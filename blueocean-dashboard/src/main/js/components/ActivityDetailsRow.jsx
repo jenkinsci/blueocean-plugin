@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitId, ReadableDate, TimeDuration, TableRow, TableCell } from '@jenkins-cd/design-language';
 import { ReplayButton, RunButton, LiveStatusIndicator, TimeHarmonizer as timeHarmonizer } from '@jenkins-cd/blueocean-core-js';
-import Extensions from '@jenkins-cd/js-extensions';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
@@ -89,7 +88,6 @@ class ActivityDetailsRow extends Component {
                     />
                 </TableCell>
                 <TableCell className="TableCell--actions">
-                    <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
                     <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
                     {/* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */}
                     <IfCapability className={pipeline._class} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>

@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-pipeline-editor",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Pipeline editor plugin for Jenkins Blue Ocean",
   "main": "dist/index.js",
   "repository": {
@@ -28,6 +28,7 @@
     "dist"
   ],
   "devDependencies": {
+    "@jenkins-cd/blueocean-dashboard": "0.0.1",
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
     "@kadira/storybook": "2.20.1",
     "@types/bluebird": "3.5.5",
@@ -48,19 +49,19 @@
     "eslint-plugin-react": "4.3.0",
     "eslint-to-editorconfig": "1.2.0",
     "gulp": "3.9.1",
-    "gulp-mocha": "2.2.0",
     "gulp-babel": "6.1.2",
     "gulp-copy": "0.0.2",
     "gulp-eslint": "3.0.1",
+    "gulp-jest": "4.0.2",
     "gulp-less": "3.1.0",
+    "gulp-mocha": "2.2.0",
     "gulp-rename": "1.2.2",
     "gulp-sourcemaps": "1.6.0",
     "gulp-typescript": "4.0.1",
-    "gulp-jest": "4.0.2",
     "jest": "23.5.0",
     "jest-cli": "23.5.0",
-    "less": "2.7.2",
     "jsdom": "7.2.2",
+    "less": "2.7.2",
     "mocha": "2.4.5",
     "nock": "8.0.0",
     "react-addons-test-utils": "15.4.2",

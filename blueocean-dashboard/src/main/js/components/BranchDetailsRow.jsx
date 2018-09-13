@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitId, ReadableDate, WeatherIcon, TableRow, TableCell } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
-import Extensions from '@jenkins-cd/js-extensions';
 import { PipelineEditorLink } from '@jenkins-cd/blueocean-pipeline-editor';
 import { observer } from 'mobx-react';
 
@@ -9,7 +8,6 @@ import RunMessageCell from './RunMessageCell';
 import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import RunHistoryButton from './RunHistoryButton';
 import { FavoritePipeline } from '../favorites/components/FavoritePipeline';
-const { sortByOrdinal } = Extensions.Utils;
 
 function noRun(branch, openRunDetails, t, store, columns) {
     const cleanBranchName = decodeURIComponent(branch.name);
@@ -20,7 +18,6 @@ function noRun(branch, openRunDetails, t, store, columns) {
             <PipelineEditorLink pipeline={branch} store={this.context.store} {...t} />
         </div>,
         <FavoritePipeline filter={sortByOrdinal} pipeline={branch} {...t} />,
-        <Extensions.Renderer extensionPoint="jenkins.pipeline.branches.list.action" filter={sortByOrdinal} pipeline={branch} store={store} {...t} />,
     ];
 
     return <BranchDetailsRowRenderer columns={columns} branchName={cleanBranchName} statusIndicator={statusIndicator} actions={actions} />;
@@ -81,7 +78,6 @@ BranchDetailsRowRenderer.propTypes = {
 
 @observer
 export class BranchDetailsRow extends Component {
-    // The number of hardcoded actions not provided by extensions
     static actionItemsCount = 4;
 
     render() {
@@ -134,13 +130,6 @@ export class BranchDetailsRow extends Component {
                     <PipelineEditorLink pipeline={branch} {...t} />
                 </div>
                 <FavoritePipeline filter={sortByOrdinal} pipeline={branch} {...t} />
-                <Extensions.Renderer
-                    extensionPoint="jenkins.pipeline.branches.list.action"
-                    filter={sortByOrdinal}
-                    pipeline={branch}
-                    store={this.context.store}
-                    {...t}
-                />
             </div>
         );
 

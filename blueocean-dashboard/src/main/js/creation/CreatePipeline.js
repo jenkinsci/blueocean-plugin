@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Page } from '@jenkins-cd/design-language';
 import { ContentPageHeader, i18nTranslator, loadingIndicator } from '@jenkins-cd/blueocean-core-js';
-import Extensions from '@jenkins-cd/js-extensions';
 
 import { ClassicCreationLink } from './ClassicCreationLink';
 import { CreatePipelineScmListRenderer } from './CreatePipelineScmListRenderer';
@@ -10,7 +9,6 @@ import VerticalStep from './flow2/VerticalStep';
 import StepStatus from './flow2/FlowStepStatus';
 import creationUtils from './creation-status-utils';
 
-const Sandbox = Extensions.SandboxedComponent;
 const t = i18nTranslator('blueocean-dashboard');
 
 export default class CreatePipeline extends React.Component {
@@ -83,12 +81,12 @@ export default class CreatePipeline extends React.Component {
                                     />
                                 </VerticalStep>
 
-                                <Sandbox>
+                                <div>
                                     <CreatePipelineStepsRenderer
                                         selectedProvider={this.state.selectedProvider}
                                         onCompleteFlow={data => this._onCompleteFlow(data)}
                                     />
-                                </Sandbox>
+                                </div>
                             </article>
                         </main>
                     )}

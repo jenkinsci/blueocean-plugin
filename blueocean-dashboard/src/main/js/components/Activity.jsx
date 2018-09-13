@@ -10,8 +10,6 @@ import { ColumnFilter } from './ColumnFilter';
 import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
 import { NoRunsDefaultPlaceholder, NoRunsForBranchPlaceholder, NoRunsMultibranchPlaceholder } from './placeholder/NoRunsPlaceholder';
 
-import Extensions from '@jenkins-cd/js-extensions';
-
 const { object, array, func, string } = PropTypes;
 
 function extractLatestRecord(run) {
@@ -27,10 +25,6 @@ function extractLatestRecord(run) {
 
 @observer
 export class Activity extends Component {
-    state = {
-        actionExtensionCount: 0,
-    };
-
     componentWillMount() {
         if (this.context.params) {
             const organization = this.context.params.organization;
@@ -38,7 +32,6 @@ export class Activity extends Component {
             const branch = this._branchFromProps(this.props);
             this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
         }
-        this._countExtensions();
     }
 
     componentWillReceiveProps(newProps) {
@@ -48,16 +41,6 @@ export class Activity extends Component {
             const branch = this._branchFromProps(newProps);
             this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
         }
-    }
-
-    // Figure out how many extensions we have for the action buttons column so we can size it appropriately
-    _countExtensions() {
-        Extensions.store.getExtensions('jenkins.pipeline.activity.list.action', extensions => {
-            const count = extensions && typeof extensions.length === 'number' ? extensions.length : 0;
-            if (count !== this.state.actionExtensionCount) {
-                this.setState({ actionExtensionCount: count });
-            }
-        });
     }
 
     _branchFromProps(props) {
@@ -83,7 +66,6 @@ export class Activity extends Component {
 
     render() {
         const { pipeline, t, locale } = this.props;
-        const { actionExtensionCount } = this.state;
         const actionsInRowCount = ActivityDetailsRow.actionItemsCount; // Non-extension actions
 
         if (!pipeline) {
@@ -168,7 +150,7 @@ export class Activity extends Component {
             JTable.column(480, message, true),
             JTable.column(100, duration, false),
             JTable.column(100, completed, false),
-            JTable.column((actionExtensionCount + actionsInRowCount) * 24, '', false)
+            JTable.column(actionsInRowCount * 24, '', false)
         );
 
         // Build main display table

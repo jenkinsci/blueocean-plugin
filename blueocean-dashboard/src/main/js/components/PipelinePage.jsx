@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import Extensions from '@jenkins-cd/js-extensions';
 import { ExpandablePath, Page, TabLink, WeatherIcon } from '@jenkins-cd/design-language';
 import { AppConfig, ContentPageHeader, i18nTranslator, logging, NotFound, Paths, Security } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from '@jenkins-cd/design-language';

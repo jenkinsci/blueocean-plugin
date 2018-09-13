@@ -1,16 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { ReadableDate, TableRow, TableCell } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
-import Extensions from '@jenkins-cd/js-extensions';
 import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import RunHistoryButton from './RunHistoryButton';
 
 function noRun(pr, openRunDetails, t, columns) {
-    const actions = [
-        <RunButton className="icon-button" runnable={pr} latestRun={pr.latestRun} onNavigation={openRunDetails} />,
-
-        <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" {...t} />,
-    ];
+    const actions = [<RunButton className="icon-button" runnable={pr} latestRun={pr.latestRun} onNavigation={openRunDetails} />];
 
     const props = {
         t,
@@ -112,7 +107,6 @@ export default class PullRequestRow extends Component {
             <div className="actions-container">
                 <RunHistoryButton pipeline={contextPipeline} branchName={pr.name} t={t} />
                 <RunButton className="icon-button" runnable={pr} latestRun={pr.latestRun} onNavigation={this.openRunDetails} />
-                <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" t={t} />
             </div>
         );
 

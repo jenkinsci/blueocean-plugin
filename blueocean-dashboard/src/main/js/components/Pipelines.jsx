@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Page, JTable, TableHeaderRow } from '@jenkins-cd/design-language';
 import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
-import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
 import { Icon } from '@jenkins-cd/design-language';
@@ -111,13 +110,11 @@ export class Pipelines extends Component {
             <Page>
                 <ContentPageHeader>
                     <div className="u-flex-grow">
-                        <Extensions.Renderer extensionPoint="jenkins.pipeline.header">
-                            <h1>
-                                <Link to="/">{translate('home.header.dashboard', { defaultValue: 'Dashboard' })}</Link>
-                                {AppConfig.showOrg() && organizationName && ' / '}
-                                {AppConfig.showOrg() && organizationName && orgLink}
-                            </h1>
-                        </Extensions.Renderer>
+                        <h1>
+                            <Link to="/">{translate('home.header.dashboard', { defaultValue: 'Dashboard' })}</Link>
+                            {AppConfig.showOrg() && organizationName && ' / '}
+                            {AppConfig.showOrg() && organizationName && orgLink}
+                        </h1>
 
                         <div className="TextInput search-pipelines-input u-icon-left" iconLeft="search">
                             <div className="TextInput-icon u-icon-left">
@@ -136,9 +133,9 @@ export class Pipelines extends Component {
                             </div>
                         </div>
                     </div>
-                    <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
+                    <div>
                         <CreatePipelineLink />
-                    </Extensions.Renderer>
+                    </div>
                 </ContentPageHeader>
                 <main>
                     <article>

@@ -1,5 +1,5 @@
 import React from 'react';
-import Extensions from '@jenkins-cd/js-extensions';
+import CredentialsPicker from '@jenkins-cd/blueocean-dashboard';
 import {
     Fetch,
     UrlBuilder,
@@ -514,18 +514,19 @@ export default class EditorPage extends React.Component {
         this.setState({
             dialog: (
                 <Dialog title={title} className={dialogClassName} buttons={[]} onDismiss={() => this.cancel()}>
-                    <Extensions.Renderer
-                        extensionPoint="jenkins.credentials.selection"
-                        onStatus={status => this.onCredentialStatus(status)}
-                        onComplete={cred => this.onCredentialSelected(cred)}
-                        type={scmSource.id}
-                        githubConfig={githubConfig}
-                        pipeline={{ fullName: pipeline.fullName }}
-                        requirePush
-                        branch={branch}
-                        dialog
-                        existingFailed
-                    />
+                    <div className="credentials-selection-git">
+                        <CredentialsPicker
+                            onStatus={status => this.onCredentialStatus(status)}
+                            onComplete={cred => this.onCredentialSelected(cred)}
+                            type={scmSource.id}
+                            githubConfig={githubConfig}
+                            pipeline={{ fullName: pipeline.fullName }}
+                            requirePush
+                            branch={branch}
+                            dialog
+                            existingFailed
+                        />
+                    </div>
                 </Dialog>
             ),
         });
