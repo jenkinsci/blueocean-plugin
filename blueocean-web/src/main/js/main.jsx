@@ -142,7 +142,7 @@ const closeHandler = props => props.onClose || {};
 function makeRoutes(routes) {
     // Build up our list of top-level routes RR will ignore any non-route stuff put into this list.
     const appRoutes = [
-        ...routes,
+        PipelineRoutes,
         // FIXME: Not sure best how to set this up without the hardcoded IndexRedirect :-/
         <IndexRedirect to="/pipelines" />,
         <Route path="*" component={NotFound} />,
@@ -233,7 +233,7 @@ function startApp(routes, stores) {
 }
 
 loadingIndicator.setDarkBackground();
-startApp([<PipelineRoutes />], undefined);
+startApp(undefined, undefined);
 
 // Enable page reload.
 require('./reload');
