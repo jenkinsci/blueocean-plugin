@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { logging, sseConnection } from '@jenkins-cd/blueocean-core-js';
-import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
 import { NoSteps, QueuedState } from './QueuedState';
@@ -12,7 +11,8 @@ import FreeStyle from './FreeStyle';
 import RunDescription from './RunDescription';
 import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import StageRestartLink from '../../StageRestartLink';
-import PipelineRunGraph from '../../../components/PipelineRunGraph';
+import PipelineRunGraph from '../../PipelineRunGraph';
+
 import { KaraokeConfig } from '../';
 import { DownstreamRuns } from '../../downstream-runs/DownstreamRuns';
 

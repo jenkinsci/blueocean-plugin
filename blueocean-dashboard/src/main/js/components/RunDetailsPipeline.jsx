@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
-import Extensions from '@jenkins-cd/js-extensions';
 import { Augmenter } from './karaoke/services/Augmenter';
 import FreeStyle from './karaoke/components/FreeStyle';
 import Pipeline from './karaoke/components/Pipeline';
+
 import { KaraokeConfig } from './karaoke';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RunDetailsPipeline');
