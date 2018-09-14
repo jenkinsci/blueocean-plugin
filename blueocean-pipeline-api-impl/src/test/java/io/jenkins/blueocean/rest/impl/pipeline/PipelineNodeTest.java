@@ -54,6 +54,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl.PARAMETERS_ELEMENT;
@@ -2878,26 +2879,39 @@ public class PipelineNodeTest extends PipelineBaseTest {
         job.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
 
         WorkflowRun build = job.scheduleBuild2(0).waitForStart();
+
+        long start = System.currentTimeMillis();
         while ( build.isBuilding() ){
-            List<Map> nodes = get("/organizations/jenkins/pipelines/p/runs/1/nodes/", List.class);
+            List<Map<String,String>> nodes = get("/organizations/jenkins/pipelines/p/runs/1/nodes/", List.class);
             if(nodes.size()>=4) {
-                Optional<Map> optionalMap = nodes.stream() //
-                    .filter( map -> map.get( "displayName" ).equals( "Nested B-1" ) ) //
-                    .findFirst();
+                Optional<Map<String,String>> optionalMap = findNodeMap(nodes, "Nested B-1" );
                 if(optionalMap.isPresent()){
+                    long now = System.currentTimeMillis();
+                    // the sleep in test file is about 10s so we want to avoid some flaky test
+                    // so if we reach 10s we exit the loop
+                    if( TimeUnit.SECONDS.convert( now - start, TimeUnit.MILLISECONDS ) >= 10) {
+                        continue;
+                    }
                     LOGGER.debug( "optionalMap: {}", optionalMap );
                     assertEquals(build.isBuilding() ? BlueRun.BlueRunState.RUNNING.name() : BlueRun.BlueRunState.FINISHED,
                                  optionalMap.get().get( "state"));
                 }
-            } else {
-                Thread.sleep( 1000 );
             }
+            Thread.sleep( 500 );
         }
-
-
+        List<Map<String,String>> nodes = get("/organizations/jenkins/pipelines/p/runs/1/nodes/", List.class);
+        Optional<Map<String,String>> optionalMap = findNodeMap(nodes, "Nested B-1" );
+        if(optionalMap.isPresent()){
+            assertEquals(BlueRun.BlueRunState.FINISHED.name(), optionalMap.get().get( "state"));
+        }
         j.assertBuildStatus(Result.SUCCESS, build);
     }
 
+    private Optional<Map<String,String>> findNodeMap(List<Map<String,String>> nodes, String displayName) {
+        return nodes.stream() //
+            .filter( map -> map.get( "displayName" ).equals( displayName ) ) //
+            .findFirst();
+    }
 
 
     private void setupScm(String script) throws Exception {

@@ -12,7 +12,7 @@ pipeline {
                     stages {
                         stage('Nested B-1') {
                             steps {
-                                sleep time: 15, unit: 'SECONDS'
+                                sleep time: 10, unit: 'SECONDS'
                             }
                         }
                     }
