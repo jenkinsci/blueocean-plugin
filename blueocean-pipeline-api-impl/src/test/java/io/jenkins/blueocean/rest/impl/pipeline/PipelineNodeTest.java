@@ -15,6 +15,7 @@ import hudson.util.RunList;
 import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
+import io.jenkins.blueocean.rest.model.BlueRun;
 import jenkins.branch.BranchSource;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
@@ -2867,6 +2868,37 @@ public class PipelineNodeTest extends PipelineBaseTest {
         assertEquals(FlowNodeWrapper.NodeType.PARALLEL.name(),nodes.get(2).get("type"));
         assertEquals(FlowNodeWrapper.NodeType.STAGE.name(),nodes.get(3).get("type"));
     }
+
+    @Issue( "JENKINS-53311" )
+    @Test
+    public void nodeWrongFinishedStatus() throws Exception {
+        WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, "p");
+        URL resource = Resources.getResource(getClass(), "JENKINS-53311.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        job.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+
+        WorkflowRun build = job.scheduleBuild2(0).waitForStart();
+        while ( build.isBuilding() ){
+            List<Map> nodes = get("/organizations/jenkins/pipelines/p/runs/1/nodes/", List.class);
+            if(nodes.size()>=4) {
+                Optional<Map> optionalMap = nodes.stream() //
+                    .filter( map -> map.get( "displayName" ).equals( "Nested B-1" ) ) //
+                    .findFirst();
+                if(optionalMap.isPresent()){
+                    LOGGER.debug( "optionalMap: {}", optionalMap );
+                    assertEquals(build.isBuilding() ? BlueRun.BlueRunState.RUNNING.name() : BlueRun.BlueRunState.FINISHED,
+                                 optionalMap.get().get( "state"));
+                }
+            } else {
+                Thread.sleep( 1000 );
+            }
+        }
+
+
+        j.assertBuildStatus(Result.SUCCESS, build);
+    }
+
+
 
     private void setupScm(String script) throws Exception {
         // create git repo
