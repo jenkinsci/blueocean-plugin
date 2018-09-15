@@ -231,6 +231,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }else if (firstExecuted == null) {
             status = new NodeRunStatus(GenericStatus.NOT_EXECUTED);
         }else if(chunk.getLastNode() != null){
+            // StatusAndTiming.computeChunkStatus2 seems to return wrong status for parallel sequential stages
+            // so check check if active and in the case of nested sequential
             if(parallelNestedStages && chunk.getFirstNode().isActive()) {
                 status = new NodeRunStatus(chunk.getFirstNode());
             } else {
