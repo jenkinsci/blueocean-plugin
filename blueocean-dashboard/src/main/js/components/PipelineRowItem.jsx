@@ -118,7 +118,7 @@ PipelineRowItem.propTypes = {
     pipeline: PropTypes.object.isRequired,
     showOrganization: PropTypes.bool,
     t: PropTypes.func,
-    columns: PropTypes.object,
+    columns: PropTypes.array,
 };
 
 PipelineRowItem.contextTypes = {

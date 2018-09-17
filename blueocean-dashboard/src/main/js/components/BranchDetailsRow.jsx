@@ -17,7 +17,7 @@ function noRun(branch, openRunDetails, t, store, columns) {
         <div className="jenkins-pipeline-branches-list-action">
             <PipelineEditorLink pipeline={branch} store={this.context.store} {...t} />
         </div>,
-        <FavoritePipeline filter={sortByOrdinal} pipeline={branch} {...t} />,
+        <FavoritePipeline pipeline={branch} {...t} />,
     ];
 
     return <BranchDetailsRowRenderer columns={columns} branchName={cleanBranchName} statusIndicator={statusIndicator} actions={actions} />;
@@ -72,7 +72,7 @@ BranchDetailsRowRenderer.propTypes = {
     commitId: PropTypes.string,
     runMessage: PropTypes.node,
     completed: PropTypes.node,
-    actions: PropTypes.array,
+    actions: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     latestRunId: PropTypes.string,
 };
 
@@ -129,7 +129,7 @@ export class BranchDetailsRow extends Component {
                 <div className="jenkins-pipeline-branches-list-action">
                     <PipelineEditorLink pipeline={branch} {...t} />
                 </div>
-                <FavoritePipeline filter={sortByOrdinal} pipeline={branch} {...t} />
+                <FavoritePipeline pipeline={branch} {...t} />
             </div>
         );
 

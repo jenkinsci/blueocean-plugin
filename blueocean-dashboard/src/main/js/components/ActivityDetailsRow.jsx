@@ -106,7 +106,7 @@ ActivityDetailsRow.propTypes = {
     changeset: PropTypes.object.isRequired,
     t: PropTypes.func,
     getTimes: PropTypes.func,
-    columns: PropTypes.object,
+    columns: PropTypes.array,
     isMultibranch: PropTypes.bool,
 };
 

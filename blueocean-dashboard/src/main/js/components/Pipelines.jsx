@@ -116,7 +116,7 @@ export class Pipelines extends Component {
                             {AppConfig.showOrg() && organizationName && orgLink}
                         </h1>
 
-                        <div className="TextInput search-pipelines-input u-icon-left" iconLeft="search">
+                        <div className="TextInput search-pipelines-input u-icon-left">
                             <div className="TextInput-icon u-icon-left">
                                 <Icon icon="ActionSearch" />
                             </div>

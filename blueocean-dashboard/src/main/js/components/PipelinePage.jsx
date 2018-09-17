@@ -98,13 +98,11 @@ export class PipelinePage extends Component {
                 <h1>
                     {AppConfig.showOrg() && (
                         <span>
-                            <Link to={orgUrl} query={location.query}>
-                                {organizationDisplayName}
-                            </Link>
+                            <Link to={{ pathname: orgUrl, query: location.query }}>{organizationDisplayName}</Link>
                             <span>&nbsp;/&nbsp;</span>
                         </span>
                     )}
-                    <Link to={activityUrl} query={location.query}>
+                    <Link to={{ pathname: activityUrl, query: location.query }}>
                         <ExpandablePath path={fullDisplayName} hideFirst className="dark-theme" iconSize={20} />
                     </Link>
                 </h1>

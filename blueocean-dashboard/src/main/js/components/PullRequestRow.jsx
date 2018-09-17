@@ -53,7 +53,7 @@ PullRequestRowRenderer.propTypes = {
     summary: PropTypes.node,
     author: PropTypes.node,
     completed: PropTypes.node,
-    actions: PropTypes.array,
+    actions: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
 };
 
 export default class PullRequestRow extends Component {

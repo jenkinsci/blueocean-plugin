@@ -84,7 +84,7 @@
     "react": "15.4.2",
     "react-addons-css-transition-group": "15.4.2",
     "react-addons-update": "15.4.2",
-    "react-autocomplete": "1.4.0",
+    "react-autocomplete": "1.8.1",
     "react-dom": "15.4.2",
     "react-i18next": "1.10.1",
     "react-router": "2.8.1",
