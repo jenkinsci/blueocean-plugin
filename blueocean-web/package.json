@@ -15,7 +15,10 @@
     "bundle:watch": "gulp bundle:watch",
     "mvnbuild": "gulp lint bundle && browserify src/main/js/ie/iepolyfills.js > target/classes/org/jenkins/ui/jsmodules/blueocean-web/iepolyfills.js",
     "mvnbuild:fast": "gulp bundle",
-    "mvntest": "gulp test"
+    "mvntest": "gulp test",
+    "buildProd": "webpack --mode production",
+    "build": "webpack --mode development && npm run copyBundles",
+    "copyBundles": "cp dist/* target/classes/io/jenkins/blueocean"
   },
   "devDependencies": {
     "@jenkins-cd/blueocean-pipeline-editor": "0.0.3",
