@@ -2,8 +2,7 @@
   "name": "@jenkins-cd/blueocean-core-js",
   "version": "0.0.171",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
-  "main": "dist/js/index.js",
-  "types": "dist/js/index.d.ts",
+  "main": "src/js/index.ts",
   "scripts": {
     "start-storybook": "start-storybook --static-dir ./dist/assets/,./node_modules/@jenkins-cd/design-language/dist/assets/",
     "storybook": "npm run start-storybook -- -p 9001",

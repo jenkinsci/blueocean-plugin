@@ -3,7 +3,7 @@
   "jdlName": "jenkins-design-language",
   "version": "0.0.164",
   "description": "Styles, assets, and React classes for Jenkins Design Language",
-  "main": "dist/js/components/index.js",
+  "main": "src/js/components/index.js",
   "scripts": {
     "storybook": "npm run gulp build && start-storybook -p 9001 --static-dir dist/assets/",
     "build-storybook": "build-storybook --static-dir dist/assets/ --output-dir website/storybook",

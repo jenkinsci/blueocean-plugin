@@ -3,7 +3,8 @@
     "jenkins-design-language",
     "blueocean-core-js",
     "blueocean-dashboard",
-    "blueocean-web"
+    "blueocean-web",
+    "blueocean-pipeline-editor"
   ],
   "version": "0.0.0"
 }
