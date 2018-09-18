@@ -57,6 +57,7 @@ export interface StageInfo {
     type: StageType;
     children: Array<StageInfo>; // Used by the top-most stages with parallel branches
     nextSibling?: StageInfo; // Used within a parallel branch to denote sequential stages
+    isSequential?: boolean;
 }
 
 // TODO: Refactor these into a common base, and some discerning "typeof" funcs
