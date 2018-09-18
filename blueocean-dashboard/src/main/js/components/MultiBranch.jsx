@@ -9,36 +9,18 @@ import { UnsupportedPlaceholder } from './placeholder/UnsupportedPlaceholder';
 
 import { BranchDetailsRow } from './BranchDetailsRow';
 
-import Extensions from '@jenkins-cd/js-extensions';
-
 // TODO: Rename this
 @observer
 export class MultiBranch extends Component {
-    state = {
-        actionExtensionCount: 0,
-    };
-
     componentWillMount() {
         if (this.props.pipeline && this.context.params && capable(this.props.pipeline, MULTIBRANCH_PIPELINE)) {
             const { organization, pipeline } = this.context.params;
             this.pager = this.context.pipelineService.branchPager(organization, pipeline);
         }
-        this._countExtensions();
-    }
-
-    // Figure out how many extensions we have for the action buttons column so we can size it appropriately
-    _countExtensions() {
-        Extensions.store.getExtensions('jenkins.pipeline.branches.list.action', extensions => {
-            const count = extensions && typeof extensions.length === 'number' ? extensions.length : 0;
-            if (count !== this.state.actionExtensionCount) {
-                this.setState({ actionExtensionCount: count });
-            }
-        });
     }
 
     render() {
         const { t, locale, pipeline } = this.props;
-        const { actionExtensionCount } = this.state;
         const actionsInRowCount = BranchDetailsRow.actionItemsCount; // Non-extension actions
 
         if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
@@ -67,7 +49,7 @@ export class MultiBranch extends Component {
         const messageHeader = t(`${head}.message`, { defaultValue: 'Message' });
         const completedHeader = t(`${head}.completed`, { defaultValue: 'Completed' });
 
-        const actionColWidth = (actionExtensionCount + actionsInRowCount) * 24;
+        const actionColWidth = actionsInRowCount * 24;
 
         const columns = [
             JTable.column(60, healthHeader, false),

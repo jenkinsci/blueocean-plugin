@@ -11,7 +11,7 @@ export class TabLink extends Component {
         const routeUrl = base + '/' + to;
         const linkClassName = router.isActive(routeUrl) ? 'selected ' + to : to;
         return (
-            <Link to={routeUrl} query={location.query} className={linkClassName}>
+            <Link to={{ pathname: routeUrl, query: location.query }} className={linkClassName}>
                 {this.props.children}
             </Link>
         );

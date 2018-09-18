@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { TabLink } from '@jenkins-cd/design-language';
 import { i18nTranslator, ReplayButton, RunButton, LoginButton, logging } from '@jenkins-cd/blueocean-core-js';
-import Extensions, { dataType } from '@jenkins-cd/js-extensions';
+import { PipelineEditorLink } from '@jenkins-cd/blueocean-pipeline-editor';
 
 import { Icon } from '@jenkins-cd/design-language';
 
@@ -194,13 +194,7 @@ class RunDetails extends Component {
         const iconButtons = [
             <ReplayButton className="icon-button dark" runnable={this.props.pipeline} latestRun={currentRun} onNavigation={switchRunDetails} autoNavigate />,
             <RunButton className="icon-button dark" runnable={this.props.pipeline} latestRun={currentRun} buttonType="stop-only" />,
-            <Extensions.Renderer
-                extensionPoint="jenkins.blueocean.rundetails.top.widgets"
-                filter={dataType(currentRun)}
-                pipeline={pipeline}
-                run={currentRun}
-                back={() => this.navigateToPipeline()}
-            />,
+            <PipelineEditorLink pipeline={pipeline} run={currentRun} />,
             classicConfigLink(pipeline),
             classicJobRunLink(pipeline, params.branch, params.runId),
             <LoginButton className="user-component button-bar layout-small inverse" translate={webTranslate} />,

@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import Extensions from '@jenkins-cd/js-extensions';
 import { ExpandablePath, Page, TabLink, WeatherIcon } from '@jenkins-cd/design-language';
 import { AppConfig, ContentPageHeader, i18nTranslator, logging, NotFound, Paths, Security } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from '@jenkins-cd/design-language';
@@ -8,6 +7,7 @@ import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { documentTitle } from './DocumentTitle';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
+import { FavoritePipelineHeader } from '../favorites/components/FavoritePipelineHeader';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.PipelinePage');
 
@@ -98,17 +98,15 @@ export class PipelinePage extends Component {
                 <h1>
                     {AppConfig.showOrg() && (
                         <span>
-                            <Link to={orgUrl} query={location.query}>
-                                {organizationDisplayName}
-                            </Link>
+                            <Link to={{ pathname: orgUrl, query: location.query }}>{organizationDisplayName}</Link>
                             <span>&nbsp;/&nbsp;</span>
                         </span>
                     )}
-                    <Link to={activityUrl} query={location.query}>
+                    <Link to={{ pathname: activityUrl, query: location.query }}>
                         <ExpandablePath path={fullDisplayName} hideFirst className="dark-theme" iconSize={20} />
                     </Link>
                 </h1>
-                <Extensions.Renderer extensionPoint="jenkins.pipeline.detail.header.action" store={this.context.store} pipeline={pipeline} />
+                <FavoritePipelineHeader pipeline={pipeline} />
                 {classicConfigLink(pipeline)}
             </ContentPageHeader>
         ) : (

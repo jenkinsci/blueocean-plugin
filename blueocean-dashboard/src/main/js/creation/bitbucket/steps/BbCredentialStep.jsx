@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import Extensions from '@jenkins-cd/js-extensions';
+import CredentialsPicker from '../../../credentials/CredentialsPicker';
 
 import FlowStep from '../../flow2/FlowStep';
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
@@ -46,8 +46,7 @@ export default class BbCredentialsStep extends React.Component {
 
         return (
             <FlowStep {...this.props} className="bitbucket-credentials-step" disabled={disabled} loading={loading} title={title}>
-                <Extensions.Renderer
-                    extensionPoint="jenkins.credentials.selection"
+                <CredentialsPicker
                     onStatus={status => this._onStatus(status)}
                     onComplete={(credential, selectionType) => this._onComplete(credential, selectionType)}
                     type={scmId}

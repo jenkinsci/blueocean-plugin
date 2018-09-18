@@ -9,34 +9,16 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { NoPullRequestsPlaceholder } from './placeholder/NoPullRequestsPlaceholder';
 import { UnsupportedPlaceholder } from './placeholder/UnsupportedPlaceholder';
 
-import Extensions from '@jenkins-cd/js-extensions';
-
 @observer
 export class PullRequests extends Component {
-    state = {
-        actionExtensionCount: 0,
-    };
-
     componentWillMount() {
         if (this.props.pipeline && this.props.params && capable(this.props.pipeline, MULTIBRANCH_PIPELINE)) {
             this.pager = this.context.pipelineService.prPager(this.props.params.organization, this.props.params.pipeline);
         }
-        this._countExtensions();
-    }
-
-    // Figure out how many extensions we have for the action buttons column so we can size it appropriately
-    _countExtensions() {
-        Extensions.store.getExtensions('jenkins.pipeline.pullrequests.list.action', extensions => {
-            const count = extensions && typeof extensions.length === 'number' ? extensions.length : 0;
-            if (count !== this.state.actionExtensionCount) {
-                this.setState({ actionExtensionCount: count });
-            }
-        });
     }
 
     render() {
         const { t, locale, pipeline } = this.props;
-        const { actionExtensionCount } = this.state;
         const actionsInRowCount = PullRequestRow.actionItemsCount; // Non-extension actions
 
         if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
@@ -68,7 +50,7 @@ export class PullRequests extends Component {
             JTable.column(500, summary, true),
             JTable.column(110, author),
             JTable.column(100, completed),
-            JTable.column((actionExtensionCount + actionsInRowCount) * 24, ''),
+            JTable.column(actionsInRowCount * 24, ''),
         ];
 
         const runRecords = pullRequests.map(run => new RunsRecord(run));

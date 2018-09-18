@@ -1,21 +1,23 @@
 import React, { Component, PropTypes } from 'react';
 import { CommitId, ReadableDate, WeatherIcon, TableRow, TableCell } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
-import Extensions from '@jenkins-cd/js-extensions';
+import { PipelineEditorLink } from '@jenkins-cd/blueocean-pipeline-editor';
 import { observer } from 'mobx-react';
 
 import RunMessageCell from './RunMessageCell';
 import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import RunHistoryButton from './RunHistoryButton';
-
-const { sortByOrdinal } = Extensions.Utils;
+import { FavoritePipeline } from '../favorites/components/FavoritePipeline';
 
 function noRun(branch, openRunDetails, t, store, columns) {
     const cleanBranchName = decodeURIComponent(branch.name);
     const statusIndicator = <LiveStatusIndicator result="NOT_BUILT" />;
     const actions = [
         <RunButton className="icon-button" runnable={branch} onNavigation={openRunDetails} />,
-        <Extensions.Renderer extensionPoint="jenkins.pipeline.branches.list.action" filter={sortByOrdinal} pipeline={branch} store={store} {...t} />,
+        <div className="jenkins-pipeline-branches-list-action">
+            <PipelineEditorLink pipeline={branch} store={this.context.store} {...t} />
+        </div>,
+        <FavoritePipeline pipeline={branch} {...t} />,
     ];
 
     return <BranchDetailsRowRenderer columns={columns} branchName={cleanBranchName} statusIndicator={statusIndicator} actions={actions} />;
@@ -70,14 +72,13 @@ BranchDetailsRowRenderer.propTypes = {
     commitId: PropTypes.string,
     runMessage: PropTypes.node,
     completed: PropTypes.node,
-    actions: PropTypes.array,
+    actions: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     latestRunId: PropTypes.string,
 };
 
 @observer
 export class BranchDetailsRow extends Component {
-    // The number of hardcoded actions not provided by extensions
-    static actionItemsCount = 2;
+    static actionItemsCount = 4;
 
     render() {
         const { data: branch, pipeline, t, locale, columns } = this.props;
@@ -125,13 +126,10 @@ export class BranchDetailsRow extends Component {
             <div className="actions-container">
                 <RunButton className="icon-button" runnable={branch} latestRun={branch.latestRun} onNavigation={openRunDetails} />
                 <RunHistoryButton pipeline={pipeline} branchName={branch.name} t={t} />
-                <Extensions.Renderer
-                    extensionPoint="jenkins.pipeline.branches.list.action"
-                    filter={sortByOrdinal}
-                    pipeline={branch}
-                    store={this.context.store}
-                    {...t}
-                />
+                <div className="jenkins-pipeline-branches-list-action">
+                    <PipelineEditorLink pipeline={branch} {...t} />
+                </div>
+                <FavoritePipeline pipeline={branch} {...t} />
             </div>
         );
 

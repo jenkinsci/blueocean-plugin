@@ -137,6 +137,9 @@ export class TableRow extends Component {
 
         props.className = classNames.join(' ');
 
+        //delete useRollover prop as we don't need to pass it along and it causes a warning
+        delete props.useRollover;
+
         return React.createElement(tagOrComponent, props, ...newChildren);
     }
 }

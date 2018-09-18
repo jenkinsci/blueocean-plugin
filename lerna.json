@@ -1,6 +1,7 @@
 {
   "packages": [
     "jenkins-design-language",
+    "blueocean-pipeline-editor",
     "blueocean-core-js",
     "blueocean-dashboard",
     "blueocean-web",

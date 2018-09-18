@@ -21,19 +21,26 @@ export class ColumnFilter extends Component {
 
     onChange(event, value) {
         const { onChange } = this.props;
+        const inputElement = event.nativeEvent ? event.nativeEvent.target : '';
         this.setState({ value });
         // only update on enter press or click
         if (event.type === 'select' || event.type === 'blur' || (event.type === 'keypress' && event.key === 'Enter')) {
             this.setState({ originalValue: value });
             onChange(value);
             setTimeout(() => {
-                this.refs.autocomplete.refs.input.blur();
+                if (inputElement) {
+                    inputElement.blur();
+                } else {
+                    if (document.activeElement.className === 'autocomplete') {
+                        document.activeElement.blur();
+                    }
+                }
             }, 0);
         }
     }
 
-    clearInput() {
-        this.onChange({ type: 'select' }, '');
+    clearInput(event) {
+        this.onChange(event ? event : { type: 'select' }, '');
     }
 
     focus(e) {
@@ -51,14 +58,6 @@ export class ColumnFilter extends Component {
             this.setState({ value: this.state.originalValue });
         }
     };
-
-    // hack due to strange behavior of triggering onChange from autocomplete when
-    // clicking on the input when the dropdown is open and an item is selected
-    preventStupidInput(e) {
-        if (this.state.visible && e.target.tagName && e.target.tagName.toLowerCase() === 'input') {
-            this.refs.autocomplete._ignoreClick = true;
-        }
-    }
 
     handleEmptyEnterPressBetter(event) {
         if (this.state.visible && event.key === 'Enter' && this.state.value === '') {
@@ -79,13 +78,11 @@ export class ColumnFilter extends Component {
             <div className={`ColumnFilter ${value ? '' : 'empty'} ${focused ? 'focused' : ''}`}>
                 <Autocomplete
                     wrapperStyle={wrapperStyle}
-                    ref="autocomplete"
                     value={value}
                     inputProps={{
                         className: 'autocomplete',
                         name: 'Filter',
                         placeholder: focused ? '' : placeholder,
-                        onMouseDown: e => this.preventStupidInput(e),
                         onKeyDown: e => this.handleEmptyEnterPressBetter(e),
                         onFocus: e => this.focus(e),
                         onBlur: e => this.blur(e),
@@ -122,6 +119,6 @@ export class ColumnFilter extends Component {
 ColumnFilter.propTypes = {
     placeholder: PropTypes.string,
     onChange: PropTypes.func,
-    value: PropTypes.object,
+    value: PropTypes.string,
     options: PropTypes.array,
 };

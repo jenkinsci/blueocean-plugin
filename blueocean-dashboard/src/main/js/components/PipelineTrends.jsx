@@ -3,7 +3,7 @@ import { action, asFlat, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
 import { capable, AppConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
-import Extensions from '@jenkins-cd/js-extensions';
+import StageDurationChart from './trends/StageDurationChart';
 
 import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { ColumnFilter } from './ColumnFilter';
@@ -92,7 +92,6 @@ export class PipelineTrends extends Component {
         }
     }
 
-    @observable extensions = asFlat({});
     @observable trends = [];
     rowsMap = {};
 
@@ -113,15 +112,11 @@ export class PipelineTrends extends Component {
     }
 
     _loadTrendsSuccess(trends) {
-        Extensions.store.getExtensions('jenkins.pipeline.trends', extensions => this.updateTrends(trends, extensions));
+        this.updateTrends(trends);
     }
 
     @action
-    updateTrends(trends, extensions) {
-        extensions.forEach(trendExt => {
-            this.extensions[trendExt.trendId] = trendExt.componentClass;
-        });
-
+    updateTrends(trends) {
         this.trends = trends;
 
         const rowsMap = {};
@@ -181,7 +176,6 @@ export class PipelineTrends extends Component {
 
                 <div className="trends-table">
                     {trends.map(trend => {
-                        const CustomComponent = this.extensions[trend.id];
                         const rows = this.rowsMap[trend.id];
 
                         if (!rows || !rows.length) {
@@ -191,11 +185,11 @@ export class PipelineTrends extends Component {
 
                         let chart = null;
 
-                        if (CustomComponent) {
+                        if (trend.displayName === 'Stage Duration') {
                             chart = (
-                                <Extensions.SandboxedComponent>
-                                    <CustomComponent trend={trend} rows={rows.slice()} />
-                                </Extensions.SandboxedComponent>
+                                <div>
+                                    <StageDurationChart trend={trend} rows={rows.slice()} />
+                                </div>
                             );
                         } else {
                             chart = <DefaultChart trend={trend} rows={rows.slice()} />;

@@ -1,5 +1,5 @@
 import React from 'react';
-import Extensions from '@jenkins-cd/js-extensions';
+import CredentialsPicker from '@jenkins-cd/blueocean-dashboard';
 import {
     Fetch,
     UrlBuilder,
@@ -158,7 +158,7 @@ SaveDialog.propTypes = {
 };
 
 @observer
-class PipelineLoader extends React.Component {
+export default class EditorPage extends React.Component {
     state = {};
 
     constructor(props) {
@@ -345,7 +345,6 @@ class PipelineLoader extends React.Component {
                 }
                 const pipelineScript = Base64.decode(content.base64Data);
                 this.setState({ sha: content.sha });
-
                 convertPipelineToJson(pipelineScript, (p, err) => {
                     if (!err) {
                         const internal = convertJsonToInternalModel(p);
@@ -515,18 +514,19 @@ class PipelineLoader extends React.Component {
         this.setState({
             dialog: (
                 <Dialog title={title} className={dialogClassName} buttons={[]} onDismiss={() => this.cancel()}>
-                    <Extensions.Renderer
-                        extensionPoint="jenkins.credentials.selection"
-                        onStatus={status => this.onCredentialStatus(status)}
-                        onComplete={cred => this.onCredentialSelected(cred)}
-                        type={scmSource.id}
-                        githubConfig={githubConfig}
-                        pipeline={{ fullName: pipeline.fullName }}
-                        requirePush
-                        branch={branch}
-                        dialog
-                        existingFailed
-                    />
+                    <div className="credentials-selection-git">
+                        <CredentialsPicker
+                            onStatus={status => this.onCredentialStatus(status)}
+                            onComplete={cred => this.onCredentialSelected(cred)}
+                            type={scmSource.id}
+                            githubConfig={githubConfig}
+                            pipeline={{ fullName: pipeline.fullName }}
+                            requirePush
+                            branch={branch}
+                            dialog
+                            existingFailed
+                        />
+                    </div>
                 </Dialog>
             ),
         });
@@ -646,7 +646,6 @@ class PipelineLoader extends React.Component {
 
         return (
             <div className="pipeline-page">
-                <Extensions.Renderer extensionPoint="pipeline.editor.css" />
                 <ContentPageHeader>
                     <div className="u-flex-grow">
                         <h1>{pipeline && title}</h1>
@@ -678,13 +677,11 @@ class PipelineLoader extends React.Component {
     }
 }
 
-PipelineLoader.contextTypes = {
+EditorPage.contextTypes = {
     router: React.PropTypes.object,
     location: React.PropTypes.object,
 };
 
-PipelineLoader.propTypes = {
+EditorPage.propTypes = {
     params: React.PropTypes.object,
 };
-
-export const EditorPage = PipelineLoader;

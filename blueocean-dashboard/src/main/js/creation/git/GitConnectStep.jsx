@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
-import Extensions from '@jenkins-cd/js-extensions';
 import { FormElement, TextInput } from '@jenkins-cd/design-language';
+import CredentialsPicker from '../../credentials/CredentialsPicker';
 
 import FlowStep from '../flow2/FlowStep';
 
@@ -150,13 +150,9 @@ export default class GitConnectStep extends React.Component {
                     <TextInput className="text-repository-url" onChange={val => this._repositoryUrlChange(val)} />
                 </FormElement>
 
-                <Extensions.Renderer
-                    extensionPoint="jenkins.credentials.selection"
-                    className="credentials-selection-git"
-                    onComplete={this._onCreateCredentialClosed}
-                    type="git"
-                    repositoryUrl={repositoryUrl}
-                />
+                <div className="credentials-selection-git">
+                    <CredentialsPicker onComplete={this._onCreateCredentialClosed} type="git" repositoryUrl={repositoryUrl} />
+                </div>
 
                 {isSshRepositoryUrl(repositoryUrl) &&
                     credentialErrorMsg && <FormElement className="public-key-display" errorMessage={t('creation.git.step1.credentials_publickey_invalid')} />}

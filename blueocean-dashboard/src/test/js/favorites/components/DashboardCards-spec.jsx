@@ -5,7 +5,7 @@ import React from 'react';
 import { assert } from 'chai';
 import { shallow } from 'enzyme';
 
-import { DashboardCards } from '../../../main/js/components/DashboardCards';
+import { DashboardCards } from '../../../../main/js/favorites/components/DashboardCards';
 
 
 const noLatestRun = [{

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import update from 'react-addons-update';
-import { classMetadataStore } from '@jenkins-cd/js-extensions';
 import { Record } from 'immutable';
 
 /* eslint new-cap: [0] */
@@ -61,12 +60,6 @@ export const capabilityStore = classesFunction => ComposedComponent =>
 
             if (typeof classesMap === 'string') {
                 classesMap = [classesMap];
-            }
-
-            for (const className of classesMap) {
-                classMetadataStore.getClassMetadata(className, classMeta => {
-                    self._setState(className, new CapabilityRecord({ classNames: classMeta.classes }));
-                });
             }
         }
 

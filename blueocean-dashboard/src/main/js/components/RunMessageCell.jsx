@@ -5,13 +5,6 @@ import LinkifiedText from './LinkifiedText';
 import { UrlConfig } from '@jenkins-cd/blueocean-core-js';
 
 export default class RunMessageCell extends Component {
-    propTypes = {
-        run: PropTypes.object,
-        t: PropTypes.func,
-        linkTo: PropTypes.string,
-        changesUrl: PropTypes.string,
-    };
-
     render() {
         const run = this.props.run;
         const t = this.props.t;
@@ -100,3 +93,10 @@ export default class RunMessageCell extends Component {
         return message;
     }
 }
+
+RunMessageCell.propTypes = {
+    run: PropTypes.object,
+    t: PropTypes.func,
+    linkTo: PropTypes.string,
+    changesUrl: PropTypes.string,
+};

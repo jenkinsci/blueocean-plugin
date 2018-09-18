@@ -2,6 +2,7 @@
  * Created by cmeyers on 8/17/16.
  */
 import React, { Component, PropTypes } from 'react';
+import { PropTypes as mobxPropTypes } from 'mobx-react';
 import TransitionGroup from 'react-addons-css-transition-group';
 
 import { Toast } from './Toast';
@@ -123,7 +124,7 @@ export class Toaster extends Component {
 }
 
 Toaster.propTypes = {
-    toasts: PropTypes.array,
+    toasts: mobxPropTypes.observableArray,
     onActionClick: PropTypes.func,
     onDismiss: PropTypes.func,
     dismissDelay: PropTypes.number,

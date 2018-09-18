@@ -6,7 +6,7 @@ import { assert } from 'chai';
 import { shallow } from 'enzyme';
 
 import { mockExtensionsForI18n } from '../mock-extensions-i18n';
-import { PipelineCard, PipelineCardRenderer } from '../../../main/js/components/PipelineCard';
+import { PipelineCard, PipelineCardRenderer } from '../../../../main/js/favorites/components/PipelineCard';
 
 function clone(object) {
     return JSON.parse(JSON.stringify(object));
