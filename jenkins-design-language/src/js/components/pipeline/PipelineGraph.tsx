@@ -1,44 +1,40 @@
-// @flow
-
-import React, { Component, PropTypes } from 'react';
-import { getGroupForResult, decodeResultValue } from '../status/StatusIndicator';
+import * as React from 'react';
+import { decodeResultValue, getGroupForResult } from '../status/StatusIndicator';
 import { strokeWidth as nodeStrokeWidth } from '../status/SvgSpinner';
 import { TruncatingLabel } from '../TruncatingLabel';
 
-import { defaultLayout } from './PipelineGraphModel';
+import { CompositeConnection, defaultLayout, LabelInfo, LayoutInfo, MATRIOSKA_PATHS, NodeColumn, NodeInfo, StageInfo } from './PipelineGraphModel';
 
 import { layoutGraph } from './PipelineGraphLayout';
 
-import { MATRIOSKA_PATHS } from './PipelineGraphModel';
-
-import type { NodeColumn, NodeInfo, LabelInfo, LayoutInfo, StageInfo, CompositeConnection } from './PipelineGraphModel';
-
 type SVGChildren = Array<any>; // Fixme: Maybe refine this?
-
-type Props = {
-    stages: Array<StageInfo>,
-    layout: LayoutInfo,
-    onNodeClick: (nodeName: string, id: string) => void,
-    selectedStage: StageInfo,
-};
 
 // Generate a react key for a connection
 function connectorKey(leftNode, rightNode) {
     return 'c_' + leftNode.key + '_to_' + rightNode.key;
 }
 
-export class PipelineGraph extends Component {
-    // Flow typedefs
-    state: {
-        nodeColumns: Array<NodeColumn>,
-        connections: Array<CompositeConnection>,
-        bigLabels: Array<LabelInfo>,
-        smallLabels: Array<LabelInfo>,
-        measuredWidth: number,
-        measuredHeight: number,
-        layout: LayoutInfo,
-        selectedStage: StageInfo,
-    };
+interface Props {
+    stages: Array<StageInfo>;
+    layout: LayoutInfo;
+    onNodeClick: (nodeName: string, id: number) => void;
+    selectedStage: StageInfo;
+}
+
+interface State {
+    nodeColumns: Array<NodeColumn>;
+    connections: Array<CompositeConnection>;
+    bigLabels: Array<LabelInfo>;
+    smallLabels: Array<LabelInfo>;
+    measuredWidth: number;
+    measuredHeight: number;
+    layout: LayoutInfo;
+    selectedStage?: StageInfo;
+}
+
+export class PipelineGraph extends React.Component {
+    props!: Props;
+    state: State;
 
     constructor(props: Props) {
         super(props);
@@ -59,7 +55,7 @@ export class PipelineGraph extends Component {
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        let newState = null; // null == no new state
+        let newState: Partial<State> | undefined;
         let needsLayout = false;
 
         if (nextProps.layout != this.props.layout) {
@@ -493,7 +489,7 @@ export class PipelineGraph extends Component {
         const { nodeRadius, connectorStrokeWidth, terminalRadius } = this.state.layout;
         const key = node.key;
 
-        const groupChildren = [];
+        const groupChildren: SVGChildren = [];
 
         if (node.isPlaceholder === true) {
             groupChildren.push(<circle r={terminalRadius} className="pipeline-node-terminal" />);
@@ -511,7 +507,7 @@ export class PipelineGraph extends Component {
         }
 
         // Set click listener and link cursor only for nodes we want to be clickable
-        const clickableProps = {};
+        const clickableProps: React.SVGProps<SVGCircleElement> = {};
 
         if (node.isPlaceholder === false && node.stage.state !== 'skipped') {
             clickableProps.cursor = 'pointer';
@@ -542,7 +538,7 @@ export class PipelineGraph extends Component {
     renderSelectionHighlight(elements: SVGChildren) {
         const { nodeRadius, connectorStrokeWidth } = this.state.layout;
         const highlightRadius = Math.ceil(nodeRadius + 0.5 * connectorStrokeWidth + 1);
-        let selectedNode = null;
+        let selectedNode: NodeInfo | undefined;
 
         columnLoop: for (const column of this.state.nodeColumns) {
             for (const row of column.rows) {
@@ -570,9 +566,9 @@ export class PipelineGraph extends Component {
     /**
      * Is this stage currently selected?
      */
-    stageIsSelected(stage?: StageInfo) {
+    stageIsSelected(stage?: StageInfo): boolean {
         const { selectedStage } = this.state;
-        return selectedStage && stage && selectedStage.id === stage.id;
+        return (selectedStage && stage && selectedStage.id === stage.id) || false;
     }
 
     /**
@@ -585,7 +581,7 @@ export class PipelineGraph extends Component {
 
             if (children && selectedStage) {
                 for (const childStage of children) {
-                    let currentStage = childStage;
+                    let currentStage: StageInfo | undefined = childStage;
 
                     while (currentStage) {
                         if (currentStage.id === selectedStage.id) {
@@ -640,7 +636,7 @@ export class PipelineGraph extends Component {
         }
 
         return (
-            <div style={outerDivStyle} className="PipelineGraph">
+            <div style={outerDivStyle as any} className="PipelineGraph">
                 <svg width={measuredWidth} height={measuredHeight}>
                     {visualElements}
                 </svg>
@@ -650,9 +646,3 @@ export class PipelineGraph extends Component {
         );
     }
 }
-
-PipelineGraph.propTypes = {
-    stages: PropTypes.array,
-    layout: PropTypes.object,
-    onNodeClick: PropTypes.func,
-};
