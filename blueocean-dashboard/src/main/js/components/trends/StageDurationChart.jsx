@@ -60,7 +60,7 @@ function createChartSeries(trend, rows) {
     return series;
 }
 
-class StageDurationChart extends React.Component {
+export default class StageDurationChart extends React.Component {
     render() {
         const rows = createChartData(this.props.rows);
         const series = createChartSeries(this.props.trend, this.props.rows);
@@ -81,9 +81,4 @@ class StageDurationChart extends React.Component {
 StageDurationChart.propTypes = {
     trend: PropTypes.object,
     rows: PropTypes.object,
-};
-
-export default {
-    trendId: 'stageDuration',
-    componentClass: StageDurationChart,
 };
