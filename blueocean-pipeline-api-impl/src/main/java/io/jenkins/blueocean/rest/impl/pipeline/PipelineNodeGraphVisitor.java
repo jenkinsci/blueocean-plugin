@@ -231,9 +231,15 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }else if (firstExecuted == null) {
             status = new NodeRunStatus(GenericStatus.NOT_EXECUTED);
         }else if(chunk.getLastNode() != null){
-            status = new NodeRunStatus(StatusAndTiming
-                                           .computeChunkStatus2(run, chunk.getNodeBefore(),
-                                                                firstExecuted, chunk.getLastNode(), chunk.getNodeAfter()));
+            // StatusAndTiming.computeChunkStatus2 seems to return wrong status for parallel sequential stages
+            // so check check if active and in the case of nested sequential
+            if(parallelNestedStages && chunk.getFirstNode().isActive()) {
+                status = new NodeRunStatus(chunk.getFirstNode());
+            } else {
+                FlowNode nodeBefore = chunk.getNodeBefore(), lastNode = chunk.getLastNode(), nodeAfter = chunk.getNodeAfter();
+                status = new NodeRunStatus(
+                    StatusAndTiming.computeChunkStatus2( run, nodeBefore, firstExecuted, lastNode, nodeAfter ) );
+            }
         }else{
             status = new NodeRunStatus(firstExecuted);
         }
@@ -241,8 +247,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         if (!pendingInputSteps.isEmpty()) {
             status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.PAUSED);
         }
-        FlowNodeWrapper stage = new FlowNodeWrapper(chunk.getFirstNode(),
-                                                    status, times, run);
+        FlowNodeWrapper stage = new FlowNodeWrapper(chunk.getFirstNode(), status, times, run);
 
         stage.setCauseOfFailure(PipelineNodeUtil.getCauseOfBlockage(stage.getNode(), agentNode));
         accumulatePipelineActions(chunk.getFirstNode());
