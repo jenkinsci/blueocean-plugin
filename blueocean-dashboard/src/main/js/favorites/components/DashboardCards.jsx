@@ -3,7 +3,6 @@
  */
 import React, { Component, PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import TransitionGroup from 'react-addons-css-transition-group';
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import favoriteStore from '../model/FavoriteStore';
@@ -18,9 +17,7 @@ function CardStack(props) {
     return (
         <div className="favorites-card-stack">
             <div className="favorites-card-stack-heading"> {message}</div>
-            <TransitionGroup transitionName="vertical-expand-collapse" transitionEnterTimeout={300} transitionLeaveTimeout={300}>
-                {children}
-            </TransitionGroup>
+            <div>{children}</div>
         </div>
     );
 }
