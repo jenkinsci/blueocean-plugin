@@ -1,7 +1,7 @@
-import jdlCSS from '@jenkins-cd/design-language/dist/assets/css/jenkins-design-language.css';
+import jdlCSS from '@jenkins-cd/design-language/less/theme.less';
 import style from '../less/blueocean.less';
-import dashboardCSS from '@jenkins-cd/blueocean-dashboard/dist/assets/css/blueocean-dashboard.css';
-import coreCSS from '@jenkins-cd/blueocean-core-js/dist/assets/css/blueocean-core-js.css';
+import dashboardCSS from '@jenkins-cd/blueocean-dashboard/src/main/less/extensions.less';
+import coreCSS from '@jenkins-cd/blueocean-core-js/src/less/blueocean-core-js.less';
 
 try {
     // start the App

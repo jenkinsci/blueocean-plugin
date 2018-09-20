@@ -6,7 +6,7 @@ module.exports = {
     entry: './src/main/js/blueocean.js',
     output: {
         pathinfo: false,
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'target/classes/io/jenkins/blueocean/'),
         filename: 'blueocean.js',
     },
     module: {

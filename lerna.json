@@ -4,8 +4,7 @@
     "blueocean-pipeline-editor",
     "blueocean-core-js",
     "blueocean-dashboard",
-    "blueocean-web",
-    "blueocean-pipeline-editor"
+    "blueocean-web"
   ],
   "version": "0.0.0"
 }
