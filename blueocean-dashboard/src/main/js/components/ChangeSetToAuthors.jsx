@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { PropTypes as mobxPropTypes } from 'mobx-react';
 import ReactDOM from 'react-dom';
 
 export default class ChangeSetToAuthors extends Component {
@@ -69,7 +70,7 @@ export default class ChangeSetToAuthors extends Component {
 const { array, func } = PropTypes;
 
 ChangeSetToAuthors.propTypes = {
-    changeSet: array,
+    changeSet: mobxPropTypes.observableArray,
     onAuthorsClick: func,
     t: func,
 };

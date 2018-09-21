@@ -1,4 +1,5 @@
 import React, { Component, PureComponent, PropTypes } from 'react';
+import { PropTypes as mobxPropTypes } from 'mobx-react';
 import { Progress, Linkify } from '@jenkins-cd/design-language';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 
@@ -29,7 +30,7 @@ class LogLine extends PureComponent {
 
         return (
             <p id={`${prefix}log-${index + 1}`}>
-                <div className="log-boxes">
+                <span className="log-boxes">
                     <a
                         className="linenumber"
                         key={index + 1}
@@ -38,7 +39,7 @@ class LogLine extends PureComponent {
                         onClick={this.onClick}
                     />
                     {React.createElement(Linkify, { className: 'line ansi-color' }, ...lineChunks)}
-                </div>
+                </span>
             </p>
         );
     }
@@ -81,7 +82,7 @@ export class LogConsole extends Component {
 
         // We need a shallow copy of the ObservableArray to "cast" it down to normal array
         const newArray = nextProps.logArray.slice();
-        const oldLength = this.props.logArray && this.props.logArray.length || 0;
+        const oldLength = (this.props.logArray && this.props.logArray.length) || 0;
         // if have a new logArray, simply add it to the queue and wait for next tick
         this.queuedLines = this.queuedLines.concat(newArray.slice(oldLength));
         clearTimeout(this.timeouts.render);
@@ -199,17 +200,17 @@ export class LogConsole extends Component {
     }
 }
 
-const { array, bool, string, func, shape } = PropTypes;
+const { array, bool, string, func, object } = PropTypes;
 LogConsole.propTypes = {
     scrollToBottom: bool, // in case of long logs you can scroll to the bottom
-    logArray: array,
+    logArray: mobxPropTypes.observableArray,
     currentLogUrl: string,
     scrollToAnchorTimeOut: func,
     scrollBottom: func,
     prefix: string,
     hasMore: bool,
-    router: shape,
-    location: shape,
+    router: object,
+    location: object,
     url: string,
     t: func,
 };

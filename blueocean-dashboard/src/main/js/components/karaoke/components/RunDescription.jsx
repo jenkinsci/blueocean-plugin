@@ -2,11 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { Alerts } from '@jenkins-cd/design-language';
 
 export default class RunDescription extends Component {
-    propTypes = {
-        run: PropTypes.object,
-        t: PropTypes.object,
-    };
-
     render() {
         if (!this.props.run || !this.props.run.description) {
             return null;
@@ -18,3 +13,7 @@ export default class RunDescription extends Component {
         );
     }
 }
+RunDescription.propTypes = {
+    run: PropTypes.object,
+    t: PropTypes.func,
+};
