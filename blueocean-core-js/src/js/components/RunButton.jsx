@@ -122,7 +122,7 @@ export class RunButton extends Component {
                     <a className={`stop-button ${innerButtonClass} ${stopClass}`} title={stopLabel} onClick={() => this._onStopClick()}>
                         {/* eslint-disable max-len */}
                         <svg className="svg-icon" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <g fill="none" fill-rule="evenodd">
+                            <g fill="none" fillRule="evenodd">
                                 <path d="M-2-2h24v24H-2z" />
                                 <path
                                     className="svg-icon-inner action-button-fill"
