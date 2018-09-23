@@ -54,7 +54,6 @@
     "moment": "2.19.3",
     "moment-duration-format": "2.2.2",
     "react": "15.4.2",
-    "react-addons-css-transition-group": "15.4.2",
     "react-dom": "15.4.2",
     "react-router": "2.8.1"
   },
@@ -103,7 +102,6 @@
       "moment",
       "moment-duration-format",
       "react",
-      "react-addons-css-transition-group",
       "react-dom",
       "react-router"
     ]

@@ -17,8 +17,7 @@
     "mvnbuild:fast": "gulp bundle",
     "mvntest": "gulp test",
     "buildProd": "webpack --mode production",
-    "build": "webpack --mode development && npm run copyBundles",
-    "copyBundles": "cp dist/* target/classes/io/jenkins/blueocean"
+    "build": "webpack --mode development"
   },
   "devDependencies": {
     "@jenkins-cd/blueocean-pipeline-editor": "0.0.3",

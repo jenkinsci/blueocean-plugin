@@ -15,10 +15,12 @@ function createStepLabel(step) {
 
     if (displayDescription) {
         return [
-            <span className="result-item-label-desc" title={displayDescription}>
+            <span className="result-item-label-desc" key="1" title={displayDescription}>
                 {displayDescription}
             </span>,
-            <span className="result-item-label-name">&mdash; {displayName}</span>,
+            <span className="result-item-label-name" key="2">
+                &mdash; {displayName}
+            </span>,
         ];
     }
 

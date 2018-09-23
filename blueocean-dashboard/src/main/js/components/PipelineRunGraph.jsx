@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { PropTypes as mobxPropTypes } from 'mobx-react';
 import { PipelineGraph } from '@jenkins-cd/design-language';
 import { TimeManager, i18nTranslator, logging } from '@jenkins-cd/blueocean-core-js';
 
@@ -323,7 +324,7 @@ PipelineRunGraph.propTypes = {
     pipelineName: string,
     branchName: string,
     run: object,
-    nodes: array,
+    nodes: mobxPropTypes.observableArray,
     node: any,
     selectedStage: object,
     callback: func,

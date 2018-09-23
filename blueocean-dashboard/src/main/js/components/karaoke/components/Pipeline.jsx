@@ -346,7 +346,7 @@ export default class Pipeline extends Component {
                         onNavigation={switchRunDetails}
                     />
                 ) : (
-                    false
+                    <span />
                 );
             }
 

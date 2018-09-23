@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { PropTypes as mobxPropTypes } from 'mobx-react';
 import ReactDOM from 'react-dom';
 
 export default class ChangeSetToAuthors extends Component {
@@ -24,11 +25,15 @@ export default class ChangeSetToAuthors extends Component {
     }
 
     condense() {
-        const domNode = ReactDOM.findDOMNode(this.refs.authorsWrapper); // used to check for overflow
+        const domNode = ReactDOM.findDOMNode(this.authorsWrapper); // used to check for overflow
         if (domNode && domNode.scrollWidth > domNode.clientWidth) {
             this.setState({ condense: true });
         }
     }
+
+    setRef = element => {
+        this.authorsWrapper = element;
+    };
 
     render() {
         const {
@@ -58,14 +63,14 @@ export default class ChangeSetToAuthors extends Component {
                 </a>
             );
         }
-        return <div ref="authorsWrapper">{children}</div>;
+        return <div ref={this.setRef}>{children}</div>;
     }
 }
 
 const { array, func } = PropTypes;
 
 ChangeSetToAuthors.propTypes = {
-    changeSet: array,
+    changeSet: mobxPropTypes.observableArray,
     onAuthorsClick: func,
     t: func,
 };
