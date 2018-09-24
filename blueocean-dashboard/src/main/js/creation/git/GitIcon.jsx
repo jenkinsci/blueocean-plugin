@@ -6,7 +6,7 @@ export function GitIcon() {
             <defs>
                 <polygon id="path-1" points="0 24 24 24 24 0 0 0" />
             </defs>
-            <g id="Symbols" stroke="none" strokeWidth="1" fill="none" fill-rule="evenodd">
+            <g id="Symbols" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
                 <g id="social-git">
                     <g id="Fill-1">
                         <mask id="mask-2" fill="white">

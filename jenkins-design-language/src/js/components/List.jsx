@@ -1,6 +1,7 @@
 // @flow
 
 import React, { PropTypes } from 'react';
+import { PropTypes as mobxPropTypes } from 'mobx-react';
 import Utils from '../Utils';
 
 type Props = {
@@ -227,7 +228,7 @@ List.propTypes = {
     className: PropTypes.string,
     children: PropTypes.element,
     style: PropTypes.object,
-    data: PropTypes.array,
+    data: PropTypes.oneOfType([PropTypes.array, mobxPropTypes.observableArray]),
     disabled: PropTypes.bool,
     labelFunction: PropTypes.func,
     keyFunction: PropTypes.func,

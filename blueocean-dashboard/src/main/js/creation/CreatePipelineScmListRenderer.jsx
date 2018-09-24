@@ -53,7 +53,7 @@ export class CreatePipelineScmListRenderer extends React.Component {
     render() {
         return (
             <div className="scm-provider-list layout-large">
-                {this.state.providers.map(provider => {
+                {this.state.providers.map((provider, index) => {
                     let defaultOption;
 
                     try {
@@ -68,7 +68,11 @@ export class CreatePipelineScmListRenderer extends React.Component {
                         isSelected: provider === this.props.selectedProvider,
                     };
 
-                    return <div className="provider-button">{React.cloneElement(defaultOption, props)}</div>;
+                    return (
+                        <div className="provider-button" key={index}>
+                            {React.cloneElement(defaultOption, props)}
+                        </div>
+                    );
                 })}
             </div>
         );

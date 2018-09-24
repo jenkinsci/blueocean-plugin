@@ -72,6 +72,6 @@ export default class BbRenameStep extends React.Component {
 }
 
 BbRenameStep.propTypes = {
-    flowManager: PropTypes.string,
+    flowManager: PropTypes.object,
     pipelineName: PropTypes.string,
 };

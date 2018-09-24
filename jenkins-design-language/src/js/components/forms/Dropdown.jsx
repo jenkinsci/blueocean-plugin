@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import { PropTypes as mobxPropTypes } from 'mobx-react';
 import debounce from 'lodash.debounce';
 import { Icon } from '../Icon';
 
@@ -96,7 +97,7 @@ export class Dropdown extends React.Component {
          * however that has the problem that the timeout can vary, leaving the whole component in a focus limbo
          */
         const { clientX, clientY } = event;
-        if( clientY !== 0 && clientX !== 0) {
+        if (clientY !== 0 && clientX !== 0) {
             this._toggleDropdownMenu();
         }
     };
@@ -330,7 +331,7 @@ export class Dropdown extends React.Component {
                     disabled={buttonDisabled}
                     title={buttonTitle}
                     onClick={this._onDropdownMouseEvent}
-                    onKeyDown={ this._keyEvent }
+                    onKeyDown={this._keyEvent}
                 >
                     {buttonLabel}
                 </button>
@@ -411,7 +412,7 @@ Dropdown.propTypes = {
     className: PropTypes.string,
     style: PropTypes.object,
     placeholder: PropTypes.string,
-    options: PropTypes.array,
+    options: PropTypes.oneOfType([PropTypes.array, mobxPropTypes.observableArray]),
     defaultOption: PropTypes.oneOfType([PropTypes.node, PropTypes.object]),
     title: PropTypes.string,
     labelField: PropTypes.string,
