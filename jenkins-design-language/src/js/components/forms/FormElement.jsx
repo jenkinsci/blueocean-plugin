@@ -30,7 +30,7 @@ FormElement.propTypes = {
     children: PropTypes.node,
     className: PropTypes.string,
     title: PropTypes.string,
-    errorMessage: PropTypes.string,
+    errorMessage: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
     showDivider: PropTypes.bool,
     verticalLayout: PropTypes.bool,
 };

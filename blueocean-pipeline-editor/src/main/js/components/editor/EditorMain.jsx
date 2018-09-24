@@ -366,6 +366,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
             <AddStepSelectionSheet
                 onClose={() => this.setState({ showSelectStep: false })}
                 onStepSelected={step => this.addStep(step)}
+                key="addStepSelectionSheet"
                 title={<h4>{t('editor.page.common.pipeline.steps.choose', { default: 'Choose step type' })}</h4>}
             />
         );

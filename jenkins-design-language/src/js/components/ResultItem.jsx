@@ -1,6 +1,7 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import { StatusIndicator, decodeResultValue } from './status/StatusIndicator';
 import { getGlyphFor } from './status/SvgStatus';
@@ -152,13 +153,19 @@ export class ResultItem extends Component {
                         <span className="result-item-extra-info">{extraInfo}</span>
                     </span>
                 </div>
-                <span>
+                <ReactCSSTransitionGroup
+                    transitionName="slide-down"
+                    transitionAppear
+                    transitionAppearTimeout={300}
+                    transitionEnterTimeout={300}
+                    transitionLeaveTimeout={300}
+                >
                     {expanded ? (
                         <div className="result-item-children" key="k">
                             {this.props.children}
                         </div>
                     ) : null}
-                </span>
+                </ReactCSSTransitionGroup>
             </div>
         );
     }

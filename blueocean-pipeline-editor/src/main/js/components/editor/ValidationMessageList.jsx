@@ -16,7 +16,7 @@ export function ValidationMessageList({ node, errors }) {
         >
             {nodeErrors && (
                 <div className="collapse-height">
-                    <ul className="error-list">{nodeErrors.map(err => <li>{err.error ? err.error : err}</li>)}</ul>
+                    <ul className="error-list">{nodeErrors.map((err, index) => <li key={index}>{err.error ? err.error : err}</li>)}</ul>
                 </div>
             )}
         </ReactCSSTransitionGroup>

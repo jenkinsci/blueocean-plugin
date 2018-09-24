@@ -91,10 +91,10 @@ class EditorStepItem extends React.Component {
                     <span className="editor-step-label">{step.label}</span>
                     {!errors && (
                         <span className="editor-step-summary">
-                            {parameters && parameters.filter(p => p.isRequired).map(p => <span>{getArg(step, p.name).value} </span>)}
+                            {parameters && parameters.filter(p => p.isRequired).map((p, index) => <span key={index}>{getArg(step, p.name).value} </span>)}
                         </span>
                     )}
-                    {errors && <span className="editor-step-errors">{errors.map(err => <div>{err.error ? err.error : err}</div>)}</span>}
+                    {errors && <span className="editor-step-errors">{errors.map((err, index) => <div key={index}>{err.error ? err.error : err}</div>)}</span>}
                 </div>
                 <EditorStepListDropZone
                     stage={stage}

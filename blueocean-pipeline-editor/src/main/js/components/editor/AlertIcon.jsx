@@ -20,9 +20,9 @@ export default () => (
                 <use xlinkHref="#path-5" />
             </mask>
         </defs>
-        <g id="Group-10" stroke="none" strokeWidth="1" fill="none" fill-rule="evenodd" transform="translate(15, 9)">
+        <g id="Group-10" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd" transform="translate(15, 9)">
             <g id="Triangle-2">
-                <use fill="#CE373A" fill-rule="evenodd" xlinkHref="#path-1" />
+                <use fill="#CE373A" fillRule="evenodd" xlinkHref="#path-1" />
                 <use stroke="#FFFFFF" mask="url(#mask-2)" strokeWidth="2" xlinkHref="#path-1" />
             </g>
             <use id="Rectangle-17" stroke="#FFFFFF" mask="url(#mask-4)" strokeWidth="2" fill="#D8D8D8" xlinkHref="#path-3" />

@@ -3,6 +3,7 @@
  */
 import React, { Component, PropTypes } from 'react';
 import { PropTypes as mobxPropTypes } from 'mobx-react';
+import TransitionGroup from 'react-addons-css-transition-group';
 
 import { Toast } from './Toast';
 
@@ -88,7 +89,13 @@ export class Toaster extends Component {
     render() {
         return (
             <div className="toaster">
-                <span>
+                <TransitionGroup
+                    transitionName="toast"
+                    transitionAppear
+                    transitionAppearTimeout={300}
+                    transitionEnterTimeout={300}
+                    transitionLeaveTimeout={300}
+                >
                     {this.props.toasts.map(toast => {
                         if (!toast.id) {
                             // eslint-disable-next-line no-console
@@ -110,7 +117,7 @@ export class Toaster extends Component {
                             />
                         );
                     })}
-                </span>
+                </TransitionGroup>
             </div>
         );
     }

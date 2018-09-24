@@ -391,18 +391,24 @@ export class EditorPipelineGraph extends Component<DefaultProps, Props, State> {
         if (isTopLevelParallel) {
             classNames.push('top-level-parallel');
             // add a top-level parallel config icon
-            inner.push(<Icon icon="NavigationMoreHoriz" size={24} />);
-            inner.push(<Icon icon="NavigationMoreHoriz" size={24} />);
+            inner.push(<Icon icon="NavigationMoreHoriz" size={24} key="1" />);
+            inner.push(<Icon icon="NavigationMoreHoriz" size={24} key="2" />);
         }
         // add an alert if the stage has errors
         if (stageHasDirectErrors(stage)) {
             classNames.push('errors');
             if (isTopLevelParallel) {
-                inner.push(<AlertIcon />);
+                inner.push(<AlertIcon key="3" />);
             }
         }
         return (
-            <div className={classNames.join(' ')} data-stagename={`${details.text ? `${details.text}` : ""}`} style={style} key={key} onClick={e => this.nodeClicked({ isPlaceholder: false, stage }, e)}>
+            <div
+                className={classNames.join(' ')}
+                data-stagename={`${details.text ? `${details.text}` : ''}`}
+                style={style}
+                key={key}
+                onClick={e => this.nodeClicked({ isPlaceholder: false, stage }, e)}
+            >
                 {details.text || NBSP}
                 {inner}
             </div>

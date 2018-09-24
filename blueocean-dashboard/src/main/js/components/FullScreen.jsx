@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+
 const transitionClass = 'expand-in';
 const transitionDuration = 150;
 
@@ -67,7 +69,19 @@ export class FullScreen extends Component {
             </div>
         );
 
-        return <div className="FullScreen">{wrappedChildren}</div>;
+        return (
+            <div className="FullScreen">
+                <ReactCSSTransitionGroup
+                    transitionName={transitionClass}
+                    transitionAppear
+                    transitionAppearTimeout={transitionDuration}
+                    transitionEnterTimeout={transitionDuration}
+                    transitionLeaveTimeout={transitionDuration}
+                >
+                    {wrappedChildren}
+                </ReactCSSTransitionGroup>
+            </div>
+        );
     }
 }
 

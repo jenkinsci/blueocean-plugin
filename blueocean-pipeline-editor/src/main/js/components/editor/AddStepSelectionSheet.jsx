@@ -74,7 +74,7 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
     }
 
     componentDidMount() {
-        this.refs.searchInput.focus();
+        this.searchInput.focus();
     }
 
     closeDialog() {
@@ -98,6 +98,10 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
         }
     }
 
+    setSearchInputRef = element => {
+        this.searchInput = element;
+    };
+
     render() {
         const { stepMetadata, selectedStep } = this.state;
 
@@ -106,7 +110,7 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
                 <div className="editor-step-search">
                     <Icon icon="ActionSearch" size={22} />
                     <input
-                        ref="searchInput"
+                        ref={this.setSearchInputRef}
                         type="text"
                         className="editor-step-search-input"
                         onChange={e => this.filterSteps(e.target.value)}
@@ -119,9 +123,10 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
                             .filter(isStepValidForSelectionUI)
                             .filter(this.state.searchFilter)
                             .sort(stepSorter)
-                            .map(step => (
+                            .map((step, index) => (
                                 <div
                                     tabIndex="0"
+                                    key={index}
                                     data-functionName={step.functionName}
                                     onKeyPress={e => this.selectItemByKeyPress(e, step)}
                                     onClick={() => this.addStep(step)}

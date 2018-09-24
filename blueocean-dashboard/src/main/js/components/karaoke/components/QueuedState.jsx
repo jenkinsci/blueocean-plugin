@@ -9,7 +9,7 @@ export const QueuedState = ({ translation, titleKey, messageKey, message }) => (
 
 QueuedState.propTypes = {
     titleKey: PropTypes.string,
-    messageKey: PropTypes.object,
+    messageKey: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     message: PropTypes.object,
     translation: PropTypes.func,
 };
@@ -20,7 +20,7 @@ export const NoSteps = ({ translation, titleKey, messageKey, message }) => (
 
 NoSteps.propTypes = {
     titleKey: PropTypes.string,
-    messageKey: PropTypes.object,
+    messageKey: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     message: PropTypes.object,
     translation: PropTypes.func,
 };

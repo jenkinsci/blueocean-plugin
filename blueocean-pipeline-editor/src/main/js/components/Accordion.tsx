@@ -11,7 +11,7 @@ interface State {
 }
 export class Accordion extends React.Component<Props, State> {
     static propTypes = {
-        children: React.PropTypes.object,
+        children: React.PropTypes.array,
     };
     constructor(props: Props) {
         super(props);

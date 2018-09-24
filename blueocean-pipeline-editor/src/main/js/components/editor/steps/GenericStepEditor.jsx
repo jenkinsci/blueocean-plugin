@@ -64,15 +64,22 @@ export default class GenericStepEditorPanel extends Component<DefaultProps, Prop
 
         return (
             <div className="pipeline-editor-step-generic pipeline-editor-form">
-                {thisMeta.parameters.map(p => {
+                {thisMeta.parameters.map((p, index) => {
                     const propTypeEditor = propertyEditorsByName[p.type];
                     if (propTypeEditor) {
-                        return React.createElement(propTypeEditor, { step: step, type: p, propName: p.name, onChange: () => this.updateStepData() });
+                        return React.createElement(propTypeEditor, {
+                            step: step,
+                            key: index,
+                            type: p,
+                            propName: p.name,
+                            onChange: () => this.updateStepData(),
+                        });
                     }
                     return (
                         <FormElement
                             title={p.capitalizedName + (p.isRequired ? '*' : '')}
                             errorMessage={!step.pristine && !getArg(step, p.name).value && p.capitalizedName + ' is required'}
+                            key={index}
                         >
                             <TextInput
                                 key={p.name}
