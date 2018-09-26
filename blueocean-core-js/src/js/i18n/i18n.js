@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import resources from '../../../../blueocean-web/locales/';
 import LngDetector from 'i18next-browser-languagedetector';
 import XHR from 'i18next-xhr-backend';
 
@@ -137,11 +138,21 @@ function buildCacheKey(pluginName, namespace = toDefaultNamespace(pluginName)) {
  */
 export function i18nTranslator(pluginName, namespace, onLoad) {
     return function translate(key, params) {
-        if (params && params.defaultValue) {
-            return params.defaultValue;
-        }
+        i18next.init({
+            fallbackLng: 'en',
+            keySeparator: false, // we do not have any nested keys in properties files
+            debug: false,
+            load: 'currentOnly',
+            interpolation: {
+                prefix: '{',
+                suffix: '}',
+                escapeValue: false, // not needed for react!!
+            },
+            resources,
+        });
+        i18next.use(defaultLngDetector);
 
-        return key;
+        return i18next.t(key);
     };
 
     assertPluginNameDefined(pluginName);

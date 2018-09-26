@@ -41,6 +41,10 @@ module.exports = {
                 test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/,
                 loader: 'file-loader',
             },
+            {
+                test: /locales/,
+                loader: '@alienfast/i18next-loader',
+            },
         ],
     },
     plugins: [

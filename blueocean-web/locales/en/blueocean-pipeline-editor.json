@@ -1,0 +1,24 @@
+{ "translation": {
+    "editor.page.common.cancel": "Cancel",
+    "editor.page.common.save": "Save",
+    "editor.page.common.add": "Add",
+    "editor.page.common.remove": "Remove",
+    "editor.page.common.delete": "Delete",
+    "editor.page.common.setting": "Settings",
+    "editor.page.common.pipeline.setting": "Pipeline Settings",
+    "editor.page.common.pipeline.steps": "Steps",
+    "editor.page.common.pipeline.steps.add": "Add step",
+    "editor.page.common.pipeline.steps.choose": "Choose step type",
+    "editor.page.common.pipeline.steps.findby.name": "Find steps by name",
+    "editor.page.common.pipeline.steps.child.require": "There are no child steps defined",
+    "editor.page.common.pipeline.steps.required": "There are no steps, at least one is required.",
+    "editor.page.common.pipeline.stages.input": "Name your stage",
+    "editor.page.common.pipeline.nestedSequentialStagesError": "The stage named \"{0}\" contains sequential parallel stages which are not currently supported by the Blue Ocean Pipeline Editor",
+    "branchdetail.actionbutton.pipeline.edit": "Edit",
+    "editor.jenkins.agent": "Agent",
+    "editor.jenkins.environment": "Environment",
+    "editor.jenkins.environment.name": "Name",
+    "editor.jenkins.environment.value": "Value",
+    "editor.jenkins.pipeline.step.substep": "Child steps"
+  }
+}

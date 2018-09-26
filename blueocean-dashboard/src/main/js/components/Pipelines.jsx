@@ -110,11 +110,13 @@ export class Pipelines extends Component {
             <Page>
                 <ContentPageHeader>
                     <div className="u-flex-grow">
-                        <h1>
-                            <Link to="/">{translate('home.header.dashboard', { defaultValue: 'Dashboard' })}</Link>
-                            {AppConfig.showOrg() && organizationName && ' / '}
-                            {AppConfig.showOrg() && organizationName && orgLink}
-                        </h1>
+                        <div className="jenkins-pipeline-header">
+                            <h1>
+                                <Link to="/">{translate('home.header.dashboard', { defaultValue: 'Dashboard' })}</Link>
+                                {AppConfig.showOrg() && organizationName && ' / '}
+                                {AppConfig.showOrg() && organizationName && orgLink}
+                            </h1>
+                        </div>
 
                         <div className="TextInput search-pipelines-input u-icon-left">
                             <div className="TextInput-icon u-icon-left">
