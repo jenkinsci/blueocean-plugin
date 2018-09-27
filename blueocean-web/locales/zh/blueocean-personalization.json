@@ -1,7 +1,7 @@
 { "translation": {
-    "dashboardCard.input.required": "\\u5FC5\\u586B\\u9879",
-    "dashboardCard.input.favorite": "\\u6536\\u85CF",
-    "Favoriting.Error": "\\u6536\\u85CF\\u5931\\u8D25",
-    "no.default.branch.to.favorite": "\\u7F3A\\u5C11\\u9ED8\\u8BA4\\u5206\\u652F(\\u6BD4\\u5982:master)\\u53EF\\u6536\\u85CF"
+    "dashboardCard.input.required": "必填项",
+    "dashboardCard.input.favorite": "收藏",
+    "Favoriting.Error": "收藏失败",
+    "no.default.branch.to.favorite": "缺少默认分支(比如:master)可收藏"
   }
 }

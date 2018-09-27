@@ -1,9 +1,9 @@
 { "translation": {
-    "administration": "Administraci\\u00f3n",
+    "administration": "Administración",
     "login": "Iniciar Sesion",
     "logout": "Desconectar",
-    "Not.found.heading": "P\\u00e1gina no encontrada (404)",
-    "Not.found.message": "Jenkins no pudo encontrar la p\\u00e1gina que est\\u00e1s buscando. Por favor revisa la URL o pulsa el bot\\u00F3n \"Atras\".",
+    "Not.found.heading": "Página no encontrada (404)",
+    "Not.found.message": "Jenkins no pudo encontrar la página que estás buscando. Por favor revisa la URL o pulsa el botón \"Atras\".",
     "parametrised.pipeline.cancel": "Cancelar",
     "parametrised.pipeline.header": "Input obligado",
     "parametrised.pipeline.submit": "Iniciar",

@@ -126,6 +126,20 @@ function buildCacheKey(pluginName, namespace = toDefaultNamespace(pluginName)) {
     return `${pluginName}:${namespace}`;
 }
 
+i18next.init({
+    fallbackLng: 'en',
+    keySeparator: false, // we do not have any nested keys in properties files
+    debug: false,
+    load: 'currentOnly',
+    interpolation: {
+        prefix: '{',
+        suffix: '}',
+        escapeValue: false, // not needed for react!!
+    },
+    resources,
+});
+i18next.use(defaultLngDetector);
+
 /**
  * Create an i18n Translator instance for accessing i18n resource bundles
  * in the named plugin namespace.
@@ -138,20 +152,6 @@ function buildCacheKey(pluginName, namespace = toDefaultNamespace(pluginName)) {
  */
 export function i18nTranslator(pluginName, namespace, onLoad) {
     return function translate(key, params) {
-        i18next.init({
-            fallbackLng: 'en',
-            keySeparator: false, // we do not have any nested keys in properties files
-            debug: false,
-            load: 'currentOnly',
-            interpolation: {
-                prefix: '{',
-                suffix: '}',
-                escapeValue: false, // not needed for react!!
-            },
-            resources,
-        });
-        i18next.use(defaultLngDetector);
-
         return i18next.t(key);
     };
 
