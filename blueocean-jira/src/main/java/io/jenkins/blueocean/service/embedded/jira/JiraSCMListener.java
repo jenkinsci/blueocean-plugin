@@ -1,10 +1,6 @@
 package io.jenkins.blueocean.service.embedded.jira;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -16,8 +12,14 @@ import hudson.plugins.jira.model.JiraIssue;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.SCM;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Extension
 public class JiraSCMListener extends SCMListener {
@@ -27,10 +29,8 @@ public class JiraSCMListener extends SCMListener {
         if (jiraSite == null) {
             return;
         }
-        List<String> issueKeys = Lists.newArrayList();
-        for (ChangeLogSet.Entry entry : changelog) {
-            issueKeys.addAll(BlueJiraIssue.findIssueKeys(entry.getMsg(), jiraSite.getIssuePattern()));
-        }
+        Collection<String> issueKeys = getIssueKeys(changelog, jiraSite.getIssuePattern());
+
         if (issueKeys.isEmpty()) {
             return;
         }
@@ -40,12 +40,11 @@ public class JiraSCMListener extends SCMListener {
             return;
         }
         // Query for JIRA issues
-        Set<JiraIssue> issuesFromJqlSearch = Sets.newHashSet(Iterables.transform(session.getIssuesFromJqlSearch(jql), new Function<Issue, JiraIssue>() {
-            @Override
-            public JiraIssue apply(Issue input) {
-                return new JiraIssue(input);
-            }
-        }));
+        List<Issue> issues = session.getIssuesFromJqlSearch(jql);
+        Set<JiraIssue> issuesFromJqlSearch = issues == null ? Collections.emptySet() :
+            issues.stream().map( input -> new JiraIssue(input) )
+                .collect( Collectors.toSet() );
+
         // If there are no JIRA issues, do not update the actions
         if (issuesFromJqlSearch.isEmpty()) {
             return;
@@ -60,18 +59,28 @@ public class JiraSCMListener extends SCMListener {
         run.save();
     }
 
-    static String constructJQLQuery(List<String> issueKeys) {
+    static String constructJQLQuery( Collection<String> issueKeys) {
         StringBuilder jql = new StringBuilder();
         jql.append("key in (");
-        for (int i = 0; i < issueKeys.size(); i++) {
+        Iterator<String> iterator = issueKeys.iterator();
+        while ( iterator.hasNext() ) {
+            String key = iterator.next();
             jql.append("'");
-            jql.append(issueKeys.get(i));
+            jql.append(key);
             jql.append("'");
-            if (issueKeys.size() > 1 &&  i+1 < issueKeys.size()) {
+            if (iterator.hasNext()) {
                 jql.append(",");
             }
         }
         jql.append(")");
         return jql.toString();
+    }
+
+    static Collection<String> getIssueKeys(ChangeLogSet<?> changelog, Pattern issuePattern) {
+        Set<String> issueKeys = new HashSet<>();
+        for (ChangeLogSet.Entry entry : changelog) {
+            issueKeys.addAll(BlueJiraIssue.findIssueKeys(entry.getMsg(), issuePattern));
+        }
+        return issueKeys;
     }
 }
