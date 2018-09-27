@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.Item;
 import hudson.model.User;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -109,6 +110,24 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
 
         request.create(organization, organization);
 //        verify(criteria, atLeastOnce()).isJenkinsfileFound();
+    }
+
+    @Test
+    public void shouldFailCreatePipelineNoJenkinsFile() throws UnirestException, IOException{
+        boolean thrown = false;
+        OrganizationImpl organization = new OrganizationImpl("jenkins", j.jenkins);
+        String credentialId = createGithubCredential(user);
+
+        JSONObject config = JSONObject.fromObject(ImmutableMap.of("repoOwner", "vivek", "repository", "empty1"));
+
+        GithubPipelineCreateRequest request = new GithubPipelineCreateRequest(
+            "empty1/empty2", new BlueScmConfig(GithubScm.ID, githubApiUrl, credentialId, config));
+        try {
+            request.create(organization, organization);
+        }catch (ServiceException.BadRequestException e){
+            thrown = true;
+        }
+        assertTrue(thrown);
     }
 
     @Test
