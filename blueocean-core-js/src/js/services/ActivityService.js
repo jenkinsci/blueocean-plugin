@@ -30,7 +30,7 @@ export class ActivityService extends BunkerService {
      *
      * @param {string} organization Jenkins organization that this pager belongs to.
      * @param {string} pipeline Pipeline that this pager belongs to.
-     * @returns {Pager} Pager for this pipelne.
+     * @returns {Pager} Pager for this pipeline.
      */
     activityPager(organization, pipeline, branch) {
         return this.pagerService.getPager({

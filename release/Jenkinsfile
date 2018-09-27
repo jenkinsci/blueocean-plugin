@@ -56,7 +56,7 @@ node('bluebuild-environment') {
                 //Prepare for release, release on github (tag)
                 stage('mvn release:prepare') {
                     writeSettingsXmlFile()
-                    sh 'mvn -s settings.xml release:prepare -B -Darguments="-DskipTests" -DautoVersionSubmodules=true -Djacoco.skip=true -Dfinbugs.skip=true -Dusername=$GITHUB_USERNAME -Dpassword=$GITHUB_TOKEN'
+                    sh 'mvn -s settings.xml release:prepare -B -Darguments="-DskipTests" -DautoVersionSubmodules=true -Djacoco.skip=true -Dfindbugs.skip=true -Dusername=$GITHUB_USERNAME -Dpassword=$GITHUB_TOKEN'
                 }
 
                 //Release to maven repo

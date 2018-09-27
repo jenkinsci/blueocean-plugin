@@ -10,7 +10,7 @@ export default class PipelineCreateButton extends React.Component {
 }
 
 PipelineCreateButton.propTypes = {
-    prganization: React.PropTypes.string,
+    organization: React.PropTypes.string,
     fullName: React.PropTypes.string,
 };
 

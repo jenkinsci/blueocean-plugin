@@ -577,7 +577,7 @@ class PipelineLoader extends React.Component {
 
         this.loadContent(internal => {
             if (internal) {
-                // may be no pipline here
+                // may be no pipeline here
                 pipelineStore.setPipeline(internal);
             }
             this.setState({ dialog: null });

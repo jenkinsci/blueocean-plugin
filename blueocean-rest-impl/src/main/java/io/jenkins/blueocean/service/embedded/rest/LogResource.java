@@ -17,7 +17,7 @@ import java.io.Writer;
  * @author Vivek Pandey
  */
 public class LogResource{
-    public static final long DEFAULT_LOG_THREASHOLD = 150;
+    public static final long DEFAULT_LOG_THRESHOLD = 150;
 
     private final AnnotatedLargeText logText;
     private final Reader appenderLogReader;
@@ -53,7 +53,7 @@ public class LogResource{
     }
 
     private void writeLogs(StaplerRequest req, StaplerResponse rsp) throws IOException {
-        long threshold = DEFAULT_LOG_THREASHOLD * 1024;
+        long threshold = DEFAULT_LOG_THRESHOLD * 1024;
 
         String s = req.getParameter("thresholdInKB");
         if(s!=null) {
