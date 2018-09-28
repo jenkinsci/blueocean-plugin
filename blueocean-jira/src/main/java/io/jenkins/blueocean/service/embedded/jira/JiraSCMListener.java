@@ -11,18 +11,25 @@ import hudson.plugins.jira.JiraSite;
 import hudson.plugins.jira.model.JiraIssue;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.SCM;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Extension
 public class JiraSCMListener extends SCMListener {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( JiraSCMListener.class);
+
     @Override
     public void onChangeLogParsed(Run<?, ?> run, SCM scm, TaskListener listener, ChangeLogSet<?> changelog) throws Exception {
         JiraSite jiraSite = JiraSite.get(run.getParent());
@@ -40,23 +47,29 @@ public class JiraSCMListener extends SCMListener {
             return;
         }
         // Query for JIRA issues
-        List<Issue> issues = session.getIssuesFromJqlSearch(jql);
-        Set<JiraIssue> issuesFromJqlSearch = issues == null ? Collections.emptySet() :
-            issues.stream().map( input -> new JiraIssue(input) )
-                .collect( Collectors.toSet() );
+        try {
+            List<Issue> issues = session.getIssuesFromJqlSearch(jql);
+            Set<JiraIssue> issuesFromJqlSearch = issues == null ? Collections.emptySet() :
+                issues.stream().map( input -> new JiraIssue(input) )
+                    .collect( Collectors.toSet() );
 
-        // If there are no JIRA issues, do not update the actions
-        if (issuesFromJqlSearch.isEmpty()) {
-            return;
+            // If there are no JIRA issues, do not update the actions
+            if (issuesFromJqlSearch.isEmpty()) {
+                return;
+            }
+            // Create or update the JiraBuildAction
+            JiraBuildAction action = run.getAction(JiraBuildAction.class);
+            if (action == null) {
+                run.addAction(new JiraBuildAction(run, issuesFromJqlSearch));
+            } else {
+                action.addIssues(issuesFromJqlSearch);
+            }
+            run.save();
+        } catch ( TimeoutException | IOException e ){
+            LOGGER.warn( "skip reccording associated jira issues: {}", e.getMessage() );
+            // stack trace in debug mode
+            LOGGER.debug( e.getMessage(), e);
         }
-        // Create or update the JiraBuildAction
-        JiraBuildAction action = run.getAction(JiraBuildAction.class);
-        if (action == null) {
-            run.addAction(new JiraBuildAction(run, issuesFromJqlSearch));
-        } else {
-            action.addIssues(issuesFromJqlSearch);
-        }
-        run.save();
     }
 
     static String constructJQLQuery( Collection<String> issueKeys) {
