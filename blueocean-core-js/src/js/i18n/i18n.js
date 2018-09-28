@@ -152,7 +152,7 @@ i18next.use(defaultLngDetector);
  */
 export function i18nTranslator(pluginName, namespace, onLoad) {
     return function translate(key, params) {
-        return i18next.t(key);
+        return i18next.t(key, params);
     };
 
     assertPluginNameDefined(pluginName);
