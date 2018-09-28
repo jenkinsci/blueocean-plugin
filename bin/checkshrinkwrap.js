@@ -31,8 +31,8 @@ checkProject('../blueocean-core-js');
 checkProject('../blueocean-pipeline-editor');
 checkProject('../jenkins-design-language');
 
-const ellapsed = new Date().getTime() - start;
-console.log(`all dependencies look good! took ${ellapsed}ms`);
+const elapsed = new Date().getTime() - start;
+console.log(`all dependencies look good! took ${elapsed}ms`);
 // done!
 
 function checkProject(pathToProject) {
@@ -100,16 +100,19 @@ function checkDuplicateDependencies(depList1, depList2) {
 }
 
 function validateShrinkwrapResolve(shrinkwrap) {
-
-  Object.keys(shrinkwrap.dependencies).forEach(name => {
-    if (!shrinkwrap.dependencies[name].from) {
-        return;
-    }
-    if (shrinkwrap.dependencies[name].from.startsWith("..") || shrinkwrap.dependencies[name].resolved.startsWith("file:")) {
-        console.error(`Bad shrinkwrap resolution: 'from' or 'resolved' refer to a project relative path not absolute URI from:${shrinkwrap.dependencies[name].from} resolved:${shrinkwrap.dependencies[name].resolved} in ${name}`);
-        process.exit(1);
-    }
-  });
+    Object.keys(shrinkwrap.dependencies).forEach(name => {
+        if (!shrinkwrap.dependencies[name].from) {
+            return;
+        }
+        if (shrinkwrap.dependencies[name].from.startsWith('..') || shrinkwrap.dependencies[name].resolved.startsWith('file:')) {
+            console.error(
+                `Bad shrinkwrap resolution: 'from' or 'resolved' refer to a project relative path not absolute URI from:${
+                    shrinkwrap.dependencies[name].from
+                } resolved:${shrinkwrap.dependencies[name].resolved} in ${name}`
+            );
+            process.exit(1);
+        }
+    });
 }
 
 function validateDepsAgainstShrinkwrap(allDeps, shrinkwrap) {
@@ -137,7 +140,8 @@ function validateExplicitDependencies(shrinkwrap) {
     const depRules = {
         'create-hmac': {
             version: '1.1.4',
-            message: 'create-hmac cannot exceed 1.1.4 due to an incompatibility with safe-buffer and buffer. the version may have changed if you recently upgraded js-builder. discard the updates in npm-shrinkwrap.json manually. see https://github.com/crypto-browserify/createHmac/issues/20'
+            message:
+                'create-hmac cannot exceed 1.1.4 due to an incompatibility with safe-buffer and buffer. the version may have changed if you recently upgraded js-builder. discard the updates in npm-shrinkwrap.json manually. see https://github.com/crypto-browserify/createHmac/issues/20',
         },
     };
 

@@ -28,7 +28,7 @@ storiesOf('Pipeline Editor Main', module)
 ;
 
 storiesOf('Pipeline Editor Graph', module)
-    .add('Basic', renderPiplineFlat)
+    .add('Basic', renderPipelineFlat)
     .add('Mixed', renderPipelineMixed)
     .add('Duplicate Names', renderPipelineDupNames)
 ;
@@ -136,7 +136,7 @@ function renderMainInPage() {
 
 //--[ Step Details Editor ]---------------------------------------------------------------------------------------------
 
-const stepDetailssContainerStyle = {
+const stepDetailsContainerStyle = {
     border: "solid 1px #ccc",
     maxWidth: "40em",
     margin: "2em",
@@ -149,7 +149,7 @@ const stepDetailssContainerStyle = {
 function renderStepDetailsBasic() {
     let step = makeStep(st_shell, "Run Script");
     return (
-        <div style={stepDetailssContainerStyle}>
+        <div style={stepDetailsContainerStyle}>
             <EditorStepDetails step={step}/>
         </div>
     );
@@ -266,7 +266,7 @@ function makeStep(type:string, label:string, nestedSteps?:Array<StepInfo>):StepI
 
 //--[ Pipeline Graph ]--------------------------------------------------------------------------------------------------
 
-function renderPiplineFlat() {
+function renderPipelineFlat() {
 
     const stages = [
         makeStage("Ken"),

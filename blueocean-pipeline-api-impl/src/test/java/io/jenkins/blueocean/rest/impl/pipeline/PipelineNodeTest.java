@@ -15,6 +15,7 @@ import hudson.util.RunList;
 import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
+import io.jenkins.blueocean.rest.model.BlueRun;
 import jenkins.branch.BranchSource;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
@@ -53,6 +54,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl.PARAMETERS_ELEMENT;
@@ -2096,7 +2098,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
     @Test
     public void testBlockedStep() throws Exception {
-        String scipt = "node {\n" +
+        String script = "node {\n" +
                 "    stage(\"one\"){\n" +
                 "        echo '1'\n" +
                 "    }\n" +
@@ -2109,7 +2111,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
                 "}";
 
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
-        job1.setDefinition(new CpsFlowDefinition(scipt, false));
+        job1.setDefinition(new CpsFlowDefinition(script, false));
 
         QueueTaskFuture<WorkflowRun> runQueueTaskFuture = job1.scheduleBuild2(0);
         WorkflowRun run = runQueueTaskFuture.getStartCondition().get();
@@ -2867,6 +2869,50 @@ public class PipelineNodeTest extends PipelineBaseTest {
         assertEquals(FlowNodeWrapper.NodeType.PARALLEL.name(),nodes.get(2).get("type"));
         assertEquals(FlowNodeWrapper.NodeType.STAGE.name(),nodes.get(3).get("type"));
     }
+
+    @Issue( "JENKINS-53311" )
+    @Test
+    public void nodeWrongFinishedStatus() throws Exception {
+        WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, "p");
+        URL resource = Resources.getResource(getClass(), "JENKINS-53311.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        job.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+
+        WorkflowRun build = job.scheduleBuild2(0).waitForStart();
+
+        long start = System.currentTimeMillis();
+        while ( build.isBuilding() ){
+            List<Map<String,String>> nodes = get("/organizations/jenkins/pipelines/p/runs/1/nodes/", List.class);
+            if(nodes.size()>=4) {
+                Optional<Map<String,String>> optionalMap = findNodeMap(nodes, "Nested B-1" );
+                if(optionalMap.isPresent()){
+                    long now = System.currentTimeMillis();
+                    // the sleep in test file is about 10s so we want to avoid some flaky test
+                    // so if we reach 10s we exit the loop
+                    if( TimeUnit.SECONDS.convert( now - start, TimeUnit.MILLISECONDS ) >= 10) {
+                        continue;
+                    }
+                    LOGGER.debug( "optionalMap: {}", optionalMap );
+                    assertEquals(build.isBuilding() ? BlueRun.BlueRunState.RUNNING.name() : BlueRun.BlueRunState.FINISHED,
+                                 optionalMap.get().get( "state"));
+                }
+            }
+            Thread.sleep( 500 );
+        }
+        List<Map<String,String>> nodes = get("/organizations/jenkins/pipelines/p/runs/1/nodes/", List.class);
+        Optional<Map<String,String>> optionalMap = findNodeMap(nodes, "Nested B-1" );
+        if(optionalMap.isPresent()){
+            assertEquals(BlueRun.BlueRunState.FINISHED.name(), optionalMap.get().get( "state"));
+        }
+        j.assertBuildStatus(Result.SUCCESS, build);
+    }
+
+    private Optional<Map<String,String>> findNodeMap(List<Map<String,String>> nodes, String displayName) {
+        return nodes.stream() //
+            .filter( map -> map.get( "displayName" ).equals( displayName ) ) //
+            .findFirst();
+    }
+
 
     private void setupScm(String script) throws Exception {
         // create git repo

@@ -42,7 +42,7 @@ function newPluginXHR(pluginName) {
             if (logger.isDebugEnabled()) {
                 logger.debug('loading data for', url);
             }
-            Fetch.fetchJSON(url, { disableCapabilites: true, disableLoadingIndicator: true, ignoreRefreshHeader: true }).then(data => {
+            Fetch.fetchJSON(url, { disableCapabilities: true, disableLoadingIndicator: true, ignoreRefreshHeader: true }).then(data => {
                 callback(data, { status: 200 });
             });
         },

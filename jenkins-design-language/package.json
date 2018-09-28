@@ -60,6 +60,8 @@
   },
   "devDependencies": {
     "@kadira/storybook": "2.35.3",
+    "@types/react": "16.4.14",
+    "@types/react-dom": "16.0.7",
     "babel-eslint": "7.0.0",
     "babel-polyfill": "6.16.0",
     "babel-preset-es2015": "6.16.0",
@@ -95,7 +97,7 @@
     "run-sequence": "1.2.2",
     "ts-jest": "19.0.2",
     "tsify": "4.0.0",
-    "typescript": "2.7.2",
+    "typescript": "3.0.3",
     "watchify": "3.7.0"
   },
   "jenkinscd": {

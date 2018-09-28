@@ -17,16 +17,16 @@ const resultValues = [
 
 
 storiesOf('Progress', module)
-    .add('indeterminate', progessBarStory)
-    .add('all', progessBarStories);
+    .add('indeterminate', progressBarStory)
+    .add('all', progressBarStories);
 
-function progessBarStory() {
+function progressBarStory() {
     return ( <div>
         Indeterminate state <Progress/>
     </div>);
 }
 
-function progessBarStories() {
+function progressBarStories() {
     return (
         <table style={{width: "98%"}}>
             <thead>

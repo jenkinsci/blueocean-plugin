@@ -21,10 +21,10 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_MULTI_BRANC
 public abstract class BlueMultiBranchPipeline extends BluePipelineFolder implements BlueMultiBranchItem {
     public static final String TOTAL_NUMBER_OF_BRANCHES="totalNumberOfBranches";
     public static final String NUMBER_OF_FAILING_BRANCHES="numberOfFailingBranches";
-    public static final String NUMBER_OF_SUCCESSFULT_BRANCHES="numberOfSuccessfulBranches";
+    public static final String NUMBER_OF_SUCCESSFUL_BRANCHES="numberOfSuccessfulBranches";
     public static final String TOTAL_NUMBER_OF_PULL_REQUESTS="totalNumberOfPullRequests";
     public static final String NUMBER_OF_FAILING_PULL_REQUESTS="numberOfFailingPullRequests";
-    public static final String NUMBER_OF_SUCCESSFULT_PULL_REQUESTS="numberOfSuccessfulPullRequests";
+    public static final String NUMBER_OF_SUCCESSFUL_PULL_REQUESTS="numberOfSuccessfulPullRequests";
     public static final String BRANCH_NAMES ="branchNames";
     public static final String SCM_SOURCE = "scmSource";
 
@@ -43,7 +43,7 @@ public abstract class BlueMultiBranchPipeline extends BluePipelineFolder impleme
     /**
      * @return total number of successful branches
      */
-    @Exported(name = NUMBER_OF_SUCCESSFULT_BRANCHES)
+    @Exported(name = NUMBER_OF_SUCCESSFUL_BRANCHES)
     public abstract int getNumberOfSuccessfulBranches();
 
     /**
@@ -60,7 +60,7 @@ public abstract class BlueMultiBranchPipeline extends BluePipelineFolder impleme
     /**
      * @return total number of pull requests
      */
-    @Exported(name = NUMBER_OF_SUCCESSFULT_PULL_REQUESTS)
+    @Exported(name = NUMBER_OF_SUCCESSFUL_PULL_REQUESTS)
     public abstract int getNumberOfSuccessfulPullRequests();
 
     /**

@@ -98,13 +98,11 @@ public class BitbucketServerTest implements WebDriverMixin {
         creationPage.clickCreatePipelineButton();
         editorPage.simplePipeline();
         editorPage.saveBranch("master");
-        // This is here so we don't try to close the browser window too fast
-        wait.tinySleep(3000);
         activityPage.checkBasicDomElements();
     }
 
     private void cleanupEndpoint(String endpointUrl) throws IOException {
-        logger.info("--> cleanupEndpoint");
+        logger.info("Calling cleanupEndpoint to remove our Bitbucket server from Jenkins");
         String serverId = DigestUtils.sha256Hex(endpointUrl);
 
         try {
@@ -114,12 +112,12 @@ public class BitbucketServerTest implements WebDriverMixin {
                 .as(Void.class);
             logger.info("found and deleted bitbucket server: " + serverId);
         } catch (Exception ex) {
-            logger.debug("server not found while attempting to delete bitbucket server: " + serverId);
+            logger.debug("server not found while attempting to delete Bitbucket server: " + serverId);
         }
     }
 
     private void cleanupCredentials(String endpointUrl) throws IOException {
-        logger.info("--> cleanupCredentials");
+        logger.info("Calling cleanupCredentials to remove the credentials we used with Bitbucket server");
         String serverId = DigestUtils.sha256Hex(endpointUrl);
         String credentialId = "bitbucket-server:" + serverId;
         jenkins.deleteUserDomainCredential(jenkinsUser.username, "blueocean-bitbucket-server-domain", credentialId);

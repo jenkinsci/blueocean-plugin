@@ -2,12 +2,14 @@ var jsTest = require('@jenkins-cd/js-test');
 var expect = require('chai').expect;
 var ExtensionStore = require('../dist/ExtensionStore').default;
 var ClassMetadataStore = require('../dist/ClassMetadataStore').default;
-var resourceLoadTracker = new (require('../dist/ResourceLoadTracker').default)();
+var resourceLoadTracker = new (require('../dist/ResourceLoadTracker')).default();
 var componentType = require('../dist/ComponentTypeFilter').componentType;
 var javaScriptExtensionInfo = require('./javaScriptExtensionInfo-01.json');
 
 // js modules calling console.debug
-console.debug = function(msg) { console.log('DEBUG: ' + msg); };
+console.debug = function(msg) {
+    console.log('DEBUG: ' + msg);
+};
 
 // Mock the calls to import
 var jsModules = require('@jenkins-cd/js-modules');
@@ -33,7 +35,9 @@ var makeExtensionStore = function(plugins, doInit, componentMap) {
         // The test can reinitialise this if these defaults are not what's required.
         store.init({
             extensionData: javaScriptExtensionInfo,
-            classMetadataStore: makeClassMetadataStore(function(type, cb) { cb({}); })
+            classMetadataStore: makeClassMetadataStore(function(type, cb) {
+                cb({});
+            }),
         });
     }
 
@@ -50,11 +54,11 @@ var mockDataLoad = function(extensionStore, out, componentMap) {
         var pluginId = bundleModuleSpec.namespace;
 
         // mimic registering of those extensions
-        for(var i1 = 0; i1 < javaScriptExtensionInfo.length; i1++) {
+        for (var i1 = 0; i1 < javaScriptExtensionInfo.length; i1++) {
             var pluginMetadata = javaScriptExtensionInfo[i1];
             if (pluginMetadata.hpiPluginId === pluginId) {
                 var extensions = pluginMetadata.extensions;
-                for(var i2 = 0; i2 < extensions.length; i2++) {
+                for (var i2 = 0; i2 < extensions.length; i2++) {
                     var component = extensions[i2].component;
                     if (componentMap && component in componentMap) {
                         component = componentMap[component];
@@ -71,10 +75,10 @@ var mockDataLoad = function(extensionStore, out, componentMap) {
 
         // fake the export of the bundle
         setTimeout(function() {
-         // js modules calling console.debug
+            // js modules calling console.debug
             var orig = console.debug;
             try {
-                console.debug = function(msg) { };
+                console.debug = function(msg) {};
                 jsModules.exportModule(pluginId, 'jenkins-js-extension', {});
             } finally {
                 console.debug = orig;
@@ -84,23 +88,24 @@ var mockDataLoad = function(extensionStore, out, componentMap) {
     };
 };
 
-describe("ExtensionStore.js", function () {
-
-    it("- fails if not initialized", function(done) {
+describe('ExtensionStore.js', function() {
+    it('- fails if not initialized', function(done) {
         jsTest.onPage(function() {
             var plugins = {};
             var extensionStore = makeExtensionStore(plugins, false);
 
             try {
-                extenstionStore.getExtensions('ext', function(ext) { });
-                expect("Exception should be thrown").to.be.undefined;
-            } catch(ex) {
+                extensionStore.getExtensions('ext', function(ext) {});
+                expect('Exception should be thrown').to.be.undefined;
+            } catch (ex) {
                 // expected
             }
 
             extensionStore.init({
                 extensionData: javaScriptExtensionInfo,
-                classMetadataStore: makeClassMetadataStore(function(type, cb) { cb({}); })
+                classMetadataStore: makeClassMetadataStore(function(type, cb) {
+                    cb({});
+                }),
             });
 
             extensionStore.getExtensions('ep-1', function(extensions) {
@@ -110,7 +115,7 @@ describe("ExtensionStore.js", function () {
         });
     });
 
-    it("- test plugins loaded not duplicated", function (done) {
+    it('- test plugins loaded not duplicated', function(done) {
         jsTest.onPage(function() {
             var plugins = {};
             var extensionStore = makeExtensionStore(plugins);
@@ -141,28 +146,30 @@ describe("ExtensionStore.js", function () {
         });
     });
 
-    it("- handles types properly", function(done) {
+    it('- handles types properly', function(done) {
         var plugins = {};
         var extensionStore = makeExtensionStore(plugins, false);
 
         var typeData = {};
         typeData['type-1'] = {
-            "_class":"io.jenkins.blueocean.service.embedded.rest.ExtensionClassImpl",
-            "_links":{
-                "self":{"_class":"io.jenkins.blueocean.rest.hal.Link",
-                "href":"/blue/rest/classes/hudson.tasks.junit.TestResultAction/"
-                }
+            _class: 'io.jenkins.blueocean.service.embedded.rest.ExtensionClassImpl',
+            _links: {
+                self: {
+                    _class: 'io.jenkins.blueocean.rest.hal.Link',
+                    href: '/blue/rest/classes/hudson.tasks.junit.TestResultAction/',
+                },
             },
-            "classes":["supertype-1"]
+            classes: ['supertype-1'],
         };
         typeData['type-2'] = {
-            "_class":"io.jenkins.blueocean.service.embedded.rest.ExtensionClassImpl",
-            "_links":{
-                "self":{"_class":"io.jenkins.blueocean.rest.hal.Link",
-                "href":"/blue/rest/classes/hudson.tasks.junit.TestResultAction/"
-                }
+            _class: 'io.jenkins.blueocean.service.embedded.rest.ExtensionClassImpl',
+            _links: {
+                self: {
+                    _class: 'io.jenkins.blueocean.rest.hal.Link',
+                    href: '/blue/rest/classes/hudson.tasks.junit.TestResultAction/',
+                },
             },
-            "classes":["supertype-2"]
+            classes: ['supertype-2'],
         };
 
         var classMetadataStore = makeClassMetadataStore(function(type, cb) {
@@ -171,7 +178,7 @@ describe("ExtensionStore.js", function () {
 
         extensionStore.init({
             extensionData: javaScriptExtensionInfo,
-            classMetadataStore: classMetadataStore
+            classMetadataStore: classMetadataStore,
         });
 
         extensionStore.getExtensions('ept-1', [classMetadataStore.dataType('type-1')], function(extensions) {
@@ -182,46 +189,50 @@ describe("ExtensionStore.js", function () {
 
         extensionStore.getExtensions('ept-2', [classMetadataStore.dataType('type-2')], function(extensions) {
             expect(extensions.length).to.equal(1);
-            expect(extensions).to.include.members(["typed-component-1.2"]);
+            expect(extensions).to.include.members(['typed-component-1.2']);
 
             done();
         });
     });
 
-    it("- handles untyped extension points", function(done) {
+    it('- handles untyped extension points', function(done) {
         var plugins = {};
         var extensionStore = makeExtensionStore(plugins, false);
 
         var typeData = {};
         typeData['type-1'] = {
-            "_class":"io.jenkins.blueocean.service.embedded.rest.ExtensionClassImpl",
-            "_links":{
-                "self":{"_class":"io.jenkins.blueocean.rest.hal.Link",
-                "href":"/blue/rest/classes/hudson.tasks.junit.TestResultAction/"
-                }
+            _class: 'io.jenkins.blueocean.service.embedded.rest.ExtensionClassImpl',
+            _links: {
+                self: {
+                    _class: 'io.jenkins.blueocean.rest.hal.Link',
+                    href: '/blue/rest/classes/hudson.tasks.junit.TestResultAction/',
+                },
             },
-            "classes":["supertype-1"]
+            classes: ['supertype-1'],
         };
         typeData['type-2'] = {
-            "_class":"io.jenkins.blueocean.service.embedded.rest.ExtensionClassImpl",
-            "_links":{
-                "self":{"_class":"io.jenkins.blueocean.rest.hal.Link",
-                "href":"/blue/rest/classes/hudson.tasks.junit.TestResultAction/"
-                }
+            _class: 'io.jenkins.blueocean.service.embedded.rest.ExtensionClassImpl',
+            _links: {
+                self: {
+                    _class: 'io.jenkins.blueocean.rest.hal.Link',
+                    href: '/blue/rest/classes/hudson.tasks.junit.TestResultAction/',
+                },
             },
-            "classes":["supertype-2"]
+            classes: ['supertype-2'],
         };
 
-        var classMetadataStore = makeClassMetadataStore(function(type, cb) { cb(typeData[type]); });
+        var classMetadataStore = makeClassMetadataStore(function(type, cb) {
+            cb(typeData[type]);
+        });
 
         extensionStore.init({
             extensionData: javaScriptExtensionInfo,
-            classMetadataStore: classMetadataStore
+            classMetadataStore: classMetadataStore,
         });
 
         extensionStore.getExtensions('ep-1', [classMetadataStore.untyped()], function(extensions) {
             expect(extensions.length).to.equal(3);
-            expect(extensions).to.include.members(["component-1.1","component-1.2","component-2.1"]);
+            expect(extensions).to.include.members(['component-1.1', 'component-1.2', 'component-2.1']);
         });
 
         extensionStore.getExtensions('ept-2', [classMetadataStore.untyped()], function(extensions) {
@@ -232,30 +243,27 @@ describe("ExtensionStore.js", function () {
         });
     });
 
-    it("- handles multi-key requests", function(done) {
+    it('- handles multi-key requests', function(done) {
         var plugins = {};
         var extensionStore = makeExtensionStore(plugins);
 
-        extensionStore.getExtensions(['ep-1','ep-2'], function(ep1,ep2) {
+        extensionStore.getExtensions(['ep-1', 'ep-2'], function(ep1, ep2) {
             expect(ep1.length).to.equal(3);
-            expect(ep1).to.include.members(["component-1.1","component-1.2","component-2.1"]);
+            expect(ep1).to.include.members(['component-1.1', 'component-1.2', 'component-2.1']);
 
             expect(ep2.length).to.equal(3);
-            expect(ep2).to.include.members(["component-1.3","component-2.2","component-2.3"]);
+            expect(ep2).to.include.members(['component-1.3', 'component-2.2', 'component-2.3']);
         });
 
         done();
     });
 
-    it("- handles componentType", function(done) {
-        class PretendReactClass {
-        }
+    it('- handles componentType', function(done) {
+        class PretendReactClass {}
 
-        class PretendComponent1 extends PretendReactClass {
-        }
+        class PretendComponent1 extends PretendReactClass {}
 
-        class PretendComponent2 extends PretendReactClass {
-        }
+        class PretendComponent2 extends PretendReactClass {}
 
         var plugins = {};
         var extensionStore = makeExtensionStore(plugins, true, {
@@ -286,7 +294,7 @@ describe("ExtensionStore.js", function () {
         done();
     });
 
-    it("- getPluginVersion", function(done) {
+    it('- getPluginVersion', function(done) {
         var extensionStore = makeExtensionStore();
 
         expect(extensionStore.getPluginVersion('plugin-1')).to.equal('1.1');

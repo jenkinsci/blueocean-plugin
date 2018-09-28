@@ -30,14 +30,14 @@ public class NodeRunStatus {
             } else {
                 this.result = BlueRun.BlueRunResult.ABORTED;
             }
-            this.state = endNode.isRunning() ? BlueRun.BlueRunState.RUNNING : BlueRun.BlueRunState.FINISHED;
+            this.state = endNode.isActive() ? BlueRun.BlueRunState.RUNNING : BlueRun.BlueRunState.FINISHED;
         } else if (QueueItemAction.getNodeState(endNode) == QueueItemAction.QueueState.QUEUED) {
             this.result = BlueRun.BlueRunResult.UNKNOWN;
             this.state = BlueRun.BlueRunState.QUEUED;
         } else if (QueueItemAction.getNodeState(endNode) == QueueItemAction.QueueState.CANCELLED) {
             this.result = BlueRun.BlueRunResult.ABORTED;
             this.state = BlueRun.BlueRunState.FINISHED;
-        } else if (endNode.isRunning()) {
+        } else if (endNode.isActive()) {
             this.result = BlueRun.BlueRunResult.UNKNOWN;
             this.state = BlueRun.BlueRunState.RUNNING;
         } else if (NotExecutedNodeAction.isExecuted(endNode)) {

@@ -173,16 +173,16 @@ public class AbstractPipelineImpl extends BluePipeline {
         ItemGroup<?> group = getBaseGroup(org);
         String[] displayNames = Functions.getRelativeDisplayNameFrom(item, group).split(" » ");
 
-        StringBuilder encondedDisplayName=new StringBuilder();
+        StringBuilder encodedDisplayName=new StringBuilder();
         for(int i=0;i<displayNames.length;i++) {
             if(i!=0) {
-                encondedDisplayName.append(String.format("/%s", Util.rawEncode(displayNames[i])));
+                encodedDisplayName.append(String.format("/%s", Util.rawEncode(displayNames[i])));
             }else {
-                encondedDisplayName.append(String.format("%s", Util.rawEncode(displayNames[i])));
+                encodedDisplayName.append(String.format("%s", Util.rawEncode(displayNames[i])));
             }
         }
 
-        return encondedDisplayName.toString();
+        return encodedDisplayName.toString();
     }
 
     /**

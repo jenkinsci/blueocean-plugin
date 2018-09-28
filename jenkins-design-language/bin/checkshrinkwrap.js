@@ -25,8 +25,8 @@ const start = new Date().getTime();
 
 checkProject('../');
 
-const ellapsed = new Date().getTime() - start;
-console.log(`dependencies look good! took ${ellapsed}ms`);
+const elapsed = new Date().getTime() - start;
+console.log(`dependencies look good! took ${elapsed}ms`);
 // done!
 
 function checkProject(pathToProject) {

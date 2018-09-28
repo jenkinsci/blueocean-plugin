@@ -33,18 +33,19 @@ function invokeInstall(err, result) {
     console.log('   type: ' + (isDevDependency ? 'dev' : 'production'));
     console.log('    mvn: ' + (shouldRunMaven ? 'will run mvn' : 'will not run mvn'));
 
-    async.map(directories,
-        function (elem, callback) {
+    async.map(
+        directories,
+        function(elem, callback) {
             console.log('Current element', elem);
-            removeAndInstall(elem, result.package,  result.version, callback);
+            removeAndInstall(elem, result.package, result.version, callback);
         },
-        function (err, result) {
+        function(err, result) {
             if (err) {
                 console.error('Something went wrong! node_modules might now be trashed, sorry.', err);
                 process.exit(1);
             } else {
-                const ellapsed = new Date().getTime() - start;
-                console.log(`Install look good! took ${ellapsed}ms`);
+                const elapsed = new Date().getTime() - start;
+                console.log(`Install look good! took ${elapsed}ms`);
                 process.exit(0);
             }
         }
@@ -67,7 +68,7 @@ if (process.argv[2]) {
     const result = {};
     if (versionArray.length > 2) {
         // Assuming a scoped NPM package that begins with @
-        result.package = "@" + versionArray[1];
+        result.package = '@' + versionArray[1];
         result.version = versionArray[2];
     } else {
         result.package = versionArray[0];
@@ -76,18 +77,21 @@ if (process.argv[2]) {
     invokeInstall(null, result);
 } else {
     prompt.start();
-    prompt.get({
-        properties: {
-            package: {
-                message: `PACKAGE to install?`,
-                required: true,
+    prompt.get(
+        {
+            properties: {
+                package: {
+                    message: `PACKAGE to install?`,
+                    required: true,
+                },
+                version: {
+                    message: `VERSION to install?`,
+                    required: true,
+                },
             },
-            version: {
-                message: `VERSION to install?`,
-                required: true,
-            }
-        }
-    }, invokeInstall);
+        },
+        invokeInstall
+    );
 }
 
 function buildPath(path) {
@@ -114,11 +118,13 @@ function removeAndInstall(pathToProject, lib, version, callback) {
 //remove folder Synchronously
 function deleteFolderRecursive(path) {
     if (fs.existsSync(path)) {
-        fs.readdirSync(path).forEach(function (file, index) {
-            var curPath = path + "/" + file;
-            if (fs.lstatSync(curPath).isDirectory()) { // recurse
+        fs.readdirSync(path).forEach(function(file, index) {
+            var curPath = path + '/' + file;
+            if (fs.lstatSync(curPath).isDirectory()) {
+                // recurse
                 deleteFolderRecursive(curPath);
-            } else { // delete file
+            } else {
+                // delete file
                 fs.unlinkSync(curPath);
             }
         });
@@ -133,11 +139,10 @@ function install(packages, callback) {
     if (shouldRunMaven) {
         command += ' && mvn clean install -DskipTests';
     }
-    const child = exec(command,
-        function (error, stdout, stderr) {
-            if (error !== null) {
-                callback(error);
-            }
-            callback(error, stdout);
-        });
+    const child = exec(command, function(error, stdout, stderr) {
+        if (error !== null) {
+            callback(error);
+        }
+        callback(error, stdout);
+    });
 }

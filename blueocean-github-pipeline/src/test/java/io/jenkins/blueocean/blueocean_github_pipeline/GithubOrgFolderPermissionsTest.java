@@ -67,18 +67,18 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         createGithubPipeline(false);
     }
 
-    private void createGithubPipeline(boolean shouldSuceed) throws Exception {
+    private void createGithubPipeline(boolean shouldSucceed) throws Exception {
         String credentialId = createGithubCredential(user);
         String pipelineName = "cloudbeers";
         Map resp = new RequestBuilder(baseUrl)
-                .status(shouldSuceed ? 201 : 403)
+                .status(shouldSucceed ? 201 : 403)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(GithubTestUtils.buildRequestBody(GithubScm.ID,null, githubApiUrl, pipelineName, "PR-demo"))
                 .build(Map.class);
 
         TopLevelItem item = getOrgRoot().getItem(pipelineName);
-        if (shouldSuceed) {
+        if (shouldSucceed) {
             assertEquals(pipelineName, resp.get("name"));
             assertEquals("io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl", resp.get("_class"));
 
