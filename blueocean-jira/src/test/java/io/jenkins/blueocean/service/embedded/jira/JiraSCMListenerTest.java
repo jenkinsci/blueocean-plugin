@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -210,15 +211,13 @@ public class JiraSCMListenerTest {
 
 
     private static ChangeLogSet build( String... texts) {
-        List<ChangeLogSet.Entry> entries = new ArrayList();
-        for(String text: texts){
+        List<ChangeLogSet.Entry> entries = Arrays.asList( texts ).stream().map( text -> {
             final ChangeLogSet.Entry entry = mock(ChangeLogSet.Entry.class);
             when(entry.getMsg()).thenReturn(text);
-            entries.add( entry );
-        }
+            return  entry;
+        } ).collect( Collectors.toList() );
 
-
-        ChangeLogSet<ChangeLogSet.Entry> set = new ChangeLogSet<ChangeLogSet.Entry>(null, null) {
+        return new ChangeLogSet<ChangeLogSet.Entry>(null, null) {
             @Override
             public boolean isEmptySet() {
                 return false;
@@ -229,8 +228,6 @@ public class JiraSCMListenerTest {
                 return entries.iterator();
             }
         };
-
-        return set;
     }
 
 }
