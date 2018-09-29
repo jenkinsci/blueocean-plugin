@@ -276,7 +276,7 @@ public class GitScm extends AbstractScm {
         try {
             if (requirePush) {
                 String branch = request.getString("branch");
-                if (repositoryUrl != null && scmSource == null){
+                if (repositoryUrl != null){
                     ((GitSCMSource) scmSource).setCredentialsId(credentialId);
                 }
                 new GitBareRepoReadSaveRequest(scmSource, branch, null, branch, null, null)
