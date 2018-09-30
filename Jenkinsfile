@@ -35,11 +35,14 @@ node() {
         }
 
         stage('Building BlueOcean') {
-          try {
-            sh "mvn clean install -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
-          } catch(e) {
-            throw e;
+          timeout(time: 90, unit: 'MINUTES') {
+            try {
+              sh "mvn clean install -V -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
+            } catch(e) {
+              throw e;
+            }
           }
+
           junit '**/target/surefire-reports/TEST-*.xml'
           junit '**/target/jest-reports/*.xml'
           jacoco execPattern: '**/target/jacoco.exec', classPattern : '**/target/classes', sourcePattern: '**/src/main/java', exclusionPattern: 'src/test*'
