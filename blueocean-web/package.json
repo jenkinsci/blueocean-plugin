@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-web",
-  "version": "0.0.1",
+  "version": "1.0.0-alpha.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -61,8 +61,8 @@
     "zombie": "4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.171",
-    "@jenkins-cd/blueocean-dashboard": "0.0.1",
+    "@jenkins-cd/blueocean-core-js": "^1.0.0-alpha.0",
+    "@jenkins-cd/blueocean-dashboard": "^1.0.0-alpha.0",
     "@jenkins-cd/design-language": "0.0.162",
     "@jenkins-cd/js-extensions": "0.0.44",
     "@jenkins-cd/js-modules": "0.0.10",

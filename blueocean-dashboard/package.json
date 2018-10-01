@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-dashboard",
-  "version": "0.0.1",
+  "version": "1.0.0-alpha.0",
   "description": "Dashboard for Jenkins Blue Ocean",
   "license": "MIT",
   "repository": {
@@ -64,7 +64,7 @@
     "typescript": "2.7.2"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.171",
+    "@jenkins-cd/blueocean-core-js": "^1.0.0-alpha.0",
     "@jenkins-cd/blueocean-pipeline-editor": "0.0.3",
     "@jenkins-cd/design-language": "0.0.162",
     "@jenkins-cd/js-extensions": "0.0.44",

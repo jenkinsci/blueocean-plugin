@@ -1,10 +1,10 @@
 {
   "packages": [
-    "jenkins-design-language",
-    "blueocean-pipeline-editor",
     "blueocean-core-js",
     "blueocean-dashboard",
-    "blueocean-web"
+    "blueocean-pipeline-editor",
+    "blueocean-web",
+    "jenkins-design-language"
   ],
-  "version": "0.0.0"
+  "version": "1.0.0-alpha.0"
 }

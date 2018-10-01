@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.171",
+  "version": "1.0.0-alpha.0",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "src/js/index.ts",
   "scripts": {
