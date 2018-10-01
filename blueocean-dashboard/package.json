@@ -137,6 +137,9 @@
     ]
   },
   "files": [
-    "dist"
+    "LICENSE",
+    "README.md",
+    "licenses",
+    "src/main"
   ]
 }

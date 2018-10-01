@@ -28,7 +28,8 @@
     "LICENSE",
     "README.md",
     "licenses",
-    "dist"
+    "src/js",
+    "src/less"
   ],
   "repository": {
     "type": "git",

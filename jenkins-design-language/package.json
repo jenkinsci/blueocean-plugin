@@ -38,7 +38,10 @@
     "LICENSE",
     "README.md",
     "licenses",
-    "dist"
+    "src/js",
+    "less",
+    "icons",
+    "fonts"
   ],
   "repository": {
     "type": "git",

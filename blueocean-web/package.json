@@ -1,5 +1,5 @@
 {
-  "name": "blueocean-web",
+  "name": "@jenkins-cd/blueocean-web",
   "version": "0.0.1",
   "license": "MIT",
   "repository": {
@@ -123,5 +123,12 @@
         "tsify"
       ]
     ]
-  }
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "licenses",
+    "src/js",
+    "src/less"
+  ]
 }

@@ -25,7 +25,8 @@
   "files": [
     "LICENSE",
     "README.md",
-    "dist"
+    "licenses",
+    "src/main"
   ],
   "devDependencies": {
     "@jenkins-cd/blueocean-dashboard": "0.0.1",
