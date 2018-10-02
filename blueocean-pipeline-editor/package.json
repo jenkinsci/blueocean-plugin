@@ -29,7 +29,6 @@
     "src/main"
   ],
   "devDependencies": {
-    "@jenkins-cd/blueocean-dashboard": "^1.0.0-alpha.0",
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
     "@kadira/storybook": "2.20.1",
     "@types/bluebird": "3.5.5",
@@ -71,7 +70,8 @@
     "typescript": "2.7.2"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "^1.0.0-alpha.0",
+    "@jenkins-cd/blueocean-core-js": "1.0.0-alpha.0",
+    "@jenkins-cd/blueocean-dashboard": "1.0.0-alpha.0",
     "@jenkins-cd/design-language": "0.0.162",
     "@jenkins-cd/js-extensions": "0.0.44",
     "@jenkins-cd/js-modules": "0.0.10",
