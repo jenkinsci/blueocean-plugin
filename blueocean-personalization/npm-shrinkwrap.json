@@ -5,13 +5,11 @@
   "requires": true,
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.171",
-      "resolved": "http://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.171.tgz",
-      "integrity": "sha1-BlKV3XDGlOdUiGQqgpuTu9fRnUY=",
+      "version": "1.0.0-alpha.0",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-1.0.0-alpha.0.tgz",
+      "integrity": "sha512-fi0/Cuc94UR/XYoA5ARN8h7nF7BX8NxKRHUj+o7h6cDCCiAzZpo1RLsward7yGvvqLcySmMrtSHOcurP+TaQdg==",
       "requires": {
-        "@jenkins-cd/design-language": "0.0.161",
-        "@jenkins-cd/js-extensions": "0.0.42",
-        "@jenkins-cd/js-modules": "0.0.10",
+        "@jenkins-cd/design-language": "0.0.162",
         "@jenkins-cd/logging": "0.0.6",
         "@jenkins-cd/sse-gateway": "0.0.21",
         "@jenkins-cd/storage": "0.0.6",
@@ -30,40 +28,7 @@
         "react": "15.4.2",
         "react-dom": "15.4.2",
         "react-router": "2.8.1"
-      },
-      "dependencies": {
-        "@jenkins-cd/design-language": {
-          "version": "0.0.161",
-          "resolved": "http://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.161.tgz",
-          "integrity": "sha1-yFhcPRv8fq8SQLHeqlvA4beQpHg=",
-          "requires": {
-            "@jenkins-cd/blueocean-material-icons": "0.0.6",
-            "@jenkins-cd/js-modules": "0.0.10",
-            "linkifyjs": "2.1.4",
-            "lodash.debounce": "4.0.8",
-            "moment": "2.19.3",
-            "moment-duration-format": "2.2.2",
-            "react": "15.4.2",
-            "react-addons-css-transition-group": "15.4.2",
-            "react-dom": "15.4.2",
-            "react-router": "2.8.1"
-          }
-        },
-        "@jenkins-cd/js-extensions": {
-          "version": "0.0.42",
-          "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.42.tgz",
-          "integrity": "sha1-FXLEw7ctneOx0PhrGZZLovGgvxY=",
-          "requires": {
-            "envify": "3.4.1",
-            "js-yaml": "3.11.0"
-          }
-        }
       }
-    },
-    "@jenkins-cd/blueocean-material-icons": {
-      "version": "0.0.6",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.6.tgz",
-      "integrity": "sha1-1Hs5dAlpvncTfvW8zuccfm6Rgw0="
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.162",
