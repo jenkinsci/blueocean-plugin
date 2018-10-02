@@ -66,7 +66,7 @@ public class JiraSCMListener extends SCMListener {
             }
             run.save();
         } catch (Exception e ){ // we do not want to fail the build if an issue happen here
-            LOGGER.warn( "skip reccording associated jira issues: {}", e.getMessage() );
+            LOGGER.warn( "Failure executing Jira query to fetch issues. Skipping recording Jira issues.: {}", e.getMessage() );
             // stack trace in debug mode
             LOGGER.debug( e.getMessage(), e);
         }
