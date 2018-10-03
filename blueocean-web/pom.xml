@@ -106,7 +106,9 @@
                         </goals>
                         <configuration>
                             <!-- The package.json must define an "mvntest" script -->
-                            <arguments>run mvntest</arguments>
+                            <arguments>run test</arguments>
+                            <workingDirectory>../</workingDirectory>
+                            <installDirectory>./</installDirectory>
                         </configuration>
                     </execution>
 

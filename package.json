@@ -2,7 +2,8 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "bootstrap": "npm install && lerna clean -y && lerna bootstrap && lerna link --force-local"
+    "bootstrap": "npm install && lerna clean -y && lerna bootstrap && lerna link --force-local",
+    "test": "lerna run test"
   },
   "devDependencies": {
     "lerna": "^3.1.4"
