@@ -52,6 +52,66 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>${frontend-version}</version>
+
+                <executions>
+
+                    <execution>
+                        <phase>initialize</phase>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>v${node.version}</nodeVersion>
+                            <npmVersion>${npm.version}</npmVersion>
+                            <nodeDownloadRoot>https://repo.jenkins-ci.org/nodejs-dist/</nodeDownloadRoot>
+                            <npmDownloadRoot>https://repo.jenkins-ci.org/npm-dist/</npmDownloadRoot>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <phase>initialize</phase>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Note that this may not be omitted lest maven-release-plugin be confused (frontend-maven-plugin #109): -->
+                            <arguments>run bootstrap</arguments>
+                            <workingDirectory>../</workingDirectory>
+                            <installDirectory>./</installDirectory>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <id>npm mvnbuild</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <!-- The package.json must define an "mvnbuild" script -->
+                            <arguments>run mvnbuild</arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <phase>test</phase>
+                        <id>npm mvntest</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <!-- The package.json must define an "mvntest" script -->
+                            <arguments>run mvntest</arguments>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <profiles>
