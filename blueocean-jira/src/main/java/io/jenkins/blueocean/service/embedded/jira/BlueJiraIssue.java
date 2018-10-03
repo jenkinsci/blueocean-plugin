@@ -1,12 +1,9 @@
 package io.jenkins.blueocean.service.embedded.jira;
 
-import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Run;
@@ -25,8 +22,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -100,19 +97,15 @@ public class BlueJiraIssue extends BlueIssue {
                 return null;
             }
             Collection<String> issueKeys = findIssueKeys(changeSetEntry.getMsg(), site.getIssuePattern());
-            Iterable<BlueIssue> transformed = Iterables.transform(issueKeys, new Function<String, BlueIssue>() {
-                @Override
-                public BlueIssue apply(String input) {
-                return BlueJiraIssue.create(site, action.getIssue(input));
-                }
-            });
+            Iterable<BlueIssue> transformed = Iterables.transform(issueKeys,
+                                                                  s -> BlueJiraIssue.create(site, action.getIssue(s)));
             return ImmutableList.copyOf(Iterables.filter(transformed, Predicates.notNull()));
         }
     }
 
     static Collection<String> findIssueKeys(String input, Pattern pattern) {
         Matcher m = pattern.matcher(input);
-        Set<String> issues = Sets.newHashSet();
+        Set<String> issues = new HashSet();
         while (m.find()) {
             if (m.groupCount() >= 1) {
                 String id = m.group(1);
