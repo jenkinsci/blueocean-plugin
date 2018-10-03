@@ -47,6 +47,7 @@
     "jest": "19.0.2",
     "jest-cli": "^23.5.0",
     "jquery-detached": "2.1.4-v4",
+    "less": "^3.8.1",
     "less-loader": "^4.1.0",
     "mini-css-extract-plugin": "^0.4.2",
     "ncp": "2.0.0",
