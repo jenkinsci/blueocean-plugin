@@ -181,44 +181,6 @@ public class GitScmTest extends PipelineBaseTest {
 
 
     @Test
-    public void shouldFailForBadCredentialIdOnCreate() throws IOException, UnirestException {
-        User user = login();
-        Map resp = createCredentials(user, ImmutableMap.of("credentials",
-                new ImmutableMap.Builder<String,Object>()
-                        .put("privateKeySource", ImmutableMap.of(
-                                "privateKey", "abcabc1212",
-                                "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
-                        .put("passphrase", "ssh2")
-                        .put("scope", "USER")
-                        .put("domain","blueocean-git-domain")
-                        .put("description", "ssh2 desc")
-                        .put("$class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey")
-                        .put("username", "ssh2").build()
-                )
-        );
-
-        String credentialId = (String) resp.get("id");
-        Assert.assertNotNull(credentialId);
-
-        resp = new RequestBuilder(baseUrl)
-                .status(400)
-                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .post("/organizations/" + getOrgName() + "/pipelines/")
-                .data(ImmutableMap.of("name", "demo",
-                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
-                                "credentialId", credentialId))).build(Map.class);
-
-        assertEquals(resp.get("code"), 400);
-
-        List<Map> errors = (List<Map>) resp.get("errors");
-
-        assertEquals(1, errors.size());
-        assertEquals("scmConfig.credentialId", errors.get(0).get("field"));
-        assertEquals("INVALID", errors.get(0).get("code"));
-    }
-
-    @Test
     public void shouldCreateGitMbp() throws IOException, UnirestException {
         login();
         Map resp = new RequestBuilder(baseUrl)
