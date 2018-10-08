@@ -35,11 +35,10 @@ node() {
         }
 
         stage('Building BlueOcean') {
-          try {
-            sh "mvn clean install -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
-          } catch(e) {
-            throw e;
+          timeout(time: 90, unit: 'MINUTES') {
+            sh "mvn clean install -V -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
           }
+
           junit '**/target/surefire-reports/TEST-*.xml'
           junit '**/target/jest-reports/*.xml'
           jacoco execPattern: '**/target/jacoco.exec', classPattern : '**/target/classes', sourcePattern: '**/src/main/java', exclusionPattern: 'src/test*'
@@ -49,9 +48,11 @@ node() {
         }
 
         stage('ATH - Jenkins 2.121.1') {
-          sh "cd acceptance-tests && ./run.sh -v=2.121.1 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
-          junit 'acceptance-tests/target/surefire-reports/*.xml'
-          archive 'acceptance-tests/target/screenshots/**/*'
+          timeout(time: 90, unit: 'MINUTES') {
+            sh "cd acceptance-tests && ./run.sh -v=2.121.1 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+            junit 'acceptance-tests/target/surefire-reports/*.xml'
+            archive 'acceptance-tests/target/screenshots/**/*'
+          }
         }
 
         if (env.JOB_NAME =~ 'blueocean-weekly-ath') {

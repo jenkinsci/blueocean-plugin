@@ -38,8 +38,7 @@
     "reactify": "1.1.1",
     "ts-jest": "19.0.2",
     "tsify": "4.0.0",
-    "typescript": "2.7.2",
-    "zombie": "4.2.1"
+    "typescript": "2.7.2"
   },
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": "0.0.171",

@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
 
-ENV MAVEN_VERSION 3.3.3
+ENV MAVEN_VERSION 3.5.4
 ENV NODE_VERSION 6.4.0
 ENV PHANTOMJS_VERSION 2.1.1
 ARG UID=1000
@@ -36,7 +36,7 @@ ENV LC_ALL en_US.UTF-8
 #==========
 # Maven
 #==========
-RUN curl -fsSL http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz | tar xzf - -C /usr/share \
+RUN curl -fsSL http://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/$MAVEN_VERSION/apache-maven-$MAVEN_VERSION-bin.tar.gz | tar xzf - -C /usr/share \
   && mv /usr/share/apache-maven-$MAVEN_VERSION /usr/share/maven \
   && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 ENV MAVEN_HOME /usr/share/maven

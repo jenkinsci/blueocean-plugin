@@ -1,3 +1,4 @@
+<?jelly escape-by-default='false'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
   <j:if test="${it.rollBarEnabled}">
     <!--
