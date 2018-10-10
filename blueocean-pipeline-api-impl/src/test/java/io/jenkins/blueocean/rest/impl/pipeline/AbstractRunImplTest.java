@@ -1,27 +1,19 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
 import hudson.model.FreeStyleProject;
 import hudson.model.Label;
 import hudson.model.Queue;
 import hudson.model.Run;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
-import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.BlueRunFactory;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
-import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
+import java.util.Map;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
-import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.api.SCMSource;
-import jenkins.util.SystemProperties;
-import static org.hamcrest.Matchers.*;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -36,10 +28,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.BuildWatcher;
 import org.jvnet.hudson.test.Issue;
-
-import java.net.URL;
-import java.util.Map;
-
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -370,6 +360,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         // Run until completed
         WorkflowRun r = p.scheduleBuild2(0).waitForStart();
         SemaphoreStep.waitForStart("wait-a/1", r);
+
         String causeOfBlockage = "There are no nodes with the label ‘second’";
         j.waitForMessage(causeOfBlockage, r);
 
