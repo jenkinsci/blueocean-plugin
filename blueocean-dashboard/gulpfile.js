@@ -102,6 +102,7 @@ gulp.task('validate', ['lint', 'test'], () => {
 gulp.task('test', () => {
     return gulp.src('src/test/js').pipe(
         jest({
+            collectCoverage: true,
             collectCoverageFrom: ['src/test/js/**/*.{js,jsx}'],
             testMatch: ['**/?(*-)(spec|test).js?(x)'],
             transform: {
