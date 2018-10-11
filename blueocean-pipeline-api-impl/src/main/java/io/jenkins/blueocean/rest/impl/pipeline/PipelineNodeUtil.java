@@ -176,13 +176,10 @@ public class PipelineNodeUtil {
         return null;
     }
 
-    public static final Predicate<FlowNode> isLoggable = new Predicate<FlowNode>() {
-        @Override
-        public boolean apply(@Nullable FlowNode input) {
+    public static final Predicate<FlowNode> isLoggable = input -> {
             if(input == null)
                 return false;
             return input.getAction(LogAction.class) != null;
-        }
     };
 
     public static boolean isPausedForInputStep(@Nonnull StepAtomNode step, @Nullable InputAction inputAction){

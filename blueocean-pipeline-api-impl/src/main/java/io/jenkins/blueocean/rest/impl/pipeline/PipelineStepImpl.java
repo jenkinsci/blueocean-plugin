@@ -1,10 +1,8 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.base.Predicate;
 import hudson.ExtensionList;
 import hudson.FilePath;
 import hudson.console.AnnotatedLargeText;
-import hudson.model.Action;
 import hudson.model.Failure;
 import hudson.model.FileParameterValue;
 import hudson.model.ParameterDefinition;
@@ -40,7 +38,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.framework.io.ByteBuffer;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -165,7 +162,7 @@ public class PipelineStepImpl extends BluePipelineStep {
         }
         msg = msg + "\n";
 
-        try (ByteBuffer byteBuffer = new ByteBuffer();) {
+        try (ByteBuffer byteBuffer = new ByteBuffer()) {
             byteBuffer.write(msg.getBytes("UTF-8"));
             return new LogResource(new AnnotatedLargeText(byteBuffer, Charset.forName("UTF-8"),true, null));
         } catch (IOException e) {
@@ -178,12 +175,7 @@ public class PipelineStepImpl extends BluePipelineStep {
     @Override
     public Collection<BlueActionProxy> getActions() {
         // The LogAction is not @ExportedBean but we want to expose its subgraph
-        return ActionProxiesImpl.getActionProxies(node.getNode().getActions(), new Predicate<Action>() {
-            @Override
-            public boolean apply(@Nullable Action input) {
-                return input instanceof LogAction;
-            }
-        }, this);
+        return ActionProxiesImpl.getActionProxies(node.getNode().getActions(), input ->  input instanceof LogAction, this);
     }
 
     @Override

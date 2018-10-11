@@ -4,7 +4,6 @@ import hudson.model.Action;
 import hudson.model.Result;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunState;
-import java.util.Collections;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.graph.AtomNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -18,8 +17,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Vivek Pandey

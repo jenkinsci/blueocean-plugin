@@ -17,8 +17,7 @@ import java.util.List;
  * @author Vivek Pandey
  */
 @Extension
-public class
-CredentialSearch extends OmniSearch<CredentialApi.Credential> {
+public class CredentialSearch extends OmniSearch<CredentialApi.Credential> {
     @Override
     public String getType() {
         return "credential";

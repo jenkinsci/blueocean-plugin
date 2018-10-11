@@ -3,7 +3,6 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Item;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmContentProviderParams;
 import jenkins.scm.api.SCMNavigator;
 import org.kohsuke.stapler.StaplerRequest;
 
