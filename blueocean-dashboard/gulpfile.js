@@ -12,7 +12,6 @@ const ts = require('gulp-typescript');
 const jest = require('gulp-jest').default;
 const tsProject = ts.createProject('./tsconfig.json');
 
-
 // Options, src/dest folders, etc
 
 const config = {
@@ -86,7 +85,6 @@ gulp.task('copy', ['copy-less-assets']);
 
 gulp.task('copy-less-assets', () => gulp.src(config.copy.less_assets.sources).pipe(copy(config.copy.less_assets.dest, { prefix: 2 })));
 
-
 // Validate contents
 gulp.task('validate', ['lint', 'test'], () => {
     const paths = [config.react.dest];
@@ -102,20 +100,16 @@ gulp.task('validate', ['lint', 'test'], () => {
 });
 
 gulp.task('test', () => {
-    return gulp.src('src/test/js').pipe(jest({ "collectCoverageFrom": [
-        "src/test/js/**/*.{js,jsx}"
-      ],
-      "testMatch":['**/?(*-)(spec|test).js?(x)'],
-      "transform": {
-        "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js",
-        "^.+\\.jsx?$": "babel-jest"
-      },
-      "moduleFileExtensions": [
-        "ts",
-        "tsx",
-        "js",
-        "jsx",
-        "json",
-        "node"
-      ]}))
-})
+    return gulp.src('src/test/js').pipe(
+        jest({
+            collectCoverageFrom: ['src/test/js/**/*.{js,jsx}'],
+            testMatch: ['**/?(*-)(spec|test).js?(x)'],
+            transform: {
+                '^.+\\.tsx?$': '<rootDir>/node_modules/ts-jest/preprocessor.js',
+                '^.+\\.jsx?$': 'babel-jest',
+            },
+            testResultsProcessor: 'jest-junit',
+            moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+        })
+    );
+});
