@@ -104,12 +104,12 @@ gulp.task('test', () => {
         jest({
             collectCoverage: true,
             collectCoverageFrom: ['src/test/js/**/*.{js,jsx}'],
+            reporters: ['default', ['jest-junit', { outputDirectory: 'target/jest-reports' }]],
             testMatch: ['**/?(*-)(spec|test).js?(x)'],
             transform: {
                 '^.+\\.tsx?$': '<rootDir>/node_modules/ts-jest/preprocessor.js',
                 '^.+\\.jsx?$': 'babel-jest',
             },
-            testResultsProcessor: 'jest-junit',
             moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
         })
     );
