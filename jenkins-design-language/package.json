@@ -93,6 +93,7 @@
     "harp": "0.24.0",
     "jest": "19.0.2",
     "jest-cli": "^23.5.0",
+    "jest-junit": "^5.2.0",
     "less": "2.7.2",
     "normalize.css": "5.0.0",
     "octicons": "4.4.0",
