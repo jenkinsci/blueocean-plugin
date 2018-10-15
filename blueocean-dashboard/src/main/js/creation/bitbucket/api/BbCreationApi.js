@@ -38,7 +38,7 @@ export class BbCreationApi {
         this.partialLoadedOrganizations = [];
     }
 
-    listOrganizations(credentialId, apiUrl, pagedOrgsStart = 1, pageSize = 100) {
+    listOrganizations(credentialId, apiUrl, pagedOrgsStart = 0, pageSize = 100) {
         const path = UrlConfig.getJenkinsRootURL();
         const orgsUrl = Utils.cleanSlashes(
             `${path}/blue/rest/organizations/${this.organization}/scm/${
