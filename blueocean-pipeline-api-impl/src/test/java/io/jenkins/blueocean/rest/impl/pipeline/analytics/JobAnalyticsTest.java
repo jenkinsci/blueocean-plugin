@@ -4,7 +4,6 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import hudson.matrix.MatrixProject;
 import hudson.model.CauseAction;
-import hudson.model.FreeStyleProject;
 import hudson.model.Result;
 import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
@@ -15,7 +14,6 @@ import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.plugins.git.GitSampleRepoRule;
-import jenkins.scm.api.SCMSource;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
@@ -23,10 +21,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 
-import java.net.URL;
 import java.util.Map;
 import java.util.UUID;
 

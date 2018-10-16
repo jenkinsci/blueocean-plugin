@@ -17,13 +17,7 @@ public class PipelineJobFilters {
 
     @Extension
     public static class FolderJobFilter extends ContainerFilter {
-        private final Predicate<Item> filter = new Predicate<Item>() {
-            @Override
-            public boolean apply(Item job) {
-                // some subclasses are fine
-                return !(Folder.class.equals(job.getClass()) || job instanceof OrganizationFolder);
-            }
-        };
+        private final Predicate<Item> filter = job -> !(Folder.class.equals(job.getClass()) || job instanceof OrganizationFolder);
         @Override
         public String getName() {
             return "no-folders";
@@ -36,12 +30,8 @@ public class PipelineJobFilters {
 
     @Extension
     public static class OriginFilter extends ContainerFilter {
-        private final Predicate<Item> filter = new Predicate<Item>() {
-            @Override
-            public boolean apply(Item job) {
-                return !isPullRequest(job);
-            }
-        };
+        private final Predicate<Item> filter = job -> !isPullRequest(job);
+
         @Override
         public String getName() {
             return "origin";
@@ -54,12 +44,8 @@ public class PipelineJobFilters {
 
     @Extension
     public static class PullRequestFilter extends ContainerFilter {
-        private final Predicate<Item> filter = new Predicate<Item>() {
-            @Override
-            public boolean apply(Item job) {
-                return isPullRequest(job);
-            }
-        };
+        private final Predicate<Item> filter = job ->  isPullRequest(job);
+
         @Override
         public String getName() {
             return "pull-requests";

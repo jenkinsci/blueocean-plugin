@@ -2,21 +2,19 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.FilePath;
 import hudson.model.Label;
-import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueuedBlueRun;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class RestartStageTest extends PipelineBaseTest
 {
