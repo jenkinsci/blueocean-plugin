@@ -370,7 +370,8 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         // Run until completed
         WorkflowRun r = p.scheduleBuild2(0).waitForStart();
         SemaphoreStep.waitForStart("wait-a/1", r);
-        j.waitForMessage("[Pipeline] [b] node", r);
+        String causeOfBlockage = "There are no nodes with the label ‘second’";
+        j.waitForMessage(causeOfBlockage, r);
 
         // Get latest run for this pipeline
         pipeline = request().get(String.format("/organizations/jenkins/pipelines/%s/", p.getName())).build(Map.class);
@@ -388,7 +389,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
         Assert.assertEquals("QUEUED", latestRun.get("state"));
         Assert.assertEquals("1", latestRun.get("id"));
-        Assert.assertEquals("There are no nodes with the label ‘second’", latestRun.get("causeOfBlockage"));
+        Assert.assertEquals(causeOfBlockage, latestRun.get("causeOfBlockage"));
 
         j.createOnlineSlave(Label.get("second"));
 
