@@ -36,6 +36,8 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
+    "@imeredith/es-extensions-api": "^0.1.5",
+    "@imeredith/es-extensions-react": "^0.1.7",
     "@jenkins-cd/design-language": "0.0.162",
     "@jenkins-cd/logging": "0.0.6",
     "@jenkins-cd/sse-gateway": "0.0.21",
