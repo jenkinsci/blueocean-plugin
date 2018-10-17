@@ -20,7 +20,11 @@
 		"lib": [
 			"dom",
 			"es2018"
-		]
+		],
+		"baseUrl": ".",
+		"paths": {
+			"@jenkins-cd/blueocean-core-js": ["../blueocean-core-js/src/js"]
+		}
 	},
 	"exclude": [
 		"target",
