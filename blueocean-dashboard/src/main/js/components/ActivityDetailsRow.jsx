@@ -89,7 +89,7 @@ class ActivityDetailsRow extends Component {
                     />
                 </TableCell>
                 <TableCell className="TableCell--actions">
-                    <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
+                    <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" pipeline={this.props.pipeline} run={this.props.run} t={t} />
                     <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
                     {/* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */}
                     <IfCapability className={pipeline._class} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
