@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Vivek Pandey
- * <p>
+ * 
  * Run your Jenkins instance with <code>-DNODE-DUMP-ENABLED</code> to turn on the logging when diagnosing bugs! You'll
  * also need to have a logging config that enables debug for (at least) this class. Use
  * <code>-Djava.util.logging.config.file=./logging.properties</code> to set a custom logging properties file from the
