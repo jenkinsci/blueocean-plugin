@@ -29,6 +29,7 @@ import { useStrict } from 'mobx';
 import { Icon } from '@jenkins-cd/design-language';
 import ErrorUtils from './ErrorUtils';
 import { PipelineRoutes } from '@jenkins-cd/blueocean-dashboard';
+import { TopPipelinesLink } from '@jenkins-cd/blueocean-dashboard';
 useStrict(true);
 
 const LOGGER = logging.logger('io.jenkins.blueocean.web.routing');
@@ -78,6 +79,7 @@ class App extends Component {
             // <Extensions.Renderer extensionPoint="jenkins.blueocean.top.pipelines" />,
             //<Extensions.Renderer extensionPoint="jenkins.blueocean.top.links" />,
             // <Extensions.Renderer extensionPoint="jenkins.blueocean.top.admin">
+            <TopPipelinesLink t={translate} />,
             <AdminLink t={translate} />,
             //</Extensions.Renderer>,
         ];

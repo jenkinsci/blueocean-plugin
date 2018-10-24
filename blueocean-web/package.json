@@ -17,7 +17,8 @@
     "mvnbuild:fast": "gulp bundle",
     "mvntest": "gulp test",
     "buildProd": "webpack --mode production",
-    "build": "webpack --mode development"
+    "build": "webpack --mode development",
+    "build:watch": "webpack --mode development --watch"
   },
   "devDependencies": {
     "@alienfast/i18next-loader": "^1.0.16",

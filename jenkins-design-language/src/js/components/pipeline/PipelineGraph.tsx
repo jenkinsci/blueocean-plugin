@@ -517,7 +517,7 @@ export class PipelineGraph extends React.Component {
         // Add an invisible click/touch/mouseover target, coz the nodes are small and (more importantly)
         // many are hollow.
         groupChildren.push(
-            <circle r={nodeRadius + 2 * connectorStrokeWidth} className="pipeline-node-hittarget" fillOpacity="0" stroke="none" {...clickableProps} />
+            <circle r={nodeRadius + 2 * connectorStrokeWidth} className="pipeline-node-hittarget" fillOpacity="0" stroke="none" {...clickableProps as any} />
         );
 
         // Most of the nodes are in shared code, so they're rendered at 0,0. We transform with a <g> to position them
