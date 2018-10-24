@@ -6,7 +6,7 @@ import { installInfo } from '../storage';
 
 // Create a dedicated storage namespace that we use to store classes
 // info in the browser, eliminating client REST call overhead for classes
-// info. This storage namespace will be auto-cleared if the jesnkins version
+// info. This storage namespace will be auto-cleared if the jenkins version
 // changes, or if the active plugins change.
 const classesInfoNS = installInfo.subspace('classesInfo');
 

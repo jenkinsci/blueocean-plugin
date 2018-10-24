@@ -1,26 +1,18 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
 import hudson.model.FreeStyleProject;
 import hudson.model.Label;
 import hudson.model.Queue;
 import hudson.model.Run;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
-import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.BlueRunFactory;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
-import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
-import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.api.SCMSource;
-import jenkins.util.SystemProperties;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -36,15 +28,17 @@ import org.junit.Test;
 import org.jvnet.hudson.test.BuildWatcher;
 import org.jvnet.hudson.test.Issue;
 
-import java.net.URL;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 
 /**
  * @author Ivan Meredith
  */
-public class AbstractRunImplTest extends PipelineBaseTest {
+public class RunImplTest
+    extends PipelineBaseTest {
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
     @ClassRule
@@ -296,7 +290,14 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
         Assert.assertEquals("QUEUED", latestRun.get("state"));
         Assert.assertEquals("1", latestRun.get("id"));
-        Assert.assertEquals("Jenkins doesn’t have label test", latestRun.get("causeOfBlockage"));
+
+        // Jenkins 2.125 introduced quotes around these labels - see commit 91ddc6. This came
+        // just after the current Jenkins LTS, which is version 2.121.1. So this assert now
+        // tests for the new quoted version, and the old non-quoted version.
+        Assert.assertThat((String)latestRun.get("causeOfBlockage"), anyOf(
+            equalTo("\u2018Jenkins\u2019 doesn’t have label \u2018test\u2019"),
+            equalTo("Jenkins doesn’t have label test")
+        ));
 
         j.createOnlineSlave(Label.get("test"));
 
@@ -362,7 +363,8 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         // Run until completed
         WorkflowRun r = p.scheduleBuild2(0).waitForStart();
         SemaphoreStep.waitForStart("wait-a/1", r);
-        j.waitForMessage("[Pipeline] [b] node", r);
+        String causeOfBlockage = "There are no nodes with the label ‘second’";
+        j.waitForMessage(causeOfBlockage, r);
 
         // Get latest run for this pipeline
         pipeline = request().get(String.format("/organizations/jenkins/pipelines/%s/", p.getName())).build(Map.class);
@@ -380,7 +382,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
         Assert.assertEquals("QUEUED", latestRun.get("state"));
         Assert.assertEquals("1", latestRun.get("id"));
-        Assert.assertEquals("There are no nodes with the label ‘second’", latestRun.get("causeOfBlockage"));
+        Assert.assertEquals(causeOfBlockage, latestRun.get("causeOfBlockage"));
 
         j.createOnlineSlave(Label.get("second"));
 

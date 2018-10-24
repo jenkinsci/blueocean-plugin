@@ -35,25 +35,35 @@ export class BbCreationApi {
         this._fetch = fetch || Fetch.fetchJSON;
         this.organization = AppConfig.getOrganizationName();
         this.scmId = scmId;
+        this.partialLoadedOrganizations = [];
     }
 
-    listOrganizations(credentialId, apiUrl) {
+    listOrganizations(credentialId, apiUrl, pagedOrgsStart = 0, pageSize = 100) {
         const path = UrlConfig.getJenkinsRootURL();
         const orgsUrl = Utils.cleanSlashes(
-            `${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/organizations/?credentialId=${credentialId}&apiUrl=${apiUrl}`,
+            `${path}/blue/rest/organizations/${this.organization}/scm/${
+                this.scmId
+            }/organizations/?credentialId=${credentialId}&start=${pagedOrgsStart}&limit=100&apiUrl=${apiUrl}`,
             false
         );
 
         return this._fetch(orgsUrl)
             .then(orgs => capabilityAugmenter.augmentCapabilities(orgs))
-            .then(orgs => this._listOrganizationsSuccess(orgs), error => this._listOrganizationsFailure(error));
+            .then(orgs => this._listOrganizationsSuccess(orgs, credentialId, apiUrl, pagedOrgsStart), error => this._listOrganizationsFailure(error));
     }
 
-    _listOrganizationsSuccess(organizations) {
-        return {
-            outcome: 'SUCCESS',
-            organizations,
-        };
+    _listOrganizationsSuccess(organizations, credentialId, apiUrl, pagedOrgsStart) {
+        this.partialLoadedOrganizations = this.partialLoadedOrganizations.concat(organizations);
+
+        if (organizations.length >= 100) {
+            //if we got 100 or more orgs, we need to check the next page to see if there are any more orgs
+            return this.listOrganizations(credentialId, apiUrl, pagedOrgsStart + 100);
+        } else {
+            return {
+                outcome: 'SUCCESS',
+                organizations: this.partialLoadedOrganizations,
+            };
+        }
     }
 
     _listOrganizationsFailure(error) {

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.blueocean.commons;
+package io.jenkins.blueocean.preload;
 
 import hudson.model.Run;
 import org.kohsuke.accmod.Restricted;
@@ -41,6 +41,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * General purpose Blue Ocean UI URL parser.
@@ -281,15 +282,10 @@ public class BlueUrlTokenizer {
     }
 
     private static Iterator<String> extractTokens(String url) {
-        String[] uncleanedTokens = url.split("/");
-        List<String> cleanedTokens = new ArrayList<>();
 
-        for (String uncleanedToken : uncleanedTokens) {
-            if (uncleanedToken.length() != 0) {
-                cleanedTokens.add(uncleanedToken);
-            }
-        }
-
-        return cleanedTokens.iterator();
+        return Arrays.asList(url.split("/")).stream()
+            .filter( s -> s.length() != 0 )
+            .collect( Collectors.toList() )
+            .iterator();
     }
 }

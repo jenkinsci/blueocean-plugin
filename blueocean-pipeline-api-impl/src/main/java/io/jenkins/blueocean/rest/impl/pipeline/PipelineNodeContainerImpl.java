@@ -8,7 +8,6 @@ import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -21,7 +20,7 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
     private final WorkflowRun run;
     private final Map<String, BluePipelineNode> nodeMap = new HashMap<>();
 
-    List<BluePipelineNode> nodes = new ArrayList<>();
+    private final List<BluePipelineNode> nodes;
     private final Link self;
 
     public PipelineNodeContainerImpl(WorkflowRun run, Link parentLink) {
@@ -63,5 +62,13 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
     @Override
     public Link getLink() {
         return self;
+    }
+
+    /**
+     * for test purpose
+     * @return
+     */
+    protected List<BluePipelineNode> getNodes(){
+        return nodes;
     }
 }

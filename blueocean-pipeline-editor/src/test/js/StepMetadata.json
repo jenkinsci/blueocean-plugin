@@ -1241,5 +1241,57 @@
         "symbol": null,
         "type": "hudson.tasks.Fingerprinter",
         "functionName": "fingerprint"
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineFunction",
+        "displayName": "With Ant",
+        "hasSingleRequiredParameter": false,
+        "help": "<div>\r\n  Prepares an environment for Jenkins to run builds using Apache Ant.\r\n  Annotates Ant-specific output to display executed targets.\r\n  Optionally sets up an Ant and/or JDK installation.\r\n<\/div>\r\n",
+        "parameters":     [
+            {
+                "capitalizedName": "Installation",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<p>\r\n    Name of an Ant installation to use so that <code>ant<\/code> will be in the path.\r\n<\/p>\r\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "installation",
+                "type": "java.lang.String"
+            },
+            {
+                "capitalizedName": "Jdk",
+                "collectionTypes": [],
+                "descriptorUrl": null,
+                "help": "<p>\r\n    Name of an Java installation to use when running Ant.\r\n<\/p>\r\n",
+                "isDeprecated": false,
+                "isRequired": false,
+                "name": "jdk",
+                "type": "java.lang.String"
+            }
+        ],
+        "symbol": null,
+        "type": "hudson.tasks.AntWrapper",
+        "functionName": "withAnt",
+        "isBlockContainer": true
+    },
+    {
+        "_class": "io.blueocean.rest.pipeline.editor.ExportedPipelineFunction",
+        "displayName": "Prepare SonarQube Scanner environment",
+        "hasSingleRequiredParameter": true,
+        "help": null,
+        "parameters": [    {
+            "capitalizedName": "InstallationName",
+            "collectionTypes": [],
+            "descriptorUrl": null,
+            "help": null,
+            "isDeprecated": false,
+            "isRequired": true,
+            "name": "installationName",
+            "type": "java.lang.String"
+        }],
+        "symbol": null,
+        "type": "hudson.plugins.sonar.SonarBuildWrapper",
+        "functionName": "withSonarQubeEnv",
+        "isBlockContainer": true
     }
 ]

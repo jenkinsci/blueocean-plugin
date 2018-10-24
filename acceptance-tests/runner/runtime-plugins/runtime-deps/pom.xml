@@ -56,7 +56,7 @@
         </pluginRepository>
     </pluginRepositories>
     <properties>
-        <jenkins.version>2.107.2</jenkins.version>
+        <jenkins.version>2.121.1</jenkins.version>
         <jenkins-test-harness.version>2.30</jenkins-test-harness.version>
         <java.level>8</java.level>
     </properties>
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>structs</artifactId>
-            <version>1.14</version>
+            <version>1.17</version>
         </dependency>
 
         <dependency>

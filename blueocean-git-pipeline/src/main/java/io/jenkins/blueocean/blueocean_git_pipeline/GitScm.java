@@ -29,6 +29,7 @@ import io.jenkins.blueocean.rest.model.Container;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.AbstractGitSCMSource;
 import jenkins.plugins.git.GitSCMFileSystem;
+import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSourceOwner;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -209,8 +210,8 @@ public class GitScm extends AbstractScm {
         final AbstractGitSCMSource scmSource;
 
         if (request.has("repositoryUrl")) {
-            scmSource = null;
             repositoryUrl = request.getString("repositoryUrl");
+            scmSource = new GitSCMSource(repositoryUrl);
         } else {
             try {
                 String fullName = request.getJSONObject("pipeline").getString("fullName");
@@ -273,9 +274,11 @@ public class GitScm extends AbstractScm {
         }
 
         try {
-
             if (requirePush) {
                 String branch = request.getString("branch");
+                if (repositoryUrl != null){
+                    ((GitSCMSource) scmSource).setCredentialsId(credentialId);
+                }
                 new GitBareRepoReadSaveRequest(scmSource, branch, null, branch, null, null)
                     .invokeOnScm(new GitSCMFileSystem.FSFunction<Void>() {
                         @Override

@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.LogManager;
+import java.util.stream.Collectors;
 
 import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
 import static org.junit.Assert.fail;
@@ -57,7 +58,7 @@ import static org.junit.Assert.fail;
  * @author Vivek Pandey
  */
 public abstract class PipelineBaseTest{
-    private static  final Logger LOGGER = LoggerFactory.getLogger(PipelineBaseTest.class);
+    protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @BeforeClass
     public static void enableJWT() {
@@ -95,10 +96,10 @@ public abstract class PipelineBaseTest{
                         value = "{}";
                     }
                     T r =  JsonConverter.om.readValue(value, valueType);
-                    LOGGER.info("Response:\n"+JsonConverter.om.writeValueAsString(r));
+                    LOGGER.debug("Response:\n"+JsonConverter.om.writeValueAsString(r));
                     return r;
                 } catch (IOException e) {
-                    LOGGER.info("Failed to parse JSON: "+value+". "+e.getMessage());
+                    LOGGER.error("Failed to parse JSON: "+value+". "+e.getMessage());
                     throw new RuntimeException(e);
                 }
             }
@@ -106,7 +107,7 @@ public abstract class PipelineBaseTest{
             public String writeValue(Object value) {
                 try {
                     String str = JsonConverter.om.writeValueAsString(value);
-                    LOGGER.info("Request:\n"+str);
+                    LOGGER.debug("Request:\n"+str);
                     return str;
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
@@ -344,15 +345,12 @@ public abstract class PipelineBaseTest{
     }
 
     protected List<FlowNode> getStages(NodeGraphBuilder builder){
-        List<FlowNode> nodes = new ArrayList<>();
-        for(FlowNodeWrapper node: builder.getPipelineNodes()){
-            if(node.type == FlowNodeWrapper.NodeType.STAGE){
-                nodes.add(node.getNode());
-            }
-        }
-
-        return nodes;
+        return builder.getPipelineNodes().stream()
+            .filter( nodeWrapper -> nodeWrapper.type == FlowNodeWrapper.NodeType.STAGE )
+            .map( nodeWrapper -> nodeWrapper.getNode() )
+            .collect( Collectors.toList() );
     }
+
     protected List<FlowNode> getAllSteps(WorkflowRun run){
         PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
         ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
@@ -363,25 +361,18 @@ public abstract class PipelineBaseTest{
         return steps;
     }
     protected List<FlowNode> getStagesAndParallels(NodeGraphBuilder builder){
-        List<FlowNode> nodes = new ArrayList<>();
-        for(FlowNodeWrapper node: builder.getPipelineNodes()){
-            if(node.type == FlowNodeWrapper.NodeType.STAGE || node.type == FlowNodeWrapper.NodeType.PARALLEL){
-                nodes.add(node.getNode());
-            }
-        }
+        return builder.getPipelineNodes().stream()
+            .filter( nodeWrapper -> nodeWrapper.type == FlowNodeWrapper.NodeType.PARALLEL || nodeWrapper.type == FlowNodeWrapper.NodeType.STAGE)
+            .map( nodeWrapper -> nodeWrapper.getNode() )
+            .collect( Collectors.toList() );
 
-        return nodes;
     }
 
     protected List<FlowNode> getParallelNodes(NodeGraphBuilder builder){
-        List<FlowNode> nodes = new ArrayList<>();
-        for(FlowNodeWrapper node: builder.getPipelineNodes()){
-            if(node.type == FlowNodeWrapper.NodeType.PARALLEL){
-                nodes.add(node.getNode());
-            }
-        }
-
-        return nodes;
+        return builder.getPipelineNodes().stream()
+            .filter( nodeWrapper -> nodeWrapper.type == FlowNodeWrapper.NodeType.PARALLEL )
+            .map( nodeWrapper -> nodeWrapper.getNode() )
+            .collect( Collectors.toList() );
     }
 
     protected String getHrefFromLinks(Map resp, String link){

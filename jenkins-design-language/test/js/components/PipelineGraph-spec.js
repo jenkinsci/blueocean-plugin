@@ -11,16 +11,20 @@ const validResultValues = StatusIndicator.validResultValues;
 // Data creation helpers Lifted from stories
 let __id = 1111;
 
-function makeNode(name, children = [], state = validResultValues.not_built, type='STAGE', completePercent) {
-    completePercent = completePercent || ((state == validResultValues.running) ? Math.floor(Math.random() * 60 + 20) : 50);
+function makeNode(name, children = [], state = validResultValues.not_built, type = 'STAGE', completePercent) {
+    completePercent = completePercent || (state == validResultValues.running ? Math.floor(Math.random() * 60 + 20) : 50);
     const id = __id++;
-    return {name, children, state, completePercent, id, type};
+    return { name, children, state, completePercent, id, type };
 }
 
 function makeSequence(...stages) {
     for (let i = 0; i < stages.length - 1; i++) {
         stages[i].nextSibling = stages[i + 1];
+        stages[i].isSequential = true;
     }
+
+    //also mark the last node in the sequence as sequential
+    stages[stages.length - 1].isSequential = true;
 
     return stages[0]; // The model only needs the first in a sequence
 }
@@ -50,7 +54,7 @@ function assertRow(row, ...nodesParams) {
     }
 }
 
-function assertLabel(labels, text, x,y) {
+function assertLabel(labels, text, x, y) {
     const label = labels.find(label => label.text === text);
     assert.ok(label, `label ${text} exists`);
     assert.equal(label.x, x, `label ${text} x`);
@@ -67,12 +71,11 @@ function assertConnection(connections, sourceName, destinationName) {
         }
     }
 
-    assert.fail(0,1,`could not find ${sourceName} --> ${destinationName} connection`);
+    assert.fail(0, 1, `could not find ${sourceName} --> ${destinationName} connection`);
 }
 
 describe('PipelineGraph', () => {
     describe('layoutGraph', () => {
-
         it('gracefully handles a Stage with null children', () => {
             const stagesNullChildren = require('../data/pipeline-graph/stages-with-null-children.json');
             const { nodeColumns } = layoutGraph(stagesNullChildren, defaultLayout);
@@ -96,23 +99,20 @@ describe('PipelineGraph', () => {
                 ]),
                 makeNode('Skizzled', [], validResultValues.skipped),
                 makeNode('Foshizzle', [], validResultValues.skipped),
-                makeNode('Dev', [
-                    makeNode('US-East', [], validResultValues.success, 'PARALLEL'),
-                    makeNode('US-West', [], validResultValues.success, 'PARALLEL'),
-                    makeNode('APAC', [], validResultValues.success, 'PARALLEL'),
-                ], validResultValues.success),
+                makeNode(
+                    'Dev',
+                    [
+                        makeNode('US-East', [], validResultValues.success, 'PARALLEL'),
+                        makeNode('US-West', [], validResultValues.success, 'PARALLEL'),
+                        makeNode('APAC', [], validResultValues.success, 'PARALLEL'),
+                    ],
+                    validResultValues.success
+                ),
                 makeNode('Staging', [], validResultValues.skipped),
                 makeNode('Production'),
             ];
 
-            const {
-                nodeColumns,
-                connections,
-                bigLabels,
-                smallLabels,
-                measuredWidth,
-                measuredHeight,
-            } = layoutGraph(stages, defaultLayout);
+            const { nodeColumns, connections, bigLabels, smallLabels, measuredWidth, measuredHeight } = layoutGraph(stages, defaultLayout);
 
             // Basic stuff
 
@@ -269,30 +269,20 @@ describe('PipelineGraph', () => {
 
         it('lays out a multi-stage parallel graph', () => {
             const stages = [
-                makeNode("Alpha"),
-                makeNode("Bravo", [
-                    makeNode("Echo", [], validResultValues.not_built, 'PARALLEL'),
+                makeNode('Alpha'),
+                makeNode('Bravo', [
+                    makeNode('Echo', [], validResultValues.not_built, 'PARALLEL'),
                     makeSequence(
-                        makeNode("Foxtrot", [], validResultValues.not_built, 'PARALLEL'),
-                        makeNode("Golf", [], validResultValues.not_built, 'PARALLEL'),
-                        makeNode("Hotel", [], validResultValues.not_built, 'PARALLEL'),
+                        makeNode('Foxtrot', [], validResultValues.not_built, 'STAGE'),
+                        makeNode('Golf', [], validResultValues.not_built, 'STAGE'),
+                        makeNode('Hotel', [], validResultValues.not_built, 'STAGE')
                     ),
-                    makeSequence(
-                        makeNode("India", [], validResultValues.not_built, 'PARALLEL'),
-                        makeNode("Juliet", [], validResultValues.not_built, 'PARALLEL'),
-                    )
+                    makeSequence(makeNode('India', [], validResultValues.not_built, 'STAGE'), makeNode('Juliet', [], validResultValues.not_built, 'STAGE')),
                 ]),
-                makeNode("Charlie"),
+                makeNode('Charlie'),
             ];
 
-            const {
-                nodeColumns,
-                connections,
-                bigLabels,
-                smallLabels,
-                measuredWidth,
-                measuredHeight,
-            } = layoutGraph(stages, defaultLayout);
+            const { nodeColumns, connections, bigLabels, smallLabels, measuredWidth, measuredHeight } = layoutGraph(stages, defaultLayout);
 
             // Basic stuff
 
@@ -327,15 +317,8 @@ describe('PipelineGraph', () => {
             assert.equal(col.topStage.name, 'Bravo', 'top stage name');
             assert.equal(3, col.rows.length);
             assertSingleNodeRow(col.rows[0], 'Echo', 384, 55);
-            assertRow(col.rows[1],
-                ['Foxtrot', 264, 125],
-                ['Golf', 384, 125],
-                ['Hotel', 504, 125],
-            );
-            assertRow(col.rows[2],
-                ['India', 324, 195],
-                ['Juliet', 444, 195],
-            );
+            assertRow(col.rows[1], ['Foxtrot', 264, 125], ['Golf', 384, 125], ['Hotel', 504, 125]);
+            assertRow(col.rows[2], ['India', 324, 195], ['Juliet', 444, 195]);
 
             // Col 3
             col = nodeColumns[3];
@@ -381,20 +364,11 @@ describe('PipelineGraph', () => {
         it('lays out a single node parallel graph', () => {
             const stages = [
                 makeNode('Build', [], validResultValues.success),
-                makeNode('Test', [
-                    makeNode('JUnit', [], validResultValues.success, 'PARALLEL'),
-                ]),
+                makeNode('Test', [makeNode('JUnit', [], validResultValues.success, 'PARALLEL')]),
                 makeNode('Deploy'),
             ];
 
-            const {
-                nodeColumns,
-                connections,
-                bigLabels,
-                smallLabels,
-                measuredWidth,
-                measuredHeight,
-            } = layoutGraph(stages, defaultLayout);
+            const { nodeColumns, connections, bigLabels, smallLabels, measuredWidth, measuredHeight } = layoutGraph(stages, defaultLayout);
 
             // Basic stuff
 

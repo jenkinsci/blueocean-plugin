@@ -11,6 +11,7 @@ import Steps from './Steps';
 import FreeStyle from './FreeStyle';
 import RunDescription from './RunDescription';
 import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
+import StageRestartLink from '../../StageRestartLink';
 
 import { KaraokeConfig } from '../';
 import { DownstreamRuns } from '../../downstream-runs/DownstreamRuns';
@@ -289,6 +290,11 @@ export default class Pipeline extends Component {
             router.push(location);
         };
 
+        const switchRunDetails = newUrl => {
+            location.pathname = newUrl;
+            router.push(location);
+        };
+
         let stepName = this.pager.nodes !== undefined ? this.pager.nodes.data.model.filter(item => item.id === this.pager.currentNode.parent)[0] : '';
         stepName = stepName && this.pager.currentNode.isParallel ? stepName.displayName : '';
 
@@ -311,6 +317,41 @@ export default class Pipeline extends Component {
 
         const generalLogPager = !this.pager.pending && !isPipelineQueued && noResultsToDisplay ? KaraokeService.generalLogPager(augmenter, location) : '';
         const { data: logArray, hasMore } = !this.pager.pending && !isPipelineQueued && noResultsToDisplay && generalLogPager.log ? generalLogPager.log : '';
+
+        const stageRestartLink = () => {
+            if (this.pager.currentNode) {
+                let nodeRestartId = this.pager.currentNode.restartable ? this.pager.currentNode.id : '';
+                let nodeRestartTitle = this.pager.currentNode.restartable ? title : '';
+
+                if (this.pager.currentNode.restartable == false) {
+                    let currentNodeParent = this.pager.nodes.data.model.filter(node => node.id == this.pager.currentNode.firstParent)[0];
+
+                    while (currentNodeParent) {
+                        if (currentNodeParent && currentNodeParent.restartable) {
+                            nodeRestartId = currentNodeParent.id;
+                            nodeRestartTitle = currentNodeParent.title;
+                            break;
+                        }
+                        currentNodeParent = this.pager.nodes.data.model.filter(node => node.id == currentNodeParent.firstParent)[0];
+                    }
+                }
+
+                return nodeRestartId ? (
+                    <StageRestartLink
+                        title={nodeRestartTitle}
+                        t={t}
+                        run={run}
+                        nodeRestartId={nodeRestartId}
+                        pipeline={pipeline}
+                        onNavigation={switchRunDetails}
+                    />
+                ) : (
+                    false
+                );
+            }
+
+            return false;
+        };
 
         return (
             <div>
@@ -338,6 +379,7 @@ export default class Pipeline extends Component {
                         duration={!generalLogPager ? this.pager.currentNode.durationInMillis : ''}
                         running={!generalLogPager ? this.pager.currentNode.isRunning : false}
                         t={t}
+                        stageRestartLink={stageRestartLink()}
                     />
                 )}
 

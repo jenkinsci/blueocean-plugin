@@ -90,13 +90,7 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
             retry++;
         }
 
-        Collections.sort(c, new Comparator<BlueQueueItem>() {
-            @Override
-            public int compare(BlueQueueItem o1, BlueQueueItem o2) {
-                return o2.getQueuedTime().compareTo(o1.getQueuedTime());
-            }
-        });
-
+        Collections.sort(c, ( o1, o2 ) ->  o2.getQueuedTime().compareTo(o1.getQueuedTime()));
         return c.iterator();
     }
 

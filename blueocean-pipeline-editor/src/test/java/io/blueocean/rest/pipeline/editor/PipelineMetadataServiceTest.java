@@ -30,17 +30,19 @@ public class PipelineMetadataServiceTest {
     @Test
     public void testBasicStepsReturned() throws IOException {
         JSONWebResponse rsp = j.getJSON("blue/rest/pipeline-metadata/pipelineStepMetadata");
-        
         assert(rsp != null) : "Should have results";
         JSONObject node = null;
+        JSONObject withSonarQubeEnv = null;
         for (Object o : JSONArray.fromObject(rsp.getContentAsString())) {
             JSONObject meta = (JSONObject)o;
             if("node".equals(meta.get("functionName"))) {
                 node = meta;
-                break;
+            } else if ("withSonarQubeEnv".equals(meta.get("functionName"))) {
+                withSonarQubeEnv = meta;
             }
         }
         assert(node != null) : "PipelineStepMetadata node not found";
+        assert(withSonarQubeEnv != null) : "PipelineStepMetadata withSonarQubeEnv not found";
     }
 
     @Test
@@ -131,6 +133,9 @@ public class PipelineMetadataServiceTest {
 
         // Verify that we *do* have advanced steps that are explicitly whitelisted in.
         assertThat(steps, hasItem(stepWithName("catchError")));
+
+        // Verify that we have a Symbol-provided SimpleBuildWrapper
+        assertThat(steps, hasItem(stepWithName("withSonarQubeEnv")));
     }
 
     private Matcher<? super ExportedPipelineStep> stepWithName(String stepName) {

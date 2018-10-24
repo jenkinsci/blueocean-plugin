@@ -27,6 +27,7 @@ import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.GenericResource;
 import jenkins.util.SystemProperties;
+import org.apache.commons.lang.BooleanUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.kohsuke.stapler.QueryParameter;
@@ -38,6 +39,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Basic {@link BlueRun} implementation.
@@ -96,7 +98,8 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public String getDescription() {
-        return SystemProperties.getBoolean(BLUEOCEAN_FEATURE_RUN_DESCRIPTION_ENABLED, true) ? run.getDescription() : null;
+        String descriptionEnabled = System.getProperty( BLUEOCEAN_FEATURE_RUN_DESCRIPTION_ENABLED, "true" );
+        return BooleanUtils.toBoolean( descriptionEnabled ) ? run.getDescription() : null;
     }
 
     @Override
@@ -232,7 +235,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueTestSummary getBlueTestSummary() {
-        BlueTestSummary blueTestSummary;
+        BlueTestSummary blueTestSummary = null;
         if (getStateObj() == BlueRunState.FINISHED) {
             try {
                 blueTestSummary =  TEST_SUMMARY.get(run.getExternalizableId(),  () -> {
@@ -245,20 +248,16 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
                 ).orNull();
             } catch (ExecutionException e) {
                 LOGGER.error("Could not load test summary from cache", e);
-                return null;
             }
         } else {
             blueTestSummary =  BlueTestResultFactory.resolve(run, this).summary;
-            if (blueTestSummary == null) {
-                // Just use an empty one while we wait
-                blueTestSummary = new BlueTestSummary(0,0,0,0,0,0,0,this.getLink());
-            }
         }
 
         // .../runs/123/blueTestSummary
         if (blueTestSummary == null)
         {
-            return null;
+            // Just use an empty one while we wait to avoid 404
+            return new BlueTestSummary(0,0,0,0,0,0,0,this.getLink());
         }
         Link link = this.getLink().rel("blueTestSummary");
         blueTestSummary.setLink( link );
@@ -388,7 +387,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
         }
 
         static Collection<BlueCause> getCauses(Collection<hudson.model.Cause> causes) {
-            return Collections2.transform(causes, input ->  new BlueCauseImpl(input));
+            return causes.stream().map( input -> new BlueCauseImpl(input)).collect(Collectors.toList());
         }
     }
 }

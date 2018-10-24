@@ -85,6 +85,16 @@ class SaveDialog extends React.Component {
                 errorMessage = err.responseBody.message;
             }
         }
+        if (err.responseBody && err.responseBody.errors && err.responseBody.errors.length) {
+            errorMessage = (
+                <div>
+                    <div><strong>{errorMessage}</strong></div>
+                    {err.responseBody.errors.map(e =>
+                        <div><em>{e.code}</em>: {e.message}</div>
+                    )}
+                </div>
+            );
+        }
         this.setState({ saving: false, errorMessage });
     }
 
@@ -567,7 +577,7 @@ class PipelineLoader extends React.Component {
 
         this.loadContent(internal => {
             if (internal) {
-                // may be no pipline here
+                // may be no pipeline here
                 pipelineStore.setPipeline(internal);
             }
             this.setState({ dialog: null });

@@ -16,7 +16,7 @@ const logger = logging.logger('io.jenkins.blueocean.core.ParametersRunButton');
 const t = i18nTranslator('blueocean-web');
 const MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';
 /**
- * Creating a "<form/>"less form to submit the build parameters requested by the user for a parametrised job..
+ * Creating a "<form/>"less form to submit the build parameters requested by the user for a parameterized job..
  *
  * We keep all form data in the ParameterService and change them onChange and onToggle (depending of the parameter
  * type). We match the different supported inputTypes with a mapping functions
@@ -104,9 +104,9 @@ export class ParametersRunButton extends Component {
         const { parameters } = this.parameterService;
 
         // Captions
-        const message = t('parametrised.pipeline.header', { defaultValue: 'Input required' });
-        const ok = t('parametrised.pipeline.submit', { defaultValue: 'Run' });
-        const cancelCaption = t('parametrised.pipeline.cancel', { defaultValue: 'Cancel' });
+        const message = t('parameterized.pipeline.header', { defaultValue: 'Input required' });
+        const ok = t('parameterized.pipeline.submit', { defaultValue: 'Run' });
+        const cancelCaption = t('parameterized.pipeline.cancel', { defaultValue: 'Cancel' });
         // buttons
         const cancelButton = (
             <button title={cancelCaption} onClick={() => this.hide()} className="btn inputStepCancel run-button btn-secondary">

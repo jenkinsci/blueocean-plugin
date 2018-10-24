@@ -9,6 +9,7 @@ import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,8 @@ public class LinkResolverImpl extends LinkResolver {
         Resource resource = resolveJob(run.getParent());
         if(resource instanceof BluePipeline){
             BluePipeline pipeline = (BluePipeline) resource;
-            return pipeline.getRuns().get(run.getId());
+            BlueRunContainer blueRunContainer = pipeline.getRuns();
+            return blueRunContainer == null ? null : blueRunContainer.get(run.getId());
         }
         return null;
     }

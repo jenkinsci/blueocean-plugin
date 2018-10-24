@@ -96,7 +96,7 @@ describe('Pipelines', () => {
                     organization: 'jenkins',
                 },
                 pipelineService: {
-                    organiztionPipelinesPager() {
+                    organizationPipelinesPager() {
                         return {
                             data: pipelinesDupName,
                         };

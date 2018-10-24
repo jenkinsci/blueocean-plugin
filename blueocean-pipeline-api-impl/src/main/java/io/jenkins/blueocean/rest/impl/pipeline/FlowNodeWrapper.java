@@ -4,7 +4,6 @@ import hudson.model.Action;
 import hudson.model.Result;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunState;
-import java.util.Collections;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.graph.AtomNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -18,6 +17,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,7 +43,7 @@ public class FlowNodeWrapper {
     private Collection<Action> pipelineActions;
 
 
-    public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status, @Nonnull TimingInfo timingInfo, @Nonnull  WorkflowRun run) {
+    public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status, @Nonnull TimingInfo timingInfo, @Nonnull WorkflowRun run) {
         this.node = node;
         this.status = status;
         this.timingInfo = timingInfo;
@@ -124,7 +124,7 @@ public class FlowNodeWrapper {
     }
 
     public void addParents(Collection<FlowNodeWrapper> parents){
-        parents.addAll(parents);
+        this.parents.addAll(parents);
     }
 
     public @CheckForNull FlowNodeWrapper getFirstParent(){
@@ -158,6 +158,11 @@ public class FlowNodeWrapper {
     @Override
     public int hashCode() {
         return node.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getName() + "[id=" + node.getId() + ",displayName=" + this.displayName + ",type=" + this.type + "]";
     }
 
     boolean hasBlockError(){

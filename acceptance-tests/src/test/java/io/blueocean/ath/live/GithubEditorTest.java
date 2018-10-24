@@ -127,6 +127,7 @@ public class GithubEditorTest {
         creationPage.createPipeline(token, organization, repo, true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
         editorPage.simplePipeline();
+        editorPage.saveBranch("master");
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
         driver.navigate().refresh();
         sseClient.untilEvents(pipeline.buildsFinished);
@@ -148,6 +149,7 @@ public class GithubEditorTest {
         creationPage.createPipeline(token, organization, repo, true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
         editorPage.simplePipeline();
+        editorPage.saveBranch("master");
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
         sseClient.untilEvents(pipeline.buildsFinished);
         sseClient.clear();
@@ -172,6 +174,7 @@ public class GithubEditorTest {
         creationPage.createPipeline(token, organization, repo, true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
         editorPage.simplePipeline();
+        editorPage.saveBranch("master");
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
         sseClient.untilEvents(pipeline.buildsFinished);
         sseClient.clear();
@@ -203,6 +206,7 @@ public class GithubEditorTest {
         creationPage.createPipeline(token, organization, repo, true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
         editorPage.simplePipeline();
+        editorPage.saveBranch("master");
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
         sseClient.untilEvents(pipeline.buildsFinished);
         sseClient.clear();

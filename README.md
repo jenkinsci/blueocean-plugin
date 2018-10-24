@@ -228,7 +228,7 @@ You can chat to folks on #jenkins-ux on freenode (IRC). You can also email the j
 
 Advanced front end development with react, redux and stuff by @scherler: https://docs.google.com/presentation/d/1dbaYTIGjGT9xX1JnWnaqjMumq94M9nGwljfMQaVtUFc/edit?usp=sharing
 
-Watch @i386 and @jenkinsci on Twitter for frequent updates and news. 
+Watch @jenkinsci on Twitter for frequent updates and news. 
 
 ## Upgrading dependencies
 
@@ -239,7 +239,7 @@ If you wanted to see if a new version of a library works with blue ocean:
 * If it isn't published yet, release a beta to the experimental update center
 * Open a pull request with the changes to the `pom.xml` in the root of this project (beta dependencies are fine)
 * Mark the pull request as "needs-review"
-* Make sure to "@mention" people - @i386, @vivek are some good ones to start with in a pull request description
+* Make sure to "@mention" people - @michaelneale @vivek are some good ones to start with in a pull request description
 * IF the dependency being upgraded is only released to the experimental update center (ie a beta) please also mark the PR as 'DO NOT MERGE' (once it has been released to the main update center, this can be removed)
 * Check back later for build success (ie unit tests)
 * The Acceptance Test Harness will normally be automatically triggered after a successful PR build, however, it ie best to check it has run: (https://ci.blueocean.io/job/ATH-Jenkinsfile/job/master/) - consult a blue ocean contributor (see below) and they will ensure it has run. This is required for a dependency change.
@@ -253,7 +253,7 @@ Contacting contributors:
 
 Gitter is the day to day chat venue used, you can log in with your github identity.
 
-* look for @michaelneale, @kzantow, @vivek or @i386 on gitter https://gitter.im/jenkinsci/blueocean-plugin or #jenkins-ux on freenode
+* look for @michaelneale, @kzantow, @vivek on gitter https://gitter.im/jenkinsci/blueocean-plugin or #jenkins-ux on freenode
 * Post to the mailing list: https://groups.google.com/forum/#!forum/jenkinsci-ux
 
 

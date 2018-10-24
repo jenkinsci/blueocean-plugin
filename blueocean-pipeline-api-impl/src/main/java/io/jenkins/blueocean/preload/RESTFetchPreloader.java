@@ -21,9 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.blueocean.commons;
+package io.jenkins.blueocean.preload;
 
+import io.jenkins.blueocean.commons.PageStatePreloader;
 import net.sf.json.JSONObject;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 import javax.annotation.Nonnull;
 
@@ -39,7 +42,9 @@ import javax.annotation.Nonnull;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public abstract class RESTFetchPreloader extends PageStatePreloader {
+@Restricted(NoExternalUse.class)
+public abstract class RESTFetchPreloader extends PageStatePreloader
+{
 
     /**
      * {@inheritDoc}

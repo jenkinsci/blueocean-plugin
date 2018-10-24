@@ -25,8 +25,6 @@ package io.jenkins.blueocean.preload;
 
 import hudson.Extension;
 import hudson.model.Item;
-import io.jenkins.blueocean.commons.BlueUrlTokenizer;
-import io.jenkins.blueocean.commons.RESTFetchPreloader;
 import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.model.BluePipeline;
@@ -64,6 +62,9 @@ public class PipelineActivityStatePreloader extends RESTFetchPreloader {
             // saving the frontend the overhead of requesting them.
 
             Container<BlueRun> activitiesContainer = pipeline.getRuns();
+            if(activitiesContainer==null){
+                return null;
+            }
             Iterator<BlueRun> activitiesIterator = activitiesContainer.iterator(0, DEFAULT_LIMIT);
             JSONArray activities = new JSONArray();
 

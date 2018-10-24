@@ -5,7 +5,7 @@
  * @param getParams: query obj that needs to be passed along to this function e.g. "this.props.location.query"
  */
 
-export default function updateGetParamm(paramName, newParamValue, getParams) {
+export default function updateGetParams(paramName, newParamValue, getParams) {
     let updatedParamsStr = '?';
     let i;
 

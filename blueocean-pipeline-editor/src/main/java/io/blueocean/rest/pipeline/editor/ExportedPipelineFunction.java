@@ -24,6 +24,7 @@
 
 package io.blueocean.rest.pipeline.editor;
 
+import jenkins.tasks.SimpleBuildWrapper;
 import org.jenkinsci.plugins.structs.describable.DescribableModel;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -43,5 +44,13 @@ public class ExportedPipelineFunction extends ExportedDescribableModel {
     @Exported
     public String getFunctionName() {
         return functionName;
+    }
+
+    /**
+     * Indicates this step wraps a block of other steps
+     */
+    @Exported
+    public boolean getIsBlockContainer() {
+        return SimpleBuildWrapper.class.isAssignableFrom(model.getType());
     }
 }

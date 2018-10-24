@@ -1,0 +1,21 @@
+
+pipeline {
+    agent any
+    stages {
+        stage("top") {
+            parallel {
+                stage("first") {
+                    steps {
+                        echo "stage first"
+                    }
+                }
+                stage("second") {
+                    steps {
+                        echo "stage second"
+                    }
+                }
+            }
+        }
+    }
+}
+

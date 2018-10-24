@@ -49,11 +49,11 @@ export default class GitFlowManager extends FlowManager {
 
         this._createApi = createApi;
         this.credentialsManager = new CredentialsManager(credentialsApi);
-        this._initalize();
+        this._initialize();
     }
 
     @action
-    _initalize() {
+    _initialize() {
         this._sseSubscribeId = sseService.registerHandler(event => this._onSseEvent(event));
         this.noCredentialsOption = {
             displayName: translate('creation.git.step1.credentials_placeholder'),
@@ -132,16 +132,7 @@ export default class GitFlowManager extends FlowManager {
 
         let credentialId = null;
 
-        if (this.selectedCredential === this.noCredentialsOption) {
-            if (!this._isHttpRepositoryUrl(this.repositoryUrl)) {
-                if (this.credentialsManager.systemSSHCredential) {
-                    LOGGER.debug('using default system SSH key credential for creation');
-                    credentialId = this.credentialsManager.systemSSHCredential.id;
-                } else {
-                    LOGGER.warn('attempting to create from Git repo w/ SSH URL but no default SSH credential exists');
-                }
-            }
-        } else if (this.selectedCredential !== this.noCredentialsOption) {
+        if (this.selectedCredential !== this.noCredentialsOption) {
             credentialId = this.selectedCredential.id;
         }
 

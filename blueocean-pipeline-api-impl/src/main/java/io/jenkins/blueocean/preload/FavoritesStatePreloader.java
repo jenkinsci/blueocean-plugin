@@ -24,20 +24,14 @@
 package io.jenkins.blueocean.preload;
 
 import hudson.Extension;
-import hudson.model.Item;
 import hudson.model.User;
-import io.jenkins.blueocean.commons.BlueUrlTokenizer;
-import io.jenkins.blueocean.commons.RESTFetchPreloader;
 import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
-import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.rest.UserImpl;
-import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 

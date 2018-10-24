@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import hudson.Util;
 import hudson.model.FreeStyleProject;
-import hudson.model.Job;
 import hudson.model.Queue;
 import hudson.model.User;
 import hudson.plugins.favorite.Favorites;
@@ -13,9 +12,7 @@ import hudson.scm.ChangeLogSet;
 import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.security.LegacyAuthorizationStrategy;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
-import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.branch.BranchProperty;
@@ -25,8 +22,6 @@ import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.api.SCMSource;
-import jenkins.scm.api.metadata.ObjectMetadataAction;
-import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import org.apache.commons.lang.StringUtils;
 import org.hamcrest.collection.IsArrayContainingInAnyOrder;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
@@ -57,8 +52,6 @@ import java.util.concurrent.ExecutionException;
 import static io.jenkins.blueocean.rest.model.BlueRun.DATE_FORMAT_STRING;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Vivek Pandey
@@ -545,9 +538,9 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         Map run = get("/organizations/jenkins/pipelines/p/branches/master/runs/"+b4.getId()+"/");
         validateRun(b4, run);
-        List<Map> changetSet = (List<Map>) run.get("changeSet");
+        List<Map> changeSet = (List<Map>) run.get("changeSet");
 
-        Map c = changetSet.get(0);
+        Map c = changeSet.get(0);
 
         Assert.assertEquals(changeLog.getCommitId(), c.get("commitId"));
         Map a = (Map) c.get("author");
@@ -556,7 +549,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         int j=0;
         for(ChangeLogSet.Entry cs:b4.getChangeSets().get(0)){
-            Assert.assertEquals(cs.getCommitId(),changetSet.get(j).get("commitId"));
+            Assert.assertEquals(cs.getCommitId(),changeSet.get(j).get("commitId"));
             j++;
         }
 

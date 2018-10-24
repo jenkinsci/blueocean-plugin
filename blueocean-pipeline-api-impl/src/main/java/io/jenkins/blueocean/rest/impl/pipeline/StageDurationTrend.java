@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import hudson.Extension;
@@ -9,6 +8,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.BlueTableRow;
 import io.jenkins.blueocean.rest.model.BlueTrend;
 import io.jenkins.blueocean.rest.model.Container;
@@ -53,7 +53,7 @@ public class StageDurationTrend extends BlueTrend {
 
     @Override
     public Container<BlueTableRow> getRows() {
-        final Iterator<BlueRun> runs = pipeline.getRuns().iterator();
+        BlueRunContainer blueRunContainer = pipeline.getRuns();
 
         return new Container<BlueTableRow>() {
             @Override
@@ -68,12 +68,8 @@ public class StageDurationTrend extends BlueTrend {
 
             @Override
             public Iterator<BlueTableRow> iterator() {
-                return Iterators.transform(runs, new Function<BlueRun, BlueTableRow>() {
-                    @Override
-                    public BlueTableRow apply(BlueRun run) {
-                        return new StageDurationTrendRow(run);
-                    }
-                });
+                return blueRunContainer == null ? null :
+                    Iterators.transform(blueRunContainer.iterator(), run -> new StageDurationTrendRow(run));
             }
         };
     }

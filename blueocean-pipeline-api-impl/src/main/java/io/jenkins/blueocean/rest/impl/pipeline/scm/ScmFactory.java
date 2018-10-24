@@ -6,8 +6,8 @@ import io.jenkins.blueocean.rest.Reachable;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * SCM factory to get {@link Scm}
@@ -30,11 +30,9 @@ public abstract class ScmFactory implements ExtensionPoint{
     }
 
     public static @Nonnull List<Scm> resolve(@Nonnull Reachable parent){
-        List<Scm> scms = new ArrayList<>();
-        for(ScmFactory scmFactory : ScmFactory.all()){
-            scms.add(scmFactory.getScm(parent));
-        }
-        return scms;
+        return ScmFactory.all().stream()
+            .map( scmFactory -> scmFactory.getScm( parent ) )
+            .collect( Collectors.toList() );
     }
 
     public static ExtensionList<ScmFactory> all(){

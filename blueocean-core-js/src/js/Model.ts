@@ -4,7 +4,7 @@
  TODO: Hand-written for now, needs to be generated from Java sources with docstrings copied over etc
  */
 
-namespace Model {
+export namespace Model {
     export interface WithClass {
         _class: string;
     }
@@ -34,9 +34,10 @@ namespace Model {
         href: string;
     }
 
-    // From io.jenkins.blueocean.rest.Reachable
-    export interface Reachable {
+    // From io.jenkins.blueocean.rest.model.Resource
+    export interface Resource {
         link: Link;
+        _links: { [key: string]: Link };
     }
 
     // From io.jenkins.blueocean.rest.model.BlueActionProxy
@@ -45,7 +46,7 @@ namespace Model {
     }
 
     // From io.jenkins.blueocean.rest.model.BluePipelineItem
-    export interface PipelineItem extends Reachable, WithClass {
+    export interface PipelineItem extends Resource, WithClass {
         organization: string;
         name: string;
         displayName: string;
@@ -66,7 +67,7 @@ namespace Model {
     export interface ContainerItem extends PipelineItem {
         numberOfFolders: number;
         numberOfPipelines: number;
-        icon?: Reachable;
+        icon?: Resource;
         pipelineFolderNames: Array<string>;
     }
 
@@ -82,7 +83,7 @@ namespace Model {
     }
 
     // From io.jenkins.blueocean.rest.model.BlueItemRun
-    export interface Run extends Reachable, WithClass {
+    export interface Run extends Resource, WithClass {
         organization: string;
         id: string;
         pipeline: string;
@@ -107,7 +108,7 @@ namespace Model {
     }
 
     // From io.jenkins.blueocean.rest.model.BlueChangeSetEntry
-    export interface Change extends Reachable, WithClass {
+    export interface Change extends Resource, WithClass {
         author: User;
         commitId: string;
         timestamp: string;
@@ -134,7 +135,7 @@ namespace Model {
     }
 
     // From io.jenkins.blueocean.rest.model.BlueUser
-    export interface User extends Reachable, WithClass {
+    export interface User extends Resource, WithClass {
         id: string;
         fullName: string;
         email?: string;
@@ -151,7 +152,7 @@ namespace Model {
     // From: io.jenkins.blueocean.rest.model.BlueUserPermission
     export interface UserPermission {
         administrator: boolean;
-        pipeline: Map<string, boolean>;
-        credential: Map<string, boolean>;
+        pipeline: { [key: string]: boolean };
+        credential: { [key: string]: boolean };
     }
 }

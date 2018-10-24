@@ -26,6 +26,6 @@ export class CapabilityApi {
             body: JSON.stringify({ q: noDuplicates }),
         };
 
-        return Fetch.fetchJSON(classesUrl, { disableCapabilites: true, fetchOptions });
+        return Fetch.fetchJSON(classesUrl, { disableCapabilities: true, fetchOptions });
     }
 }

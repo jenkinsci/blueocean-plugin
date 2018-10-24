@@ -156,16 +156,19 @@ export class DefaultSSEHandler {
                     pager.insert(href);
                 }
             }
-            this.pipelineService.updateLatestRun(run);
 
-            /*
-                Check to see if the TestSummary has been loaded and if so then reload it. Otherwise don't because
-                it's expensive to calculate.
-             */
+            if (run) {
+                this.pipelineService.updateLatestRun(run);
 
-            const testResultUrl = run._links.blueTestSummary && run._links.blueTestSummary.href;
-            if (this.activityService.hasItem(testResultUrl)) {
-                this.activityService.fetchTestSummary(testResultUrl, { useCache: false, disableLoadingIndicator: true });
+                /*
+                    Check to see if the TestSummary has been loaded and if so then reload it. Otherwise don't because
+                    it's expensive to calculate.
+                 */
+
+                const testResultUrl = run._links.blueTestSummary && run._links.blueTestSummary.href;
+                if (this.activityService.hasItem(testResultUrl)) {
+                    this.activityService.fetchTestSummary(testResultUrl, { useCache: false, disableLoadingIndicator: true });
+                }
             }
         });
     }

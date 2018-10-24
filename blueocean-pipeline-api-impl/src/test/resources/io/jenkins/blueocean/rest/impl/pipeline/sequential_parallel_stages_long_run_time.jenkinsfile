@@ -1,0 +1,57 @@
+pipeline {
+  agent any
+  stages {
+    stage('first-solo') {
+      steps {
+        sh 'echo \'first-solo\''
+        sh 'ping -c 5 localhost'
+      }
+    }
+    stage('parent') {
+        parallel {
+            stage('single-stage') {
+              steps {
+                sh 'echo \'single-stage\''
+                sh 'ping -c 5 localhost'
+              }
+            }
+
+            stage('multiple-stages') {
+                stages {
+                    stage('first-sequential-stage') {
+                      steps {
+                        sh 'echo \'first-sequential-stage\''
+                        sh 'ping -c 5 localhost'
+                      }
+                    }
+                    stage('second-sequential-stage') {
+                      steps {
+                        sh 'echo \'second-sequential-stage\''
+                        sh 'ping -c 5 localhost'
+                      }
+                    }
+                    stage('third-sequential-stage') {
+                      steps {
+                        sh 'echo \'third-sequential-stage\''
+                        sh 'ping -c 5 localhost'
+                      }
+                    }
+                }
+            }
+
+            stage('other-single-stage') {
+              steps {
+                sh 'echo \'other-single-stage\''
+                sh 'ping -c 5 localhost'
+              }
+            }
+        }
+    }
+    stage('second-solo') {
+      steps {
+        sh 'echo \'second-solo\''
+        sh 'ping -c 5 localhost'
+      }
+    }
+  }
+}

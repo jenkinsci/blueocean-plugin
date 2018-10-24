@@ -35,22 +35,24 @@ node() {
         }
 
         stage('Building BlueOcean') {
-          try {
-            sh "mvn clean install -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
-          } catch(e) {
-            throw e;
+          timeout(time: 90, unit: 'MINUTES') {
+            sh "mvn clean install -V -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
           }
+
           junit '**/target/surefire-reports/TEST-*.xml'
           junit '**/target/jest-reports/*.xml'
+          jacoco execPattern: '**/target/jacoco.exec', classPattern : '**/target/classes', sourcePattern: '**/src/main/java', exclusionPattern: 'src/test*'
           archive '*/target/code-coverage/**/*'
           archive '*/target/*.hpi'
           archive '*/target/jest-coverage/**/*'
         }
 
-        stage('ATH - Jenkins 2.107.2') {
-          sh "cd acceptance-tests && ./run.sh -v=2.107.2 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
-          junit 'acceptance-tests/target/surefire-reports/*.xml'
-          archive 'acceptance-tests/target/screenshots/**/*'
+        stage('ATH - Jenkins 2.121.1') {
+          timeout(time: 90, unit: 'MINUTES') {
+            sh "cd acceptance-tests && ./run.sh -v=2.121.1 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+            junit 'acceptance-tests/target/surefire-reports/*.xml'
+            archive 'acceptance-tests/target/screenshots/**/*'
+          }
         }
 
         if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
@@ -66,6 +68,10 @@ node() {
             sh "cd acceptance-tests && ./run.sh -v=2.107.2 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
             junit 'acceptance-tests/target/surefire-reports/*.xml'
           }
+          stage('ATH - Jenkins 2.121.1') {
+            sh "cd acceptance-tests && ./run.sh -v=2.121.1 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+            junit 'acceptance-tests/target/surefire-reports/*.xml'
+          }
         }
 
 
@@ -79,7 +85,6 @@ node() {
         stage('Cleanup') {
           sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
           sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-bitbucket-server.sh"
-          sendhipchat()
           deleteDir()
         }
       }
@@ -87,24 +92,3 @@ node() {
   }
 }
 
-
-def sendhipchat() {
-  res = currentBuild.result
-  if(currentBuild.result == null) {
-    res = "SUCCESS"
-  }
-  message = "${env.JOB_NAME} #${env.BUILD_NUMBER}, status: ${res} (<a href='${env.RUN_DISPLAY_URL}'>Open</a>)"
-  color = null
-  if(currentBuild.result == "UNSTABLE") {
-      color = "YELLOW"
-  } else if(currentBuild.result == "SUCCESS" || currentBuild.result == null){
-      color = "GREEN"
-  } else if(currentBuild.result == "FAILURE") {
-      color = "RED"
-  } else if(currentBuild.result == "ABORTED") {
-      color = "GRAY"
-  }
-  if(color != null) {
-      hipchatSend message: message, color: color
-  }
-}
