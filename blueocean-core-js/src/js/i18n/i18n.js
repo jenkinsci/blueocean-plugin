@@ -1,6 +1,4 @@
 import i18next from 'i18next';
-import resources from '../../../../blueocean-web/locales/';
-import LngDetector from 'i18next-browser-languagedetector';
 import XHR from 'i18next-xhr-backend';
 
 import { UrlConfig } from '../urlconfig';
@@ -9,18 +7,6 @@ import { Fetch } from '../fetch';
 
 const logger = logging.logger('io.jenkins.blueocean.i18n');
 
-/**
- * Init language detector, we are going to use first queryString and then the navigator prefered language
- */
-export const defaultLngDetector = new LngDetector(null, {
-    // order and from where user language should be detected
-    order: ['querystring', 'htmlTag', 'navigator'],
-    // keys or params to lookup language from
-    lookupQuerystring: 'language',
-    // Don't use the default (document.documentElement) because that can
-    // trigger the browsers auto-translate, which is quite annoying.
-    htmlTag: window.document ? window.document.head : undefined,
-});
 const prefix = UrlConfig.getJenkinsRootURL() || '';
 const FALLBACK_LANG = '';
 
@@ -126,19 +112,6 @@ function buildCacheKey(pluginName, namespace = toDefaultNamespace(pluginName)) {
     return `${pluginName}:${namespace}`;
 }
 
-i18next.init({
-    fallbackLng: 'en',
-    keySeparator: false, // we do not have any nested keys in properties files
-    debug: false,
-    load: 'currentOnly',
-    interpolation: {
-        prefix: '{',
-        suffix: '}',
-        escapeValue: false, // not needed for react!!
-    },
-    resources,
-});
-i18next.use(defaultLngDetector);
 
 /**
  * Create an i18n Translator instance for accessing i18n resource bundles
@@ -152,6 +125,9 @@ i18next.use(defaultLngDetector);
  */
 export function i18nTranslator(pluginName, namespace, onLoad) {
     return function translate(key, params) {
+        if(!i18next.isInitialized){
+            return key;
+        }
         return i18next.t(key, params);
     };
 

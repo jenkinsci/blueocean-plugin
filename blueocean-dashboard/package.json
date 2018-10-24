@@ -65,11 +65,11 @@
     "typescript": "2.7.2"
   },
   "dependencies": {
-    "@imeredith/es-extensions-api": "^0.1.5",
-    "@imeredith/es-extensions-react": "^0.1.5",
     "@jenkins-cd/blueocean-core-js": "1.0.0-alpha.0",
     "@jenkins-cd/blueocean-pipeline-editor": "0.0.3",
     "@jenkins-cd/design-language": "0.0.162",
+    "@jenkins-cd/es-extensions": "^0.2.2",
+    "@jenkins-cd/es-extensions-react": "^0.2.2",
     "@jenkins-cd/js-extensions": "0.0.44",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/preferences": "0.0.4",

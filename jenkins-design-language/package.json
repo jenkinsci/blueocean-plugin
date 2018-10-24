@@ -49,6 +49,8 @@
   },
   "dependencies": {
     "@jenkins-cd/blueocean-material-icons": "0.0.7",
+    "@jenkins-cd/es-extensions": "^0.2.2",
+    "@jenkins-cd/es-extensions-react": "^0.2.2",
     "linkifyjs": "2.1.4",
     "lodash.debounce": "4.0.8",
     "mobx": "2.6.0",
