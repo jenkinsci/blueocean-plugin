@@ -32,22 +32,23 @@ public class JiraSCMListener extends SCMListener {
 
     @Override
     public void onChangeLogParsed(Run<?, ?> run, SCM scm, TaskListener listener, ChangeLogSet<?> changelog) throws Exception {
-        JiraSite jiraSite = JiraSite.get(run.getParent());
-        if (jiraSite == null) {
-            return;
-        }
-        Collection<String> issueKeys = getIssueKeys(changelog, jiraSite.getIssuePattern());
 
-        if (issueKeys.isEmpty()) {
-            return;
-        }
-        String jql = constructJQLQuery(issueKeys);
-        JiraSession session = jiraSite.getSession();
-        if (session == null) {
-            return;
-        }
-        // Query for JIRA issues
         try {
+            JiraSite jiraSite = JiraSite.get(run.getParent());
+            if (jiraSite == null) {
+                return;
+            }
+            Collection<String> issueKeys = getIssueKeys(changelog, jiraSite.getIssuePattern());
+
+            if (issueKeys.isEmpty()) {
+                return;
+            }
+            String jql = constructJQLQuery(issueKeys);
+            JiraSession session = jiraSite.getSession();
+            if (session == null) {
+                return;
+            }
+            // Query for JIRA issues
             List<Issue> issues = session.getIssuesFromJqlSearch(jql);
             Set<JiraIssue> issuesFromJqlSearch = issues == null ? Collections.emptySet() :
                 issues.stream().map( input -> new JiraIssue(input) )
