@@ -4,7 +4,7 @@ import dashboardCSS from '@jenkins-cd/blueocean-dashboard/src/main/less/extensio
 import coreCSS from '@jenkins-cd/blueocean-core-js/src/less/blueocean-core-js.less';
 import resources from '../../../locales';
 import LngDetector from 'i18next-browser-languagedetector';
-import i18next from 'i18next';
+import i18next from '../../../../blueocean-core-js/node_modules/i18next';
 
 const defaultLngDetector = new LngDetector(null, {
     // order and from where user language should be detected

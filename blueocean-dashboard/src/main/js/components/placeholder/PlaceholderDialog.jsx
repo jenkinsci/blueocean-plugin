@@ -11,17 +11,38 @@ function createContent(content) {
     }
 
     const { icon, title, message, linkElement, linkText, linkHref } = content;
-    // use 'linkElement' as is, or build a link if the text and href were supplied
-    const link =
-        linkElement ||
-        (linkText &&
-            linkHref && (
-                <a className="btn" target="_blank" href={linkHref}>
-                    {linkText}
-                </a>
-            ));
+    let newChildren = [];
 
-    return [icon && React.cloneElement(icon, { className: 'icon' }), <h1 className="title">{title}</h1>, message && <p className="message">{message}</p>, link];
+    if (icon) {
+        newChildren.push(React.cloneElement(icon, { className: 'icon', key: '1' }));
+    }
+
+    newChildren.push(
+        <h1 className="title" key="2">
+            {title}
+        </h1>
+    );
+
+    if (message) {
+        newChildren.push(
+            <p className="message" key="3">
+                {message}
+            </p>
+        );
+    }
+
+    // use 'linkElement' as is, or build a link if the text and href were supplied
+    if (linkElement) {
+        newChildren.push(linkElement);
+    } else if (linkText && linkHref) {
+        newChildren.push(
+            <a className="btn" target="_blank" href={linkHref} key="4">
+                {linkText}
+            </a>
+        );
+    }
+
+    return newChildren;
 }
 
 /**

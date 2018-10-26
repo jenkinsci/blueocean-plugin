@@ -112,7 +112,6 @@ function buildCacheKey(pluginName, namespace = toDefaultNamespace(pluginName)) {
     return `${pluginName}:${namespace}`;
 }
 
-
 /**
  * Create an i18n Translator instance for accessing i18n resource bundles
  * in the named plugin namespace.
@@ -125,7 +124,7 @@ function buildCacheKey(pluginName, namespace = toDefaultNamespace(pluginName)) {
  */
 export function i18nTranslator(pluginName, namespace, onLoad) {
     return function translate(key, params) {
-        if(!i18next.isInitialized){
+        if (!i18next.exists(key)) {
             return key;
         }
         return i18next.t(key, params);
