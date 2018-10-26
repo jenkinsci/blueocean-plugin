@@ -1,5 +1,10 @@
 #!groovy
 
+if (JENKINS_URL == 'https://ci.jenkins.io/') {
+    buildPlugin()
+    return
+}
+
 // only 20 builds
 properties([buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: '20'))])
 
