@@ -18,9 +18,9 @@ export function PlaceholderContent(props) {
 }
 
 PlaceholderContent.propTypes = {
-    children: PropTypes.element,
-    className: PropTypes.element,
-    style: PropTypes.style,
+    children: PropTypes.array,
+    className: PropTypes.string,
+    style: PropTypes.object,
 };
 
 PlaceholderContent.defaultProps = {

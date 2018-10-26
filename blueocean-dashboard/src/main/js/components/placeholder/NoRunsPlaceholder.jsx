@@ -52,7 +52,7 @@ export function NoRunsDefaultPlaceholder(props) {
     const content = {
         icon: Icon.PIPELINE_EMPTY,
         title: t('pipelinedetail.placeholder.noruns.default.title'),
-        linkElement: React.cloneElement(runButton, { innerButtonClasses: 'btn' }),
+        linkElement: React.cloneElement(runButton, { innerButtonClasses: 'btn', key: 'runButton' }),
     };
 
     return (
