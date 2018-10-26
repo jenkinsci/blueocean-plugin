@@ -75,6 +75,7 @@ export { sseBus as SseBus };
 
 // required so new toasts are routed to the instance used in blueocean-web
 const toastService = new ToastService();
+
 export { toastService as ToastService };
 
 const runApi = new RunApi();
