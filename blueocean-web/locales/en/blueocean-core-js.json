@@ -1,0 +1,6 @@
+{ "translation": {
+    "parameterized.pipeline.header": "Input required",
+    "parameterized.pipeline.submit": "Run",
+    "parameterized.pipeline.cancel": "Cancel"
+  }
+}
