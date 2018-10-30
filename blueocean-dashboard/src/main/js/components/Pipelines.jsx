@@ -12,6 +12,7 @@ import PipelineRowItem from './PipelineRowItem';
 import { DashboardPlaceholder } from './placeholder/DashboardPlaceholder';
 import updateGetParam from '../util/UpdateGetParam';
 import { DashboardCards } from '../favorites/components/DashboardCards';
+import { ExtensionPoint } from '@jenkins-cd/es-extensions-react';
 
 const translate = i18nTranslator('blueocean-dashboard');
 
@@ -111,11 +112,13 @@ export class Pipelines extends Component {
                 <ContentPageHeader>
                     <div className="u-flex-grow">
                         <div className="jenkins-pipeline-header">
-                            <h1>
-                                <Link to="/">{translate('home.header.dashboard', { defaultValue: 'Dashboard' })}</Link>
-                                {AppConfig.showOrg() && organizationName && ' / '}
-                                {AppConfig.showOrg() && organizationName && orgLink}
-                            </h1>
+                            <ExtensionPoint extensionPointId="jenkins.pipeline.header">
+                                <h1>
+                                    <Link to="/">{translate('home.header.dashboard', { defaultValue: 'Dashboard' })}</Link>
+                                    {AppConfig.showOrg() && organizationName && ' / '}
+                                    {AppConfig.showOrg() && organizationName && orgLink}
+                                </h1>
+                            </ExtensionPoint>
                         </div>
 
                         <div className="TextInput search-pipelines-input u-icon-left">
