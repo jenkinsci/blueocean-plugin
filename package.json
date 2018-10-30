@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "bootstrap": "npm install && lerna clean -y && lerna bootstrap && lerna link --force-local",
+    "bootstrap": "npm install && lerna clean -y && lerna bootstrap && lerna link --force-local && npx lerna run --scope=\"@jenkins-cd/blueocean-core-js\" --scope=\"@jenkins-cd/design-language\" gulp",
     "test": "lerna run test"
   },
   "devDependencies": {

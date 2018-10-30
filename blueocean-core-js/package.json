@@ -2,14 +2,15 @@
   "name": "@jenkins-cd/blueocean-core-js",
   "version": "1.0.0-alpha.0",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
-  "main": "src/js/index.ts",
+  "main": "dist/js/index.js",
+  "types": "dist/js/index.d.ts",
   "scripts": {
     "start-storybook": "start-storybook --static-dir ./dist/assets/,./node_modules/@jenkins-cd/design-language/dist/assets/",
     "storybook": "npm run start-storybook -- -p 9001",
     "storybook:port": "npm run start-storybook -- -p ",
     "flow": "flow",
     "lint": "gulp lint",
-    "gulp": "gulp",
+    "gulp": "gulp build",
     "gulp:fast": "gulp clean-build",
     "bundle:watch": "gulp bundle:watch",
     "test": "gulp test",
@@ -28,8 +29,7 @@
     "LICENSE",
     "README.md",
     "licenses",
-    "src/js",
-    "src/less"
+    "dist"
   ],
   "repository": {
     "type": "git",
