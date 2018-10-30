@@ -82,7 +82,9 @@ class App extends Component {
             // <Extensions.Renderer extensionPoint="jenkins.blueocean.top.admin">
             <TopPipelinesLink t={translate} />,
             <ExtensionPoint extensionPointId="jenkins.blueocean.top.links"/>,
-            <AdminLink t={translate} />,
+            <ExtensionPoint extensionPointId="jenkins.blueocean.top.admin">
+                <AdminLink t={translate} />
+            </ExtensionPoint>
             //</Extensions.Renderer>,
         ];
 
