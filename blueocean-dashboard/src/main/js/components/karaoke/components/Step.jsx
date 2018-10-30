@@ -13,16 +13,13 @@ const timeManager = new TimeManager();
 function createStepLabel(step) {
     const { displayName, displayDescription } = step;
 
-    if (displayDescription) {
-        return [
-            <span className="result-item-label-desc" title={displayDescription}>
+    return displayDescription ? (
+        <span className="result-item-label-desc" title={displayDescription}>
                 {displayDescription}
             </span>,
-            <span className="result-item-label-name">&mdash; {displayName}</span>,
-        ];
-    }
+        <span className="result-item-label-name">&mdash; {displayName}</span>,
+    ) : displayName;
 
-    return displayName;
 }
 
 @observer

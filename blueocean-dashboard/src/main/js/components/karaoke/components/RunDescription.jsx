@@ -8,12 +8,10 @@ export default class RunDescription extends Component {
     };
 
     render() {
-        if (!this.props.run || !this.props.run.description) {
-            return null;
-        }
-        return (
+        return (!this.props.run || !this.props.run.description)
+            ? null : (
             <div className="RunDetails-Description">
-                <Alerts title={this.props.t('rundetail.pipeline.description')} message={this.props.run.description} />
+                <Alerts title={this.props.t('rundetail.pipeline.description')} message={this.props.run.description}/>
             </div>
         );
     }
