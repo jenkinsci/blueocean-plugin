@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-pipeline-editor",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.1",
   "description": "Pipeline editor plugin for Jenkins Blue Ocean",
   "main": "src/main/js/index.js",
   "repository": {
@@ -70,8 +70,8 @@
     "typescript": "2.7.2"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "1.0.0-alpha.0",
-    "@jenkins-cd/blueocean-dashboard": "1.0.0-alpha.0",
+    "@jenkins-cd/blueocean-core-js": "^1.0.0-alpha.1",
+    "@jenkins-cd/blueocean-dashboard": "^1.0.0-alpha.1",
     "@jenkins-cd/design-language": "0.0.162",
     "@jenkins-cd/es-extensions": "^0.2.2",
     "@jenkins-cd/es-extensions-react": "^0.2.2",

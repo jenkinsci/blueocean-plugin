@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-web",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.1",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -22,10 +22,10 @@
   },
   "devDependencies": {
     "@alienfast/i18next-loader": "^1.0.16",
-    "@types/bluebird-global": "3.5.0",
-    "@types/node": "9.6.4",
     "@jenkins-cd/blueocean-pipeline-editor": "0.0.3",
     "@jenkins-cd/js-builder": "0.0.63",
+    "@types/bluebird-global": "3.5.0",
+    "@types/node": "9.6.4",
     "babel-eslint": "7.0.0",
     "babel-plugin-transform-decorators-legacy": "1.3.4",
     "babel-polyfill": "6.16.0",
@@ -65,8 +65,8 @@
     "zombie": "4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "1.0.0-alpha.0",
-    "@jenkins-cd/blueocean-dashboard": "1.0.0-alpha.0",
+    "@jenkins-cd/blueocean-core-js": "^1.0.0-alpha.1",
+    "@jenkins-cd/blueocean-dashboard": "^1.0.0-alpha.1",
     "@jenkins-cd/design-language": "0.0.162",
     "@jenkins-cd/es-extensions": "^0.2.2",
     "@jenkins-cd/es-extensions-react": "^0.2.2",
