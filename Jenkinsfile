@@ -1,7 +1,10 @@
 #!groovy
 
 if (JENKINS_URL == 'https://ci.jenkins.io/') {
-    buildPlugin()
+    buildPlugin(
+      platforms: ['linux'],
+      tests: [skip: true]
+    )
     return
 }
 
