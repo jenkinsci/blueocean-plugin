@@ -24,7 +24,15 @@ public class LoginPage implements WebDriverMixin {
         open();
         find("#j_username").sendKeys(admin.username);
         find("input[name=j_password]").sendKeys(admin.password);
-        find("//button[contains(text(), 'log')]").click();
+
+        if (find("//button[contains(text(), 'log')]").isPresent()) {
+            logger.info("Logging in via pre-2.128 style log in page");
+            find("//button[contains(text(), 'log')]").click();
+        } else {
+            logger.info("Logging in via post-2.128 style log in page");
+            find("input[name=Submit]").click();
+        }
+
         find("//a[contains(@href, 'logout')]").isDisplayed();
         logger.info("Logged in as " + admin.username);
     }
