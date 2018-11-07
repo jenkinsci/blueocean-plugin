@@ -95,9 +95,6 @@ class Caches {
             }
             ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
             PrimaryInstanceMetadataAction pima = job.getAction(PrimaryInstanceMetadataAction.class);
-            if (om == null && pima == null) {
-                return Optional.absent();
-            }
             String url = om != null && om.getObjectUrl() != null ? om.getObjectUrl() : null;
             return Optional.of(new Branch(url, pima != null, BlueIssueFactory.resolve(job)));
         }
