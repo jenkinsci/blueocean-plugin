@@ -30,7 +30,7 @@ class ActivityDetailsRow extends Component {
             return null;
         }
 
-        const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
+        const resultRun = (run.result === 'UNKNOWN' && typeof run.state === 'string') ? run.state : run.result;
         const runDetailsUrl = UrlBuilder.buildRunUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
         const changesUrl = UrlBuilder.buildRunUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'changes');
 
