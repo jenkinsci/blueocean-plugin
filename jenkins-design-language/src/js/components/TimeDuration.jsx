@@ -59,6 +59,7 @@ export class TimeDuration extends Component {
         }
 
         if (props.millis >= 0 && props.liveUpdate) {
+            this.internalStartMoment = moment();
             this.clearIntervalId = setInterval(() => {
                 this._updateTime();
             }, this.timerPeriodMillis);
@@ -73,7 +74,7 @@ export class TimeDuration extends Component {
     }
 
     _updateTime() {
-        const elapsed = this.state.elapsed + this.timerPeriodMillis;
+        const elapsed = moment().diff(this.internalStartMoment);
         this.setState({
             elapsed,
         });
