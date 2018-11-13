@@ -31,6 +31,8 @@ import ErrorUtils from './ErrorUtils';
 import { PipelineRoutes } from '@jenkins-cd/blueocean-dashboard';
 import { TopPipelinesLink } from '@jenkins-cd/blueocean-dashboard';
 import { ExtensionPoint } from '@jenkins-cd/es-extensions-react';
+import store from '@jenkins-cd/es-extensions';
+import { BlueOceanExtensionPage } from './BlueOceanExtensionPage';
 useStrict(true);
 
 const LOGGER = logging.logger('io.jenkins.blueocean.web.routing');
@@ -76,13 +78,15 @@ class App extends Component {
             defaultValue: 'Pipelines',
         });
 
+        const linkContext = { navigate: this.context.router.push }
+
         const topNavLinks = [
             // <Extensions.Renderer extensionPoint="jenkins.blueocean.top.pipelines" />,
             //<Extensions.Renderer extensionPoint="jenkins.blueocean.top.links" />,
             // <Extensions.Renderer extensionPoint="jenkins.blueocean.top.admin">
             <TopPipelinesLink t={translate} />,
-            <ExtensionPoint extensionPointId="jenkins.blueocean.top.links"/>,
-            <ExtensionPoint extensionPointId="jenkins.blueocean.top.admin">
+            <ExtensionPoint extensionPointId="jenkins.blueocean.top.links" context={linkContext}/>,
+            <ExtensionPoint extensionPointId="jenkins.blueocean.top.admin" context={linkContext}>
                 <AdminLink t={translate} />
             </ExtensionPoint>
             //</Extensions.Renderer>,
@@ -136,13 +140,21 @@ App.childContextTypes = {
 
 App.contextTypes = {
     location: PropTypes.object.isRequired,
+    router: PropTypes.object.isRequired
 };
 
 const closeHandler = props => props.onClose || {};
 function makeRoutes(routes) {
+
+    const extRoutes = store.getExtensions('jenkins.main.routes')
+        .map(ext => ext())
+        .filter(ext => ext && ext.path && ext.render)
+        .map(ext => <Route path={ext.path} component={BlueOceanExtensionPage(ext.render)} />)
+    console.log('extroutes', extRoutes);
     // Build up our list of top-level routes RR will ignore any non-route stuff put into this list.
     const appRoutes = [
         PipelineRoutes,
+        ...extRoutes,
         // FIXME: Not sure best how to set this up without the hardcoded IndexRedirect :-/
         <IndexRedirect to="/pipelines" />,
         <Route path="/organizations/:organization/pipeline-editor/(:pipeline/)(:branch/)" component={EditorPage} />,

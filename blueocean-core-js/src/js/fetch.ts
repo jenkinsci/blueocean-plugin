@@ -183,7 +183,7 @@ export class FetchFunctions {
         };
     }
 
-    /**
+   /**
      * Raw fetch that returns the json body.
      *
      * This method is semi-private, under normal conditions it should not be
