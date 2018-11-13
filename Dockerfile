@@ -22,4 +22,7 @@ RUN for f in /usr/share/jenkins/ref/plugins/blueocean-*.jpi; do mv "$f" "$f.over
 # let scripts customize the reference Jenkins folder. Used in bin/build-in-docker to inject the git build data
 COPY docker/ref /usr/share/jenkins/ref
 
+# Allow Jenkins to run docker commands
+RUN chown :jenkins /var/run/docker.sock
+
 USER jenkins
