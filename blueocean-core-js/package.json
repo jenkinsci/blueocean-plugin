@@ -37,8 +37,8 @@
   },
   "dependencies": {
     "@jenkins-cd/design-language": "0.0.162",
-    "@jenkins-cd/es-extensions": "^0.2.2",
-    "@jenkins-cd/es-extensions-react": "^0.2.2",
+    "@jenkins-cd/es-extensions": "^0.4.0",
+    "@jenkins-cd/es-extensions-react": "^0.4.0",
     "@jenkins-cd/logging": "0.0.6",
     "@jenkins-cd/sse-gateway": "0.0.21",
     "@jenkins-cd/storage": "0.0.6",
