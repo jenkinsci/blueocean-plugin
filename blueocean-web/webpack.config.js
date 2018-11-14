@@ -3,11 +3,14 @@ var ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-    entry: './src/main/js/blueocean.js',
+    entry: {
+        blueocean: './src/main/js/blueocean.js',
+        iepolyfills: './src/main/js/ie/iepolyfills.js',
+    },
     output: {
         pathinfo: false,
         path: path.resolve(__dirname, 'target/classes/io/jenkins/blueocean/'),
-        filename: 'blueocean.js',
+        filename: '[name].js',
     },
     module: {
         rules: [
