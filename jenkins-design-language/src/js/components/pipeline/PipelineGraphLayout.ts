@@ -163,6 +163,9 @@ function positionNodes(nodeColumns: Array<NodeColumn>, { nodeSpacingH, parallelS
             xp += Math.round((widestRow - row.length) * parallelSpacingH * 0.5);
 
             for (const node of row) {
+                if (!node.isPlaceholder && node.stage && node.stage.seqContainerName) {
+                    xp += 70;
+                }
                 maxX = Math.max(maxX, xp);
                 node.x = xp;
                 node.y = yp;

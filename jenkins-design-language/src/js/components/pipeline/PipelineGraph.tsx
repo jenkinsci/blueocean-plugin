@@ -3,7 +3,17 @@ import { decodeResultValue, getGroupForResult } from '../status/StatusIndicator'
 import { strokeWidth as nodeStrokeWidth } from '../status/SvgSpinner';
 import { TruncatingLabel } from '../TruncatingLabel';
 
-import { CompositeConnection, defaultLayout, LabelInfo, LayoutInfo, MATRIOSKA_PATHS, NodeColumn, NodeInfo, StageInfo } from './PipelineGraphModel';
+import {
+    CompositeConnection,
+    defaultLayout,
+    LabelInfo,
+    LayoutInfo,
+    MATRIOSKA_PATHS,
+    NodeColumn,
+    NodeInfo,
+    StageNodeInfo,
+    StageInfo,
+} from './PipelineGraphModel';
 
 import { layoutGraph } from './PipelineGraphLayout';
 
@@ -112,7 +122,19 @@ export class PipelineGraph extends React.Component {
             marginLeft: labelOffsetH,
         };
 
-        const x = details.x;
+        const hasSequentialParallelStages = () => {
+            if (details.stage) {
+                for (const stageChild of details.stage.children) {
+                    if (stageChild.seqContainerName) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        };
+
+        const x = hasSequentialParallelStages() ? details.x + 35 : details.x;
         const bottom = this.state.measuredHeight - details.y + labelOffsetV;
 
         // These are about layout more than appearance, so they're inline
@@ -170,17 +192,43 @@ export class PipelineGraph extends React.Component {
     }
 
     /**
+     * Generate the Component for a small label denoting the name of the container of a group of sequential parallel stages
+     */
+    renderSequentialContainerLabel(destNode: StageNodeInfo, connectorStrokeWidth: number, midPointX: number, sequentialBranchesNames: Array<any>) {
+        const seqContainerName = destNode.stage.seqContainerName;
+        const containerStyle = {
+            top: Math.ceil(destNode.y - connectorStrokeWidth * 2),
+            left: midPointX + 30,
+            position: 'absolute' as 'absolute',
+            maxWidth: 70,
+            textAlign: 'center' as 'center',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            background: 'white',
+            padding: '0 7px',
+            lineHeight: '1',
+            whiteSpace: 'nowrap' as 'nowrap',
+        };
+
+        sequentialBranchesNames.push(
+            <div style={containerStyle} key={destNode.key + 'container'} title={seqContainerName}>
+                {seqContainerName}
+            </div>
+        );
+    }
+
+    /**
      * Generate SVG for a composite connection, which may be to/from many nodes.
      *
      * Farms work out to other methods on self depending on the complexity of the line required. Adds all the SVG
      * components to the elements list.
      */
-    renderCompositeConnection(connection: CompositeConnection, elements: SVGChildren) {
+    renderCompositeConnection(connection: CompositeConnection, elements: SVGChildren, sequentialBranchesNames: Array<NodeInfo>) {
         const { sourceNodes, destinationNodes, skippedNodes } = connection;
 
         if (skippedNodes.length === 0) {
             // Nothing too complicated, use the original connection drawing code
-            this.renderBasicConnections(sourceNodes, destinationNodes, elements);
+            this.renderBasicConnections(sourceNodes, destinationNodes, elements, sequentialBranchesNames);
         } else {
             this.renderSkippingConnections(sourceNodes, destinationNodes, skippedNodes, elements);
         }
@@ -191,7 +239,7 @@ export class PipelineGraph extends React.Component {
      *
      * Adds all the SVG components to the elements list.
      */
-    renderBasicConnections(sourceNodes: Array<NodeInfo>, destinationNodes: Array<NodeInfo>, elements: SVGChildren) {
+    renderBasicConnections(sourceNodes: Array<NodeInfo>, destinationNodes: Array<NodeInfo>, elements: SVGChildren, sequentialBranchesNames: Array<any>) {
         const { connectorStrokeWidth, nodeSpacingH } = this.state.layout;
         const halfSpacingH = nodeSpacingH / 2;
 
@@ -232,10 +280,21 @@ export class PipelineGraph extends React.Component {
             this.renderBasicCurvedConnection(previousNode, destinationNodes[0], midPointX, elements);
         }
 
+        for (const destNode of destinationNodes) {
+            if (!MATRIOSKA_PATHS && !destNode.isPlaceholder && destNode.stage && destNode.stage.seqContainerName) {
+                const midPointX = Math.round(leftmostDestination - 70 - halfSpacingH);
+
+                this.renderSequentialContainerLabel(destNode, connectorStrokeWidth, midPointX, sequentialBranchesNames);
+            }
+        }
+
         // Expand from top previous node to column node(s)
         for (const destNode of destinationNodes.slice(1)) {
-            const midPointX = Math.round((MATRIOSKA_PATHS ? destNode.x : leftmostDestination) - halfSpacingH);
+            const computedLeftmostDestination =
+                !destNode.isPlaceholder && destNode.stage && destNode.stage.seqContainerName ? leftmostDestination - 70 : leftmostDestination;
+            const midPointX = Math.round((MATRIOSKA_PATHS ? destNode.x : computedLeftmostDestination) - halfSpacingH);
             // console.log('expand from',sourceNodes[0].name,'to',destNode.name, 'mpx', midPointX); // TODO: RM
+
             this.renderBasicCurvedConnection(sourceNodes[0], destNode, midPointX, elements);
         }
     }
@@ -620,9 +679,10 @@ export class PipelineGraph extends React.Component {
         };
 
         const visualElements = []; // Buffer for children of the SVG
+        const sequentialBranchesNames = [];
 
         connections.forEach(connection => {
-            this.renderCompositeConnection(connection, visualElements);
+            this.renderCompositeConnection(connection, visualElements, sequentialBranchesNames);
         });
 
         this.renderSelectionHighlight(visualElements);
@@ -642,6 +702,7 @@ export class PipelineGraph extends React.Component {
                 </svg>
                 {bigLabels.map(label => this.renderBigLabel(label))}
                 {smallLabels.map(label => this.renderSmallLabel(label))}
+                {sequentialBranchesNames}
             </div>
         );
     }

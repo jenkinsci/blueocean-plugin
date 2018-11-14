@@ -86,6 +86,7 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
         id: jenkinsNode.id,
         title,
         type: jenkinsNode.type,
+        seqContainerName: '',
     };
     logger.debug('converted node', converted);
     return converted;
@@ -191,6 +192,7 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
                         if (originalNodeForId[key].firstParent === branchNode.id) {
                             for (var i = 0; i < currentNode.children.length; i++) {
                                 if (currentNode.children[i].id === branchNode.id) {
+                                    convertedNodeForId[key].seqContainerName = branchNode.name;
                                     currentNode.children[i] = convertedNodeForId[key];
                                     if (originalNodeForId[key].edges.length && originalNodeForId[key].edges[0]) {
                                         buildSequentialStages(originalNodeForId, convertedNodeForId, key, currentNode.children[i]);
