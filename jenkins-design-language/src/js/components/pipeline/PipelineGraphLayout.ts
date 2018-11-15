@@ -2,6 +2,8 @@ import { CompositeConnection, MATRIOSKA_PATHS } from './PipelineGraphModel';
 
 import { NodeColumn, LabelInfo, LayoutInfo, StageInfo, NodeInfo } from './PipelineGraphModel';
 
+export const sequentialStagesLabelOffset = 70;
+
 /**
  * Main process for laying out the graph. Creates and positions markers for each component, but creates no components.
  *
@@ -164,7 +166,7 @@ function positionNodes(nodeColumns: Array<NodeColumn>, { nodeSpacingH, parallelS
 
             for (const node of row) {
                 if (!node.isPlaceholder && node.stage && node.stage.seqContainerName) {
-                    xp += 70;
+                    xp += sequentialStagesLabelOffset;
                 }
                 maxX = Math.max(maxX, xp);
                 node.x = xp;

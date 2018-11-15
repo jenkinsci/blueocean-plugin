@@ -15,7 +15,7 @@ import {
     StageInfo,
 } from './PipelineGraphModel';
 
-import { layoutGraph } from './PipelineGraphLayout';
+import { layoutGraph, sequentialStagesLabelOffset } from './PipelineGraphLayout';
 
 type SVGChildren = Array<any>; // Fixme: Maybe refine this?
 
@@ -134,7 +134,7 @@ export class PipelineGraph extends React.Component {
             return false;
         };
 
-        const x = hasSequentialParallelStages() ? details.x + 35 : details.x;
+        const x = hasSequentialParallelStages() ? details.x + sequentialStagesLabelOffset / 2 : details.x;
         const bottom = this.state.measuredHeight - details.y + labelOffsetV;
 
         // These are about layout more than appearance, so they're inline
@@ -200,7 +200,7 @@ export class PipelineGraph extends React.Component {
             top: Math.ceil(destNode.y - connectorStrokeWidth * 2),
             left: midPointX + 30,
             position: 'absolute' as 'absolute',
-            maxWidth: 70,
+            maxWidth: sequentialStagesLabelOffset,
             textAlign: 'center' as 'center',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -282,7 +282,7 @@ export class PipelineGraph extends React.Component {
 
         for (const destNode of destinationNodes) {
             if (!MATRIOSKA_PATHS && !destNode.isPlaceholder && destNode.stage && destNode.stage.seqContainerName) {
-                const midPointX = Math.round(leftmostDestination - 70 - halfSpacingH);
+                const midPointX = Math.round(leftmostDestination - sequentialStagesLabelOffset - halfSpacingH);
 
                 this.renderSequentialContainerLabel(destNode, connectorStrokeWidth, midPointX, sequentialBranchesNames);
             }
@@ -291,7 +291,9 @@ export class PipelineGraph extends React.Component {
         // Expand from top previous node to column node(s)
         for (const destNode of destinationNodes.slice(1)) {
             const computedLeftmostDestination =
-                !destNode.isPlaceholder && destNode.stage && destNode.stage.seqContainerName ? leftmostDestination - 70 : leftmostDestination;
+                !destNode.isPlaceholder && destNode.stage && destNode.stage.seqContainerName
+                    ? leftmostDestination - sequentialStagesLabelOffset
+                    : leftmostDestination;
             const midPointX = Math.round((MATRIOSKA_PATHS ? destNode.x : computedLeftmostDestination) - halfSpacingH);
             // console.log('expand from',sourceNodes[0].name,'to',destNode.name, 'mpx', midPointX); // TODO: RM
 
