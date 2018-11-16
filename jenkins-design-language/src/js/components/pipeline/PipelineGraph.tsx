@@ -122,19 +122,17 @@ export class PipelineGraph extends React.Component {
             marginLeft: labelOffsetH,
         };
 
-        const hasSequentialParallelStages = () => {
-            if (details.stage) {
-                for (const stageChild of details.stage.children) {
-                    if (stageChild.seqContainerName) {
-                        return true;
-                    }
+        let hasSequentialParallelStages = false;
+
+        if (details.stage) {
+            for (const stageChild of details.stage.children) {
+                if (stageChild.seqContainerName) {
+                    hasSequentialParallelStages = true;
                 }
             }
+        }
 
-            return false;
-        };
-
-        const x = hasSequentialParallelStages() ? details.x + sequentialStagesLabelOffset / 2 : details.x;
+        const x = hasSequentialParallelStages ? details.x + sequentialStagesLabelOffset / 2 : details.x;
         const bottom = this.state.measuredHeight - details.y + labelOffsetV;
 
         // These are about layout more than appearance, so they're inline
