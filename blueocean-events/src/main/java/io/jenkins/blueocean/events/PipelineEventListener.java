@@ -71,8 +71,12 @@ public class PipelineEventListener implements GraphListener {
         // test whether we have a stage node
         if (PipelineNodeUtil.isStage(flowNode)) {
             List<String> branch = getBranch(flowNode);
-            currentStageName.put(flowNode.getExecution(), flowNode.getDisplayName());
-            currentStageId.put(flowNode.getExecution(), flowNode.getId());
+            if(flowNode.getExecution()!=null && flowNode.getDisplayName()!=null) {
+                currentStageName.put(flowNode.getExecution(), flowNode.getDisplayName());
+            }
+            if(flowNode.getExecution()!=null && flowNode.getId()!=null) {
+                currentStageId.put( flowNode.getExecution(), flowNode.getId() );
+            }
             publishEvent(newMessage(PipelineEventChannel.Event.pipeline_stage, flowNode, branch));
         } else if (flowNode instanceof StepStartNode) {
             if (flowNode.getAction(BodyInvocationAction.class) != null) {
