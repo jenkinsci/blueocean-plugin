@@ -71,10 +71,10 @@ public class PipelineEventListener implements GraphListener {
         // test whether we have a stage node
         if (PipelineNodeUtil.isStage(flowNode)) {
             List<String> branch = getBranch(flowNode);
-            if(flowNode.getExecution()!=null && flowNode.getDisplayName()!=null) {
+            if(flowNode.getDisplayName()!=null) {
                 currentStageName.put(flowNode.getExecution(), flowNode.getDisplayName());
             }
-            if(flowNode.getExecution()!=null && flowNode.getId()!=null) {
+            if(flowNode.getId()!=null) {
                 currentStageId.put( flowNode.getExecution(), flowNode.getId() );
             }
             publishEvent(newMessage(PipelineEventChannel.Event.pipeline_stage, flowNode, branch));
