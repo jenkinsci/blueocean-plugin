@@ -3036,4 +3036,68 @@ public class PipelineNodeTest extends PipelineBaseTest {
         }
     }
 
+    @Test
+    @Issue("JENKINS-53900")
+    public void singleStageSequentialLastInParallel() throws Exception {
+            final String jenkinsfile =
+            "pipeline {\n" +
+                "    agent any\n" +
+                "    stages {\n" +
+                "        stage('Alpha') {\n" +
+                "            parallel {\n" +
+                "                stage('Blue') {\n" +
+                "                    steps {\n" +
+                "                        script {\n" +
+                "                            println \"XXXX\"\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                }\n" +
+                "                stage('Red') {\n" +
+                "                    stages {\n" +
+                "                        stage('Green') {\n" +
+                "                            steps {\n" +
+                "                                script {\n" +
+                "                                    println \"XXXX\"\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            }\n" +
+                "        }\n" +
+                "        stage('Bravo') {\n" +
+                "            steps {\n" +
+                "                script {\n" +
+                "                    println \"XXXX\"\n" +
+                "                }\n" +
+                "            }\n" +
+                "        }\n" +
+                "    }\n" +
+                "}\n";
+
+        WorkflowJob project1 = j.createProject(WorkflowJob.class, "project1");
+        project1.setDefinition(new CpsFlowDefinition(jenkinsfile, true));
+
+        j.assertBuildStatus(Result.SUCCESS, project1.scheduleBuild2(0));
+
+        WorkflowRun r = project1.getLastBuild();
+        List<Map> resp = get("/organizations/jenkins/pipelines/project1/runs/" + r.getId() + "/nodes/", List.class);
+
+        assertEquals("number of nodes", 5, resp.size());
+
+        final Map<String, Object> bravoNode = resp.get(3);
+        final Map<String, Object> greenNode = resp.get(4);
+
+        assertEquals("includes Alpha node", "Alpha", resp.get(0).get("displayName"));
+        assertEquals("includes Blue node", "Blue", resp.get(1).get("displayName"));
+        assertEquals("includes Red node", "Red", resp.get(2).get("displayName"));
+        assertEquals("includes Bravo node", "Bravo", bravoNode.get("displayName"));
+        assertEquals("includes Green node", "Green", greenNode.get("displayName"));
+
+        String bravoId = bravoNode.get("id").toString();
+
+        List<Map<String,Object>> greenEdges = (List<Map<String,Object>>)greenNode.get("edges");
+        assertEquals("green has edges", 1, greenEdges.size());
+        assertEquals("green has edge pointing to bravo", bravoId, greenEdges.get(0).get("id"));
+    }
 }

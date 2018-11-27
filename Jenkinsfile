@@ -1,5 +1,13 @@
 #!groovy
 
+if (JENKINS_URL == 'https://ci.jenkins.io/') {
+    buildPlugin(
+      platforms: ['linux'],
+      tests: [skip: true]
+    )
+    return
+}
+
 // only 20 builds
 properties([buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: '20'))])
 

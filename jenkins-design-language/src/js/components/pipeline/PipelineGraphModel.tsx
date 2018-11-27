@@ -58,6 +58,7 @@ export interface StageInfo {
     children: Array<StageInfo>; // Used by the top-most stages with parallel branches
     nextSibling?: StageInfo; // Used within a parallel branch to denote sequential stages
     isSequential?: boolean;
+    seqContainerName: string; //used within a parallel branch to denote the name of the container of the parallel sequential stages
 }
 
 // TODO: Refactor these into a common base, and some discerning "typeof" funcs
