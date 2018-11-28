@@ -3,6 +3,7 @@
   "version": "1.0.0-alpha.1",
   "description": "Dashboard for Jenkins Blue Ocean",
   "license": "MIT",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"

@@ -3,6 +3,7 @@
   "version": "1.0.0-alpha.1",
   "description": "Pipeline editor plugin for Jenkins Blue Ocean",
   "main": "src/main/js/index.js",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
