@@ -2,10 +2,10 @@
   "packages": [
     "blueocean-core-js",
     "blueocean-dashboard",
+    "blueocean-extension-points",
     "blueocean-pipeline-editor",
     "blueocean-web",
-    "jenkins-design-language",
-    "blueocean-extension-points"
+    "jenkins-design-language"
   ],
-  "version": "1.0.0-alpha.1"
+  "version": "1.0.0"
 }
