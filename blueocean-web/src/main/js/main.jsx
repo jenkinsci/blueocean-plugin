@@ -30,8 +30,8 @@ import { Icon } from '@jenkins-cd/design-language';
 import ErrorUtils from './ErrorUtils';
 import { PipelineRoutes } from '@jenkins-cd/blueocean-dashboard';
 import { TopPipelinesLink } from '@jenkins-cd/blueocean-dashboard';
-import { ExtensionPoint } from '@jenkins-cd/es-extensions-react';
-import store from '@jenkins-cd/es-extensions';
+import { ReactExtensionPoint } from '@jenkins-cd/es-extensions-react';
+import { AdminLinkExtensionPoint, TopLinkExtensionPoint, RouteExtensionPoint } from '@jenkins-cd/blueocean-extension-points';
 import { BlueOceanExtensionPage } from './BlueOceanExtensionPage';
 useStrict(true);
 
@@ -85,10 +85,10 @@ class App extends Component {
             //<Extensions.Renderer extensionPoint="jenkins.blueocean.top.links" />,
             // <Extensions.Renderer extensionPoint="jenkins.blueocean.top.admin">
             <TopPipelinesLink t={translate} />,
-            <ExtensionPoint extensionPointId="jenkins.blueocean.top.links" context={linkContext}/>,
-            <ExtensionPoint extensionPointId="jenkins.blueocean.top.admin" context={linkContext}>
+            <ReactExtensionPoint extensionPointId={TopLinkExtensionPoint} params={linkContext}/>,
+            <ReactExtensionPoint extensionPoint={AdminLinkExtensionPoint} params={linkContext}>
                 <AdminLink t={translate} />
-            </ExtensionPoint>
+            </ReactExtensionPoint>
             //</Extensions.Renderer>,
         ];
 
@@ -146,10 +146,10 @@ App.contextTypes = {
 const closeHandler = props => props.onClose || {};
 function makeRoutes(routes) {
 
-    const extRoutes = store.getExtensions('jenkins.main.routes')
-        .map(ext => ext())
+    const extRoutes = RouteExtensionPoint.get()
         .filter(ext => ext && ext.path && ext.render)
         .map(ext => <Route path={ext.path} component={BlueOceanExtensionPage(ext.render)} />)
+   
     console.log('extroutes', extRoutes);
     // Build up our list of top-level routes RR will ignore any non-route stuff put into this list.
     const appRoutes = [

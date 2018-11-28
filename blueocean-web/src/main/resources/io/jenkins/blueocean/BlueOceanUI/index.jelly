@@ -24,7 +24,8 @@
               data-adjuncturl="${rootURL}/${j.getAdjuncts('').rootURL}">
 
             <title>Jenkins</title>
-
+            <st:adjunct includes="io.jenkins.blueocean.extension-store"/>
+   
             <j:if test="${isMSIE}">
                 <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
                 <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1"></meta>

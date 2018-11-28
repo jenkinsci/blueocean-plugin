@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { BasicHeader, TopNav, PageTabs, HeaderDetails } from '@jenkins-cd/design-language';
-import { ExtensionPoint } from '@jenkins-cd/es-extensions-react'
+import { ReactExtensionPoint } from '@jenkins-cd/es-extensions-react'
+import { LogoExtensionPoint } from '@jenkins-cd/blueocean-extension-points'
 import { BlueLogo } from './BlueLogo';
 
 // Wrap an array of elements in a parent element without requiring a bunch "key" props
@@ -21,9 +22,9 @@ export const SiteHeader = props => {
     return (
         <BasicHeader className="ContentPageHeader">
             <TopNav>
-                <ExtensionPoint extensionPointId="jenkins.header.logo">
+                <ReactExtensionPoint extensionPoint={LogoExtensionPoint}>
                     <BlueLogo />
-                </ExtensionPoint>
+                </ReactExtensionPoint>
                 <div className="u-flex-grow" />
                 {topNavLinks}
                 {userComponents}

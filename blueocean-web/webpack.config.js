@@ -1,11 +1,11 @@
 const path = require('path');
-var ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     entry: {
         blueocean: './src/main/js/blueocean.js',
         iepolyfills: './src/main/js/ie/iepolyfills.js',
+        'extension-store': './src/main/js/extensionStore/index.js'
     },
     output: {
         pathinfo: false,
@@ -51,7 +51,6 @@ module.exports = {
         ],
     },
     plugins: [
-        new ProgressBarPlugin(),
         new MiniCssExtractPlugin({
             filename: 'blueocean.css',
         }),

@@ -4,6 +4,7 @@
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "types": "dist/js/index.d.ts",
+  "private": true,
   "scripts": {
     "start-storybook": "start-storybook --static-dir ./dist/assets/,./node_modules/@jenkins-cd/design-language/dist/assets/",
     "storybook": "npm run start-storybook -- -p 9001",
@@ -36,9 +37,10 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
+    "@jenkins-cd/blueocean-extension-points": "1.0.0",
     "@jenkins-cd/design-language": "0.0.162",
-    "@jenkins-cd/es-extensions": "^0.4.0",
-    "@jenkins-cd/es-extensions-react": "^0.4.0",
+    "@jenkins-cd/es-extensions": "^0.5.0",
+    "@jenkins-cd/es-extensions-react": "^0.5.0",
     "@jenkins-cd/logging": "0.0.6",
     "@jenkins-cd/sse-gateway": "0.0.21",
     "@jenkins-cd/storage": "0.0.6",

@@ -4,7 +4,8 @@
     "blueocean-dashboard",
     "blueocean-pipeline-editor",
     "blueocean-web",
-    "jenkins-design-language"
+    "jenkins-design-language",
+    "blueocean-extension-points"
   ],
   "version": "1.0.0-alpha.1"
 }
