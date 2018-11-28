@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "types": "dist/js/index.d.ts",
@@ -37,7 +37,7 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-extension-points": "1.0.0",
+    "@jenkins-cd/blueocean-extension-points": "^1.0.1",
     "@jenkins-cd/design-language": "0.0.162",
     "@jenkins-cd/es-extensions": "^0.5.0",
     "@jenkins-cd/es-extensions-react": "^0.5.0",
