@@ -33,7 +33,11 @@ export class BunkerService {
      * @returns {any} The key for the store.
      */
     bunkerKey(data) {
+      if(data && data._links && data._links.self && data._links.self.href){
         return data._links.self.href;
+      } else {
+        return Math.random().toString(36).substring(2) + (new Date()).getTime().toString(36);
+      }
     }
 
     /**
