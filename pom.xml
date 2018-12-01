@@ -529,7 +529,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jira</artifactId>
-            <version>3.0.4</version>
+            <version>3.0.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -639,7 +639,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.6</version>
+            <version>3.7</version>
         </dependency>
         <dependency>
             <groupId>oro</groupId>
