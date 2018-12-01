@@ -188,10 +188,10 @@ public class GithubScm extends AbstractScm {
                 HttpException ex = (HttpException) e;
                 if (ex.getResponseCode() == 401) {
                     throw new ServiceException
-                            .PreconditionRequired("Invalid Github accessToken", ex);
+                            .PreconditionRequired("Invalid GitHub accessToken", ex);
                 }else if(ex.getResponseCode() == 403){
                     throw new ServiceException
-                            .PreconditionRequired("Github accessToken does not have required scopes. Expected scopes 'user:email, repo'", ex);
+                            .PreconditionRequired("GitHub accessToken does not have required scopes. Expected scopes 'user:email, repo'", ex);
                 }
             }
             throw new ServiceException.UnexpectedErrorException(e.getMessage(), e);
@@ -304,13 +304,13 @@ public class GithubScm extends AbstractScm {
             throw new ServiceException.PreconditionRequired("Invalid accessToken");
         }
         if(status == 403){
-            throw new ServiceException.PreconditionRequired("Github accessToken does not have required scopes. Expected scopes 'user:email, repo'");
+            throw new ServiceException.PreconditionRequired("GitHub accessToken does not have required scopes. Expected scopes 'user:email, repo'");
         }
         if(status == 404){
             throw new ServiceException.NotFoundException(String.format("Remote server at %s responded with code 404.", apiUrl));
         }
         if(status != 200) {
-            throw new ServiceException.BadRequestException(String.format("Github Api returned error: %s. Error message: %s.", connection.getResponseCode(), connection.getResponseMessage()));
+            throw new ServiceException.BadRequestException(String.format("GitHub Api returned error: %s. Error message: %s.", connection.getResponseCode(), connection.getResponseMessage()));
         }
 
         return connection;

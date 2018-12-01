@@ -3,7 +3,7 @@
  */
 
 /**
- * Models a SCM Provider (e.g. Git, Github, Github Enterprise) used in 'Create Pipeline' flow.
+ * Models a SCM Provider (e.g. Git, Github, GitHub Enterprise) used in 'Create Pipeline' flow.
  * Extend this class and implement methods to provide an implementation.
  */
 export default class ScmProvider {

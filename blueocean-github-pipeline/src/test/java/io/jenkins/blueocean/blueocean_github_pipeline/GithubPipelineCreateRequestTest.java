@@ -272,19 +272,19 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
 
         assertNotNull(store);
         store.addDomain(new Domain("github-domain",
-                "Github Domain to store personal access token",
+                "GitHub Domain to store personal access token",
                 Collections.<DomainSpecification>singletonList(new BlueOceanDomainSpecification())));
 
 
         Domain domain = store.getDomainByName("github-domain");
         StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
-                "github", "Github Access Token", user.getId(), "12345");
+                "github", "GitHub Access Token", user.getId(), "12345");
         store.addCredentials(domain, credential);
 
         //create another credentials with same id in system store with different description
         for(CredentialsStore s: CredentialsProvider.lookupStores(Jenkins.getInstance())){
             s.addCredentials(Domain.global(), new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
-                    "github", "System Github Access Token", user.getId(), "12345"));
+                    "github", "System GitHub Access Token", user.getId(), "12345"));
         }
 
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "demo");
@@ -295,7 +295,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
 
         // lookup for created credential id in system store, it should resolve to previously created user store credential
         StandardCredentials c = Connector.lookupScanCredentials((Item)mp, "https://api.github.com", credential.getId());
-        assertEquals("Github Access Token", c.getDescription());
+        assertEquals("GitHub Access Token", c.getDescription());
 
         assertNotNull(c);
         assertTrue(c instanceof StandardUsernamePasswordCredentials);
@@ -314,7 +314,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
 
         //it must resolve to system credential
         c = Connector.lookupScanCredentials((Item)mp, null, credential.getId());
-        assertEquals("System Github Access Token", c.getDescription());
+        assertEquals("System GitHub Access Token", c.getDescription());
     }
 
     @Test
