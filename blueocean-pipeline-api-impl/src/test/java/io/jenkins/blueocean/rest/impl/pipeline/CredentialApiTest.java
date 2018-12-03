@@ -12,6 +12,11 @@ import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.ExtensionList;
 import hudson.model.User;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -129,6 +134,7 @@ public class CredentialApiTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .crumb( crumb )
                 .post("/organizations/jenkins/credentials/user/")
                 .data(                ImmutableMap.of("credentials",
                         new ImmutableMap.Builder<String,Object>()
@@ -153,6 +159,7 @@ public class CredentialApiTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .crumb( crumb )
                 .post("/organizations/jenkins/credentials/user/")
                 .data(                ImmutableMap.of("credentials",
                         new ImmutableMap.Builder<String,Object>()
@@ -186,4 +193,22 @@ public class CredentialApiTest extends PipelineBaseTest {
         Assert.assertEquals("SSH Username with private key", resp.get("typeName"));
         Assert.assertEquals("blueocean-git-domain", resp.get("domain"));
     }
+
+
+    @Test
+    public void crumbRejected() throws IOException, UnirestException {
+        User user = login();
+        HttpClient httpClient = HttpClientBuilder.create().build();
+
+        HttpPost post = new HttpPost( baseUrl + "/organizations/jenkins/credentials/user/" );
+        post.addHeader( "Authorization", "Bearer " + getJwtToken(j.jenkins,user.getId(), user.getId()));
+
+        HttpResponse resp =  httpClient.execute( post );
+        Assert.assertEquals(403, resp.getStatusLine().getStatusCode());
+        //LOGGER.info( IOUtils.toString( resp.getEntity().getContent() ));
+        // assert content contains No valid crumb was included in the request
+        // olamy not sure as it can be i18n sensitive
+    }
+
+
 }

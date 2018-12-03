@@ -36,6 +36,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
     public void setup() throws Exception {
         super.setup();
         token = getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId());
+        this.crumb = getCrumb( j.jenkins );
     }
 
     @Test
@@ -47,6 +48,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         Map resp = request()
                 .status(400)
                 .jwtToken(token)
+                .crumb( crumb )
                 .data(ImmutableMap.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
@@ -69,6 +71,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         Map resp = request()
                 .status(400)
                 .jwtToken(token)
+                .crumb( crumb )
                 .data(ImmutableMap.of(
                         "name", "My Server",
                         "apiUrl", "http://foobar/"
@@ -90,6 +93,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         Map resp = request()
                 .status(400)
                 .jwtToken(token)
+                .crumb( crumb )
                 .data(ImmutableMap.of())
                 .post(URL)
                 .build(Map.class);
@@ -110,6 +114,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         Map resp = request()
                 .status(400)
                 .jwtToken(token)
+                .crumb( crumb )
                 .data(ImmutableMap.of("name", "foo"))
                 .post(URL)
                 .build(Map.class);
@@ -129,6 +134,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         Map resp = request()
                 .status(400)
                 .jwtToken(token)
+                .crumb( crumb )
                 .data(ImmutableMap.of("apiUrl", apiUrl))
                 .post(URL)
                 .build(Map.class);
@@ -149,6 +155,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         Map server = request()
                 .status(200)
                 .jwtToken(token)
+                .crumb( crumb )
                 .data(ImmutableMap.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
@@ -161,6 +168,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         Map resp = server = request()
                 .status(400)
                 .jwtToken(token)
+                .crumb( crumb )
                 .data(ImmutableMap.of(
                         "name", "My Server 2",
                         "apiUrl", apiUrl
@@ -185,6 +193,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         Map server = request()
                 .status(200)
                 .jwtToken(token)
+                .crumb( crumb )
                 .data(ImmutableMap.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
@@ -234,6 +243,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         Map server = request()
                 .status(400)
                 .jwtToken(token)
+                .crumb( crumb )
                 .data(ImmutableMap.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
@@ -257,6 +267,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         Map server = request()
                 .status(200)
                 .jwtToken(token)
+                .crumb( crumb )
                 .data(ImmutableMap.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
@@ -293,6 +304,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
             .as(Void.class);
 
         httpRequest().Post(URL)
+            .header( crumb.field, crumb.value )
             .bodyJson(ImmutableMap.of(
                 "name", "My Server",
                 "apiUrl", apiUrl
@@ -334,6 +346,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
     private List getServers() {
         return request()
                 .status(200)
+                .crumb( crumb )
                 .jwtToken(token)
                 .get(URL)
                 .build(List.class);
