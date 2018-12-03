@@ -101,7 +101,9 @@ public abstract class GithubMockBase extends PipelineBaseTest {
 
         this.user = login("vivek", "Vivek Pandey", "vivek.pandey@gmail.com");
         this.githubApiUrl = String.format("http://localhost:%s",githubApi.port());
+        this.crumb = getCrumb( j.jenkins );
     }
+
 
     @After
     public void tearDown() {
@@ -127,6 +129,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
                 .data(ImmutableMap.of("accessToken", accessToken))
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( this.crumb )
                 .put("/organizations/" + getOrgName() + "/scm/github/validate/?apiUrl="+githubApiUrl)
                 .build(Map.class);
         String credentialId = (String) r.get("credentialId");
@@ -142,6 +145,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
             .data(ImmutableMap.of("accessToken", accessToken))
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .crumb( this.crumb )
             .put("/organizations/" + getOrgName() + "/scm/github-enterprise/validate/?apiUrl="+githubApiUrl)
             .build(Map.class);
         String credentialId = (String) r.get("credentialId");

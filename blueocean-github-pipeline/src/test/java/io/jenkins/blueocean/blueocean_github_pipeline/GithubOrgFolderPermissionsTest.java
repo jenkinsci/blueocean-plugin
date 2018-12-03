@@ -73,6 +73,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         Map resp = new RequestBuilder(baseUrl)
                 .status(shouldSuceed ? 201 : 403)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .crumb( this.crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(GithubTestUtils.buildRequestBody(GithubScm.ID,null, githubApiUrl, pipelineName, "PR-demo"))
                 .build(Map.class);

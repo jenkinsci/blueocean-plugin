@@ -62,6 +62,7 @@ public class GitScmTest extends PipelineBaseTest {
         return new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/credentials/user/")
                 .data(credRequest).build(Map.class);
     }
@@ -96,6 +97,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map r = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -203,6 +205,7 @@ public class GitScmTest extends PipelineBaseTest {
         resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -224,6 +227,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -277,6 +281,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -301,6 +306,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -314,6 +320,7 @@ public class GitScmTest extends PipelineBaseTest {
         resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -395,8 +402,8 @@ public class GitScmTest extends PipelineBaseTest {
         sampleRepo.write("file", "subsequent content1");
         sampleRepo.git("commit", "--all", "--message=tweaked1");
     }
-    
-    
+
+
 
     private String getOrgName() {
         return OrganizationFactory.getInstance().list().iterator().next().getName();
@@ -408,9 +415,9 @@ public class GitScmTest extends PipelineBaseTest {
 
     @TestExtension
     public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
-        
+
         public static String orgRoot;
-        
+
         private OrganizationImpl instance;
 
         public TestOrganizationFactoryImpl() {
@@ -426,7 +433,7 @@ public class GitScmTest extends PipelineBaseTest {
                 } catch (IOException e) {
                     throw new RuntimeException("Test setup failed!", e);
                 }
-                
+
             }
             else {
                 instance = new OrganizationImpl("jenkins", Jenkins.getInstance());

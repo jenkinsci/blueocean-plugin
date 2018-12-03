@@ -336,6 +336,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         Map map = new RequestBuilder(baseUrl)
                 .post("/organizations/jenkins/pipelines/p/runs/")
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( getCrumb( j.jenkins ) )
                 .data(ImmutableMap.of())
                 .status(200)
                 .build(Map.class);
