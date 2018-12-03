@@ -217,7 +217,8 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         String replayURL = String.format("/organizations/jenkins/pipelines/%s/runs/%s/replay/", p.getName(), idOfSecondRun);
         try {
             Thread.sleep(200);
-            request().post(replayURL).build(String.class);
+
+            request().crumb( getCrumb( j.jenkins ) ).post(replayURL).build(String.class);
         } catch (Exception e) {
             Thread.sleep(200);
             request().post(replayURL).build(String.class);

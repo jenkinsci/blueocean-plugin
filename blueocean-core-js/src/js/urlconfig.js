@@ -1,6 +1,8 @@
 let jenkinsRootURL = '';
 let blueOceanAppURL = '/';
 let restBaseURL = '';
+let crumbToken = '';
+let crumbHeaderName = '';
 
 let loaded = false;
 
@@ -22,6 +24,18 @@ function loadConfig() {
 
         // typically '/jenkins/blue/rest'
         restBaseURL = `${blueOceanAppURL}/rest`.replace(/\/\/+/g, '/'); // eliminate any duplicated slashes
+
+        // load crumb token used for POST requests
+        crumbToken = headElement.getAttribute('data-crumbtoken');
+        if (typeof crumbToken !== 'string') {
+            crumbToken = '';
+        }
+
+        // load crumb header name used for POST requests
+        crumbHeaderName = headElement.getAttribute('data-crumbtoken-field');
+        if (typeof crumbHeaderName !== 'string') {
+            crumbHeaderName = '';
+        }
 
         loaded = true;
     } catch (error) {
@@ -45,6 +59,20 @@ export const UrlConfig = {
             loadConfig();
         }
         return blueOceanAppURL;
+    },
+
+    getCrumbHeaderName() {
+        if (!loaded) {
+            loadConfig();
+        }
+        return crumbHeaderName;
+    },
+
+    getCrumbToken() {
+        if (!loaded) {
+            loadConfig();
+        }
+        return crumbToken;
     },
 
     getRestBaseURL() {
