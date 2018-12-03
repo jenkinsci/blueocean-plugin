@@ -12,6 +12,8 @@ import com.mashape.unirest.request.HttpRequestWithBody;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.User;
+import hudson.security.csrf.CrumbIssuer;
+import hudson.security.csrf.DefaultCrumbIssuer;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
 import jenkins.model.Jenkins;
@@ -53,6 +55,8 @@ public abstract class BaseTest {
 
     protected String jwtToken;
 
+    protected Crumb crumb;
+
     @Before
     public void setup() throws Exception {
         if(System.getProperty("DISABLE_HTTP_HEADER_TRACE") == null) {
@@ -61,6 +65,7 @@ public abstract class BaseTest {
         }
         this.baseUrl = j.jenkins.getRootUrl() + getContextPath();
         this.jwtToken = getJwtToken(j.jenkins);
+        this.crumb = getCrumb( j.jenkins );
         Unirest.setObjectMapper(new ObjectMapper() {
             public <T> T readValue(String value, Class<T> valueType) {
                 try {
@@ -153,6 +158,7 @@ public abstract class BaseTest {
             HttpResponse<Map> response = Unirest.post(getBaseUrl(path))
                 .header("Content-Type","application/json")
                 .header("Authorization", "Bearer "+jwtToken)
+                .header( crumb.field, crumb.value )
                 .body(body).asObject(Map.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -321,6 +327,7 @@ public abstract class BaseTest {
         private String contentType = "application/json";
         private String baseUrl;
         private int expectedStatus = 200;
+        private Crumb crumb;
 
         private String token;
 
@@ -356,6 +363,11 @@ public abstract class BaseTest {
 
         public RequestBuilder jwtToken(String token){
             this.token = token;
+            return this;
+        }
+
+        public RequestBuilder crumb(Crumb crumb){
+            this.crumb = crumb;
             return this;
         }
 
@@ -433,6 +445,10 @@ public abstract class BaseTest {
                     request.basicAuth(username, password);
                 }
 
+                if(crumb!=null){
+                    request.header( crumb.field, crumb.value );
+                }
+
                 if(token == null) {
                     request.header("Authorization", "Bearer " + BaseTest.this.jwtToken);
                 }else{
@@ -464,6 +480,19 @@ public abstract class BaseTest {
         //we do not validate it for test optimization and for the fact that there are separate
         // tests that test token generation and validation
         return token;
+    }
+
+    static class Crumb {
+        String field, value;
+    }
+
+    public static Crumb getCrumb(Jenkins jenkins) throws Exception {
+
+        Crumb crumb  = new Crumb();
+        CrumbIssuer crumbIssuer = jenkins.getCrumbIssuer();
+        crumb.field = crumbIssuer.getCrumbRequestField();
+        crumb.value = crumbIssuer.getCrumb();
+        return crumb;
     }
 
     public static String getJwtToken(Jenkins jenkins, String username, String password) throws UnirestException {

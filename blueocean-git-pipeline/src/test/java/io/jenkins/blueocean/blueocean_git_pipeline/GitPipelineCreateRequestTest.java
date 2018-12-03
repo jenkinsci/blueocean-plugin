@@ -45,6 +45,7 @@ public class GitPipelineCreateRequestTest extends PipelineBaseTest {
         Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
             .status(201)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .crumb( crumb )
             .post("/organizations/jenkins/pipelines/")
             .data(ImmutableMap.of("name", "pipeline1",
                 "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
