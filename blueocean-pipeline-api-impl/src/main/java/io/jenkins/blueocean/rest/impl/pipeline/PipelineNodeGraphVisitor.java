@@ -311,9 +311,20 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                                branchNode.getDisplayName(), branchNode.getDisplayFunctionName()));
         }
 
-        if (!pendingBranchEndNodes.isEmpty()) {
+        if ( nestedbranches.size() != parallelBranchEndNodes.size() ) {
+            logger.debug(String.format("nestedBranches size: %s not equal to parallelBranchEndNodes: %s",
+                nestedbranches.size(), parallelBranchEndNodes.size()));
+            if(!parallelEnds.isEmpty()){
+                parallelEnds.pop();
+            }
+            return;
+        }
+
+        if (!pendingBranchEndNodes.isEmpty()){
             logger.debug("Found parallelBranchEndNodes, but the corresponding branchStartNode yet");
-            parallelEnds.pop();
+            if(!parallelEnds.isEmpty()){
+                parallelEnds.pop();
+            }
             return;
         }
 
@@ -335,8 +346,12 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                         status = new NodeRunStatus(endNode);
                     }
                 } else {
+                    FlowNode parallelEnd = null;
+                    if(!parallelEnds.isEmpty()){
+                        parallelEnd = parallelEnds.peek();
+                    }
                     GenericStatus genericStatus =
-                        StatusAndTiming.computeChunkStatus2(run, parallelStartNode, branchStartNode, endNode, parallelEnds.peek());
+                        StatusAndTiming.computeChunkStatus2(run, parallelStartNode, branchStartNode, endNode, parallelEnd);
                     status = new NodeRunStatus(genericStatus);
                 }
             } else {
@@ -422,7 +437,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
 
         //Removes parallelEnd node for next parallel block
-        this.parallelEnds.pop();
+        if(!parallelEnds.isEmpty()){
+            parallelEnds.pop();
+        }
     }
 
     @Override
@@ -449,8 +466,10 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         // Save actions for this branch, so we can add them to the FlowNodeWrapper later
         pendingActionsForBranches.put(branchStartNode, drainPipelineActions());
         nestedbranches.push(branchStartNode);
-        FlowNode endNode = pendingBranchEndNodes.pop();
-        parallelBranchEndNodes.add(endNode);
+        if(!pendingBranchEndNodes.isEmpty()){
+            FlowNode endNode = pendingBranchEndNodes.pop();
+            parallelBranchEndNodes.add(endNode);
+        }
     }
 
     @Override
