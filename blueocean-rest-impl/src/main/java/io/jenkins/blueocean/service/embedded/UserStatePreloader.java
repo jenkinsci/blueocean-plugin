@@ -70,7 +70,7 @@ public class UserStatePreloader extends PageStatePreloader {
         try {
             User currentUser = User.current();
             if (currentUser != null && organization != null) {
-                return Export.toJson(new UserImpl(organization, currentUser));
+                return Export.toJson(new UserImpl(organization, currentUser), true);
             } else {
                 return ANONYMOUS;
             }
