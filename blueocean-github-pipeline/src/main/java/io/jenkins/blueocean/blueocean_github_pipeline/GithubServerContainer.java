@@ -77,7 +77,7 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
         }
 
         if (StringUtils.isNotEmpty(url)) {
-            // Validate that the URL represents a Github API endpoint
+            // Validate that the URL represents a GitHub API endpoint
             try {
                 HttpURLConnection connection = HttpRequest.get(url).connect();
 
@@ -136,7 +136,7 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
                 }
             }
         }
-        ErrorMessage message = new ErrorMessage(400, "Failed to create Github server");
+        ErrorMessage message = new ErrorMessage(400, "Failed to create GitHub server");
         message.addAll(errors);
         throw new ServiceException.BadRequestException(message);
      }

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Github SCM save file API
+ * GitHub SCM save file API
  *
  * @author Vivek Pandey
  */
