@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { PipelineGraph } from '@jenkins-cd/design-language';
-import * as pg2 from '@jenkins-cd/pipeline-graph-widget';
+import { PipelineGraph } from '@jenkins-cd/pipeline-graph-widget';
 import { TimeManager, i18nTranslator, logging } from '@jenkins-cd/blueocean-core-js';
 
 const timeManager = new TimeManager();
@@ -272,8 +271,6 @@ export default class PipelineRunGraph extends Component {
     };
 
     render() {
-        console.log('Imported from widget', pg2); // TODO: RM
-
         const { graphNodes, t } = this.state;
 
         if (!graphNodes) {
@@ -316,11 +313,7 @@ export default class PipelineRunGraph extends Component {
             }
         }
 
-        return (
-            <div className="PipelineGraph-container">
-                <PipelineGraph stages={graphNodes} selectedStage={selectedStage} onNodeClick={this.graphNodeClicked} />
-            </div>
-        );
+        return <PipelineGraph stages={graphNodes} selectedStage={selectedStage} onNodeClick={this.graphNodeClicked} />;
     }
 }
 
