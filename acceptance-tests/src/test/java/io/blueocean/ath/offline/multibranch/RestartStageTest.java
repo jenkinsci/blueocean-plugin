@@ -68,7 +68,7 @@ public class RestartStageTest extends BlueOceanAcceptanceTest {
         sseClientRule.untilEvents(pipeline.buildsFinished);
 
         //check that there is one stage that was not built
-        wait.until(By.cssSelector(".PWGx-progress-spinner.not_built"));
+        wait.until(By.cssSelector(".PWGx-svgResultStatusOutline"));
 
         //check that there is one stage that has been successfully built
         wait.until(By.cssSelector(".PWGx-pipeline-node-selected .circle-bg.success"));
