@@ -83,7 +83,7 @@ module.exports = {
         blueRunDetailPage.clickReRunButton();
 
         //Ccheck that it runs and we could stop if if we want to
-        blueRunDetailPage.waitForElementVisible('.progress-spinner');
+        blueRunDetailPage.waitForElementVisible('.PWGx-progress-spinner');
         blueRunDetailPage.waitForElementPresent('.stop-button');
 
         // this will show up when it has finished replaying
