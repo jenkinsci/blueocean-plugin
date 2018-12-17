@@ -1,3 +1,7 @@
+/**
+ *  @deprecated Don't use this, the latest version exists in the ux-widgets repo, and Blue Ocean also uses that now
+ */
+
 export enum Result {
     success = 'success',
     failure = 'failure',

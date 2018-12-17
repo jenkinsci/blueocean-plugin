@@ -12,6 +12,8 @@ export const sequentialStagesLabelOffset = 70;
  *  3. Create all the connections between nodes that need to be rendered
  *  4. Create a bigLabel per column, and a smallLabel for any child nodes
  *  5. Measure the extents of the graph
+ *
+ *  @deprecated Don't use this, the latest version exists in the ux-widgets repo, and Blue Ocean also uses that now
  */
 export function layoutGraph(newStages: Array<StageInfo>, layout: LayoutInfo) {
     const stageNodeColumns = createNodeColumns(newStages);
