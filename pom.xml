@@ -24,7 +24,7 @@
   </licenses>
 
   <properties>
-    <revision>1.10.0</revision>
+    <revision>1.10.0-beta-1</revision>
     <changelist>-SNAPSHOT</changelist>
     <java.level>8</java.level>
     <jenkins.version>2.121.1</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
