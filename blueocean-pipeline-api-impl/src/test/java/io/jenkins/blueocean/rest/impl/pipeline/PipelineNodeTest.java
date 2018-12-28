@@ -160,6 +160,67 @@ public class PipelineNodeTest extends PipelineBaseTest {
         }
     }
 
+    @Test
+    @Issue("JENKINS-50532")
+    public void statusForTwoLevelParallelBuild() throws Exception{
+        String p = "pipeline {\n" +
+            "    agent any\n" +
+            "    stages {\n" +
+            "        stage('Nested Parallel Stage') {\n" +
+            "            parallel {\n" +
+            "                stage(\"Parallel Stage\") { \n" +
+            "                    steps { \n" +
+            "                        script {\n" +
+            "                          def parallelTasks = [:]\n" +
+            "                          \n" +
+            "                            parallelTasks['Successful Task 1'] = {\n" +
+            "                              echo \"Success\"\n" +
+            "                          }\n" +
+            "                          parallelTasks['Failing Task'] = {\n" +
+            "                              sh \"exit 1\"\n" +
+            "                          }\n" +
+            "                          parallel parallelTasks\n" +
+            "                        } \n" +
+            "                    } \n" +
+            "                }\n" +
+            "                stage(\"Stage\") {\n" +
+            "                    steps { \n" +
+            "                        echo \"Stage\"    \n" +
+            "                    }\n" +
+            "                }\n" +
+            "            }\n" +
+            "        }\n" +
+            "    }\n" +
+            "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition(p, false));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.FAILURE,b1);
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(resp.size(),5);
+
+        for(int i=0; i< resp.size();i++){
+            Map rn = resp.get(i);
+            if(rn.get("displayName").equals("Failing Task")){
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+                Assert.assertEquals(rn.get("result"), "FAILURE");
+            }else if(rn.get("displayName").equals("Parallel Stage")){
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+                Assert.assertEquals(rn.get("result"), "FAILURE");
+            }else if(rn.get("displayName").equals("Stage")){
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+            }else if(rn.get("displayName").equals("Successful Task")) {
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+            }
+        }
+    }
+
     //JENKINS-39203
     @Test
     public void stepStatusForUnstableBuild() throws Exception{
