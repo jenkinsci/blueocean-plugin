@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>3.28</version>
+    <version>3.32</version>
   </parent>
 
   <groupId>io.jenkins.blueocean</groupId>
@@ -27,24 +27,26 @@
     <revision>1.11.0</revision>
     <changelist>-SNAPSHOT</changelist>
     <java.level>8</java.level>
-    <jenkins.version>2.121.1</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
+    <jenkins.version>2.156</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.6</frontend-version>
     <node.version>6.4.0</node.version>
     <npm.version>3.10.3</npm.version>
     <findbugs-maven-plugin.version>3.0.4</findbugs-maven-plugin.version>
     <findbugs.failOnError>true</findbugs.failOnError>
-    <powermock.version>1.6.6</powermock.version>
+    <powermock.version>2.0.0-RC.4</powermock.version>
+    <mockito.version>2.23.4</mockito.version>
     <guava.version>11.0.1</guava.version>
     <jacoco.version>0.8.2</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
-    <jenkins-test-harness.version>2.38</jenkins-test-harness.version>
+    <jenkins-test-harness.version>2.44</jenkins-test-harness.version>
     <scm-api.version>2.2.8</scm-api.version>
     <git.version>3.8.0</git.version>
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
+    <plugin.minimumJavaVersion>11</plugin.minimumJavaVersion>
   </properties>
 
   <scm>
@@ -185,7 +187,7 @@
       </dependency>
       <dependency>
           <groupId>org.powermock</groupId>
-          <artifactId>powermock-api-mockito</artifactId>
+          <artifactId>powermock-api-mockito2</artifactId>
           <scope>test</scope>
       </dependency>
       <dependency>
@@ -581,7 +583,7 @@
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
             <artifactId>jenkins-test-harness-tools</artifactId>
-            <version>2.0</version>
+            <version>2.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -696,7 +698,7 @@
         <dependency>
             <groupId>org.jenkins-ci.modules</groupId>
             <artifactId>instance-identity</artifactId>
-            <version>2.1</version>
+            <version>2.2</version>
             <scope>provided</scope>
         </dependency>
 
@@ -789,7 +791,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <!--We need 1.x version untile powermock has decent support for mockito2-->
-            <version>1.10.19</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -816,7 +818,13 @@
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
+            <artifactId>powermock-api-mockito2</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-core</artifactId>
             <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
@@ -1005,7 +1013,7 @@
               <!--
               The following line is the one that's a must. Without it, with get jacoco complexity failures.
               -->
-              <argLine>-Djava.awt.headless=true ${argLine}</argLine>
+              <argLine>-Djava.awt.headless=true --illegal-access=permit ${argLine}</argLine>
               <rerunFailingTestsCount>0</rerunFailingTestsCount>
               <systemPropertyVariables>
                   <jacoco-agent.destfile>${project.build.directory}/code-coverage/jacoco.exec</jacoco-agent.destfile>
