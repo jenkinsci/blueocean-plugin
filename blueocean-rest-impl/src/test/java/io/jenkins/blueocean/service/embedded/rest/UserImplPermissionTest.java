@@ -52,6 +52,7 @@ import org.kohsuke.stapler.verb.DELETE;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -79,6 +80,7 @@ import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 @PrepareForTest({ Jenkins.class, User.class })
 public class UserImplPermissionTest {
     private TestOrganization testOrganization;
@@ -123,7 +125,7 @@ public class UserImplPermissionTest {
         } catch (NoSuchMethodException e) {
             when(jenkins.hasPermission(Mockito.any())).thenAnswer(new Answer<Boolean>() {
                 public Boolean answer(InvocationOnMock invocation) {
-                    Permission permission = invocation.getArgumentAt(0, Permission.class);
+                    Permission permission = invocation.getArgument(0);
                     Jenkins j = (Jenkins) invocation.getMock();
                     return j.getACL().hasPermission(permission);
                 }
