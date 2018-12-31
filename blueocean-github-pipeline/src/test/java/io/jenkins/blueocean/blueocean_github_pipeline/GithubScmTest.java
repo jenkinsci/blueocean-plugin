@@ -149,7 +149,7 @@ public class GithubScmTest {
         String id = githubScm.getCredentialId();
         Assert.assertEquals(githubScm.getId(), id);
 
-        verifyStatic();
+        verifyStatic(HttpRequest.class);
 
         Assert.assertEquals("constructed url", "https://api.github.com/user", urlStringCaptor.getValue());
         Assert.assertEquals("access token passed to github", accessToken.trim(), tokenCaptor.getValue());
