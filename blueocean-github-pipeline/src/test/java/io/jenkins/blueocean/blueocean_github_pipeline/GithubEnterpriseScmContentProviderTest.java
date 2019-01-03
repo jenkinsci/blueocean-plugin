@@ -4,6 +4,9 @@ import io.jenkins.blueocean.rest.impl.pipeline.ScmContentProvider;
 import jenkins.branch.MultiBranchProject;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.*;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -11,6 +14,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
 /**
  * @author cliffmeyers
  */
+@RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubEnterpriseScmContentProviderTest extends GithubMockBase {
 
     @Test

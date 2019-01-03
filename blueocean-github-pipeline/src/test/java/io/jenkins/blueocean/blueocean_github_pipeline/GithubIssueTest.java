@@ -4,6 +4,7 @@ import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.scm.ChangeLogSet;
@@ -16,15 +17,35 @@ import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubIssueTest {
+
+    /* Totally a dumb subclass so mockito can find the invocation of getParent properly (since parent is protected class) */
+    public abstract class MockJob extends Job {
+
+        @Nonnull
+        @Override
+        public ItemGroup getParent() {
+            return super.getParent();
+        }
+
+        protected MockJob(ItemGroup parent, String name) {
+            super(parent, name);
+        }
+    }
 
     @Rule
     public JenkinsRule j = new JenkinsRule();
@@ -38,7 +59,7 @@ public class GithubIssueTest {
 
     @Test
     public void jobNotImplemented() throws Exception {
-        Job job = mock(Job.class);
+        Job job = mock(MockJob.class);
         Collection<BlueIssue> resolved = BlueIssueFactory.resolve(job);
         Assert.assertTrue(resolved.isEmpty());
     }
@@ -46,7 +67,7 @@ public class GithubIssueTest {
     @Test
     public void changeSetEntry() throws Exception {
         MultiBranchProject project = mock(MultiBranchProject.class);
-        Job job = mock(Job.class);
+        Job job = mock(MockJob.class);
         Run run = mock(Run.class);
         ChangeLogSet logSet = mock(ChangeLogSet.class);
         ChangeLogSet.Entry entry = mock(ChangeLogSet.Entry.class);
@@ -82,7 +103,7 @@ public class GithubIssueTest {
     @Test
     public void changeSetEntryIsNotGithub() throws Exception {
         MultiBranchProject project = mock(MultiBranchProject.class);
-        Job job = mock(Job.class);
+        Job job = mock(MockJob.class);
         Run run = mock(Run.class);
         ChangeLogSet logSet = mock(ChangeLogSet.class);
         ChangeLogSet.Entry entry = mock(ChangeLogSet.Entry.class);
@@ -103,7 +124,7 @@ public class GithubIssueTest {
     @Test
     public void changeSetJobParentNotMultibranch() throws Exception {
         AbstractFolder project = mock(AbstractFolder.class);
-        Job job = mock(Job.class);
+        Job job = mock(MockJob.class);
         Run run = mock(Run.class);
         ChangeLogSet logSet = mock(ChangeLogSet.class);
         ChangeLogSet.Entry entry = mock(ChangeLogSet.Entry.class);

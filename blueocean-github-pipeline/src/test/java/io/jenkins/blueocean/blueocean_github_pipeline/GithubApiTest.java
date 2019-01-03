@@ -8,6 +8,9 @@ import hudson.ProxyConfiguration;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -22,6 +25,8 @@ import static org.junit.Assert.*;
 /**
  * @author Vivek Pandey
  */
+@RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubApiTest extends GithubMockBase {
     @Test
     public void validateGithubToken() throws IOException, UnirestException {

@@ -29,6 +29,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.verification.VerificationMode;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -48,7 +49,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({GithubScm.class, Jenkins.class, Authentication.class, User.class, Secret.class,
     CredentialsMatchers.class, CredentialsProvider.class, Stapler.class, HttpRequest.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubScmTest {
 
     @Mock
@@ -148,8 +149,6 @@ public class GithubScmTest {
 
         String id = githubScm.getCredentialId();
         Assert.assertEquals(githubScm.getId(), id);
-
-        verifyStatic(HttpRequest.class);
 
         Assert.assertEquals("constructed url", "https://api.github.com/user", urlStringCaptor.getValue());
         Assert.assertEquals("access token passed to github", accessToken.trim(), tokenCaptor.getValue());
