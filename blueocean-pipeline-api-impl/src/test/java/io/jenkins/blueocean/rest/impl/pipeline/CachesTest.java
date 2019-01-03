@@ -4,6 +4,7 @@ import com.cloudbees.hudson.plugins.folder.Folder;
 import com.google.common.collect.Lists;
 import hudson.ExtensionList;
 import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMHead;
@@ -14,34 +15,65 @@ import jenkins.scm.impl.mock.MockChangeRequestSCMHead;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.jvnet.hudson.test.MockFolder;
+import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.junit.Assert.*;
+import javax.annotation.Nonnull;
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
-@PrepareForTest(ExtensionList.class)
+@PrepareForTest({ ExtensionList.class })
 public class CachesTest {
 
-    Jenkins jenkins;
-    Job job;
+    /* Totally a dumb subclass so mockito can find the invocation of getParent properly (since parent is protected class) */
+    public abstract class MockJob extends Job {
 
+        @Nonnull
+        @Override
+        public ItemGroup getParent() {
+            return super.getParent();
+        }
+
+        protected MockJob(ItemGroup parent, String name) {
+            super(parent, name);
+        }
+    }
+
+    @Mock
+    Jenkins jenkins;
+
+    @Mock
+    MockJob job;
+
+    @Mock
+    Folder folder;
+
+    class MockMockFolder extends MockFolder {
+        protected MockMockFolder(ItemGroup parent, String name) {
+            super(parent, name);
+        }
+    }
     @Before
-    public void setup() {
-        jenkins = mock(Jenkins.class);
+    public void setup() throws IOException {
         when(jenkins.getFullName()).thenReturn("");
 
-        Folder folder = mock(Folder.class);
         when(folder.getParent()).thenReturn(jenkins);
         when(folder.getFullName()).thenReturn("/Repo");
         when(jenkins.getItem("/Repo")).thenReturn(folder);
 
-        job = mock(Job.class);
         when(job.getParent()).thenReturn(folder);
         when(job.getFullName()).thenReturn("cool-branch");
 
