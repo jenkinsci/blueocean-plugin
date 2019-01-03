@@ -33,7 +33,10 @@ import static org.mockito.Mockito.when;
 @PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubIssueTest {
 
-    /* Totally a dumb subclass so mockito can find the invocation of getParent properly (since parent is protected class) */
+    /*
+     * Totally a dumb subclass so mockito can find the invocation of getParent properly (since parent is protected class)
+     * See https://stackoverflow.com/questions/19915270/mockito-stub-abstract-parent-class-method?rq=1
+     */
     public abstract class MockJob extends Job {
 
         @Nonnull
