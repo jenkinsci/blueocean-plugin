@@ -15,7 +15,6 @@ import jenkins.scm.impl.mock.MockChangeRequestSCMHead;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.jvnet.hudson.test.MockFolder;
 import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -23,7 +22,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -38,7 +36,10 @@ import static org.mockito.Mockito.when;
 @PrepareForTest({ ExtensionList.class })
 public class CachesTest {
 
-    /* Totally a dumb subclass so mockito can find the invocation of getParent properly (since parent is protected class) */
+    /*
+     * Totally a dumb subclass so mockito can find the invocation of getParent properly (since parent is protected class)
+     * See https://stackoverflow.com/questions/19915270/mockito-stub-abstract-parent-class-method?rq=1
+     */
     public abstract class MockJob extends Job {
 
         @Nonnull
@@ -61,13 +62,8 @@ public class CachesTest {
     @Mock
     Folder folder;
 
-    class MockMockFolder extends MockFolder {
-        protected MockMockFolder(ItemGroup parent, String name) {
-            super(parent, name);
-        }
-    }
     @Before
-    public void setup() throws IOException {
+    public void setup() {
         when(jenkins.getFullName()).thenReturn("");
 
         when(folder.getParent()).thenReturn(jenkins);
