@@ -1013,7 +1013,7 @@
               <!--
               The following line is the one that's a must. Without it, with get jacoco complexity failures.
               -->
-              <argLine>-Djava.awt.headless=true --illegal-access=permit ${argLine}</argLine>
+              <argLine>-Djava.awt.headless=true ${argLine}</argLine>
               <rerunFailingTestsCount>0</rerunFailingTestsCount>
               <systemPropertyVariables>
                   <jacoco-agent.destfile>${project.build.directory}/code-coverage/jacoco.exec</jacoco-agent.destfile>
