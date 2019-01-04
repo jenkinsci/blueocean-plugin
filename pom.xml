@@ -32,8 +32,8 @@
     <frontend-version>1.6</frontend-version>
     <node.version>6.4.0</node.version>
     <npm.version>3.10.3</npm.version>
-    <findbugs-maven-plugin.version>3.0.4</findbugs-maven-plugin.version>
-    <findbugs.failOnError>true</findbugs.failOnError>
+    <spotbugs-maven-plugin.version>3.1.10</spotbugs-maven-plugin.version>
+    <spotbugs.failOnError>true</spotbugs.failOnError>
     <powermock.version>2.0.0-RC.4</powermock.version>
     <mockito.version>2.23.4</mockito.version>
     <guava.version>11.0.1</guava.version>
@@ -900,14 +900,14 @@
                   <version>2.10.4</version>
               </plugin>
               <plugin>
-                  <groupId>org.codehaus.mojo</groupId>
-                  <artifactId>findbugs-maven-plugin</artifactId>
-                  <version>${findbugs-maven-plugin.version}</version>
+                  <groupId>com.github.spotbugs</groupId>
+                  <artifactId>spotbugs-maven-plugin</artifactId>
+                  <version>${spotbugs-maven-plugin.version}</version>
                   <configuration>
                       <effort>Max</effort>
                       <threshold>Default</threshold>
                       <xmlOutput>true</xmlOutput>
-                      <findbugsXmlOutput>false</findbugsXmlOutput>
+                      <spotbugsXmlOutput>false</spotbugsXmlOutput>
                   </configuration>
               </plugin>
               <plugin>
@@ -1021,10 +1021,10 @@
           </configuration>
       </plugin>
 
-        <!-- run findbugs on all modules -->
+        <!-- run spotbugs on all modules -->
         <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>findbugs-maven-plugin</artifactId>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-maven-plugin</artifactId>
         </plugin>
     </plugins>
   </build>
