@@ -8,7 +8,7 @@ const newButtonSelector = '.btn-new-pipeline';
 module.exports = {
     /** Load it in German */
     'Step 01': function (browser) {
-        browser.login();
+        // browser.login();
         var bluePipelines = browser.page.bluePipelines().navigateLanguage("de");
         bluePipelines.waitForElementVisible(newButtonSelector);
         browser.getText(newButtonSelector, function(response) {
