@@ -9,7 +9,7 @@ module.exports = {
      * @param browser
      */
     'Step 01': function (browser) {
-        browser.login();
+        // browser.login();
         const pipelinesCreate = browser.page.pipelineCreate().navigate();
         // we have used the noStages script as basis
         pipelinesCreate.createPipeline(JOB, 'stagesFailing.groovy');
