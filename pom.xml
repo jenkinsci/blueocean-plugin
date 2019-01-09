@@ -42,8 +42,8 @@
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
     <jenkins-test-harness.version>2.38</jenkins-test-harness.version>
-    <scm-api.version>2.2.8</scm-api.version>
-    <git.version>3.8.0</git.version>
+    <scm-api.version>2.3.0</scm-api.version>
+    <git.version>4.0.0-beta4</git.version>
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
   </properties>
 
@@ -507,7 +507,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git-client</artifactId>
-            <version>2.7.0</version>
+            <version>3.0.0-beta6</version>
         </dependency>
 
         <!-- Other -->
