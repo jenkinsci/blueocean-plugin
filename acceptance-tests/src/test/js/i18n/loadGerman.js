@@ -7,17 +7,17 @@ const newButtonSelector = '.btn-new-pipeline';
  */
 module.exports = {
     /** Load it in German */
-    // 'Step 01': function (browser) {
-    //     // browser.login();
-    //     var bluePipelines = browser.page.bluePipelines().navigateLanguage("de");
-    //     bluePipelines.waitForElementVisible(newButtonSelector);
-    //     browser.getText(newButtonSelector, function(response) {
-    //         browser.assert.equal(response.value, 'Neue Pipeline');
-    //     });
-    // },
+    'Step 01': !function (browser) {
+        // browser.login();
+        var bluePipelines = browser.page.bluePipelines().navigateLanguage("de");
+        bluePipelines.waitForElementVisible(newButtonSelector);
+        browser.getText(newButtonSelector, function(response) {
+            browser.assert.equal(response.value, 'Neue Pipeline');
+        });
+    },
 
     /** Load it in The Queens English, God Bless The Queen */
-    'Step 02': function (browser) {
+    'Step 02': !function (browser) {
         var bluePipelines = browser.page.bluePipelines().navigateLanguage("en");
         bluePipelines.waitForElementVisible(newButtonSelector);
         browser.getText(newButtonSelector, function(response) {
