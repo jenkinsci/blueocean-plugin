@@ -87,7 +87,7 @@ public class BlueOceanUI {
      * @return the crumb token value or empty String if no {@link CrumbIssuer}
      */
     public String getCrumbToken() {
-        CrumbIssuer crumbIssuer = Jenkins.get().getCrumbIssuer();
+        CrumbIssuer crumbIssuer = Jenkins.getInstance().getCrumbIssuer();
         return crumbIssuer == null ? StringUtils.EMPTY : crumbIssuer.getCrumb();
     }
 
@@ -96,7 +96,7 @@ public class BlueOceanUI {
      * @return the crumb request field or empty String if no {@link CrumbIssuer}
      */
     public String getCrumbRequestField() {
-        CrumbIssuer crumbIssuer = Jenkins.get().getCrumbIssuer();
+        CrumbIssuer crumbIssuer = Jenkins.getInstance().getCrumbIssuer();
         return crumbIssuer == null ? StringUtils.EMPTY : crumbIssuer.getCrumbRequestField();
     }
 

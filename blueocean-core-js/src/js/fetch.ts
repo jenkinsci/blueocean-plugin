@@ -340,10 +340,10 @@ export const Fetch = {
      */
     fetch(url, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader }: FetchOpts = {}) {
         const fixedUrl = FetchFunctions.prefixUrl(url);
-        const crumbHeaderName = UrlConfig.getCrumbHeaderName();
+        const crumbHeaderName = config.getCrumbHeaderName();
 
         if (crumbHeaderName && fetchOptions && fetchOptions.headers) {
-            fetchOptions.headers[crumbHeaderName] = UrlConfig.getCrumbToken();
+            fetchOptions.headers[crumbHeaderName] = config.getCrumbToken();
         }
 
         if (!config.isJWTEnabled()) {
