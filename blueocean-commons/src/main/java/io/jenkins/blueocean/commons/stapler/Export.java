@@ -49,7 +49,7 @@ public class Export {
     /**
      * Serialize the supplied object to JSON and return as a {@link String}.
      * @param object The object to serialize.
-     * @param boolean enable html encoding so its safe to output to html
+     * @param htmlEncoded enable html encoding so its safe to output to html
      * @return The JSON as a {@link String}.
      * @throws IOException Error serializing model object.
      */
@@ -77,6 +77,7 @@ public class Export {
      * Serialize the supplied object to JSON and write to the supplied {@link Writer}.
      * @param object The object to serialize.
      * @param writer The writer to output to.
+     * @param htmlEncoded enable html encoding so its safe to output to html
      * @throws IOException Error serializing model object.
      */
     @SuppressWarnings("unchecked")
