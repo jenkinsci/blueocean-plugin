@@ -301,10 +301,10 @@ export const Fetch = {
     fetchJSON(url, { onSuccess, onError, fetchOptions, disableCapabilites, disableLoadingIndicator, ignoreRefreshHeader }: FetchOpts = {}) {
         const fixedUrl = FetchFunctions.prefixUrl(url);
         let future;
-        const crumbHeaderName = config.getCrumbHeaderName();
+        const crumbHeaderName = urlconfig.getCrumbHeaderName();
 
         if (crumbHeaderName && fetchOptions && fetchOptions.headers) {
-            fetchOptions.headers[crumbHeaderName] = config.getCrumbToken();
+            fetchOptions.headers[crumbHeaderName] = urlconfig.getCrumbToken();
         }
 
         if (!config.isJWTEnabled()) {
@@ -340,10 +340,10 @@ export const Fetch = {
      */
     fetch(url, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader }: FetchOpts = {}) {
         const fixedUrl = FetchFunctions.prefixUrl(url);
-        const crumbHeaderName = config.getCrumbHeaderName();
+        const crumbHeaderName = urlconfig.getCrumbHeaderName();
 
         if (crumbHeaderName && fetchOptions && fetchOptions.headers) {
-            fetchOptions.headers[crumbHeaderName] = config.getCrumbToken();
+            fetchOptions.headers[crumbHeaderName] = urlconfig.getCrumbToken();
         }
 
         if (!config.isJWTEnabled()) {
