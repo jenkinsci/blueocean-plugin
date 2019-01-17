@@ -47,6 +47,7 @@
     <git.version>3.8.0</git.version>
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
     <plugin.minimumJavaVersion>11</plugin.minimumJavaVersion>
+    <workflow-support.version>3.1</workflow-support.version>
   </properties>
 
   <scm>
@@ -381,12 +382,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-support</artifactId>
-            <version>3.1</version>
+            <version>${workflow-support.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-support</artifactId>
-            <version>3.1</version>
+            <version>${workflow-support.version}</version>
             <classifier>tests</classifier>
         </dependency>
         <dependency>
