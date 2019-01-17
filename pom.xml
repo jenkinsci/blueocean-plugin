@@ -386,7 +386,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-support</artifactId>
-            <version>2.22</version>
+            <version>3.1</version>
             <classifier>tests</classifier>
         </dependency>
         <dependency>
