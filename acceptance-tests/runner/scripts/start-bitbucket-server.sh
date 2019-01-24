@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 SCRIPT_DIR=$(dirname $0)
 $SCRIPT_DIR/stop-bitbucket-server.sh
