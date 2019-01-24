@@ -13,6 +13,8 @@ properties([buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: 
 
 node() {
   stage('Setup') {
+    githubNotify description: 'Blueocean Dogfood',  status: 'PENDING'
+
     deleteDir()
     checkout scm
     sh 'docker build -t blueocean_build_env --build-arg GID=$(id -g ${USER}) --build-arg UID=$(id -u ${USER}) - < Dockerfile.build'
@@ -90,6 +92,7 @@ node() {
     if (err.toString().contains('exit code 143')) {
       currentBuild.result = "ABORTED"
     }
+    githubNotify description: 'Blueocean Dogfood',  status: currentBuild.result
   } finally {
     stage('Cleanup') {
       sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
