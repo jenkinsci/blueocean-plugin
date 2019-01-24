@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-set -x
 
 echo ""
 echo " Stopping old Bitbucket Docker container, if any. This may take a few seconds..."
