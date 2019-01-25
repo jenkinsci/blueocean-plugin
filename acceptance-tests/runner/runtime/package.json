@@ -4,8 +4,6 @@
   "description": "Blue Ocean acceptance tests",
   "main": "index.js",
   "scripts": {
-    "test": "npm run nightwatch",
-    "nightwatch": "PATH=./node:./node/npm:$PATH nightwatch",
     "doinstall": "PATH=./node:./node/npm:$PATH npm install",
     "site-build": "rm -rf docs/; gulp doc",
     "site-publish": "npm run site-build;./site-publish.sh"
@@ -36,11 +34,11 @@
     "gulp-shell": "^0.5.2",
     "gulp-watch": "^4.3.9",
     "network-address": "^1.1.0",
-    "nightwatch": "0.9.8",
     "nodegit": "^0.14.1",
     "phantomjs-prebuilt": "2.1.12",
     "request": "2.74.0",
     "util": "0.10.3",
     "xmlhttprequest": "1.8.0"
-  }
+  },
+  "dependencies": {}
 }
