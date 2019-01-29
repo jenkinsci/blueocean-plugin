@@ -90,9 +90,9 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
                 try {
                     next.evaluate();
                     outputConsoleLogs();
-                    LocalDriver.executeScript("sauce:job-result=passed");
+                    LocalDriver.executeSauce("job-result=passed");
                 } catch (Exception e) {
-                    LocalDriver.executeScript("sauce:job-result=failed");
+                    LocalDriver.executeSauce("job-result=failed");
                     writeScreenShotCause(e, test, method);
                     outputConsoleLogs();
                     throw e;
@@ -163,9 +163,9 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
         }
         // https://wiki.saucelabs.com/display/DOCS/Annotating+Tests+with+Selenium%27s+JavaScript+Executor
         if (buildName != null && buildName != "") {
-            LocalDriver.executeScript(String.format("sauce:job-build=%s", buildName));
+            LocalDriver.executeSauce(String.format("job-build=%s", buildName));
         }
-        LocalDriver.executeScript(String.format("sauce:job-name=%s", description.getMethodName()));
+        LocalDriver.executeSauce(String.format("job-name=%s", description.getMethodName()));
 
         EachTestNotifier eachNotifier = new EachTestNotifier(notifier, description);
         eachNotifier.fireTestStarted();
