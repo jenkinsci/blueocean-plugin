@@ -66,6 +66,13 @@ public class AthModule extends AbstractModule {
         String webDriverBrowserSize = cfg.getString("webDriverBrowserSize");
 
         try {
+            String launchUrl = cfg.getString("jenkinsUrl");
+            if (launchUrl == null) {
+                launchUrl = new String(Files.readAllBytes(Paths.get("runner/.blueocean-ath-jenkins-url")));
+            }
+            capability.setCapability("extendedDebugging", "true");
+            capability.setCapability("initialBrowserUrl", launchUrl);
+
             WebDriver driver = new RemoteWebDriver(new URL(webDriverUrl), capability);
             LocalDriver.setCurrent(driver);
 
@@ -79,10 +86,6 @@ public class AthModule extends AbstractModule {
             driver.manage().deleteAllCookies();
             bind(WebDriver.class).toInstance(driver);
 
-            String launchUrl = cfg.getString("jenkinsUrl");
-            if (launchUrl == null) {
-                launchUrl = new String(Files.readAllBytes(Paths.get("runner/.blueocean-ath-jenkins-url")));
-            }
             bindConstant().annotatedWith(BaseUrl.class).to(launchUrl);
             LocalDriver.setUrlBase(launchUrl);
 

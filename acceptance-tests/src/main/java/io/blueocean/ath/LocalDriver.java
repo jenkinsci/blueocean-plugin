@@ -3,6 +3,7 @@ package io.blueocean.ath;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.JavascriptExecutor;
 
 import java.util.List;
 import java.util.Set;
@@ -24,10 +25,19 @@ public class LocalDriver implements WebDriver {
         return CURRENT_WEB_DRIVER.get();
     }
 
+    public static void executeScript(String str) {
+        ((JavascriptExecutor) CURRENT_WEB_DRIVER.get()).executeScript(str);
+    }
+
+    public static void annotate(String text) {
+        LocalDriver.executeScript("sauce:context=" + text);
+    }
+
     public static void destroy() {
         WebDriver driver = CURRENT_WEB_DRIVER.get();
         if (driver != null) {
             try {
+                driver.quit();
                 driver.close();
             } catch(Exception e) {
                 // ignore, this happens when running individual tests sometimes
