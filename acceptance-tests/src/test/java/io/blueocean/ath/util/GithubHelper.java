@@ -26,6 +26,7 @@ public class GithubHelper {
     private String organizationOrUsername;
     private String accessToken;
     private boolean deleteRepoAfter = false;
+
     private boolean useRandomSuffix = false;
 
     public static String getRandomSuffix() {
@@ -105,9 +106,9 @@ public class GithubHelper {
 
     // getters/setters
 
-    public String getRepositoryName() {
-        return repositoryName;
-    }
+    public String getRepositoryName() { return repositoryName;  }
+
+    public String getActualRepositoryName() { return githubRepository.getName(); }
 
     public String getOrganizationOrUsername() {
         return organizationOrUsername;
@@ -116,4 +117,6 @@ public class GithubHelper {
     public String getAccessToken() {
         return accessToken;
     }
+
+    public GHRepository getGithubRepository() { return githubRepository; }
 }
