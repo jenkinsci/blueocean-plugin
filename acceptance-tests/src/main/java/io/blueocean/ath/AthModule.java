@@ -22,8 +22,12 @@ import io.blueocean.ath.pages.blue.PullRequestsPage;
 import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import io.blueocean.ath.pages.blue.RunDetailsTestsPage;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.Augmenter;
@@ -41,6 +45,8 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 public class AthModule extends AbstractModule {
+    private static final Logger logger = Logger.getLogger(AthModule.class);
+
     @Override
     protected void configure() {
         Config cfg = new Config();
@@ -51,11 +57,11 @@ public class AthModule extends AbstractModule {
         bind(Config.class).toInstance(cfg);
 
         String webDriverType = cfg.getString("webDriverType");
-        DesiredCapabilities capability;
+        MutableCapabilities capability;
         if ("firefox".equals(webDriverType)) {
-            capability = DesiredCapabilities.firefox();
+            capability = new FirefoxOptions();
         } else {
-            capability = DesiredCapabilities.chrome();
+            capability = new ChromeOptions();
         }
 
         LoggingPreferences logPrefs = new LoggingPreferences();
@@ -76,6 +82,8 @@ public class AthModule extends AbstractModule {
             WebDriver driver = new RemoteWebDriver(new URL(webDriverUrl), capability);
             if (cfg.getBoolean("saucelabs", false)) {
                 LocalDriver.enableSauce();
+                logger.info("SauceOnDemandSessionID=" + ((RemoteWebDriver) driver).getSessionId().toString());
+                System.out.println("SauceOnDemandSessionID=" + ((RemoteWebDriver) driver).getSessionId().toString());
             }
             LocalDriver.setCurrent(driver);
 

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.blueocean</groupId>
@@ -18,10 +17,10 @@
 
 
     <repositories>
-      <repository>
-        <id>repo.jenkins-ci.org</id>
-        <url>http://repo.jenkins-ci.org/public/</url>
-      </repository>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
         <repository>
             <snapshots>
                 <enabled>false</enabled>
@@ -32,10 +31,10 @@
         </repository>
     </repositories>
     <pluginRepositories>
-      <pluginRepository>
-        <id>repo.jenkins-ci.org</id>
-        <url>http://repo.jenkins-ci.org/public/</url>
-      </pluginRepository>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
     </pluginRepositories>
 
     <dependencies>
@@ -47,12 +46,12 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>2.53.0</version>
+            <version>3.141.59</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-firefox-driver</artifactId>
-            <version>2.53.0</version>
+            <version>3.141.59</version>
         </dependency>
         <!-- begin HttpRequest helper -->
         <dependency>
@@ -128,22 +127,10 @@
             <version>2.7.1</version>
         </dependency>
         <!-- end wiremock -->
-        <!-- override guava from bitbucket-rest but ensure UrlEscapers is available -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>18.0</version>
-        </dependency>
         <dependency>
             <groupId>com.cdancy</groupId>
             <artifactId>bitbucket-rest</artifactId>
-            <version>1.0.3</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>2.3.0</version>
         </dependency>
         <!-- end guava -->
     </dependencies>
@@ -268,7 +255,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <includes>
-                              <include>**/live/*Test.java</include>
+                                <include>**/live/*Test.java</include>
                             </includes>
                         </configuration>
                     </plugin>

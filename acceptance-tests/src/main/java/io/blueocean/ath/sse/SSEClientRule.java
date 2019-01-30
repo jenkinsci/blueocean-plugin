@@ -28,6 +28,7 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 
 public class SSEClientRule extends ExternalResource {
@@ -119,21 +120,15 @@ public class SSEClientRule extends ExternalResource {
         logger.info("SSE Connected " + clientId);
     }
 
-    public void untilEvent(Predicate<JSONObject> isEvent) {
-        new FluentWait<List<JSONObject>>(getEvents())
-            .pollingEvery(1000, TimeUnit.MILLISECONDS)
-            .withTimeout(20, TimeUnit.SECONDS)
-            .ignoring(NoSuchElementException.class)
-            .until((Predicate<List<JSONObject>>) events -> Iterables.any(events, isEvent));
-    }
-
     public void untilEvents(Predicate<List<JSONObject>> isEvents) {
         new FluentWait<>(getEvents())
             .pollingEvery(1000, TimeUnit.MILLISECONDS)
             .withTimeout(120, TimeUnit.SECONDS)
             .ignoring(NoSuchElementException.class)
-            .until((Predicate<List<JSONObject>>) a -> {
-               return isEvents.apply(a);
+            .until(new Function<List<JSONObject>, Boolean>() {
+                public Boolean apply(List<JSONObject> events) {
+                    return isEvents.apply(events);
+                }
             });
     }
 }

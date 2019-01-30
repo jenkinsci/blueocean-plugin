@@ -21,7 +21,6 @@ import org.openqa.selenium.remote.ScreenshotException;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 
-import java.util.Arrays;
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;

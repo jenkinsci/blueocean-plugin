@@ -102,11 +102,11 @@ public class ActivityPage {
     }
 
     public By getSelectorForBranch(String branchName) {
-        return By.xpath("//*[@data-branch=\"" + branchName + "\"]");
+        return By.xpath("//*[@data-branch=\"" + branchName + "\"]//a");
     }
 
     public WebElement getRunRowForBranch(String branchName) {
-        return wait.until(getSelectorForBranch(branchName));
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(getSelectorForBranch(branchName)));
     }
 
     public By getSelectorForRowCells() {
