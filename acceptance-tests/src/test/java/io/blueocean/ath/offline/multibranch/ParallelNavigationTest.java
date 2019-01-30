@@ -14,6 +14,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -155,7 +156,7 @@ public class ParallelNavigationTest {
         navTestWithNoStepsNoStagesPipeline.getRunDetailsPipelinePage().open(1);
 
         logger.info("Wait for log to appear");
-        wait.until(By.cssSelector(".log-body"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".log-body")));
     }
 
     /**
