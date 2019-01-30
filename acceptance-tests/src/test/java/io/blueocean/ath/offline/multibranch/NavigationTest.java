@@ -13,6 +13,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.By;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -53,7 +54,7 @@ public class NavigationTest extends BlueOceanAcceptanceTest {
 
         branchPage.clickHistoryButton("feature/1");
         activityPage.open();
-        activityPage.getRunRowForBranch("feature@2").click();
+        activityPage.getRunRowForBranch("feature@2").findElement(By.cssSelector("a")).click();
         pipeline.getRunDetailsPipelinePage().checkUrl("feature%402", 1);
         pipeline.getRunDetailsPipelinePage().checkBasicDomElements();
     }
