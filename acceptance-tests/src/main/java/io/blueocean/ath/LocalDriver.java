@@ -71,6 +71,10 @@ public class LocalDriver implements WebDriver {
         sauceLabsMode = true;
     }
 
+    public static boolean isSauceLabsMode() {
+        return sauceLabsMode;
+    }
+
     /**
      * Used for callbacks in a specific browser context
      */

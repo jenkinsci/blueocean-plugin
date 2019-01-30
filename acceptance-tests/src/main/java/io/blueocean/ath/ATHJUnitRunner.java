@@ -17,6 +17,7 @@ import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.ScreenshotException;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -87,6 +88,10 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
                 }
 
                 try {
+                    if (LocalDriver.isSauceLabsMode()) {
+                        logger.info("SauceOnDemandSessionID=" + ((RemoteWebDriver) LocalDriver.getDriver()).getSessionId().toString());
+                    }
+
                     next.evaluate();
                     outputConsoleLogs();
                     LocalDriver.executeSauce("job-result=passed");
