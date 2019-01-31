@@ -27,8 +27,9 @@
     <revision>1.11.0</revision>
     <changelist>-SNAPSHOT</changelist>
     <java.level>8</java.level>
-    <jenkins.version>2.150.1</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
-    <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
+    <!--<jenkins.version>2.150.2</jenkins.version> &lt;!&ndash; Should be kept in sync with the version resulting from Dockerfile FROM statement&ndash;&gt;-->
+    <jenkins.version>2.138.4</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
+    <javadoc.exec.goal>javadoc-no-forknd </javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.6</frontend-version>
     <node.version>6.4.0</node.version>
     <npm.version>3.10.3</npm.version>
