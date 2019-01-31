@@ -183,8 +183,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
         // it should bring the browser to the run details page for the first run
         driver.get(base+"/job/anotherFolder/job/三百/job/ñba/job/七/job/"+pipelineName+"/job/feature%252F1/1/");
         wait.until(By.xpath("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']")).click();
-        assertEquals(driver.getCurrentUrl(), base+getNestedPipelinePath("anotherFolder") +
-                pipelineName+"/detail/feature%2F1/1/");
+        wait.until(ExpectedConditions.urlContains(getNestedPipelinePath("anotherFolder") + pipelineName + "/detail/feature%2F1/1/pipeline"));
         wait.until(ExpectedConditions.or(
                 ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .log-wrapper")),
                 ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .Steps .logConsole"))

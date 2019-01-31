@@ -50,7 +50,7 @@ public class WaitUtil {
     }
 
     public <T> T until(Function<WebDriver, T> function, String errorMessage) {
-        return until(function, DEFAULT_TIMEOUT);
+        return until(function, DEFAULT_TIMEOUT, errorMessage);
     }
 
     public WebElement until(WebElement element) {
