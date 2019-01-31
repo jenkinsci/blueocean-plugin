@@ -20,17 +20,17 @@ public class SSEEvents {
      * @return
      */
     public static Predicate<List<JSONObject>> activityComplete(String fullName){
-            System.out.println("!!!!!! making an activityComplete predicate"); // TODO: RM
+//            System.out.println("!!!!!! making an activityComplete predicate"); // TODO: RM
         return list -> {
 
-            System.out.println("!!!!!! checking a list of size " + list.size()); // TODO: RM
+//            System.out.println("!!!!!! checking a list of size " + list.size()); // TODO: RM
 
 
             List<JSONObject> jobsQueued = Lists.newArrayList();
             List<JSONObject> jobsFinished = Lists.newArrayList();
             for (JSONObject json : list) {
 
-                System.out.println("  * json = " + json.toString()); // TODO: RM
+//                System.out.println("  * json = " + json.toString()); // TODO: RM
 
                 if(json.has("jenkins_event") && json.getString("jenkins_event").equals("job_run_queue_enter")) {
                     if(json.has("jenkins_object_type") &&

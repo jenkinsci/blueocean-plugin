@@ -5,10 +5,10 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
+//import com.mashape.unirest.http.HttpResponse;
+//import com.mashape.unirest.http.JsonNode;
+//import com.mashape.unirest.http.Unirest;
+//import com.mashape.unirest.http.exceptions.UnirestException;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.JenkinsUser;
 import org.apache.log4j.Logger;
@@ -40,6 +40,8 @@ import javax.ws.rs.core.UriBuilder;
 public class SSEClientRule extends ExternalResource {
     private Logger logger = Logger.getLogger(SSEClientRule.class);
 
+    private Cookie sessionCookie;
+
     @Override
     protected void before() throws Throwable {
         events = Lists.newCopyOnWriteArrayList();
@@ -48,7 +50,12 @@ public class SSEClientRule extends ExternalResource {
 
     @Override
     protected void after() {
+
+        if (source != null) {
+            source.close();
+        }
         clear();
+
     }
 
     @Inject
@@ -59,10 +66,11 @@ public class SSEClientRule extends ExternalResource {
     JenkinsUser admin;
 
     public SSEClientRule() {
-        mapper = new ObjectMapper();
+//        mapper = new ObjectMapper();
+        System.out.println("new SSEClientRule()!"); // TODO: RM
     }
 
-    ObjectMapper mapper;
+//    ObjectMapper mapper;
 
     List<JSONObject> events;
 
@@ -85,7 +93,7 @@ public class SSEClientRule extends ExternalResource {
     }
 
     private EventListener listener = inboundEvent -> {
-        System.out.println(">>>>>> SSE inbound " + inboundEvent); // TODO: RM
+//        System.out.println(">>>>>> SSE inbound " + inboundEvent); // TODO: RM
         JSONObject jenkinsEvent = new JSONObject(inboundEvent.readData());
         if (jenkinsEvent.has("jenkins_event") && jenkinsEvent.getString("jenkins_event").equals("job_run_queue_enter")) {
             if (jenkinsEvent.has("jenkins_object_type") &&
@@ -95,7 +103,7 @@ public class SSEClientRule extends ExternalResource {
                 logger.info("Build for " + pipelineName + " entered queue");
             }
         }
-        System.out.println(">>>>>> SSE adding jenkinsEvent " + jenkinsEvent); // TODO: RM
+//        System.out.println(">>>>>> SSE adding jenkinsEvent " + jenkinsEvent); // TODO: RM
         events.add(jenkinsEvent);
         if (logEvents) {
             logger.info("SSE - " + jenkinsEvent.toString());
@@ -105,31 +113,35 @@ public class SSEClientRule extends ExternalResource {
     EventSource source;
 
     public void connect() throws UnirestException, InterruptedException {
+
         SecureRandom rnd = new SecureRandom();
         String clientId = "ath-" + rnd.nextLong();
         HttpResponse<JsonNode> httpResponse = Unirest.get(baseUrl + "/sse-gateway/connect?clientId=" + clientId).basicAuth(admin.username, admin.password).asJson();
         JsonNode body = httpResponse.getBody();
         Client client = ClientBuilder.newBuilder().register(SseFeature.class).build();
         final String httpSessionId = body.getObject().getJSONObject("data").getString("jsessionid");
-        System.out.println("****** gateway connect response body " + body); // TODO: RM
+//        System.out.println("****** gateway connect response body " + body); // TODO: RM
+                System.out.println("httpSessionId: " + httpSessionId); // TODO: RM
 //        WebTarget target = client.target(baseUrl + "/sse-gateway/listen/" + clientId + ";jsessionid=" + httpSessionId);
 //        Cookie sessionCookie = new Cookie("JSESSIONID",httpSessionId);
 
+        checkResponseForCookie(httpResponse);
+
         WebTarget target = client.target(baseUrl + "/sse-gateway/listen/" + clientId);
 
-        final String rawSessionCookie = httpResponse.getHeaders().getFirst("Set-Cookie");
-        if (rawSessionCookie != null) {
-                System.out.println("Cookie: " + rawSessionCookie); // TODO: RM
-            target = new CookieAddedWebTarget(target, Cookie.valueOf(rawSessionCookie));
+        if (sessionCookie != null) {
+            target = new CookieAddedWebTarget(target,sessionCookie);
         } else {
-            System.out.println("No Set-Cookie response header!"); // TODO: RM
-            for (String headerName:httpResponse.getHeaders().keySet()) {
-                System.out.println("   Found header: " + headerName); // TODO: RM
-            }
+            // TODO: fix it so this doesn't happen, or create a new valid cookie somehow!
+            throw new RuntimeException("Reusing session " + httpSessionId + " but this instance has never seen the cookie!");
         }
 
-
         // TODO: put sessionid on url for old jenkins, but cookie for modern jenkins?
+
+
+
+
+
         source = EventSource.target(target).build();
         source.register(listener);
         source.open();
@@ -146,6 +158,24 @@ public class SSEClientRule extends ExternalResource {
                                                .body(req).asJson();
 
         logger.info("SSE Connected " + clientId);
+    }
+
+    /**
+     * Checks the headers for the session cookie and extracts it when received, so we can use it on subsequent
+     * tests within the same session.
+     */
+    private void checkResponseForCookie(HttpResponse<?> httpResponse) {
+        List<String> cookies = httpResponse.getHeaders().get("Set-Cookie");
+
+        if (cookies != null) {
+            for (String rawCookie : cookies) {
+                if (rawCookie.toUpperCase().contains("JSESSIONID")) {
+                    System.out.println("Session cookie found " + rawCookie); // TODO: RM
+                    this.sessionCookie = Cookie.valueOf(rawCookie);
+                    break;
+                }
+            }
+        }
     }
 
     public void untilEvent(Predicate<JSONObject> isEvent) {
