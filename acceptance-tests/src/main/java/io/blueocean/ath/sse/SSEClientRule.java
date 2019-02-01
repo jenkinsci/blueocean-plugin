@@ -5,13 +5,11 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-//import com.mashape.unirest.http.HttpResponse;
-//import com.mashape.unirest.http.JsonNode;
-//import com.mashape.unirest.http.Unirest;
-//import com.mashape.unirest.http.exceptions.UnirestException;
+
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.JenkinsUser;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.media.sse.EventListener;
 import org.glassfish.jersey.media.sse.EventSource;
 import org.glassfish.jersey.media.sse.SseFeature;
@@ -23,6 +21,7 @@ import org.openqa.selenium.support.ui.FluentWait;
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import java.net.URI;
@@ -34,7 +33,16 @@ import java.util.concurrent.TimeUnit;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import javax.ws.rs.client.ClientRequestContext;
+import javax.ws.rs.client.ClientRequestFilter;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.xml.bind.DatatypeConverter;
 
 
 public class SSEClientRule extends ExternalResource {
@@ -112,34 +120,40 @@ public class SSEClientRule extends ExternalResource {
 
     EventSource source;
 
-    public void connect() throws UnirestException, InterruptedException {
+    public void connect()  {
 
         SecureRandom rnd = new SecureRandom();
         String clientId = "ath-" + rnd.nextLong();
-        HttpResponse<JsonNode> httpResponse = Unirest.get(baseUrl + "/sse-gateway/connect?clientId=" + clientId).basicAuth(admin.username, admin.password).asJson();
-        JsonNode body = httpResponse.getBody();
-        Client client = ClientBuilder.newBuilder().register(SseFeature.class).build();
-        final String httpSessionId = body.getObject().getJSONObject("data").getString("jsessionid");
-//        System.out.println("****** gateway connect response body " + body); // TODO: RM
-                System.out.println("httpSessionId: " + httpSessionId); // TODO: RM
-//        WebTarget target = client.target(baseUrl + "/sse-gateway/listen/" + clientId + ";jsessionid=" + httpSessionId);
-//        Cookie sessionCookie = new Cookie("JSESSIONID",httpSessionId);
 
-        checkResponseForCookie(httpResponse);
 
-        WebTarget target = client.target(baseUrl + "/sse-gateway/listen/" + clientId);
+        Client restClient = ClientBuilder.newClient().register(HttpAuthenticationFeature.basic(admin.username, admin.password));
+        Response connectResponse = restClient.target(baseUrl + "/sse-gateway/connect?clientId=" + clientId).request().get();
+
+
+//
+//        HttpResponse<JsonNode> httpResponse = Unirest.get(baseUrl + "/sse-gateway/connect?clientId=" + clientId).basicAuth(admin.username, admin.password).asJson();
+//        JsonNode body = httpResponse.getBody();
+//        final String httpSessionId = body.getObject().getJSONObject("data").getString("jsessionid");
+//        System.out.println("httpSessionId: " + httpSessionId); // TODO: RM
+//
+//
+
+
+
+
+        checkResponseForCookie(connectResponse);
+
+        Client sseClient = ClientBuilder.newBuilder().register(SseFeature.class).build();
+        WebTarget target = sseClient.target(baseUrl + "/sse-gateway/listen/" + clientId);
 
         if (sessionCookie != null) {
-            target = new CookieAddedWebTarget(target,sessionCookie);
+            target = new CookieAddedWebTarget(target, sessionCookie);
         } else {
             // TODO: fix it so this doesn't happen, or create a new valid cookie somehow!
-            throw new RuntimeException("Reusing session " + httpSessionId + " but this instance has never seen the cookie!");
+            throw new RuntimeException("Reusing session but this instance has never seen the cookie!");
         }
 
         // TODO: put sessionid on url for old jenkins, but cookie for modern jenkins?
-
-
-
 
 
         source = EventSource.target(target).build();
@@ -153,9 +167,16 @@ public class SSEClientRule extends ExternalResource {
                                 .put("jenkins_channel", "job"))))
             .put("unsubscribe", new JSONArray());
 
-        HttpResponse<JsonNode> result = Unirest.post(baseUrl + "/sse-gateway/configure?batchId=1")
-                                               .basicAuth(admin.username, admin.password)
-                                               .body(req).asJson();
+        Response configureResponse = restClient
+            .target(baseUrl + "/sse-gateway/configure?batchId=1")
+            .request()
+            .cookie(sessionCookie)
+            .buildPost(Entity.json(req.toString()))
+            .invoke();
+
+//        HttpResponse<JsonNode> result = Unirest.post(baseUrl + "/sse-gateway/configure?batchId=1")
+//                                               .basicAuth(admin.username, admin.password)
+//                                               .body(req).asJson();
 
         logger.info("SSE Connected " + clientId);
     }
@@ -163,12 +184,14 @@ public class SSEClientRule extends ExternalResource {
     /**
      * Checks the headers for the session cookie and extracts it when received, so we can use it on subsequent
      * tests within the same session.
+     * @param httpResponse
      */
-    private void checkResponseForCookie(HttpResponse<?> httpResponse) {
-        List<String> cookies = httpResponse.getHeaders().get("Set-Cookie");
+    private void checkResponseForCookie(Response httpResponse) {
+        List<Object> cookies = httpResponse.getHeaders().get("Set-Cookie");
 
         if (cookies != null) {
-            for (String rawCookie : cookies) {
+            for (Object rawCookieObj : cookies) {
+                String rawCookie = rawCookieObj.toString();
                 if (rawCookie.toUpperCase().contains("JSESSIONID")) {
                     System.out.println("Session cookie found " + rawCookie); // TODO: RM
                     this.sessionCookie = Cookie.valueOf(rawCookie);
@@ -214,6 +237,7 @@ class CookieAddedWebTarget implements WebTarget {
     }
 
     // Inject that cookie whenever someone requests a Builder (which EventSource does):
+
     public Invocation.Builder request() {
         return delegate.request().cookie(cookie);
     }
@@ -226,7 +250,14 @@ class CookieAddedWebTarget implements WebTarget {
         return delegate.request(paramArrayOfMediaType).cookie(cookie);
     }
 
-    //All other methods from WebTarget are delegated as-is:
+    /**
+     * For methods that return another WebTarget, we wrap in another CAWT so we don't lose the cookie
+     */
+    private WebTarget wrap(WebTarget newDelegate) {
+        return new CookieAddedWebTarget(newDelegate, cookie);
+    }
+
+    // All other methods from WebTarget are delegated as-is:
 
     @Override
     public URI getUri() {
@@ -240,47 +271,47 @@ class CookieAddedWebTarget implements WebTarget {
 
     @Override
     public WebTarget path(String s) {
-        return delegate.path(s);
+        return wrap(delegate.path(s));
     }
 
     @Override
     public WebTarget resolveTemplate(String s, Object o) {
-        return delegate.resolveTemplate(s, o);
+        return wrap(delegate.resolveTemplate(s, o));
     }
 
     @Override
     public WebTarget resolveTemplate(String s, Object o, boolean b) {
-        return delegate.resolveTemplate(s, o, b); // That aughtta hold those SOBs </brockman>
+        return wrap(delegate.resolveTemplate(s, o, b)); // That aughtta hold those SOBs </brockman>
     }
 
     @Override
     public WebTarget resolveTemplateFromEncoded(String s, Object o) {
-        return delegate.resolveTemplateFromEncoded(s, o);
+        return wrap(delegate.resolveTemplateFromEncoded(s, o));
     }
 
     @Override
     public WebTarget resolveTemplates(Map<String, Object> map) {
-        return delegate.resolveTemplates(map);
+        return wrap(delegate.resolveTemplates(map));
     }
 
     @Override
     public WebTarget resolveTemplates(Map<String, Object> map, boolean b) {
-        return delegate.resolveTemplates(map, b);
+        return wrap(delegate.resolveTemplates(map, b));
     }
 
     @Override
     public WebTarget resolveTemplatesFromEncoded(Map<String, Object> map) {
-        return delegate.resolveTemplatesFromEncoded(map);
+        return wrap(delegate.resolveTemplatesFromEncoded(map));
     }
 
     @Override
     public WebTarget matrixParam(String s, Object... objects) {
-        return delegate.matrixParam(s, objects);
+        return wrap(delegate.matrixParam(s, objects));
     }
 
     @Override
     public WebTarget queryParam(String s, Object... objects) {
-        return delegate.queryParam(s, objects);
+        return wrap(delegate.queryParam(s, objects));
     }
 
     @Override
@@ -290,47 +321,47 @@ class CookieAddedWebTarget implements WebTarget {
 
     @Override
     public WebTarget property(String s, Object o) {
-        return delegate.property(s, o);
+        return wrap(delegate.property(s, o));
     }
 
     @Override
     public WebTarget register(Class<?> aClass) {
-        return delegate.register(aClass);
+        return wrap(delegate.register(aClass));
     }
 
     @Override
     public WebTarget register(Class<?> aClass, int i) {
-        return delegate.register(aClass, i);
+        return wrap(delegate.register(aClass, i));
     }
 
     @Override
     public WebTarget register(Class<?> aClass, Class<?>... classes) {
-        return delegate.register(aClass, classes);
+        return wrap(delegate.register(aClass, classes));
     }
 
     @Override
     public WebTarget register(Class<?> aClass, Map<Class<?>, Integer> map) {
-        return delegate.register(aClass, map);
+        return wrap( delegate.register(aClass, map));
     }
 
     @Override
     public WebTarget register(Object o) {
-        return delegate.register(o);
+        return wrap(delegate.register(o));
     }
 
     @Override
     public WebTarget register(Object o, int i) {
-        return delegate.register(o, i);
+        return wrap(delegate.register(o, i));
     }
 
     @Override
     public WebTarget register(Object o, Class<?>... classes) {
-        return delegate.register(o, classes);
+        return wrap(delegate.register(o, classes));
     }
 
     @Override
     public WebTarget register(Object o, Map<Class<?>, Integer> map) {
-        return delegate.register(o, map);
+        return wrap(delegate.register(o, map));
     }
 
 }
