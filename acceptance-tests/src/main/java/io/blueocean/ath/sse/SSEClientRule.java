@@ -1,11 +1,9 @@
 package io.blueocean.ath.sse;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.JenkinsUser;
 import org.apache.log4j.Logger;
@@ -24,26 +22,17 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Configuration;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
-import javax.ws.rs.core.Configuration;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.xml.bind.DatatypeConverter;
-
 
 public class SSEClientRule extends ExternalResource {
     private Logger logger = Logger.getLogger(SSEClientRule.class);
@@ -51,7 +40,7 @@ public class SSEClientRule extends ExternalResource {
     private Cookie sessionCookie;
 
     @Override
-    protected void before() throws Throwable {
+    protected void before() {
         events = Lists.newCopyOnWriteArrayList();
         connect();
     }
@@ -74,11 +63,7 @@ public class SSEClientRule extends ExternalResource {
     JenkinsUser admin;
 
     public SSEClientRule() {
-//        mapper = new ObjectMapper();
-        System.out.println("new SSEClientRule()!"); // TODO: RM
     }
-
-//    ObjectMapper mapper;
 
     List<JSONObject> events;
 
@@ -101,7 +86,6 @@ public class SSEClientRule extends ExternalResource {
     }
 
     private EventListener listener = inboundEvent -> {
-//        System.out.println(">>>>>> SSE inbound " + inboundEvent); // TODO: RM
         JSONObject jenkinsEvent = new JSONObject(inboundEvent.readData());
         if (jenkinsEvent.has("jenkins_event") && jenkinsEvent.getString("jenkins_event").equals("job_run_queue_enter")) {
             if (jenkinsEvent.has("jenkins_object_type") &&
@@ -111,7 +95,6 @@ public class SSEClientRule extends ExternalResource {
                 logger.info("Build for " + pipelineName + " entered queue");
             }
         }
-//        System.out.println(">>>>>> SSE adding jenkinsEvent " + jenkinsEvent); // TODO: RM
         events.add(jenkinsEvent);
         if (logEvents) {
             logger.info("SSE - " + jenkinsEvent.toString());
@@ -120,7 +103,7 @@ public class SSEClientRule extends ExternalResource {
 
     EventSource source;
 
-    public void connect()  {
+    public void connect() {
 
         SecureRandom rnd = new SecureRandom();
         String clientId = "ath-" + rnd.nextLong();
@@ -129,32 +112,14 @@ public class SSEClientRule extends ExternalResource {
         Client restClient = ClientBuilder.newClient().register(HttpAuthenticationFeature.basic(admin.username, admin.password));
         Response connectResponse = restClient.target(baseUrl + "/sse-gateway/connect?clientId=" + clientId).request().get();
 
-
-//
-//        HttpResponse<JsonNode> httpResponse = Unirest.get(baseUrl + "/sse-gateway/connect?clientId=" + clientId).basicAuth(admin.username, admin.password).asJson();
-//        JsonNode body = httpResponse.getBody();
-//        final String httpSessionId = body.getObject().getJSONObject("data").getString("jsessionid");
-//        System.out.println("httpSessionId: " + httpSessionId); // TODO: RM
-//
-//
-
-
-
-
-        checkResponseForCookie(connectResponse);
+        checkResponseForCookie(connectResponse);  // TODO: maybe inline this
 
         Client sseClient = ClientBuilder.newBuilder().register(SseFeature.class).build();
         WebTarget target = sseClient.target(baseUrl + "/sse-gateway/listen/" + clientId);
 
         if (sessionCookie != null) {
             target = new CookieAddedWebTarget(target, sessionCookie);
-        } else {
-            // TODO: fix it so this doesn't happen, or create a new valid cookie somehow!
-            throw new RuntimeException("Reusing session but this instance has never seen the cookie!");
         }
-
-        // TODO: put sessionid on url for old jenkins, but cookie for modern jenkins?
-
 
         source = EventSource.target(target).build();
         source.register(listener);
@@ -174,16 +139,13 @@ public class SSEClientRule extends ExternalResource {
             .buildPost(Entity.json(req.toString()))
             .invoke();
 
-//        HttpResponse<JsonNode> result = Unirest.post(baseUrl + "/sse-gateway/configure?batchId=1")
-//                                               .basicAuth(admin.username, admin.password)
-//                                               .body(req).asJson();
-
         logger.info("SSE Connected " + clientId);
     }
 
     /**
      * Checks the headers for the session cookie and extracts it when received, so we can use it on subsequent
      * tests within the same session.
+     *
      * @param httpResponse
      */
     private void checkResponseForCookie(Response httpResponse) {
@@ -193,7 +155,6 @@ public class SSEClientRule extends ExternalResource {
             for (Object rawCookieObj : cookies) {
                 String rawCookie = rawCookieObj.toString();
                 if (rawCookie.toUpperCase().contains("JSESSIONID")) {
-                    System.out.println("Session cookie found " + rawCookie); // TODO: RM
                     this.sessionCookie = Cookie.valueOf(rawCookie);
                     break;
                 }
@@ -341,7 +302,7 @@ class CookieAddedWebTarget implements WebTarget {
 
     @Override
     public WebTarget register(Class<?> aClass, Map<Class<?>, Integer> map) {
-        return wrap( delegate.register(aClass, map));
+        return wrap(delegate.register(aClass, map));
     }
 
     @Override
