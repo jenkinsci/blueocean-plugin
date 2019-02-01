@@ -79,6 +79,13 @@ public class GitCreationPage {
 
         wait.until(By.xpath("//*[contains(text(), 'Jenkins needs a user credential')]"));
 
+        try {
+            // depending on the credentials for the url, this might need to be switched to create new credentials
+            wait.until(By.xpath("//*[contains(text(), 'Create new credential')]"), 1000).click();
+        } catch (org.openqa.selenium.InvalidElementStateException e) {
+            // do nothing if not found
+        }
+
         wait.until(By.cssSelector("div.text-username input")).sendKeys(user);
         wait.until(By.cssSelector("div.text-password input")).sendKeys(pass);
         wait.until(By.cssSelector(".button-create-credential")).click();
