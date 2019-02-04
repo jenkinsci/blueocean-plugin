@@ -11,7 +11,7 @@
     <version>0.2-beta-2-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <description>Show what executors are doing what.</description>
-    <url>https://wiki.jenkins-ci.org/display/JENKINS/Amazing+Plugin</url>
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
     <properties>
         <java.level>8</java.level>
         <jenkins.version>2.121.1</jenkins.version>
