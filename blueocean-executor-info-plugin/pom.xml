@@ -8,7 +8,6 @@
     </parent>
     <name>Blue Ocean Executor Info</name>
     <artifactId>blueocean-executor-info</artifactId>
-    <version>0.2-beta-2-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <description>Show what executors are doing what.</description>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
