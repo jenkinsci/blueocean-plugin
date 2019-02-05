@@ -67,6 +67,7 @@ public class GitScmTest extends PipelineBaseTest {
         return new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/credentials/user/")
                 .data(credRequest).build(Map.class);
     }
@@ -101,6 +102,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map r = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -208,6 +210,7 @@ public class GitScmTest extends PipelineBaseTest {
         resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -229,6 +232,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -282,6 +286,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -306,6 +311,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -319,6 +325,7 @@ public class GitScmTest extends PipelineBaseTest {
         resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -368,6 +375,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
             .get(repoPath)
             .build(Map.class);
 
@@ -384,6 +392,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
             .get(repoPath)
             .build(Map.class);
 
@@ -409,6 +418,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
             .data(params)
             .put(scmValidatePath)
             .build(Map.class);
@@ -422,6 +432,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp2 = new RequestBuilder(baseUrl)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
             .get(repoPath)
             .build(Map.class);
 
@@ -451,6 +462,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
             .status(400)
             .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
             .data(params)
             .put(scmValidatePath)
             .build(Map.class);
@@ -481,6 +493,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
             .status(428)
             .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
             .data(params)
             .put(scmValidatePath)
             .build(Map.class);

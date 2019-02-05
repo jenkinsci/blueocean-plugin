@@ -556,7 +556,7 @@ public class PipelineApiTest extends BaseTest {
         p2.scheduleBuild2(0).waitForStart();
 
         // Run the third pipeline
-        Map r = request().post("/organizations/jenkins/pipelines/pipeline3/runs/").build(Map.class);
+        Map r = request().crumb( crumb ).post("/organizations/jenkins/pipelines/pipeline3/runs/").build(Map.class);
 
         // Ensure it is still in the queue
         assertNotNull(p3.getQueueItem());

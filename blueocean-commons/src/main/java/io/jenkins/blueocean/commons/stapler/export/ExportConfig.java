@@ -20,6 +20,8 @@ public class ExportConfig {
 
     private Flavor flavor = Flavor.JSON;
 
+    private boolean htmlEncode = false;
+
     /**
      * If true, output will be indented to make it easier for humans to understand.
      */
@@ -81,6 +83,21 @@ public class ExportConfig {
 
     public ExportConfig withFlavor(Flavor flavor){
         this.flavor = flavor;
+        return this;
+    }
+
+    /**
+     * If true, output will escaped to be embedded into html
+     */
+    public boolean isHtmlEncode() {
+        return htmlEncode;
+    }
+
+    /**
+     * If true, output will escaped to be embedded into html
+     */
+    public ExportConfig withHtmlEncode(boolean htmlEncode) {
+        this.htmlEncode = htmlEncode;
         return this;
     }
 }

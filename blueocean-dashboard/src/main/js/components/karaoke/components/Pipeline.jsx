@@ -270,8 +270,9 @@ export default class Pipeline extends Component {
                 pathArray.shift();
                 nextPath = `/${pathArray.join('/')}`;
             }
-            // check whether we have a parallel node
-            const isParallel = nextNode.isParallel;
+            // check whether we have a parallel node or seq parallel nodes
+            const isParallel = nextNode.isParallel || (nextNode.firstParent && nextNode.parent != nextNode.firstParent);
+
             // see whether we need to update the state
             if (nextNode.state === 'FINISHED' || isParallel) {
                 nextPath = `${nextPath}/${id}`; // only allow node param in finished nodes

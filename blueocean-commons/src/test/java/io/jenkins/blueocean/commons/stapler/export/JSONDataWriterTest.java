@@ -12,8 +12,13 @@ import static org.junit.Assert.assertEquals;
 
 public class JSONDataWriterTest {
     private ExportConfig config = new ExportConfig().withFlavor(Flavor.JSON).withClassAttribute(ClassAttributeBehaviour.IF_NEEDED.simple());
+    private ExportConfig configWithHtmlEncode = new ExportConfig().withFlavor(Flavor.JSON).withClassAttribute(ClassAttributeBehaviour.IF_NEEDED.simple()).withHtmlEncode(true);
 
     private <T> String serialize(T bean, Class<T> clazz) throws IOException {
+        return serialize(bean, clazz, config);
+    }
+
+    private <T> String serialize(T bean, Class<T> clazz, ExportConfig config) throws IOException {
         StringWriter w = new StringWriter();
         Model<T> model = new ModelBuilder().get(clazz);
         model.writeTo(bean, Flavor.JSON.createDataWriter(bean, w, config));
@@ -76,6 +81,16 @@ public class JSONDataWriterTest {
         public Supers(Super... elements) {
             this.elements = Arrays.asList(elements);
         }
+    }
+
+    @ExportedBean public static class Escaping {
+        @Exported public String specific() {return "<script>alert('hi')</script>";}
+    }
+
+    @Test
+    public void testEscaping() throws Exception {
+        assertEquals("{\"_class\":\"Escaping\",\"specific\":\"&lt;script&gt;alert('hi')&lt;/script&gt;\"}",
+                serialize(new Escaping(), Escaping.class, configWithHtmlEncode));
     }
 
 }

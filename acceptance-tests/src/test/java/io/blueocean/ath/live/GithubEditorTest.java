@@ -10,6 +10,7 @@ import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
 import io.blueocean.ath.sse.SSEClientRule;
+import io.blueocean.ath.util.GithubHelper;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
@@ -34,16 +35,6 @@ import java.util.Properties;
 public class GithubEditorTest {
     private Logger logger = Logger.getLogger(GithubEditorTest.class);
 
-    private Properties props = new Properties();
-    private String token;
-    private String organization;
-    private String repo;
-    private Boolean deleteRepo = false;
-    private Boolean randomSuffix = false;
-
-    private GitHub github;
-    private GHRepository ghRepository;
-
     @Inject
     GithubCreationPage creationPage;
 
@@ -62,6 +53,9 @@ public class GithubEditorTest {
     @Inject
     CustomJenkinsServer jenkins;
 
+    @Inject
+    GithubHelper helper;
+
     /**
      * Cleans up repository after the test has completed.
      *
@@ -69,15 +63,7 @@ public class GithubEditorTest {
      */
     @After
     public void deleteRepository() throws IOException {
-        if(deleteRepo) {
-            try {
-                GHRepository repositoryToDelete = github.getRepository(organization + "/" + repo);
-                repositoryToDelete.delete();
-                logger.info("Deleted repository " + repo);
-            } catch (FileNotFoundException e) {
-
-            }
-        }
+        helper.cleanupRepository();
     }
 
     /**
@@ -87,33 +73,7 @@ public class GithubEditorTest {
      */
     @Before
     public void createBlankRepo() throws IOException {
-        props.load(new FileInputStream("live.properties"));
-        token = props.getProperty("github.token");
-        organization = props.getProperty("github.org");
-        repo = props.getProperty("github.repo");
-        deleteRepo = Boolean.parseBoolean(props.getProperty("github.deleteRepo", "false"));
-        randomSuffix = Boolean.parseBoolean(props.getProperty("github.randomSuffix", "false"));
-
-        Assert.assertNotNull(token);
-        Assert.assertNotNull(organization);
-        Assert.assertNotNull(repo);
-
-        logger.info("Loaded test properties");
-        if(randomSuffix) {
-            SecureRandom random = new SecureRandom();
-            repo = repo + "-" + new BigInteger(50, random).toString(16);
-        }
-
-        github = GitHub.connectUsingOAuth(token);
-        Assert.assertTrue(github.isCredentialValid());
-        logger.info("Github credentials are valid");
-
-        deleteRepository();
-
-        ghRepository = github.createRepository(repo)
-            .autoInit(true)
-            .create();
-        logger.info("Created repository " + repo);
+        helper.createEmptyRepository();
     }
 
 
@@ -124,8 +84,8 @@ public class GithubEditorTest {
      */
     @Test
     public void testEditor() throws IOException {
-        creationPage.createPipeline(token, organization, repo, true);
-        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
         editorPage.simplePipeline();
         editorPage.saveBranch("master");
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
@@ -146,8 +106,8 @@ public class GithubEditorTest {
     @Test
     public void testEditorChangeAgentSetting() throws IOException {
         String newBranchName = "made-by-testEditorChangeAgentSetting";
-        creationPage.createPipeline(token, organization, repo, true);
-        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
         editorPage.simplePipeline();
         editorPage.saveBranch("master");
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
@@ -171,8 +131,8 @@ public class GithubEditorTest {
         String firstBranchName = "branch-before-delete";
         String secondBranchName = "branch-after-delete";
         String stageToDelete = "stage to be deleted";
-        creationPage.createPipeline(token, organization, repo, true);
-        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
         editorPage.simplePipeline();
         editorPage.saveBranch("master");
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
@@ -203,8 +163,8 @@ public class GithubEditorTest {
     @Test
     public void testEditorSetEnvironmentVariables() throws IOException {
         String newBranchName = "made-by-testEditorSetEnvironmentVariables";
-        creationPage.createPipeline(token, organization, repo, true);
-        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
         editorPage.simplePipeline();
         editorPage.saveBranch("master");
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
@@ -226,7 +186,7 @@ public class GithubEditorTest {
     public void testEditorWithSpace() throws IOException {
         // Gotta make Jenkins clear out its credential store or we might get a false positive depending on test order
         jenkins.deleteUserDomainCredential("alice", "blueocean-github-domain", "github");
-        creationPage.createPipeline(" " + token + " ", organization, repo, false);
+        creationPage.createPipeline(" " + helper.getAccessToken() + " ", helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), false);
     }
 
     /**
@@ -237,8 +197,8 @@ public class GithubEditorTest {
     @Test
     public void testEditorParallel() throws IOException {
         String branchNameForParallelPipeline = "branch-with-parallels";
-        creationPage.createPipeline(token, organization, repo, true);
-        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
         editorPage.parallelPipeline(4);
         editorPage.saveBranch(branchNameForParallelPipeline);
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();

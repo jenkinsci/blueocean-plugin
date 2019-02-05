@@ -42,6 +42,9 @@ interface State {
     selectedStage?: StageInfo;
 }
 
+/**
+ *  @deprecated Don't use this, the latest version exists in the ux-widgets repo, and Blue Ocean also uses that now
+ */
 export class PipelineGraph extends React.Component {
     props!: Props;
     state: State;

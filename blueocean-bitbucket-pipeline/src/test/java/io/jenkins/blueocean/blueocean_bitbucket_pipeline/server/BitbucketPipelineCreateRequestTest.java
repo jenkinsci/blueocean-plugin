@@ -42,6 +42,7 @@ public class BitbucketPipelineCreateRequestTest extends BbServerWireMock {
         Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
             .status(201)
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
+            .crumb( crumb )
             .post("/organizations/jenkins/pipelines/")
             .data(ImmutableMap.of(
                 "name","pipeline1",
@@ -91,6 +92,7 @@ public class BitbucketPipelineCreateRequestTest extends BbServerWireMock {
         Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
+                .crumb( crumb )
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of(
                     "name","pipeline1",
@@ -116,6 +118,7 @@ public class BitbucketPipelineCreateRequestTest extends BbServerWireMock {
         Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
             .status(201)
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
+            .crumb( crumb )
             .post("/organizations/jenkins/pipelines/")
             .data(ImmutableMap.of(
                 "name","pipeline1",
