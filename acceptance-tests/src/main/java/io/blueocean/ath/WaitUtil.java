@@ -210,6 +210,9 @@ public class WaitUtil {
      * Wait until the SSE is fully connected so events will propegate properly
      */
     public void untilSSEReady() {
+        // make sure the variable is defined
+        until( driver -> ((JavascriptExecutor)driver).executeScript("return typeof window.JenkinsBlueOceanCoreJSSSEConnected").equals("boolean"));
+        // then wait until sse is ready
         until( driver -> ((JavascriptExecutor)driver).executeScript("return window.JenkinsBlueOceanCoreJSSSEConnected").equals(true));
         logger.info("SSE connected");
     }
