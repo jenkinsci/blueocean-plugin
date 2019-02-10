@@ -1,0 +1,93 @@
+{
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
+    "actions": [],
+    "artifactsZipFile": null,
+    "causeOfBlockage": null,
+    "causes": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl$BlueCauseImpl",
+        "shortDescription": "Pull request #1466 updated",
+        "_capabilities": ["io.jenkins.blueocean.rest.model.BlueRun$BlueCause"]
+    }],
+    "changeSet": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ChangeSetResource",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/my-job/pipelines/my-job-mbp/branches/PR-1466/runs/79/changeset/fd033f4110e33a6162e3054ebd0f60c542bbff57/"
+            }
+        },
+        "affectedPaths": ["script/jenkins/intake.sh"],
+        "author": {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.UserImpl",
+            "_links": {
+                "favorites": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/users/gitHubUser/favorites/"
+                },
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/users/gitHubUser/"
+                }
+            },
+            "avatar": null,
+            "email": "mail@example.com",
+            "fullName": "A Guy",
+            "id": "gitHubUser",
+            "permission": {
+                "_class": "io.jenkins.blueocean.service.embedded.rest.UserImpl$1",
+                "administrator": false,
+                "credential": {
+                    "create": false,
+                    "view": false,
+                    "delete": false,
+                    "update": false,
+                    "manageDomains": false
+                },
+                "pipeline": {
+                    "create": false,
+                    "read": true,
+                    "start": true,
+                    "stop": true,
+                    "configure": false
+                },
+                "_capabilities": ["io.jenkins.blueocean.rest.model.BlueUserPermission"]
+            },
+            "_capabilities": ["io.jenkins.blueocean.rest.model.BlueUser", "io.jenkins.blueocean.rest.model.Resource"]
+        },
+        "commitId": "fd033f4110e33a6162e3054ebd0f60c542bbff57",
+        "issues": [],
+        "msg": "update goimports before run intake",
+        "timestamp": "2018-11-29T16:46:03.000+0000",
+        "url": "https://github.com/gitHubUser/my-job/commit/fd033f4110e33a6162e3054ebd0f60c542bbff57",
+        "_capabilities": ["io.jenkins.blueocean.rest.model.BlueChangeSetEntry", "io.jenkins.blueocean.rest.model.Resource"]
+    }],
+    "description": null,
+    "durationInMillis": 198873,
+    "enQueueTime": "2018-11-29T16:46:20.066+0000",
+    "endTime": "2018-11-29T16:49:38.949+0000",
+    "estimatedDurationInMillis": 654167,
+    "id": "79",
+    "name": null,
+    "organization": "jenkins",
+    "pipeline": "PR-1466",
+    "replayable": true,
+    "result": "ABORTED",
+    "runSummary": "aborted",
+    "startTime": "2018-11-29T16:46:20.076+0000",
+    "state": "FINISHED",
+    "type": "WorkflowRun",
+    "branch": {
+        "isPrimary": false,
+        "issues": [],
+        "url": "https://github.com/my-org/my-job/pull/1466"
+    },
+    "commitId": "fd033f4110e33a6162e3054ebd0f60c542bbff57+c706112e1294e643b2050dceeade0b5c87a0f2bb",
+    "commitUrl": null,
+    "pullRequest": {
+        "author": "gitHubUser",
+        "id": "1466",
+        "title": "My-Job pipeline initial version",
+        "url": "https://github.com/my-org/my-job/pull/1466"
+    },
+    "_capabilities": ["org.jenkinsci.plugins.workflow.job.WorkflowRun", "io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl", "io.jenkins.blueocean.rest.model.BlueRun", "io.jenkins.blueocean.rest.model.Resource"]
+}
