@@ -8,6 +8,7 @@ import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.KeyPair;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.EnvVars;
 import hudson.model.ItemGroup;
 import hudson.model.TaskListener;
@@ -305,6 +306,8 @@ class GitUtils {
         }
     }
 
+    // TODO - remove once https://github.com/spotbugs/spotbugs/issues/756 is resolved
+    @SuppressFBWarnings(value={"RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"}, justification="JDK11 produces different bytecode - https://github.com/spotbugs/spotbugs/issues/756")
     public static void commit(final Repository repo, final String refName, final String path, final byte[] contents,
             final String name, final String email, final String message, final TimeZone timeZone, final Date when) {
 
@@ -436,6 +439,8 @@ class GitUtils {
         return inCoreIndex;
     }
 
+    // TODO - remove once https://github.com/spotbugs/spotbugs/issues/756 is resolved
+    @SuppressFBWarnings(value={"RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"}, justification="JDK11 produces different bytecode - https://github.com/spotbugs/spotbugs/issues/756")
     static byte[] readFile(Repository repository, String ref, String filePath) {
         try (ObjectReader reader = repository.newObjectReader()) {
             ObjectId branchRef = repository.resolve(ref); // repository.exactRef(ref);

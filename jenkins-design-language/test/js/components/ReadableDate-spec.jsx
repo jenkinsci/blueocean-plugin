@@ -2,8 +2,12 @@ import React from 'react';
 import { assert } from 'chai';
 import { shallow } from 'enzyme';
 import moment from 'moment';
+import MockDate from 'mockdate';
 
 import { ReadableDate } from '../../../src/js/components';
+
+beforeEach(() => MockDate.set('2017-02-01'));
+afterEach(() => MockDate.reset());
 
 describe("ReadableDate", () => {
 

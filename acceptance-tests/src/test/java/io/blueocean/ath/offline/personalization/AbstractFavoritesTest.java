@@ -12,14 +12,16 @@ import io.blueocean.ath.factory.FreestyleJobFactory;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.Folder;
 import io.blueocean.ath.pages.blue.FavoritesDashboardPage;
-import io.jenkins.blueocean.util.HttpRequest;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import java.io.IOException;
 
 /**
@@ -56,10 +58,6 @@ abstract public class AbstractFavoritesTest implements WebDriverMixin {
 
     abstract protected Logger getLogger();
 
-    private HttpRequest httpRequest() {
-        return new HttpRequest(base + "/blue/rest");
-    }
-
     @Before
     public void setUp() throws IOException {
         resources = new ResourceResolver(getClass());
@@ -67,12 +65,8 @@ abstract public class AbstractFavoritesTest implements WebDriverMixin {
         String user = "alice";
         getLogger().info(String.format("deleting any existing favorites for %s", user));
 
-        httpRequest()
-            .Delete("/users/{user}/favorites/")
-            .urlPart("user", user)
-            .auth(user, user)
-            .status(204)
-            .as(Void.class);
+        Client restClient = ClientBuilder.newClient().register(HttpAuthenticationFeature.basic(user, user));
+        restClient.target(base + "/users/" + user + "/favorites/").request().delete();
     }
 
     @After

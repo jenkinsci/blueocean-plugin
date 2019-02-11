@@ -79,13 +79,18 @@ class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
                 Git activeRepo = getActiveRepository(repository);
                 Repository repo = activeRepo.getRepository();
                 File repoDir = repo.getDirectory().getParentFile();
+                FileInputStream fis = null;
                 try {
                     File f = new File(repoDir, filePath);
                     if (f.canRead()) {
-                        return IOUtils.toByteArray(new FileInputStream(f));
+                        fis = new FileInputStream(f);
+                        return IOUtils.toByteArray(fis);
                     }
                     return null;
                 } finally {
+                    if (fis != null) {
+                        fis.close();
+                    }
                     FileUtils.deleteDirectory(repoDir);
                 }
             }

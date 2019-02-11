@@ -25,6 +25,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestExtension;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -38,6 +40,7 @@ import static org.junit.Assert.*;
  * @author Vivek Pandey
  */
 @RunWith(Parameterized.class)
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GitScmTest extends PipelineBaseTest {
     public static final String HTTPS_GITHUB_NO_JENKINSFILE = "https://github.com/vivek/test-no-jenkins-file.git";
     public static final String HTTPS_GITHUB_PUBLIC = "https://github.com/cloudbeers/multibranch-demo.git";

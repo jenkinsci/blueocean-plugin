@@ -44,7 +44,10 @@ import org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrai
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.TestExtension;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -56,6 +59,8 @@ import static org.junit.Assert.*;
 /**
  * @author Vivek Pandey
  */
+@RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubPipelineCreateRequestTest extends GithubMockBase {
     @Test
     public void createPipeline() throws UnirestException, IOException {

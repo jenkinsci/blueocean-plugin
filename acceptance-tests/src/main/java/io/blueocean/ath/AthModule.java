@@ -80,12 +80,11 @@ public class AthModule extends AbstractModule {
             capability.setCapability("initialBrowserUrl", launchUrl);
 
             WebDriver driver = new RemoteWebDriver(new URL(webDriverUrl), capability);
+            LocalDriver.setCurrent(driver);
             if (cfg.getBoolean("saucelabs", false)) {
                 LocalDriver.enableSauce();
-                logger.info("SauceOnDemandSessionID=" + ((RemoteWebDriver) driver).getSessionId().toString());
                 System.out.println("SauceOnDemandSessionID=" + ((RemoteWebDriver) driver).getSessionId().toString());
             }
-            LocalDriver.setCurrent(driver);
 
             driver = new Augmenter().augment(driver);
             if (webDriverBrowserSize == null) {

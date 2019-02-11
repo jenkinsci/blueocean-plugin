@@ -60,9 +60,21 @@ export { BlueLogo } from './components/BlueLogo';
 export { ContentPageHeader, SiteHeader } from './components/ContentPageHeader';
 export { ResultPageHeader } from './components/ResultPageHeader';
 
+declare global {
+    interface Window {
+        JenkinsBlueOceanCoreJSSSEConnected: boolean;
+    }
+}
+window.JenkinsBlueOceanCoreJSSSEConnected = false;
+
 // Create and export the SSE connection that will be shared by other
 // Blue Ocean components via this package.
-export const sseConnection = sse.connect('jenkins-blueocean-core-js');
+export const sseConnection = sse.connect('jenkins-blueocean-core-js', function() {
+    // Declare SSE is fully loaded and ready for events.
+    // Mostly used by our ATH to prevent actions from happening
+    // too quickly
+    window.JenkinsBlueOceanCoreJSSSEConnected = true;
+});
 
 // export services as a singleton so all plugins will use the same instance
 
