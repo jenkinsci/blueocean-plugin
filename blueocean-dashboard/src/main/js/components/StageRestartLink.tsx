@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { RunApi as runApi } from '@jenkins-cd/blueocean-core-js';
-import { ToastUtils } from '@jenkins-cd/blueocean-core-js';
+import { Security, ToastUtils, RunApi as runApi } from '@jenkins-cd/blueocean-core-js';
 
 interface Props {
     title: string;
@@ -74,12 +73,16 @@ class StageRestartLink extends React.Component<Props, State> {
     }
 
     render() {
-        return (
-            <a className="restart-stage" onClick={() => this._onRestartStageClick()}>
-                <RestartStageIcon />
-                <span>{this.props.t('rundetail.logToolbar.restartStage', { 0: this.props.title })}</span>
-            </a>
-        );
+        if (Security.permit(this.props.pipeline).start()) {
+            return (
+                <a className="restart-stage" onClick={() => this._onRestartStageClick()}>
+                    <RestartStageIcon />
+                    <span>{this.props.t('rundetail.logToolbar.restartStage', { 0: this.props.title })}</span>
+                </a>
+            );
+        } else {
+            return false;
+        }
     }
 }
 
