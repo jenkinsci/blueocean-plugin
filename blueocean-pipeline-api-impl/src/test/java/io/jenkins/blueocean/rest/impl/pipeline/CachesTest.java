@@ -6,15 +6,26 @@ import hudson.ExtensionList;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
+import hudson.model.TaskListener;
+import hudson.util.StreamTaskListener;
+import jenkins.branch.BranchSource;
+import jenkins.branch.DefaultBranchPropertyStrategy;
 import jenkins.model.Jenkins;
+import jenkins.plugins.git.GitSCMSource;
+import jenkins.plugins.git.GitSampleRepoRule;
+import jenkins.plugins.git.traits.BranchDiscoveryTrait;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.metadata.ContributorMetadataAction;
 import jenkins.scm.api.metadata.ObjectMetadataAction;
 import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import jenkins.scm.impl.mock.MockChangeRequestSCMHead;
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -22,6 +33,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -74,6 +87,42 @@ public class CachesTest {
         when(job.getFullName()).thenReturn("cool-branch");
 
         when(jenkins.getItemByFullName("/Repo/cool-branch", Job.class)).thenReturn(job);
+    }
+
+    public static class UsesJenkinsRule {
+        @Rule public GitSampleRepoRule sampleRepo1 = new GitSampleRepoRule();
+        @Rule public JenkinsRule r = new JenkinsRule();
+        @Rule public TemporaryFolder tmp = new TemporaryFolder();
+
+        @Test
+        public void testBranchCacheLoaderNoMetadata() throws Exception {
+            sampleRepo1.init();
+            sampleRepo1.write("Jenkinsfile", "node { echo 'hi'; }");
+            sampleRepo1.git("add", "Jenkinsfile");
+            sampleRepo1.git("commit", "--all", "--message=buildable");
+
+            WorkflowMultiBranchProject project = r.jenkins.createProject(WorkflowMultiBranchProject.class, "Repo");
+            GitSCMSource source = new GitSCMSource(sampleRepo1.toString());
+            source.setTraits(new ArrayList<>(Arrays.asList(new BranchDiscoveryTrait())));
+
+            BranchSource branchSource = new BranchSource(source);
+            branchSource.setStrategy(new DefaultBranchPropertyStrategy(null));
+
+            TaskListener listener = StreamTaskListener.fromStderr();
+            assertEquals("[SCMHead{'master'}]", source.fetch(listener).toString());
+            project.setSourcesList(new ArrayList<>(Arrays.asList(branchSource)));
+
+            project.scheduleBuild2(0).getFuture().get();
+
+            Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(r.jenkins);
+            BranchImpl.Branch branch = loader.load(project.getFullName() + "/master").orNull();
+
+            // if branch is defined, it'll be sorted by branch
+            assertNotNull(branch);
+            assertTrue(branch.isPrimary());
+            assertEquals("master", branch.getUrl());
+        }
+
     }
 
     @Test
