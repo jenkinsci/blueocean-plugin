@@ -141,6 +141,7 @@
     <module>blueocean-bitbucket-pipeline</module>
     <module>blueocean-pipeline-editor</module>
     <module>blueocean-jira</module>
+    <module>blueocean-executor-info-plugin</module>
   </modules>
 
   <repositories>
@@ -295,6 +296,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-jira</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-executor-info-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
 
