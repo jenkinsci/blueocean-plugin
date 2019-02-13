@@ -44,7 +44,6 @@
     <scm-api.version>2.2.8</scm-api.version>
     <git.version>3.8.0</git.version>
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
-    <plugin.minimumJavaVersion>11</plugin.minimumJavaVersion>
     <workflow-support.version>3.2</workflow-support.version>
   </properties>
 
