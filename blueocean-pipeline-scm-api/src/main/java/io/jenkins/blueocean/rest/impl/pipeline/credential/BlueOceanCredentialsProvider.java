@@ -18,6 +18,7 @@ import hudson.model.ModelObject;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
 import hudson.security.ACL;
+import hudson.security.ACLContext;
 import hudson.security.Permission;
 import hudson.util.ListBoxModel;
 import io.jenkins.blueocean.credential.CredentialsUtils;
@@ -25,8 +26,11 @@ import io.jenkins.blueocean.pipeline.credential.Messages;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
+import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -53,6 +57,7 @@ import static com.cloudbees.plugins.credentials.CredentialsMatchers.withId;
 @Extension(ordinal = 99999)
 public class BlueOceanCredentialsProvider extends CredentialsProvider {
     private static final BlueOceanDomainRequirement PROXY_REQUIREMENT = new BlueOceanDomainRequirement();
+    private static final Logger logger = LoggerFactory.getLogger(BlueOceanCredentialsProvider.class);
 
     @Nonnull
     @Override
@@ -73,24 +78,22 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
         final FolderPropertyImpl prop = propertyOf(itemGroup);
         if (prop != null && prop.domain.test(domainRequirements)) {
             final User proxyUser = User.get(prop.getUser(), false, Collections.emptyMap());
-            Authentication proxyAuth = proxyUser == null ? null : proxyUser.impersonate();
-            if (proxyAuth != null) {
-                ACL.impersonate(proxyAuth, new Runnable() {
-                    @Override
-                    public void run() {
-                        for (CredentialsStore s : CredentialsProvider.lookupStores(proxyUser)) {
-                            for (Domain d : s.getDomains()) {
-                                if (d.test(PROXY_REQUIREMENT)) {
-                                    for (Credentials c : filter(s.getCredentials(d), withId(prop.getId()))) {
-                                        if (type.isInstance(c)) {
-                                            result.add((C) c);
-                                        }
+            if (proxyUser != null) {
+                try (ACLContext ignored = ACL.as(proxyUser.impersonate())) {
+                    for (CredentialsStore s : CredentialsProvider.lookupStores(proxyUser)) {
+                        for (Domain d : s.getDomains()) {
+                            if (d.test(PROXY_REQUIREMENT)) {
+                                for (Credentials c : filter(s.getCredentials(d), withId(prop.getId()))) {
+                                    if (type.isInstance(c)) {
+                                        result.add((C) c);
                                     }
                                 }
                             }
                         }
                     }
-                });
+                } catch (UsernameNotFoundException ex) {
+                    logger.warn("BlueOceanCredentialsProvider#getCredentials(): Username attached to credentials can not be found");
+                }
             }
         }
         return result;
@@ -286,20 +289,18 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
                 final List<Credentials> result = new ArrayList<>(1);
                 if (domain.equals(FolderPropertyImpl.this.domain)) {
                     final User proxyUser = User.get(getUser(), false, Collections.emptyMap());
-                    Authentication proxyAuth = proxyUser == null ? null : proxyUser.impersonate();
-                    if (proxyAuth != null) {
-                        ACL.impersonate(proxyAuth, new Runnable() {
-                            @Override
-                            public void run() {
-                                for (CredentialsStore s : CredentialsProvider.lookupStores(proxyUser)) {
-                                    for (Domain d : s.getDomains()) {
-                                        if (d.test(PROXY_REQUIREMENT)) {
-                                            result.addAll(filter(s.getCredentials(d), withId(getId())));
-                                        }
+                    if (proxyUser != null) {
+                        try (ACLContext ignored = ACL.as(proxyUser.impersonate())) {
+                            for (CredentialsStore s : CredentialsProvider.lookupStores(proxyUser)) {
+                                for (Domain d : s.getDomains()) {
+                                    if (d.test(PROXY_REQUIREMENT)) {
+                                        result.addAll(filter(s.getCredentials(d), withId(getId())));
                                     }
                                 }
                             }
-                        });
+                        } catch (UsernameNotFoundException ex) {
+                            logger.warn("BlueOceanCredentialsProvider.StoreImpl#getCredentials(): Username attached to credentials can not be found");
+                        }
                     }
                 }
                 return result;
