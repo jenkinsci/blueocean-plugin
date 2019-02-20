@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
@@ -10,6 +11,7 @@ import org.kohsuke.stapler.verb.PUT;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,7 @@ public abstract class BluePipeline extends Resource implements BluePipelineItem,
     public static final String ESTIMATED_DURATION = "estimatedDurationInMillis";
     public static final String ACTIONS = "actions";
     public static final String PERMISSIONS= "permissions";
+    public static final String DISABLED="disabled";
 
     /** Create pipeline */
     public static final String CREATE_PERMISSION = "create";
@@ -103,6 +106,14 @@ public abstract class BluePipeline extends Resource implements BluePipelineItem,
     public abstract BlueRun getLatestRun();
 
     /**
+     * @return If the pipeline is disabled or not
+     */
+    @Exported(name = DISABLED, inline = true)
+    public Boolean getDisabled() {
+        return null;
+    }
+
+    /**
      * @return Estimated duration based on last pipeline runs. -1 is returned if there is no estimate available.
      *
      */
@@ -140,6 +151,19 @@ public abstract class BluePipeline extends Resource implements BluePipelineItem,
     @TreeResponse
     public abstract BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction);
 
+    @PUT
+    @WebMethod(name="enable")
+    @TreeResponse
+    public void enable() throws IOException {
+        throw new ServiceException.MethodNotAllowedException("Cannot enable this item");
+    }
+
+    @PUT
+    @WebMethod(name="disable")
+    @TreeResponse
+    public void disable() throws IOException {
+        throw new ServiceException.MethodNotAllowedException("Cannot disable this item");
+    }
 
     /**
      * Gives permissions of user in context for a given pipeline.

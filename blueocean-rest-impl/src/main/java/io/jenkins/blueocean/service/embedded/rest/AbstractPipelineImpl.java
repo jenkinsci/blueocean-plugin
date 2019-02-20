@@ -35,6 +35,7 @@ import io.jenkins.blueocean.rest.model.BlueTrendContainer;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -158,6 +159,42 @@ public class AbstractPipelineImpl extends BluePipeline {
     @Override
     public String getFullDisplayName() {
         return getFullDisplayName(organization, job);
+    }
+
+    @Override
+    public Boolean getDisabled() {
+        try {
+            Object isDisabled = job.getClass().getMethod("isDisabled", null).invoke(job);
+            if (isDisabled instanceof Boolean) {
+                return !(Boolean) isDisabled;
+            }
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
+    @Override
+    public void enable() throws IOException {
+        if (getPermissions(job).getOrDefault(BluePipeline.CONFIGURE_PERMISSION, Boolean.FALSE)) {
+            try {
+                job.getClass().getMethod("makeDisabled", new Class[]{boolean.class}).invoke(job, false);
+            } catch (IllegalAccessException e) {
+            } catch (InvocationTargetException e) {
+            } catch (NoSuchMethodException e) {
+            }
+        }
+    }
+
+    @Override
+    public void disable() throws IOException {
+        if (getPermissions(job).getOrDefault(BluePipeline.CONFIGURE_PERMISSION, Boolean.FALSE)) {
+            try {
+                job.getClass().getMethod("makeDisabled", new Class[] { boolean.class }).invoke(job,  true);
+            } catch (IllegalAccessException e) {
+            } catch (InvocationTargetException e) {
+            } catch (NoSuchMethodException e) {
+            }
+        }
     }
 
     /**
