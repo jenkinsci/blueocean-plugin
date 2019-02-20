@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { JTable, TableRow, TableHeader, TableCell } from '@jenkins-cd/design-language';
-import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { capable, RunButton, ShowMoreButton, DisablePipelineButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { ActivityDetailsRow } from './ActivityDetailsRow';
 import { ChangeSetRecord } from './records';
@@ -96,6 +96,8 @@ export class Activity extends Component {
 
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
         const hasBranches = pipeline.branchNames && !!pipeline.branchNames.length;
+
+        const disableablePipeline = pipeline.disabled !== null ? true : false;
 
         const onNavigation = url => {
             this.context.location.pathname = url;
@@ -205,6 +207,7 @@ export class Activity extends Component {
             <main>
                 <article className="activity">
                     {runButton}
+                    {disableablePipeline && <DisablePipelineButton innerButtonClasses="btn-secondary" pipeline={pipeline} />}
                     {runsTable}
                     {!isLoading && !runs.length && branch && <NoRunsForBranchPlaceholder t={t} branchName={branch} />}
                     {runs && runs.length > 0 && <ShowMoreButton pager={this.pager} />}
