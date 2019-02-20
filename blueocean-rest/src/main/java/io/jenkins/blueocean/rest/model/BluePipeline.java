@@ -109,9 +109,7 @@ public abstract class BluePipeline extends Resource implements BluePipelineItem,
      * @return If the pipeline is disabled or not
      */
     @Exported(name = DISABLED, inline = true)
-    public Boolean getDisabled() {
-        return null;
-    }
+    public abstract Boolean getDisabled();
 
     /**
      * @return Estimated duration based on last pipeline runs. -1 is returned if there is no estimate available.
@@ -153,17 +151,11 @@ public abstract class BluePipeline extends Resource implements BluePipelineItem,
 
     @PUT
     @WebMethod(name="enable")
-    @TreeResponse
-    public void enable() throws IOException {
-        throw new ServiceException.MethodNotAllowedException("Cannot enable this item");
-    }
+    public abstract void enable() throws IOException;
 
     @PUT
     @WebMethod(name="disable")
-    @TreeResponse
-    public void disable() throws IOException {
-        throw new ServiceException.MethodNotAllowedException("Cannot disable this item");
-    }
+    public abstract void disable() throws IOException;
 
     /**
      * Gives permissions of user in context for a given pipeline.
