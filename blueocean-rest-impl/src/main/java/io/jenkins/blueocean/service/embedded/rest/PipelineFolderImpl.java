@@ -207,6 +207,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     }
 
     @Override
+    @SuppressFBWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "isDisabled will return null if the job type doesn't support it")
     public Boolean getDisabled() {
         return Disabler.isDisabled(folder);
     }

@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.util;
 
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.AbstractProject;
 import jenkins.model.ParameterizedJobMixIn;
 
@@ -44,6 +45,7 @@ public class Disabler {
         return job.isDisabled();
     }
 
+    @SuppressFBWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "isDisabled will return null if the job type doesn't support it")
     public static Boolean isDisabled(Object item) {
         if (item instanceof AbstractFolder) {
             return Disabler.isDisabled((AbstractFolder) item);
