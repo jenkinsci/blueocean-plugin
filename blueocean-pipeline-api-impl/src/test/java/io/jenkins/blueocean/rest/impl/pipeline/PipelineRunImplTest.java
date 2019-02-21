@@ -13,10 +13,10 @@ import org.jvnet.hudson.test.Issue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class PipelineRunImplTest extends PipelineBaseTest {
 
@@ -42,21 +42,19 @@ public class PipelineRunImplTest extends PipelineBaseTest {
 
         updateREADME(sampleRepo1);
         updateREADME(sampleRepo2);
+        TimeUnit.SECONDS.sleep(1);
         updateREADME(sampleRepo2);
 
         r = p.scheduleBuild2(0).waitForStart();
         j.waitForCompletion(r);
-
-        System.out.println("----");
-        System.out.println(jenkinsFile);
-        System.out.println("----");
 
         Map<String, Object> runDetails = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/" + r.getId() + "/");
         HashSet<String> commitIds = new HashSet<>();
         for (Object o : (ArrayList) runDetails.get("changeSet")) {
             commitIds.add(((Map) o).get("checkoutCount").toString());
         }
-        assertEquals(commitIds, new HashSet<>(Arrays.asList("0", "1")));
+        assertEquals(3, ((ArrayList) runDetails.get("changeSet")).size());
+        assertEquals(new HashSet<>(Arrays.asList("0", "1")), commitIds);
     }
 
     private int updateREADMECounter = 0;
