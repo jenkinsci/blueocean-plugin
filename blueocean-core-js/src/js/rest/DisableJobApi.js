@@ -1,6 +1,3 @@
-/**
- * Created by cmeyers on 8/29/16.
- */
 import { UrlConfig } from '../urlconfig';
 import { Fetch } from '../fetch';
 import { Utils } from '../utils';
