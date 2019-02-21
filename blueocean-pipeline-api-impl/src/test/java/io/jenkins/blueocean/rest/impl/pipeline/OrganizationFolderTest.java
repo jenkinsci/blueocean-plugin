@@ -135,9 +135,8 @@ public class OrganizationFolderTest{
     @Test(expected = ServiceException.ForbiddenException.class)
     public void testOrganizationFolderFactoryNoPermissionsFolder() throws Exception {
         List<OrganizationFolderPipelineImpl.OrganizationFolderFactory> organizationFolderFactoryList = ExtensionList.lookup(OrganizationFolderPipelineImpl.OrganizationFolderFactory.class);
-        assertEquals(1, organizationFolderFactoryList.size());
-        assertTrue(organizationFolderFactoryList.get(0) instanceof OrganizationFolderFactoryTestImpl);
-        OrganizationFolderFactoryTestImpl organizationFolderFactoryTest = (OrganizationFolderFactoryTestImpl) organizationFolderFactoryList.get(0);
+        OrganizationFolderFactoryTestImpl organizationFolderFactoryTest = ((ExtensionList<OrganizationFolderPipelineImpl.OrganizationFolderFactory>) organizationFolderFactoryList).get(OrganizationFolderFactoryTestImpl.class);
+        assertNotNull(organizationFolderFactoryTest);
 
         OrganizationFolderPipelineImpl folderPipeline = organizationFolderFactoryTest.getFolder(orgFolder, new Reachable() {
             @Override
@@ -217,8 +216,12 @@ public class OrganizationFolderTest{
     public static class OrganizationFolderFactoryTestImpl extends OrganizationFolderPipelineImpl.OrganizationFolderFactory {
         @Override
         protected OrganizationFolderPipelineImpl getFolder(jenkins.branch.OrganizationFolder folder, Reachable parent, BlueOrganization organization) {
-            OrganizationFolder orgFolder = mockOrgFolder(organization);
-            return new OrganizationFolderPipelineImpl(organization, orgFolder, organization.getLink().rel("/pipelines/")){};
+            if (folder.getName() != "orgFolder1") {
+                OrganizationFolder orgFolder = mockOrgFolder(organization);
+                return new OrganizationFolderPipelineImpl(organization, orgFolder, organization.getLink().rel("/pipelines/")) {
+                };
+            }
+            return null;
         }
     }
 }
