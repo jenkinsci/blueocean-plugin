@@ -329,8 +329,25 @@ a.pipelineRedirectLink svg {
     }
 }
 
-.activity .run-button-component {
-    margin-bottom: 16px;
+.activity-actions-container {
+    &:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    .run-button-component {
+        margin-bottom: 16px;
+    }
+
+    .disable-job-button {
+        float: right;
+        margin-bottom: 16px;
+
+        svg {
+            fill: @brand-primary;
+        }
+    }
 }
 
 .search-pipelines-input .clear-icon-container svg[icon="ContentClear"] {

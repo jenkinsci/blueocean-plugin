@@ -13,7 +13,10 @@ export class DisablePipelineButton extends Component {
     constructor(props) {
         super(props);
 
-        this.state = { disabled: this.props.pipeline.disabled };
+        this.state = {
+            disabled: this.props.pipeline.disabled,
+            submitingChange: false,
+        };
     }
 
     _updateState(newDisabledState) {
@@ -23,16 +26,25 @@ export class DisablePipelineButton extends Component {
     }
 
     _onDisableClick() {
-        disableJobApi.disable(this.props.pipeline).then(this._updateState(true));
+        disableJobApi.disable(this.props.pipeline).then(() => {
+            this._updateState(true);
+            this.props.onChangeDisableState(true);
+            this.setState({ submitingChange: false });
+        });
     }
 
     _onEnableClick() {
-        disableJobApi.enable(this.props.pipeline).then(this._updateState(false));
+        disableJobApi.enable(this.props.pipeline).then(() => {
+            this._updateState(false);
+            this.props.onChangeDisableState(false);
+            this.setState({ submitingChange: false });
+        });
     }
 
     render() {
         const outerClass = this.props.className ? this.props.className : '';
         const outerClassNames = outerClass.split(' ');
+        const buttonDisabled = this.state.submitingChange ? true : false;
 
         let buttonLabel;
 
@@ -43,12 +55,15 @@ export class DisablePipelineButton extends Component {
         }
 
         const onClick = () => {
-            this.state.disabled ? this._onEnableClick() : this._onDisableClick();
+            if (!this.state.submitingChange) {
+                this.setState({ submitingChange: true });
+                this.state.disabled ? this._onEnableClick() : this._onDisableClick();
+            }
         };
 
         return (
             <div className="disable-job-button" onClick={event => stopProp(event)}>
-                <a className={`${this.props.innerButtonClasses}`} title={buttonLabel} onClick={onClick}>
+                <a className={`${this.props.innerButtonClasses}`} title={buttonLabel} onClick={onClick} disabled={buttonDisabled}>
                     <Icon size={24} icon="ContentClear" style={{ marginRight: '5px' }} />
                     <span className="button-label">{buttonLabel}</span>
                 </a>
@@ -61,6 +76,7 @@ DisablePipelineButton.propTypes = {
     className: PropTypes.string,
     pipeline: PropTypes.object,
     onClick: PropTypes.func,
+    onChangeDisableState: PropTypes.func,
     buttonText: PropTypes.string,
     innerButtonClasses: PropTypes.string,
 };

@@ -29,6 +29,7 @@ function extractLatestRecord(run) {
 export class Activity extends Component {
     state = {
         actionExtensionCount: 0,
+        pipelineDisabled: this.props.pipeline.disabled,
     };
 
     componentWillMount() {
@@ -97,11 +98,15 @@ export class Activity extends Component {
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
         const hasBranches = pipeline.branchNames && !!pipeline.branchNames.length;
 
-        const disableablePipeline = pipeline.disabled !== null ? true : false;
+        const disableablePipeline = pipeline.disabled !== undefined && pipeline.disabled !== null ? true : false;
 
         const onNavigation = url => {
             this.context.location.pathname = url;
             this.context.router.push(this.context.location);
+        };
+
+        const onChangeDisableState = newDisableState => {
+            this.setState({ pipelineDisabled: newDisableState });
         };
 
         const latestRun = runs && runs[0];
@@ -109,9 +114,10 @@ export class Activity extends Component {
         // Only show the Run button for non multi-branch pipelines.
         // Multi-branch pipelines have the Run/play button beside them on
         // the Branches/PRs tab.
-        const runButton = isMultiBranchPipeline ? null : (
-            <RunButton buttonType="run-only" innerButtonClasses="btn-secondary" runnable={pipeline} latestRun={latestRun} onNavigation={onNavigation} />
-        );
+        const runButton =
+            isMultiBranchPipeline || this.state.pipelineDisabled ? null : (
+                <RunButton buttonType="run-only" innerButtonClasses="btn-secondary" runnable={pipeline} latestRun={latestRun} onNavigation={onNavigation} />
+            );
 
         if (!isLoading) {
             if (isMultiBranchPipeline && !hasBranches) {
@@ -206,8 +212,12 @@ export class Activity extends Component {
         return (
             <main>
                 <article className="activity">
-                    {runButton}
-                    {disableablePipeline && <DisablePipelineButton innerButtonClasses="btn-secondary" pipeline={pipeline} />}
+                    <div className="activity-actions-container">
+                        {runButton}
+                        {disableablePipeline && (
+                            <DisablePipelineButton innerButtonClasses="btn-secondary" pipeline={pipeline} onChangeDisableState={onChangeDisableState} />
+                        )}
+                    </div>
                     {runsTable}
                     {!isLoading && !runs.length && branch && <NoRunsForBranchPlaceholder t={t} branchName={branch} />}
                     {runs && runs.length > 0 && <ShowMoreButton pager={this.pager} />}

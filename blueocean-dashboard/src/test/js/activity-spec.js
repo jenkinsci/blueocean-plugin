@@ -189,6 +189,18 @@ describe('Activity', () => {
         const wrapper = shallow(<Activity pipeline={pipeline} t={ () => {} } capabilities={capabilities} />, { context: contextNoData });
         assert.equal(wrapper.find('NewComponent').length, 0);
     });
+
+    it('does render the disable job btn', () => {
+        const wrapper = shallow(<Activity pipeline={pipeline} t={ () => {} } capabilities={capabilities} />, { context: contextNoData });
+        assert.equal(wrapper.find('DisablePipelineButton').length, 1);
+    });
+
+    it('doesn not render the disable job btn when not available', () => {
+        pipeline.disabled = null;
+
+        const wrapper = shallow(<Activity pipeline={pipeline} t={ () => {} } capabilities={capabilities} />, { context: contextNoData });
+        assert.equal(wrapper.find('DisablePipelineButton').length, 0);
+    });
 });
 
 describe('Pipeline -> Activity List', () => {
