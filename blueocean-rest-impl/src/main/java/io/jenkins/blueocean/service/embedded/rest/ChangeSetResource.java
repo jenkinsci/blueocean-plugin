@@ -34,8 +34,8 @@ import java.util.Collection;
 public class ChangeSetResource extends BlueChangeSetEntry {
     private final ChangeLogSet.Entry changeSet;
     private final Reachable parent;
-
     private final BlueOrganization organization;
+    private int checkoutCount;
 
     public ChangeSetResource(@Nonnull BlueOrganization organization, Entry changeSet, Reachable parent) {
         this.organization = organization;
@@ -92,6 +92,17 @@ public class ChangeSetResource extends BlueChangeSetEntry {
     @Override
     public Collection<BlueIssue> getIssues() {
         return BlueIssueFactory.resolve(changeSet);
+    }
+
+    @Override
+    public Integer getCheckoutCount() {
+        return this.checkoutCount;
+    }
+
+    @Override
+    public BlueChangeSetEntry setCheckoutCount(int checkoutCount) {
+        this.checkoutCount = checkoutCount;
+        return this;
     }
 
     @Override

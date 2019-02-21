@@ -87,6 +87,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         } else {
             Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
             int cnt = 0;
+            int checkoutCount = 0;
             for (ChangeLogSet<? extends Entry> cs : run.getChangeSets()) {
                 for (ChangeLogSet.Entry e : cs) {
                     cnt++;
@@ -95,8 +96,9 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                     {
                         id = String.valueOf( cnt );
                     }
-                    m.put(id, new ChangeSetResource(organization, e, this));
+                    m.put(id, new ChangeSetResource(organization, e, this).setCheckoutCount(checkoutCount));
                 }
+                checkoutCount++;
             }
             return Containers.fromResourceMap(getLink(), m);
         }
