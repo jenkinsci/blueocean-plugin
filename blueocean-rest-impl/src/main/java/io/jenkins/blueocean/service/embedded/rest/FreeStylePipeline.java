@@ -14,11 +14,10 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Resource;
 
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.DISABLABLE;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_FREESTYLE_PROJECT;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_FREE_STYLE_BUILD;
 
-@Capability({ JENKINS_FREESTYLE_PROJECT, DISABLABLE})
+@Capability({ JENKINS_FREESTYLE_PROJECT })
 public class FreeStylePipeline extends AbstractPipelineImpl {
     private final Job job;
     private FreeStylePipeline(BlueOrganization organization, Job job) {
