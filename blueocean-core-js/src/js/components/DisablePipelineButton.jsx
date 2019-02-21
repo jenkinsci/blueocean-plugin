@@ -42,8 +42,6 @@ export class DisablePipelineButton extends Component {
     }
 
     render() {
-        const outerClass = this.props.className ? this.props.className : '';
-        const outerClassNames = outerClass.split(' ');
         const buttonDisabled = this.state.submitingChange ? true : false;
 
         let buttonLabel;
@@ -73,7 +71,6 @@ export class DisablePipelineButton extends Component {
 }
 
 DisablePipelineButton.propTypes = {
-    className: PropTypes.string,
     pipeline: PropTypes.object,
     onClick: PropTypes.func,
     onChangeDisableState: PropTypes.func,
