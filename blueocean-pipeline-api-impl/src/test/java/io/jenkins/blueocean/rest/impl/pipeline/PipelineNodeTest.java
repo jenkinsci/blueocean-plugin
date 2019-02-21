@@ -3067,6 +3067,41 @@ public class PipelineNodeTest extends PipelineBaseTest {
         assertThat("node #4 contains a link to downstream1", actions, hasItem(actionMatcher2));
     }
 
+    @Test
+    @Issue("JENKINS-38339")
+    public void downstreamBuildLinksDeclarative() throws Exception {
+        // TODO: if we can truly use the same test body but only different jenkinsfiles, merge these
+        FreeStyleProject downstream1 = j.createFreeStyleProject("downstream1");
+        FreeStyleProject downstream2 = j.createFreeStyleProject("downstream2");
+
+        WorkflowJob upstream = j.createProject(WorkflowJob.class, "upstream");
+
+        URL resource = Resources.getResource(getClass(), "downstreamBuildLinksDecl.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        upstream.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+
+        j.assertBuildStatus(Result.SUCCESS, upstream.scheduleBuild2(0));
+
+        WorkflowRun r = upstream.getLastBuild();
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/upstream/runs/" + r.getId() + "/nodes/", List.class);
+
+        assertEquals("number of nodes", 5, resp.size());
+
+        Matcher actionMatcher1 = new NodeDownstreamBuildActionMatcher("downstream1");
+        Matcher actionMatcher2 = new NodeDownstreamBuildActionMatcher("downstream2");
+
+        List<Map> actions = (List<Map>) resp.get(2).get("actions");
+        assertThat("node #2 contains a link to downstream1", actions, hasItem(actionMatcher1));
+
+        actions = (List<Map>) resp.get(3).get("actions");
+        assertThat("node #3 contains a link to downstream2", actions, hasItem(actionMatcher2));
+
+        actions = (List<Map>) resp.get(4).get("actions");
+        assertThat("node #4 contains a link to downstream1", actions, hasItem(actionMatcher1));
+        assertThat("node #4 contains a link to downstream1", actions, hasItem(actionMatcher2));
+    }
+
     /**
      *  Matcher to check for a serialised NodeDownstreamBuildAction
      */
