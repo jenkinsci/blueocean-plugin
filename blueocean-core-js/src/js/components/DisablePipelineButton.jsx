@@ -1,10 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/design-language';
 import { DisableJobApi as disableJobApi } from '../';
+import { Security } from '../security';
 import { stopProp } from '../utils';
 import { i18nTranslator } from '../i18n/i18n';
 
 const translate = i18nTranslator('blueocean-web');
+
+const { permit } = Security;
 
 /**
  * Disable a pipeline
@@ -42,6 +45,11 @@ export class DisablePipelineButton extends Component {
     }
 
     render() {
+        //if the user doesn't have config permission, don't show the button
+        if (!permit(this.props.pipeline).configure()) {
+            return false;
+        }
+
         const buttonDisabled = this.state.submitingChange ? true : false;
 
         let buttonLabel;
