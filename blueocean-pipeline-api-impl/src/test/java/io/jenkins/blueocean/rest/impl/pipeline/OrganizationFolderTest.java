@@ -101,12 +101,9 @@ public class OrganizationFolderTest{
 
     @Test
     public void testOrganizationFolderFactory() throws Exception{
-        List<OrganizationFolderPipelineImpl.OrganizationFolderFactory> organizationFolderFactoryList
-                = ExtensionList.lookup(OrganizationFolderPipelineImpl.OrganizationFolderFactory.class);
-        assertEquals(1, organizationFolderFactoryList.size());
-        assertTrue(organizationFolderFactoryList.get(0) instanceof OrganizationFolderFactoryTestImpl);
-        OrganizationFolderFactoryTestImpl organizationFolderFactoryTest =
-                (OrganizationFolderFactoryTestImpl) organizationFolderFactoryList.get(0);
+        List<OrganizationFolderPipelineImpl.OrganizationFolderFactory> organizationFolderFactoryList = ExtensionList.lookup(OrganizationFolderPipelineImpl.OrganizationFolderFactory.class);
+        OrganizationFolderFactoryTestImpl organizationFolderFactoryTest = ((ExtensionList<OrganizationFolderPipelineImpl.OrganizationFolderFactory>) organizationFolderFactoryList).get(OrganizationFolderFactoryTestImpl.class);
+        assertNotNull(organizationFolderFactoryTest);
 
         OrganizationFolderPipelineImpl folderPipeline = organizationFolderFactoryTest.getFolder(orgFolder, new Reachable() {
             @Override
