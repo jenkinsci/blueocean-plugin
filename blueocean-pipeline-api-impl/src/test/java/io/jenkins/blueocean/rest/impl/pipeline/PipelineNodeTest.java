@@ -3068,7 +3068,6 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @Test
     @Issue("JENKINS-38339")
     public void downstreamBuildLinksDeclarative() throws Exception {
-        // TODO: if we can truly use the same test body but only different jenkinsfiles, merge these
         FreeStyleProject downstream1 = j.createFreeStyleProject("downstream1");
         FreeStyleProject downstream2 = j.createFreeStyleProject("downstream2");
 
