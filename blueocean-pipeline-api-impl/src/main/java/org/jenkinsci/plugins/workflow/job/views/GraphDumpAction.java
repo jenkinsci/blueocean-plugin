@@ -88,10 +88,12 @@ public final class GraphDumpAction implements Action {
             if (node instanceof StepNode) {
                 StepNode sn = (StepNode) node;
                 StepDescriptor descriptor = sn.getDescriptor();
-                JSONObject outputDescriptor = new JSONObject();
-                outputDescriptor.put("getDisplayName", descriptor.getDisplayName());
-                outputDescriptor.put("getFunctionName", descriptor.getFunctionName());
-                outputNode.put("stepDescriptor", outputDescriptor);
+                if (descriptor != null) {
+                    JSONObject outputDescriptor = new JSONObject();
+                    outputDescriptor.put("getDisplayName", descriptor.getDisplayName());
+                    outputDescriptor.put("getFunctionName", descriptor.getFunctionName());
+                    outputNode.put("stepDescriptor", outputDescriptor);
+                }
             }
 
             JSONArray parents = new JSONArray();
