@@ -2,25 +2,23 @@ pipeline {
     agent any
     stages {
         stage('SCM') {
-            parallel {
-                stage('Master Branch') {
-                    steps {
-                        script {
-                            checkout([ $class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[ $class: 'RelativeTargetDirectory', relativeTargetDir: 'repo1' ]],
-                                submoduleCfg: [],
-                                userRemoteConfigs:[[ name: 'origin', url: '%REPO1%' ]]
-                            ])
-                        }
+            stage('Master Branch') {
+                steps {
+                    script {
+                        checkout([ $class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[ $class: 'RelativeTargetDirectory', relativeTargetDir: 'repo1' ]],
+                            submoduleCfg: [],
+                            userRemoteConfigs:[[ name: 'origin', url: '%REPO1%' ]]
+                        ])
                     }
                 }
-                stage('Justreadme Project Branch') {
-                    steps {
-                        script {
-                            checkout([ $class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[ $class: 'RelativeTargetDirectory', relativeTargetDir: 'repo2' ]],
-                                submoduleCfg: [],
-                                userRemoteConfigs:[[ name: 'origin', url: '%REPO2%' ]]
-                            ])
-                        }
+            }
+            stage('Justreadme Project Branch') {
+                steps {
+                    script {
+                        checkout([ $class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[ $class: 'RelativeTargetDirectory', relativeTargetDir: 'repo2' ]],
+                            submoduleCfg: [],
+                            userRemoteConfigs:[[ name: 'origin', url: '%REPO2%' ]]
+                        ])
                     }
                 }
             }
