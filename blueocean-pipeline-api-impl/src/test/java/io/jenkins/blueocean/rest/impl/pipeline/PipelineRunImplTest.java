@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import hudson.model.Result;
 import hudson.model.Run;
 import jenkins.plugins.git.GitSampleRepoRule;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
@@ -37,16 +38,15 @@ public class PipelineRunImplTest extends PipelineBaseTest {
         sampleRepo1.init();
         sampleRepo2.init();
 
-        Run r = p.scheduleBuild2(0).waitForStart();
-        j.waitForCompletion(r);
+        j.assertBuildStatus(Result.SUCCESS, p.scheduleBuild2(0));
 
         updateREADME(sampleRepo1);
         updateREADME(sampleRepo2);
         TimeUnit.SECONDS.sleep(1);
         updateREADME(sampleRepo2);
+        TimeUnit.SECONDS.sleep(1);
 
-        r = p.scheduleBuild2(0).waitForStart();
-        j.waitForCompletion(r);
+        Run r = j.assertBuildStatus(Result.SUCCESS, p.scheduleBuild2(0));
 
         Map<String, Object> runDetails = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/" + r.getId() + "/");
         HashSet<String> commitIds = new HashSet<>();
