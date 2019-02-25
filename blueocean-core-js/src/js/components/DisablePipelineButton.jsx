@@ -3,9 +3,6 @@ import { Icon } from '@jenkins-cd/design-language';
 import { DisableJobApi as disableJobApi } from '../';
 import { Security } from '../security';
 import { stopProp } from '../utils';
-import { i18nTranslator } from '../i18n/i18n';
-
-const translate = i18nTranslator('blueocean-web');
 
 const { permit } = Security;
 
@@ -45,8 +42,10 @@ export class DisablePipelineButton extends Component {
     }
 
     render() {
+        const { t, pipeline, innerButtonClasses } = this.props;
+
         //if the user doesn't have config permission, don't show the button
-        if (!permit(this.props.pipeline).configure()) {
+        if (!permit(pipeline).configure()) {
             return false;
         }
 
@@ -56,10 +55,10 @@ export class DisablePipelineButton extends Component {
         let buttonIcon;
 
         if (this.state.disabled) {
-            buttonLabel = translate('enable.job', { defaultValue: 'Enable Job' });
+            buttonLabel = t('pipelinedetail.activity.header.enable.job', { defaultValue: 'Enable Job' });
             buttonIcon = 'ActionCheckCircleOutline';
         } else {
-            buttonLabel = translate('disable.job', { defaultValue: 'Disable Job' });
+            buttonLabel = t('pipelinedetail.activity.header.disable.job', { defaultValue: 'Disable Job' });
             buttonIcon = 'AvNotInterested';
         }
 
@@ -72,7 +71,7 @@ export class DisablePipelineButton extends Component {
 
         return (
             <div className="disable-job-button" onClick={event => stopProp(event)}>
-                <a className={`${this.props.innerButtonClasses}`} title={buttonLabel} onClick={onClick} disabled={buttonDisabled}>
+                <a className={`${innerButtonClasses}`} title={buttonLabel} onClick={onClick} disabled={buttonDisabled}>
                     <Icon size={24} icon={buttonIcon} style={{ marginRight: '5px' }} />
                     <span className="button-label">{buttonLabel}</span>
                 </a>
@@ -82,6 +81,7 @@ export class DisablePipelineButton extends Component {
 }
 
 DisablePipelineButton.propTypes = {
+    t: PropTypes.func,
     pipeline: PropTypes.object,
     onClick: PropTypes.func,
     onChangeDisableState: PropTypes.func,

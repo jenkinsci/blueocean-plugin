@@ -121,7 +121,7 @@ export class Activity extends Component {
                 runButton = (
                     <span className="pipeline-disabled-label">
                         <Icon size={24} icon="ActionInfoOutline" style={{ marginRight: '5px' }} />
-                        <span>This Pipeline is currently disabled</span>
+                        <span>{t('pipelinedetail.activity.header.disabled.pipeline', { defaultValue: 'This Pipeline is currently disabled' })}</span>
                     </span>
                 );
             } else {
@@ -227,7 +227,7 @@ export class Activity extends Component {
                     <div className="activity-actions-container">
                         {runButton}
                         {disableablePipeline && (
-                            <DisablePipelineButton innerButtonClasses="btn-secondary" pipeline={pipeline} onChangeDisableState={onChangeDisableState} />
+                            <DisablePipelineButton t={t} innerButtonClasses="btn-secondary" pipeline={pipeline} onChangeDisableState={onChangeDisableState} />
                         )}
                     </div>
                     {runsTable}
