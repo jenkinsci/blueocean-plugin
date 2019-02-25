@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { JTable, TableRow, TableHeader, TableCell } from '@jenkins-cd/design-language';
+import { JTable, TableRow, TableHeader, TableCell, Icon } from '@jenkins-cd/design-language';
 import { capable, RunButton, ShowMoreButton, DisablePipelineButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { ActivityDetailsRow } from './ActivityDetailsRow';
@@ -114,10 +114,22 @@ export class Activity extends Component {
         // Only show the Run button for non multi-branch pipelines.
         // Multi-branch pipelines have the Run/play button beside them on
         // the Branches/PRs tab.
-        const runButton =
-            isMultiBranchPipeline || this.state.pipelineDisabled ? null : (
-                <RunButton buttonType="run-only" innerButtonClasses="btn-secondary" runnable={pipeline} latestRun={latestRun} onNavigation={onNavigation} />
-            );
+        let runButton = null;
+
+        if (!isMultiBranchPipeline) {
+            if (this.state.pipelineDisabled) {
+                runButton = (
+                    <span className="pipeline-disabled-label">
+                        <Icon size={24} icon="ActionInfoOutline" style={{ marginRight: '5px' }} />
+                        <span>This Pipeline is currently disabled</span>
+                    </span>
+                );
+            } else {
+                runButton = (
+                    <RunButton buttonType="run-only" innerButtonClasses="btn-secondary" runnable={pipeline} latestRun={latestRun} onNavigation={onNavigation} />
+                );
+            }
+        }
 
         if (!isLoading) {
             if (isMultiBranchPipeline && !hasBranches) {

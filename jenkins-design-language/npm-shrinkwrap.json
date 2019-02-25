@@ -5,9 +5,9 @@
   "requires": true,
   "dependencies": {
     "@jenkins-cd/blueocean-material-icons": {
-      "version": "0.0.7",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.7.tgz",
-      "integrity": "sha1-O3/GMgHtF+75xe/v9T2hVnLGHf4="
+      "version": "0.0.8",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.8.tgz",
+      "integrity": "sha512-DaDXpmQkLVCRMkuUKGW1D8Pi42ZD2rycKcy8ZFtOiYm10Xdpapk1AhHAzeh+OL6uBMW+p1pVH4FfX1Utq3wbAA=="
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",

@@ -53,11 +53,14 @@ export class DisablePipelineButton extends Component {
         const buttonDisabled = this.state.submitingChange ? true : false;
 
         let buttonLabel;
+        let buttonIcon;
 
         if (this.state.disabled) {
             buttonLabel = translate('enable.job', { defaultValue: 'Enable Job' });
+            buttonIcon = 'ActionCheckCircleOutline';
         } else {
             buttonLabel = translate('disable.job', { defaultValue: 'Disable Job' });
+            buttonIcon = 'AvNotInterested';
         }
 
         const onClick = () => {
@@ -70,7 +73,7 @@ export class DisablePipelineButton extends Component {
         return (
             <div className="disable-job-button" onClick={event => stopProp(event)}>
                 <a className={`${this.props.innerButtonClasses}`} title={buttonLabel} onClick={onClick} disabled={buttonDisabled}>
-                    <Icon size={24} icon="ContentClear" style={{ marginRight: '5px' }} />
+                    <Icon size={24} icon={buttonIcon} style={{ marginRight: '5px' }} />
                     <span className="button-label">{buttonLabel}</span>
                 </a>
             </div>

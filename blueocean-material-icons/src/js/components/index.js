@@ -34,6 +34,7 @@ export ActionCardMembership from './svg-icons/action/card-membership';
 export ActionCardTravel from './svg-icons/action/card-travel';
 export ActionChangeHistory from './svg-icons/action/change-history';
 export ActionCheckCircle from './svg-icons/action/check-circle';
+export ActionCheckCircleOutline from './svg-icons/action/check-circle-outline';
 export ActionChromeReaderMode from './svg-icons/action/chrome-reader-mode';
 export ActionClass from './svg-icons/action/class';
 export ActionCode from './svg-icons/action/code';
