@@ -201,6 +201,18 @@ describe('Activity', () => {
         const wrapper = shallow(<Activity pipeline={pipeline} t={ () => {} } capabilities={capabilities} />, { context: contextNoData });
         assert.equal(wrapper.find('DisablePipelineButton').length, 0);
     });
+
+    it('does not render the run button when job is disabled', () => {
+        pipeline.disabled = true;
+
+        const wrapper = shallow(<Activity pipeline={pipeline} t={ () => {} } capabilities={capabilities} />, { context: contextNoData });
+
+        //the run button is not rendered
+        assert.equal(wrapper.find('ParametersRunButton').length, 0);
+
+        //the "job disabled" text is rendered
+        assert.equal(wrapper.find('.pipeline-disabled-label').length, 1);
+    });
 });
 
 describe('Pipeline -> Activity List', () => {
