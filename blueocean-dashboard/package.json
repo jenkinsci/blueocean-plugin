@@ -58,8 +58,8 @@
     "typescript": "2.7.2"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.171",
-    "@jenkins-cd/design-language": "0.0.162",
+    "@jenkins-cd/blueocean-core-js": "1.10.4",
+    "@jenkins-cd/design-language": "1.10.4",
     "@jenkins-cd/js-extensions": "0.0.44",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/pipeline-graph-widget": "0.1.2",
