@@ -14,7 +14,7 @@ export function execute(done, config) {
         classMetadataProvider: (type, cb) => {
             const fetch = require('./fetch').Fetch;
             const fetchOptions = {
-                method: 'POST',
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                 },

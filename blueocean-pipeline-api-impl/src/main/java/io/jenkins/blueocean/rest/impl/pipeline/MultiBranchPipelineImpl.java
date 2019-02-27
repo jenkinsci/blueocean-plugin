@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.Job;
@@ -35,11 +36,13 @@ import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
+import io.jenkins.blueocean.service.embedded.util.Disabler;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -309,5 +312,21 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     @Override
     public BlueTrendContainer getTrends() {
         return null;
+    }
+
+    @Override
+    @SuppressFBWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "isDisabled will return null if the job type doesn't support it")
+    public Boolean getDisabled() {
+        return null; // NOT SUPPORTED
+    }
+
+    @Override
+    public void enable() throws IOException {
+        throw new ServiceException.MethodNotAllowedException("Cannot enable this item");
+    }
+
+    @Override
+    public void disable() throws IOException {
+        throw new ServiceException.MethodNotAllowedException("Cannot disable this item");
     }
 }

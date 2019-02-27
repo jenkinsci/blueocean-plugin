@@ -9,6 +9,7 @@ export const pipelines = [
             },
         },
         'displayName': 'moreBeers',
+        'disabled': false,
         'name': 'morebeers',
         'organization': 'jenkins',
         'weatherScore': 0,

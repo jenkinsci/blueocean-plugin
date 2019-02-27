@@ -1,7 +1,7 @@
 {
   "name": "@jenkins-cd/design-language",
   "jdlName": "jenkins-design-language",
-  "version": "0.0.163",
+  "version": "1.10.4",
   "description": "Styles, assets, and React classes for Jenkins Design Language",
   "main": "dist/js/components/index.js",
   "scripts": {
@@ -45,7 +45,7 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-material-icons": "0.0.7",
+    "@jenkins-cd/blueocean-material-icons": "0.0.8",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/js-extensions": "0.0.44",
     "linkifyjs": "2.1.4",
