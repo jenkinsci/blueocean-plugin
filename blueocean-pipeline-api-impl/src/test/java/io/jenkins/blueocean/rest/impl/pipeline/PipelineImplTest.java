@@ -31,8 +31,7 @@ public class PipelineImplTest extends PipelineBaseTest {
 
         sampleRepo.init();
 
-        Run r = p.scheduleBuild2(0).waitForStart();
-        j.waitForCompletion(r);
+        Run r = j.assertBuildStatus(Result.SUCCESS, p.scheduleBuild2(0));
 
         Map<String, Object> runDetails = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/" + r.getId() + "/");
         List<Object> changeSet = (ArrayList) runDetails.get("changeSet");
