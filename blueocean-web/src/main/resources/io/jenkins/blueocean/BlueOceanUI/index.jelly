@@ -27,7 +27,11 @@
 
             <title>Jenkins</title>
 
+            <j:if test="${!isMSIE}">
+                <meta name="referrer" content="same-origin"></meta>
+            </j:if>
             <j:if test="${isMSIE}">
+                <meta name="referrer" content="never"></meta>
                 <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
                 <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1"></meta>
                 <script src="${resURL}/plugin/blueocean-web/scripts/ie-detect.js"></script>
@@ -35,6 +39,9 @@
                 <st:adjunct includes="org.jenkins.ui.jsmodules.blueocean-web.iepolyfills"/>
                 <st:adjunct includes="org.jenkinsci.plugins.ssegateway.sse.EventSource" />
             </j:if>
+
+            <meta name="robots" content="index, nofollow"></meta>
+
             <j:set var="assetsPath" value="${resURL}/plugin/blueocean-web/assets" />
 
             <!-- Inject headers from other extensions. See BluePageDecorator.java -->

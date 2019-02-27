@@ -5,6 +5,7 @@
 import { Fetch } from './fetch';
 import * as sse from '@jenkins-cd/sse-gateway';
 import { RunApi } from './rest/RunApi';
+import { DisableJobApi } from './rest/DisableJobApi';
 
 import { SseBus } from './sse/SseBus';
 
@@ -56,6 +57,7 @@ export {
     supportedInputTypesMapping,
     ParametersRender,
 } from './parameter';
+export { DisablePipelineButton } from './components/DisablePipelineButton';
 export { BlueLogo } from './components/BlueLogo';
 export { ContentPageHeader, SiteHeader } from './components/ContentPageHeader';
 export { ResultPageHeader } from './components/ResultPageHeader';
@@ -91,6 +93,10 @@ export { toastService as ToastService };
 
 const runApi = new RunApi();
 export { runApi as RunApi };
+
+const disableJobApi = new DisableJobApi();
+export { disableJobApi as DisableJobApi };
+
 export { BunkerService } from './services/BunkerService';
 
 export const pagerService = new PagerService();

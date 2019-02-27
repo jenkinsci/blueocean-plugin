@@ -5,12 +5,12 @@
   "requires": true,
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.171",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.171.tgz",
-      "integrity": "sha1-BlKV3XDGlOdUiGQqgpuTu9fRnUY=",
+      "version": "1.10.4",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-1.10.4.tgz",
+      "integrity": "sha512-SJsqN3dvbSqVa35VcgRbNZW2BebwTI5Qv2Bs4RJWFdOpzJUokS2KHPmsfVR7Sb4dHjBuGNnS2VN+Tl2LfzinYQ==",
       "requires": {
-        "@jenkins-cd/design-language": "0.0.161",
-        "@jenkins-cd/js-extensions": "0.0.42",
+        "@jenkins-cd/design-language": "1.10.4",
+        "@jenkins-cd/js-extensions": "0.0.44",
         "@jenkins-cd/js-modules": "0.0.10",
         "@jenkins-cd/logging": "0.0.6",
         "@jenkins-cd/sse-gateway": "0.0.21",
@@ -33,11 +33,12 @@
       },
       "dependencies": {
         "@jenkins-cd/design-language": {
-          "version": "0.0.161",
-          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.161.tgz",
-          "integrity": "sha1-yFhcPRv8fq8SQLHeqlvA4beQpHg=",
+          "version": "1.10.4",
+          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-1.10.4.tgz",
+          "integrity": "sha512-/vDZ2lQ7TfjHtFFfmEX0TRY4zvjb9AtlZ/RGj9DLftpCxdBdLIDd/hiaI9XFpKfntTSlKUFuABBpmP5/NZti0g==",
           "requires": {
-            "@jenkins-cd/blueocean-material-icons": "0.0.6",
+            "@jenkins-cd/blueocean-material-icons": "0.0.8",
+            "@jenkins-cd/js-extensions": "0.0.44",
             "@jenkins-cd/js-modules": "0.0.10",
             "linkifyjs": "2.1.4",
             "lodash.debounce": "4.0.8",
@@ -48,29 +49,21 @@
             "react-dom": "15.4.2",
             "react-router": "2.8.1"
           }
-        },
-        "@jenkins-cd/js-extensions": {
-          "version": "0.0.42",
-          "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.42.tgz",
-          "integrity": "sha1-FXLEw7ctneOx0PhrGZZLovGgvxY=",
-          "requires": {
-            "envify": "3.4.1",
-            "js-yaml": "3.11.0"
-          }
         }
       }
     },
     "@jenkins-cd/blueocean-material-icons": {
-      "version": "0.0.6",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.6.tgz",
-      "integrity": "sha1-1Hs5dAlpvncTfvW8zuccfm6Rgw0="
+      "version": "0.0.8",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.8.tgz",
+      "integrity": "sha512-DaDXpmQkLVCRMkuUKGW1D8Pi42ZD2rycKcy8ZFtOiYm10Xdpapk1AhHAzeh+OL6uBMW+p1pVH4FfX1Utq3wbAA=="
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.162",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.162.tgz",
-      "integrity": "sha1-Y767gJKuGyG76bEjY1yUyEf2c5Y=",
+      "version": "1.10.4",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-1.10.4.tgz",
+      "integrity": "sha512-/vDZ2lQ7TfjHtFFfmEX0TRY4zvjb9AtlZ/RGj9DLftpCxdBdLIDd/hiaI9XFpKfntTSlKUFuABBpmP5/NZti0g==",
       "requires": {
-        "@jenkins-cd/blueocean-material-icons": "0.0.7",
+        "@jenkins-cd/blueocean-material-icons": "0.0.8",
+        "@jenkins-cd/js-extensions": "0.0.44",
         "@jenkins-cd/js-modules": "0.0.10",
         "linkifyjs": "2.1.4",
         "lodash.debounce": "4.0.8",
@@ -80,13 +73,6 @@
         "react-addons-css-transition-group": "15.4.2",
         "react-dom": "15.4.2",
         "react-router": "2.8.1"
-      },
-      "dependencies": {
-        "@jenkins-cd/blueocean-material-icons": {
-          "version": "0.0.7",
-          "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.7.tgz",
-          "integrity": "sha1-O3/GMgHtF+75xe/v9T2hVnLGHf4="
-        }
       }
     },
     "@jenkins-cd/eslint-config-jenkins": {
@@ -201,7 +187,7 @@
     "@jenkins-cd/pipeline-graph-widget": {
       "version": "0.1.2",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/pipeline-graph-widget/-/pipeline-graph-widget-0.1.2.tgz",
-      "integrity": "sha512-nMTenuo6J52l495NQ3vTqwy8J+Uhe1TTOWhmop26Z7/va7CjR5tD9UeebtHuGXhHknlTFHj2E0KfBgZXpOHWhw=="
+      "integrity": "sha1-8fgzs5HXwQyYn7XHTBruhYDHA/I="
     },
     "@jenkins-cd/preferences": {
       "version": "0.0.4",
@@ -2398,11 +2384,6 @@
       "resolved": "https://registry.npmjs.org/base64-js/-/base64-js-0.0.8.tgz",
       "integrity": "sha1-EQHpVE9KdrG8OybUUsqW16NeeXg=",
       "dev": true
-    },
-    "base64url": {
-      "version": "2.0.0",
-      "resolved": "https://registry.npmjs.org/base64url/-/base64url-2.0.0.tgz",
-      "integrity": "sha1-6sFuA+oUOO/5Qj1puqNiYu0fcLs="
     },
     "bcrypt-pbkdf": {
       "version": "1.0.1",
@@ -4623,11 +4604,10 @@
       }
     },
     "ecdsa-sig-formatter": {
-      "version": "1.0.9",
-      "resolved": "https://registry.npmjs.org/ecdsa-sig-formatter/-/ecdsa-sig-formatter-1.0.9.tgz",
-      "integrity": "sha1-S8kmJ07Dtau1AW5+HWCSGsJisqE=",
+      "version": "1.0.11",
+      "resolved": "https://registry.npmjs.org/ecdsa-sig-formatter/-/ecdsa-sig-formatter-1.0.11.tgz",
+      "integrity": "sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==",
       "requires": {
-        "base64url": "^2.0.0",
         "safe-buffer": "^5.0.1"
       }
     },
@@ -9873,23 +9853,21 @@
       }
     },
     "jwa": {
-      "version": "1.1.5",
-      "resolved": "https://registry.npmjs.org/jwa/-/jwa-1.1.5.tgz",
-      "integrity": "sha1-oFUs4CIHQs1S4VN3SjKQXDDnVuU=",
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/jwa/-/jwa-1.3.0.tgz",
+      "integrity": "sha512-SxObIyzv9a6MYuZYaSN6DhSm9j3+qkokwvCB0/OTSV5ylPq1wUQiygZQcHT5Qlux0I5kmISx3J86TxKhuefItg==",
       "requires": {
-        "base64url": "2.0.0",
         "buffer-equal-constant-time": "1.0.1",
-        "ecdsa-sig-formatter": "1.0.9",
+        "ecdsa-sig-formatter": "1.0.11",
         "safe-buffer": "^5.0.1"
       }
     },
     "jws": {
-      "version": "3.1.4",
-      "resolved": "https://registry.npmjs.org/jws/-/jws-3.1.4.tgz",
-      "integrity": "sha1-+ei5M46KhHJ31kRLFGT2GIDgUKI=",
+      "version": "3.2.1",
+      "resolved": "https://registry.npmjs.org/jws/-/jws-3.2.1.tgz",
+      "integrity": "sha512-bGA2omSrFUkd72dhh05bIAN832znP4wOU3lfuXtRBuGTbsmNmDXMQg28f0Vsxaxgk4myF5YkKQpz6qeRpMgX9g==",
       "requires": {
-        "base64url": "^2.0.0",
-        "jwa": "^1.1.4",
+        "jwa": "^1.2.0",
         "safe-buffer": "^5.0.1"
       }
     },
@@ -15356,7 +15334,7 @@
         "semver": {
           "version": "5.6.0",
           "resolved": "https://registry.npmjs.org/semver/-/semver-5.6.0.tgz",
-          "integrity": "sha512-RS9R6R35NYgQn++fkDWaOmqGoj4Ek9gGs+DPxNUZKuwE183xjJroKvyo1IzVFeXvUrvmALy6FWD5xrdJT25gMg==",
+          "integrity": "sha1-fnQlb7qknHWqfHogXMInmcrIAAQ=",
           "dev": true
         }
       }
