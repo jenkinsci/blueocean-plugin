@@ -56,30 +56,42 @@ export default class RunDetailsChanges extends Component {
             JTable.column(100, dateLabel),
         ];
 
+        const changeSetSplitBySource = [];
+        changeSet.map(commit => {
+            if (changeSetSplitBySource[commit.checkoutCount] === undefined) {
+                changeSetSplitBySource[commit.checkoutCount] = [];
+            }
+            changeSetSplitBySource[commit.checkoutCount].push(commit);
+        });
+
         return (
-            <JTable columns={columns} className="changeset-table">
-                <TableHeaderRow />
-                {changeSet.map(commit => (
-                    <TableRow key={commit.commitId}>
-                        <TableCell>
-                            <CommitId commitId={commit.commitId} url={commit.url} />
-                        </TableCell>
-                        <TableCell>{commit.author.fullName}</TableCell>
-                        <TableCell className="multipleLines">
-                            <LinkifiedText text={commit.msg} partialTextLinks={commit.issues} />
-                        </TableCell>
-                        <TableCell>
-                            <ReadableDate
-                                date={commit.timestamp}
-                                liveUpdate
-                                locale={locale}
-                                shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
-                                longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
-                            />
-                        </TableCell>
-                    </TableRow>
+            <div>
+                {changeSetSplitBySource.map(changeSet => (
+                    <JTable columns={columns} className="changeset-table">
+                        <TableHeaderRow />
+                        {changeSet.map(commit => (
+                            <TableRow key={commit.commitId}>
+                                <TableCell>
+                                    <CommitId commitId={commit.commitId} url={commit.url} />
+                                </TableCell>
+                                <TableCell>{commit.author.fullName}</TableCell>
+                                <TableCell className="multipleLines">
+                                    <LinkifiedText text={commit.msg} partialTextLinks={commit.issues} />
+                                </TableCell>
+                                <TableCell>
+                                    <ReadableDate
+                                        date={commit.timestamp}
+                                        liveUpdate
+                                        locale={locale}
+                                        shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                                        longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </JTable>
                 ))}
-            </JTable>
+            </div>
         );
     }
 }
