@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import hudson.model.Result;
 import hudson.model.Run;
 import java.util.ArrayList;
 import java.util.List;
