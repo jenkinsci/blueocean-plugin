@@ -32,6 +32,13 @@ public class PipelineImplTest extends PipelineBaseTest {
 
         sampleRepo.init();
 
+        j.assertBuildStatus(Result.SUCCESS, p.scheduleBuild2(0));
+        
+        // create a commit to populate the changeSet for the second run
+        sampleRepo.write("file1", "");
+        sampleRepo.git("add", "file1");
+        sampleRepo.git("commit", "--message=init");
+
         Run r = j.assertBuildStatus(Result.SUCCESS, p.scheduleBuild2(0));
 
         Map<String, Object> runDetails = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/" + r.getId() + "/");
