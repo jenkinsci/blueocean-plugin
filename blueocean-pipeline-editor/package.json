@@ -27,7 +27,8 @@
     "@jenkins-cd/js-builder": "0.0.64",
     "@jenkins-cd/js-builder-jest": "0.0.4",
     "@kadira/storybook": "2.20.1",
-    "@types/bluebird-global": "3.5.5",
+    "@types/bluebird": "^3.5.26",
+    "@types/bluebird-global": "^3.5.11",
     "@types/react": "15.6.14",
     "babel": "6.5.2",
     "babel-core": "6.17.0",
@@ -53,7 +54,7 @@
     "react-addons-test-utils": "15.4.2",
     "ts-jest": "19.0.2",
     "tsify": "4.0.0",
-    "typescript": "2.7.2"
+    "typescript": "^3.3.3333"
   },
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": "1.10.4",
