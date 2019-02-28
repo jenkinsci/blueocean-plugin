@@ -41,9 +41,10 @@ public class PipelineImplTest extends PipelineBaseTest {
 
         Run r = j.assertBuildStatus(Result.SUCCESS, p.scheduleBuild2(0));
 
-        Map<String, Object> runDetails = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/" + r.getId() + "/");
+        // confirm the changeSet retrieved from the latestRun details for the project is not empty
+        Map<String, Object> projectDetails = get("/organizations/jenkins/pipelines/" + p.getName() + "/");
+        Map<String, Object> runDetails = (Map<String, Object>) projectDetails.get("latestRun");
         List<Object> changeSet = (ArrayList) runDetails.get("changeSet");
-        
         assertTrue(!changeSet.isEmpty());
     }
 }
