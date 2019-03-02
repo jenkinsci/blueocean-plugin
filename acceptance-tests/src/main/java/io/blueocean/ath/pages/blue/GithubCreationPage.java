@@ -1,6 +1,7 @@
 package io.blueocean.ath.pages.blue;
 
 import io.blueocean.ath.BaseUrl;
+import io.blueocean.ath.LocalDriver;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.api.classic.ClassicJobApi;
@@ -8,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -25,18 +25,6 @@ public class GithubCreationPage implements WebDriverMixin {
     public GithubCreationPage(WebDriver driver) {
         PageFactory.initElements(driver, this);
     }
-
-    @FindBy(css = "button.github-creation")
-    public WebElement githubCreationBtn;
-
-    @FindBy(css = ".text-token input")
-    public WebElement apiKeyInput;
-
-    @FindBy(css = ".button-connect")
-    public WebElement connectButton;
-
-    @FindBy(css = ".repo-list input")
-    public WebElement pipelineSearchInput;
 
     @Inject
     @BaseUrl
@@ -62,7 +50,7 @@ public class GithubCreationPage implements WebDriverMixin {
     }
 
     public void selectGithubCreation() {
-        wait.until(ExpectedConditions.visibilityOf(githubCreationBtn)).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button.github-creation"))).click();
         logger.info("Selected github");
     }
 
@@ -71,9 +59,9 @@ public class GithubCreationPage implements WebDriverMixin {
      * @param token
      */
     public void validateGithubOauthToken(String token) {
-        WebElement element = wait.until(ExpectedConditions.visibilityOf((apiKeyInput)), 1000);
+        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".text-token input")), 1000);
         element.sendKeys(token);
-        connectButton.click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".button-connect")), 1000).click();
         logger.info("Set Oauth token");
     }
 
@@ -93,12 +81,13 @@ public class GithubCreationPage implements WebDriverMixin {
     public By getOrgSelector(String user) {
         return By.xpath("//div[@class='org-list-item']/span[text()='"+ user +"']");
     }
-    public void selectPipelineToCreate(String pipeline){
-        wait.until(ExpectedConditions.visibilityOf(pipelineSearchInput))
+    public void selectPipelineToCreate(final String pipeline){
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".repo-list input")))
             .sendKeys(pipeline);
 
-        By xpath = By.xpath("//div[contains(@class, 'repo-list')]//div[contains(@class,'List-Item')]//span[text()='"+pipeline+"']");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(xpath)).click();
+        // because the auto complete is added and removed quickly, sometimes the element becomes stale before we can click
+        // so do a retry
+        wait.click(By.xpath("//div[contains(@class, 'repo-list')]//div[contains(@class,'List-Item')]//span[text()='" + pipeline + "']"));
         logger.info("Selected pipeline to create");
     }
 
@@ -131,10 +120,12 @@ public class GithubCreationPage implements WebDriverMixin {
     }
 
     public void completeCreationFlow(String apiKey, String org, String pipeline, boolean createJenkinsFile) {
-        if(wait.until(wait.orVisible(
-            driver -> apiKeyInput,
-            driver -> driver.findElement(getOrgSelector(org)))) == 1) {
-
+        if(wait.until(
+                wait.orVisible(
+                    driver -> driver.findElement(By.cssSelector(".text-token input")),
+                    driver -> driver.findElement(getOrgSelector(org))
+                )
+        ) == 1) {
             validateGithubOauthToken(apiKey);
         }
         selectOrganization(org);
