@@ -103,7 +103,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-executor-info-plugin</artifactId>
+            <artifactId>blueocean-executor-info</artifactId>
         </dependency>
 
         <!-- Bundled plugins for improved out of the box experience -->
