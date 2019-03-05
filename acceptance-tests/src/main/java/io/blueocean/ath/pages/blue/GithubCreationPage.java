@@ -92,12 +92,9 @@ public class GithubCreationPage implements WebDriverMixin {
     }
 
     public void clickCreatePipelineButton() {
-        String className = ".github-complete-step.state-completed";
         wait.retryAction("click create pipeline button", 3, driver -> {
             wait.click(By.cssSelector(".button-create"));
-            WebElement element = wait.until(By.cssSelector(className), 5000);
-            logger.info(String.format("creation succeeded: found step .%s", className));
-            return element;
+            return true;
         });
     }
 
