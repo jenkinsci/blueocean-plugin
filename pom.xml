@@ -29,9 +29,9 @@
     <java.level>8</java.level>
     <jenkins.version>2.121.1</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
-    <frontend-version>1.6</frontend-version>
-    <node.version>6.4.0</node.version>
-    <npm.version>3.10.3</npm.version>
+    <frontend-version>1.7.5</frontend-version>
+    <node.version>10.13.0</node.version>
+    <npm.version>6.8.0</npm.version>
     <powermock.version>2.0.0-RC.4</powermock.version>
     <mockito.version>2.23.4</mockito.version>
     <guava.version>11.0.1</guava.version>
