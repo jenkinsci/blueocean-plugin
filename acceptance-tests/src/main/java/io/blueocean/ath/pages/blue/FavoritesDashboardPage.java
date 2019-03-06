@@ -77,9 +77,7 @@ public class FavoritesDashboardPage extends DashboardPage {
         String statusi = Arrays.stream(statuses).map(Object::toString).collect(Collectors.joining(","));
         logger.info(String.format("waiting for status = %s for favorite card = %s", statusi, fullName));
         WebElement favorite = getFavoriteCard(fullName);
-        Arrays.stream(statuses).forEach(status ->
-            wait.until(ExpectedConditions.attributeContains(favorite, "class", status.toString().toLowerCase()))
-        );
+        Arrays.stream(statuses).forEach(status -> wait.until(ExpectedConditions.attributeContains(favorite, "class", status.toString().toLowerCase()), 15*1000));
         return favorite;
     }
 

@@ -122,6 +122,7 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
             .clickBranchTab()
             .toggleFavoriteStatus(branchOther);
         dashboardPage.open();
+        wait.untilSSEReady();
 
         List<String> cardFullnames = ImmutableList.of(fullNameMaster, fullNameOther);
         int count = 2;
