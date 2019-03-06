@@ -205,8 +205,7 @@ public class FlowNodeWrapper {
     }
 
     /**
-     * Returns Action instances that were attached to the associated FlowNode, or to any of its children
-     * not represented in the graph.
+     * Returns Action instances that were attached to the associated FlowNode, or to any of its children.
      * Filters by class to mimic Item.getActions(class).
      */
     public <T extends Action> Collection<T> getPipelineActions(Class<T> clazz) {
@@ -220,14 +219,6 @@ public class FlowNodeWrapper {
             }
         }
         return filtered;
-    }
-
-    /**
-     * Returns Action instances that were attached to the associated FlowNode, or to any of its children
-     * not represented in the graph.
-     */
-    public Collection<Action> getPipelineActions() {
-        return Collections.unmodifiableCollection(this.pipelineActions);
     }
 
     public void setPipelineActions(Collection<Action> pipelineActions) {
