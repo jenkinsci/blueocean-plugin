@@ -53,6 +53,8 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         String fullName = freestyle.getFullName();
 
         dashboardPage.open();
+        wait.untilSSEReady();
+
         dashboardPage.togglePipelineListFavorite(jobName);
         dashboardPage.checkFavoriteCardCount(1);
         dashboardPage.clickFavoriteCardRunButton(fullName);
@@ -70,6 +72,8 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         String fullName = pipeline.getFullName();
 
         dashboardPage.open();
+        wait.untilSSEReady();
+
         dashboardPage.togglePipelineListFavorite(jobName);
         dashboardPage.checkFavoriteCardCount(1);
 
@@ -113,6 +117,8 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         String fullNameOther = pipeline.getFullName(branchOther);
 
         dashboardPage.open();
+        wait.untilSSEReady();
+
         dashboardPage.togglePipelineListFavorite(jobName);
         dashboardPage.getFavoriteCard(fullNameMaster);
         dashboardPage.clickFavoriteCardActivityLink(fullNameMaster);
