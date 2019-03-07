@@ -7,9 +7,11 @@ import io.blueocean.ath.model.ClassicPipeline;
 import io.blueocean.ath.model.Folder;
 import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.model.MultiBranchPipeline;
+import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -46,6 +48,10 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
     @Inject
     WaitUtil wait;
 
+    @Rule
+    @Inject
+    public SSEClientRule sseClientRule;
+
     @Test
     public void testFreestyle() throws IOException {
         String jobName = "favoritescards-freestyle";
@@ -53,7 +59,6 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         String fullName = freestyle.getFullName();
 
         dashboardPage.open();
-        wait.untilSSEReady();
 
         dashboardPage.togglePipelineListFavorite(jobName);
         dashboardPage.checkFavoriteCardCount(1);
@@ -72,7 +77,6 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         String fullName = pipeline.getFullName();
 
         dashboardPage.open();
-        wait.untilSSEReady();
 
         dashboardPage.togglePipelineListFavorite(jobName);
         dashboardPage.checkFavoriteCardCount(1);
@@ -117,8 +121,6 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         String fullNameOther = pipeline.getFullName(branchOther);
 
         dashboardPage.open();
-        wait.untilSSEReady();
-
         dashboardPage.togglePipelineListFavorite(jobName);
         dashboardPage.getFavoriteCard(fullNameMaster);
         dashboardPage.clickFavoriteCardActivityLink(fullNameMaster);
@@ -128,7 +130,6 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
             .clickBranchTab()
             .toggleFavoriteStatus(branchOther);
         dashboardPage.open();
-        wait.untilSSEReady();
 
         List<String> cardFullnames = ImmutableList.of(fullNameMaster, fullNameOther);
         int count = 2;
@@ -158,9 +159,14 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
             logger.info(String.format("running tests against favorited branch: %s", fullName));
             count--;
             dashboardPage.clickFavoriteCardRunButton(fullName);
-            dashboardPage.checkFavoriteCardStatus(fullName, RUNNING, SUCCESS);
+            dashboardPage.checkFavoriteCardStatus(fullName, RUNNING);
+            sseClientRule.untilEvents(pipeline.buildsFinished);
+            dashboardPage.checkFavoriteCardStatus(fullName, SUCCESS);
+
             dashboardPage.clickFavoriteCardReplayButton(fullName);
-            dashboardPage.checkFavoriteCardStatus(fullName, RUNNING, SUCCESS);
+            dashboardPage.checkFavoriteCardStatus(fullName, RUNNING);
+            sseClientRule.untilEvents(pipeline.buildsFinished);
+            dashboardPage.checkFavoriteCardStatus(fullName, SUCCESS);
             dashboardPage.removeFavoriteCard(fullName);
             dashboardPage.checkFavoriteCardCount(count);
             dashboardPage.checkIsPipelineListItemFavorited(jobName, false);
