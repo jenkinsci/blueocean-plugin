@@ -1,8 +1,13 @@
 # Changelogs
 
+## 1.13.2 (March 6st, 2019)
+
+* HOTFIX - [JENKINS-56383](https://issues.jenkins-ci.org/browse/JENKINS-56383) Reverted the fix for [JENKINS-38339](https://issues.jenkins-ci.org/browse/JENKINS-38339) which was causing double parallel steps to fail to render
+
+
 ## 1.13.1 (March 1st, 2019)
 
-**NOTE:** blueocean-executor-info is now included in the main blueocean-plugin repository
+**NOTE:** blueocean-executor-info is now included in the main blueocean-plugin repository (but not as a required dependancy yet)
 
 * [JENKINS-53188](https://issues.jenkins-ci.org/browse/JENKINS-53188) New jobs created from Blue Ocean are tied with username that created them
 * [JENKINS-53019](https://issues.jenkins-ci.org/browse/JENKINS-53019) Changes tab does not group changes for multiple SCM providers by SCM
