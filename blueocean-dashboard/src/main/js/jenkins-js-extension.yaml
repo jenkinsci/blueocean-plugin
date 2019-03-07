@@ -8,6 +8,10 @@ extensions:
     extensionPoint: jenkins.main.routes
   - component: components/PipelineRunGraph
     extensionPoint: jenkins.pipeline.run.result
+# creation for Perforce
+  - component: creation/perforce/PerforceScmProvider
+    extensionPoint: jenkins.pipeline.create.scm.provider
+    ordinal: 600
 # creation for Git repos
   - component: creation/git/GitScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
