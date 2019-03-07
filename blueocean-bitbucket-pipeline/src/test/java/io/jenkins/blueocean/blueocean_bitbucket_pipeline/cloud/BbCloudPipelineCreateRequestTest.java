@@ -21,6 +21,7 @@ public class BbCloudPipelineCreateRequestTest extends BbCloudWireMock {
         Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
+                .crumb( crumb )
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", "pipeline1", "$class", "io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("id", BitbucketCloudScm.ID, "uri", apiUrl,

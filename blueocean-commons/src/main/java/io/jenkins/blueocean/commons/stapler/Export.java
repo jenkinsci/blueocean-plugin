@@ -43,8 +43,20 @@ public class Export {
      */
     @Nonnull
     public static String toJson(@Nonnull Object object) throws IOException {
+        return toJson(object, false);
+    }
+
+    /**
+     * Serialize the supplied object to JSON and return as a {@link String}.
+     * @param object The object to serialize.
+     * @param htmlEncoded enable html encoding so its safe to output to html
+     * @return The JSON as a {@link String}.
+     * @throws IOException Error serializing model object.
+     */
+    @Nonnull
+    public static String toJson(@Nonnull Object object, boolean htmlEncoded) throws IOException {
         try (StringWriter writer = new StringWriter()) {
-            toJson(object, writer);
+            toJson(object, writer, htmlEncoded);
             return writer.toString();
         }
     }
@@ -57,8 +69,25 @@ public class Export {
      */
     @SuppressWarnings("unchecked")
     public static void toJson(@Nonnull Object object, @Nonnull Writer writer) throws IOException {
+        toJson(object, writer, false);
+    }
+
+
+    /**
+     * Serialize the supplied object to JSON and write to the supplied {@link Writer}.
+     * @param object The object to serialize.
+     * @param writer The writer to output to.
+     * @param htmlEncoded enable html encoding so its safe to output to html
+     * @throws IOException Error serializing model object.
+     */
+    @SuppressWarnings("unchecked")
+    public static void toJson(@Nonnull Object object, @Nonnull Writer writer, boolean htmlEncoded) throws IOException {
         Model model = new ModelBuilder().get(object.getClass());
-        model.writeTo(object, Flavor.JSON.createDataWriter(object, writer, createExportConfig()));
+        ExportConfig exportConfig = createExportConfig();
+        if (htmlEncoded) {
+            exportConfig.withHtmlEncode(true);
+        }
+        model.writeTo(object, Flavor.JSON.createDataWriter(object, writer, exportConfig));
         writer.flush();
     }
 

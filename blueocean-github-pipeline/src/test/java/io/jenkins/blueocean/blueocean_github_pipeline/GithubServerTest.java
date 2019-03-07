@@ -34,10 +34,11 @@ public class GithubServerTest extends PipelineBaseTest {
     String token;
 
     @Before
-    public void createUser() throws UnirestException {
+    public void createUser() throws Exception {
         hudson.model.User user = User.get("alice");
         user.setFullName("Alice Cooper");
         token = getJwtToken(j.jenkins, "alice", "alice");
+        this.crumb = getCrumb( j.jenkins );
     }
 
     @Test
@@ -46,6 +47,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = request()
             .status(400)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of(
                 "name", "My Server",
                 "apiUrl", getApiUrlCustomPath("/notgithub")
@@ -68,6 +70,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = request()
             .status(400)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of(
                 "name", "My Server",
                 "apiUrl", getApiUrl()
@@ -90,6 +93,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = request()
             .status(400)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of(
                 "name", "My Server",
                 "apiUrl", "http://foobar/"
@@ -111,6 +115,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = request()
             .status(400)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of())
             .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
@@ -131,6 +136,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = request()
             .status(400)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of("name", "foo"))
             .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
@@ -150,6 +156,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = request()
             .status(400)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of("apiUrl", getDefaultApiUrl()))
             .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
@@ -170,6 +177,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map server = request()
             .status(200)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of(
                 "name", "My Server",
                 "apiUrl", getDefaultApiUrl()
@@ -181,6 +189,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = server = request()
             .status(400)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of(
                 "name", "My Server 2",
                 "apiUrl", getDefaultApiUrl()
@@ -203,6 +212,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map server = request()
             .status(200)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of(
                 "name", "My Server",
                 "apiUrl", getDefaultApiUrl()
@@ -214,6 +224,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = request()
             .status(400)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of(
                 "name", "My Server",
                 "apiUrl", getDefaultApiUrl()
@@ -238,6 +249,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map server = request()
             .status(200)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of(
                 "name", "My Server",
                 "apiUrl", getDefaultApiUrl()

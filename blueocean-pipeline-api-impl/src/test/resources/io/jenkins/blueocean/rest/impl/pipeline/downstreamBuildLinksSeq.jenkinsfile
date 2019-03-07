@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+    stages {
+        stage ("Stage the first") {
+            steps {
+                echo "This pipeline waits for the downstream builds to finish"
+            }
+        }
+        stage ("Stage the second") {
+            parallel {
+                stage ("Single stage branch") {
+                    steps {
+                        build 'downstream1'
+                    }
+                }
+                stage ("Outer") {
+                    stages {
+                        stage ("Inner") {
+                            steps {
+                                build 'downstream2'
+                            }
+                        }
+                    }
+                }
+                stage ("Two stage branch") {
+                    stages {
+                        stage ("build-ds3") {
+                            steps {
+                                build 'downstream3'
+                            }
+                        }
+                        stage ("build-ds4") {
+                            steps {
+                                build 'downstream4'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage ("Final stage") {
+            steps {
+                echo "This stage is boring"
+            }
+        }
+    }
+}

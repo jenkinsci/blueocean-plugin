@@ -44,7 +44,10 @@ import org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrai
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.TestExtension;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -56,6 +59,8 @@ import static org.junit.Assert.*;
 /**
  * @author Vivek Pandey
  */
+@RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubPipelineCreateRequestTest extends GithubMockBase {
     @Test
     public void createPipeline() throws UnirestException, IOException {
@@ -63,6 +68,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( this.crumb )
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", "pipeline1", "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("id", GithubScm.ID, "uri", githubApiUrl, "credentialId", credentialId,
@@ -138,6 +144,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         String orgFolderName = "cloudbeers";
         Map resp = new RequestBuilder(baseUrl)
                 .status(401)
+                .crumb( this.crumb )
                 .post("/organizations/"+getOrgName()+"/pipelines/")
                 .data(GithubTestUtils.buildRequestBody(GithubScm.ID,null, githubApiUrl, orgFolderName, "PR-demo"))
                 .build(Map.class);
@@ -152,6 +159,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         String orgFolderName = "cloudbeers";
         Map resp = new RequestBuilder(baseUrl)
                 .status(401)
+                .crumb( this.crumb )
                 .post("/organizations/"+getOrgName()+"/pipelines/")
                 .data(GithubTestUtils.buildRequestBody(GithubScm.ID, credentialId, githubApiUrl, orgFolderName, "PR-demo"))
                 .build(Map.class);
@@ -169,6 +177,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         Map resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .crumb( this.crumb )
                 .post("/organizations/"+getOrgName()+"/pipelines/")
                 .data(GithubTestUtils.buildRequestBody(GithubScm.ID,null, githubApiUrl, orgFolderName, "PR-demo"))
                 .build(Map.class);
@@ -186,6 +195,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         Map resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( this.crumb )
                 .post("/organizations/"+getOrgName()+"/pipelines/")
                 .data(GithubTestUtils.buildRequestBody(GithubScm.ID, credentialId, githubApiUrl, orgFolderName, "PR-demo"))
                 .build(Map.class);
@@ -202,6 +212,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( this.crumb )
                 .post("/organizations/"+getOrgName()+"/pipelines/")
                 // since credentialId will default to 'github', it's okay to omit it in request
                 .data(GithubTestUtils.buildRequestBody(GithubScm.ID, null, githubApiUrl, orgFolderName, "PR-demo"))
@@ -219,6 +230,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( this.crumb )
                 .post("/organizations/"+getOrgName()+"/pipelines/")
                 .data(GithubTestUtils.buildRequestBody(GithubScm.ID, credentialId, githubApiUrl, orgFolderName, "PR-demo"))
                 .build(Map.class);
@@ -235,6 +247,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         Map resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( this.crumb )
                 .post("/organizations/"+getOrgName()+"/pipelines/")
                 .data(GithubTestUtils.buildRequestBody(GithubScm.ID, "bogus-cred", githubApiUrl, orgFolderName, "PR-demo"))
                 .build(Map.class);
@@ -251,6 +264,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( this.crumb )
                 .post("/organizations/"+getOrgName()+"/pipelines/")
                 // since credentialId will default to 'github', it's okay to omit it in request
                 .data(GithubTestUtils.buildRequestBody(GithubEnterpriseScm.ID, null, githubApiUrl, orgFolderName, "PR-demo"))
@@ -325,6 +339,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         Map map = new RequestBuilder(baseUrl)
                 .post("/organizations/jenkins/pipelines/p/runs/")
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( this.crumb )
                 .data(ImmutableMap.of())
                 .status(200)
                 .build(Map.class);

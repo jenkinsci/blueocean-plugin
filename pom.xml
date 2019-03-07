@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>3.28</version>
+    <version>3.36</version>
   </parent>
 
   <groupId>io.jenkins.blueocean</groupId>
@@ -24,27 +24,27 @@
   </licenses>
 
   <properties>
-    <revision>1.11.0</revision>
+    <revision>1.14.0</revision>
     <changelist>-SNAPSHOT</changelist>
     <java.level>8</java.level>
     <jenkins.version>2.121.1</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
-    <frontend-version>1.6</frontend-version>
-    <node.version>6.4.0</node.version>
-    <npm.version>3.10.3</npm.version>
-    <findbugs-maven-plugin.version>3.0.4</findbugs-maven-plugin.version>
-    <findbugs.failOnError>true</findbugs.failOnError>
-    <powermock.version>1.6.6</powermock.version>
+    <frontend-version>1.7.5</frontend-version>
+    <node.version>10.13.0</node.version>
+    <npm.version>6.8.0</npm.version>
+    <powermock.version>2.0.0-RC.4</powermock.version>
+    <mockito.version>2.23.4</mockito.version>
     <guava.version>11.0.1</guava.version>
     <jacoco.version>0.8.2</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
-    <jenkins-test-harness.version>2.38</jenkins-test-harness.version>
+    <jenkins-test-harness.version>2.44</jenkins-test-harness.version>
     <scm-api.version>2.2.8</scm-api.version>
     <git.version>3.8.0</git.version>
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
+    <workflow-support.version>3.2</workflow-support.version>
   </properties>
 
   <scm>
@@ -140,6 +140,7 @@
     <module>blueocean-bitbucket-pipeline</module>
     <module>blueocean-pipeline-editor</module>
     <module>blueocean-jira</module>
+    <module>blueocean-executor-info-plugin</module>
   </modules>
 
   <repositories>
@@ -185,7 +186,7 @@
       </dependency>
       <dependency>
           <groupId>org.powermock</groupId>
-          <artifactId>powermock-api-mockito</artifactId>
+          <artifactId>powermock-api-mockito2</artifactId>
           <scope>test</scope>
       </dependency>
       <dependency>
@@ -297,6 +298,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-executor-info-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- TODO: should be moved out of blueocean repo as separate plugin -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -369,7 +376,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-step-api</artifactId>
-            <version>2.16</version>
+            <version>2.19</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -379,12 +386,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-support</artifactId>
-            <version>2.22</version>
+            <version>${workflow-support.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-support</artifactId>
-            <version>2.22</version>
+            <version>${workflow-support.version}</version>
             <classifier>tests</classifier>
         </dependency>
         <dependency>
@@ -480,7 +487,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-bitbucket-branch-source</artifactId>
-            <version>2.2.15</version>
+            <version>2.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -519,7 +526,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-autofavorite</artifactId>
-            <version>1.2.2</version>
+            <version>1.2.3</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -581,7 +588,7 @@
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
             <artifactId>jenkins-test-harness-tools</artifactId>
-            <version>2.0</version>
+            <version>2.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -603,7 +610,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>sse-gateway</artifactId>
-            <version>1.16</version>
+            <version>1.17</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -624,7 +631,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jackson2-api</artifactId>
-            <version>2.8.11.2</version>
+            <version>2.9.8</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -696,7 +703,7 @@
         <dependency>
             <groupId>org.jenkins-ci.modules</groupId>
             <artifactId>instance-identity</artifactId>
-            <version>2.1</version>
+            <version>2.2</version>
             <scope>provided</scope>
         </dependency>
 
@@ -789,7 +796,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <!--We need 1.x version untile powermock has decent support for mockito2-->
-            <version>1.10.19</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -816,7 +823,13 @@
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
+            <artifactId>powermock-api-mockito2</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-core</artifactId>
             <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
@@ -890,17 +903,6 @@
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-javadoc-plugin</artifactId>
                   <version>2.10.4</version>
-              </plugin>
-              <plugin>
-                  <groupId>org.codehaus.mojo</groupId>
-                  <artifactId>findbugs-maven-plugin</artifactId>
-                  <version>${findbugs-maven-plugin.version}</version>
-                  <configuration>
-                      <effort>Max</effort>
-                      <threshold>Default</threshold>
-                      <xmlOutput>true</xmlOutput>
-                      <findbugsXmlOutput>false</findbugsXmlOutput>
-                  </configuration>
               </plugin>
               <plugin>
                   <groupId>org.jacoco</groupId>
@@ -1012,12 +1014,6 @@
               </systemPropertyVariables>
           </configuration>
       </plugin>
-
-        <!-- run findbugs on all modules -->
-        <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>findbugs-maven-plugin</artifactId>
-        </plugin>
     </plugins>
   </build>
 

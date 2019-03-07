@@ -22,8 +22,12 @@ import io.blueocean.ath.pages.blue.PullRequestsPage;
 import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import io.blueocean.ath.pages.blue.RunDetailsTestsPage;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.Augmenter;
@@ -41,6 +45,8 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 public class AthModule extends AbstractModule {
+    private static final Logger logger = Logger.getLogger(AthModule.class);
+
     @Override
     protected void configure() {
         Config cfg = new Config();
@@ -51,11 +57,11 @@ public class AthModule extends AbstractModule {
         bind(Config.class).toInstance(cfg);
 
         String webDriverType = cfg.getString("webDriverType");
-        DesiredCapabilities capability;
+        MutableCapabilities capability;
         if ("firefox".equals(webDriverType)) {
-            capability = DesiredCapabilities.firefox();
+            capability = new FirefoxOptions();
         } else {
-            capability = DesiredCapabilities.chrome();
+            capability = new ChromeOptions();
         }
 
         LoggingPreferences logPrefs = new LoggingPreferences();
@@ -66,8 +72,19 @@ public class AthModule extends AbstractModule {
         String webDriverBrowserSize = cfg.getString("webDriverBrowserSize");
 
         try {
+            String launchUrl = cfg.getString("jenkinsUrl");
+            if (launchUrl == null) {
+                launchUrl = new String(Files.readAllBytes(Paths.get("runner/.blueocean-ath-jenkins-url")));
+            }
+            capability.setCapability("extendedDebugging", "true");
+            capability.setCapability("initialBrowserUrl", launchUrl);
+
             WebDriver driver = new RemoteWebDriver(new URL(webDriverUrl), capability);
             LocalDriver.setCurrent(driver);
+            if (cfg.getBoolean("saucelabs", false)) {
+                LocalDriver.enableSauce();
+                System.out.println("SauceOnDemandSessionID=" + ((RemoteWebDriver) driver).getSessionId().toString());
+            }
 
             driver = new Augmenter().augment(driver);
             if (webDriverBrowserSize == null) {
@@ -79,10 +96,6 @@ public class AthModule extends AbstractModule {
             driver.manage().deleteAllCookies();
             bind(WebDriver.class).toInstance(driver);
 
-            String launchUrl = cfg.getString("jenkinsUrl");
-            if (launchUrl == null) {
-                launchUrl = new String(Files.readAllBytes(Paths.get("runner/.blueocean-ath-jenkins-url")));
-            }
             bindConstant().annotatedWith(BaseUrl.class).to(launchUrl);
             LocalDriver.setUrlBase(launchUrl);
 

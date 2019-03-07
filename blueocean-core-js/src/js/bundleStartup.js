@@ -13,8 +13,14 @@ export function execute(done, config) {
         extensionData: window.$blueocean.jsExtensions,
         classMetadataProvider: (type, cb) => {
             const fetch = require('./fetch').Fetch;
+            const fetchOptions = {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
             fetch
-                .fetchJSON(`${appRoot}/rest/classes/${type}/`)
+                .fetchJSON(`${appRoot}/rest/classes/${type}/`, { fetchOptions })
                 .then(cb)
                 .catch(fetch.consoleError);
         },

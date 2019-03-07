@@ -14,6 +14,7 @@ import com.mashape.unirest.request.HttpRequestWithBody;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.User;
+import hudson.security.csrf.CrumbIssuer;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
 import jenkins.model.Jenkins;
@@ -77,6 +78,8 @@ public abstract class PipelineBaseTest{
 
     protected String jwtToken;
 
+    protected Crumb crumb;
+
     protected String getContextPath(){
         return "blue/rest";
     }
@@ -89,6 +92,8 @@ public abstract class PipelineBaseTest{
         }
         this.baseUrl = j.jenkins.getRootUrl() + getContextPath();
         this.jwtToken = getJwtToken(j.jenkins);
+        this.crumb = getCrumb( j.jenkins );
+
         Unirest.setObjectMapper(new ObjectMapper() {
             public <T> T readValue(String value, Class<T> valueType) {
                 try {
@@ -119,6 +124,19 @@ public abstract class PipelineBaseTest{
 //
 //        HttpClient client = new HttpClient();
 //        Unirest.setHttpClient();
+    }
+
+    protected static class Crumb {
+        public String field, value;
+    }
+
+    public static Crumb getCrumb(Jenkins jenkins) throws Exception {
+
+        Crumb crumb  = new Crumb();
+        CrumbIssuer crumbIssuer = jenkins.getCrumbIssuer();
+        crumb.field = crumbIssuer.getCrumbRequestField();
+        crumb.value = crumbIssuer.getCrumb();
+        return crumb;
     }
 
     protected <T> T  get(String path, Class<T> type){
@@ -180,6 +198,7 @@ public abstract class PipelineBaseTest{
             HttpResponse<Map> response = Unirest.post(getBaseUrl(path))
                 .header("Content-Type","application/json")
                 .header("Authorization", "Bearer "+jwtToken)
+                .header( crumb.field, crumb.value )
                 .body(body).asObject(Map.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -419,6 +438,7 @@ public abstract class PipelineBaseTest{
         private String baseUrl;
         private int expectedStatus = 200;
         private String token;
+        private Crumb crumb;
 
         private Map<String,String> headers = new HashMap<>();
 
@@ -454,6 +474,11 @@ public abstract class PipelineBaseTest{
 
         public RequestBuilder jwtToken(String token){
             this.token = token;
+            return this;
+        }
+
+        public RequestBuilder crumb(Crumb crumb){
+            this.crumb = crumb;
             return this;
         }
 
@@ -498,50 +523,58 @@ public abstract class PipelineBaseTest{
             return this;
         }
 
-        public <T> T build(Class<T> clzzz) {
+        public HttpRequest build() {
             assert url != null;
             assert url.startsWith("/");
-            try {
-                HttpRequest request;
-                switch (method) {
-                    case "PUT":
-                        request = Unirest.put(getBaseUrl(url));
-                        break;
-                    case "POST":
-                        request = Unirest.post(getBaseUrl(url));
-                        break;
-                    case "GET":
-                        request = Unirest.get(getBaseUrl(url));
-                        break;
-                    case "DELETE":
-                        request = Unirest.delete(getBaseUrl(url));
-                        break;
-                    default:
-                        throw new RuntimeException("No default options");
 
-                }
-                request.header("Accept-Encoding","");
-                if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){
-                    request.basicAuth(username, password);
+            HttpRequest request;
+            switch (method) {
+                case "PUT":
+                    request = Unirest.put(getBaseUrl(url));
+                    break;
+                case "POST":
+                    request = Unirest.post(getBaseUrl(url));
+                    break;
+                case "GET":
+                    request = Unirest.get(getBaseUrl(url));
+                    break;
+                case "DELETE":
+                    request = Unirest.delete(getBaseUrl(url));
+                    break;
+                default:
+                    throw new RuntimeException("No default options");
+
+            }
+            if(crumb!=null){
+                request.header( crumb.field, crumb.value );
+            }
+            request.header("Accept-Encoding","");
+            if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){
+                request.basicAuth(username, password);
+            }else{
+                if (token == null) {
+                    request.header("Authorization", "Bearer " + PipelineBaseTest.this.jwtToken);
                 }else{
-                    if (token == null) {
-                        request.header("Authorization", "Bearer " + PipelineBaseTest.this.jwtToken);
-                    }else{
-                        request.header("Authorization", "Bearer " + token);
-                    }
+                    request.header("Authorization", "Bearer " + token);
                 }
+            }
 
-                request.header("Content-Type", contentType);
+            request.header("Content-Type", contentType);
 
-                request.headers(headers);
+            request.headers(headers);
 
-                if(request instanceof HttpRequestWithBody && data != null) {
-                    ((HttpRequestWithBody)request).body(data);
-                }
+            if(request instanceof HttpRequestWithBody && data != null) {
+                ((HttpRequestWithBody)request).body(data);
+            }
+            return request;
+        }
 
+        public <T> T build(Class<T> clzzz) {
+            try {
+                HttpRequest request = build();
                 HttpResponse<T> response = request.asObject(clzzz);
                 Assert.assertEquals(response.getStatusText(), expectedStatus, response.getStatus());
-                return response.getBody();
+            return response.getBody();
             } catch (UnirestException e) {
                 throw new RuntimeException(e);
             }

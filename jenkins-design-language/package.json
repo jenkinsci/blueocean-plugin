@@ -1,7 +1,7 @@
 {
   "name": "@jenkins-cd/design-language",
   "jdlName": "jenkins-design-language",
-  "version": "0.0.163",
+  "version": "1.10.4",
   "description": "Styles, assets, and React classes for Jenkins Design Language",
   "main": "dist/js/components/index.js",
   "scripts": {
@@ -45,7 +45,7 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-material-icons": "0.0.7",
+    "@jenkins-cd/blueocean-material-icons": "0.0.8",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/js-extensions": "0.0.44",
     "linkifyjs": "2.1.4",
@@ -58,9 +58,10 @@
     "react-router": "2.8.1"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.63",
+    "@jenkins-cd/js-builder": "0.0.64",
     "@jenkins-cd/js-builder-jest": "0.0.4",
     "@kadira/storybook": "2.35.3",
+    "@types/node": "11.9.5",
     "@types/react": "16.4.14",
     "@types/react-dom": "16.0.7",
     "babel-eslint": "7.0.0",
@@ -69,7 +70,7 @@
     "babel-preset-react": "6.16.0",
     "babel-preset-stage-0": "6.16.0",
     "bluebird": "3.4.6",
-    "browserify": "13.1.0",
+    "browserify": "16.2.3",
     "chai": "3.5.0",
     "cli-spinner": "0.2.6",
     "enzyme": "2.5.1",
@@ -87,17 +88,19 @@
     "gulp-sourcemaps": "2.1.1",
     "gulp-svgmin": "1.2.3",
     "gulp-typescript": "4.0.1",
-    "harp": "0.24.0",
+    "harp": "0.29.0",
     "jest": "19.0.2",
     "less": "2.7.2",
+    "mockdate": "2.0.2",
+    "node-sass": "4.11.0",
     "normalize.css": "5.0.0",
     "octicons": "4.4.0",
     "react-addons-test-utils": "15.4.2",
     "run-sequence": "1.2.2",
     "ts-jest": "19.0.2",
     "tsify": "4.0.0",
-    "typescript": "3.0.3",
-    "watchify": "3.7.0"
+    "typescript": "3.3.3333",
+    "watchify": "3.11.1"
   },
   "jenkinscd": {
     "export": [

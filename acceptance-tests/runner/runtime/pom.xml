@@ -22,8 +22,6 @@
   <properties>
     <!-- https://github.com/jenkinsci/acceptance-test-harness -->
     <jenkins.acceptance.testharness.version>1.30</jenkins.acceptance.testharness.version>
-    <node.version>6.4.0</node.version>
-    <npm.version>3.10.3</npm.version>
     <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
   </properties>
 
@@ -77,7 +75,7 @@
     will be requests by community members to move the BO tests in with
     the main acceptance tests in https://github.com/jenkinsci/acceptance-test-harness.
   -->
-  
+
   <profiles>
     <profile>
       <id>BROWSER</id>
@@ -173,108 +171,25 @@
         </plugins>
       </build>
     </profile>
-
-    <!--
-       Node/NPM download, install and initialize.
-    -->
-    <profile>
-      <id>node-classifier-linux</id>
-      <activation>
-        <os>
-          <family>Linux</family>
-          <arch>amd64</arch>
-        </os>
-      </activation>
-      <properties>
-        <node.download.file>node-v${node.version}-linux-x64.tar.gz</node.download.file>
-        <node.download.classifier />
-      </properties>
-    </profile>
-    <profile>
-      <id>node-classifier-mac</id>
-      <activation>
-        <os>
-          <family>mac</family>
-        </os>
-      </activation>
-      <properties>
-        <node.download.file>node-v${node.version}-darwin-x64.tar.gz</node.download.file>
-        <node.download.classifier />
-      </properties>
-    </profile>
-    <profile>
-      <id>node-classifier-windows</id>
-      <activation>
-        <os>
-          <family>windows</family>
-          <arch>x64</arch>
-        </os>
-      </activation>
-      <properties>
-        <node.download.file>win-x64/node.exe</node.download.file>
-        <node.download.classifier>/x64</node.download.classifier>
-      </properties>
-    </profile>
-    <profile>
-      <id>node-classifier-windows-amd64</id>
-      <activation>
-        <os>
-          <family>windows</family>
-          <arch>amd64</arch>
-        </os>
-      </activation>
-      <properties>
-        <node.download.file>win-x64/node.exe</node.download.file>
-        <node.download.classifier>/x64</node.download.classifier>
-      </properties>
-    </profile>
-    <profile>
-      <id>node-classifier-windows-x86</id>
-      <activation>
-        <os>
-          <family>windows</family>
-          <arch>x86</arch>
-        </os>
-      </activation>
-      <properties>
-        <node.download.file>win-x86/node.exe</node.download.file>
-        <node.download.classifier />
-      </properties>
-    </profile>
-
-    <profile>
-      <id>clean-node</id>
-      <activation>
-        <property>
-          <name>cleanNode</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-clean-plugin</artifactId>
-            <configuration>
-              <filesets>
-                <fileset>
-                  <directory>node</directory>
-                  <followSymlinks>false</followSymlinks>
-                </fileset>
-                <fileset>
-                  <directory>node_modules</directory>
-                  <followSymlinks>false</followSymlinks>
-                </fileset>
-              </filesets>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>    
-    
   </profiles>
-  
+
   <build>
     <plugins>
+      <plugin>
+          <groupId>com.github.klieber</groupId>
+          <artifactId>phantomjs-maven-plugin</artifactId>
+          <version>0.7</version>
+          <executions>
+              <execution>
+                  <goals>
+                      <goal>install</goal>
+                  </goals>
+              </execution>
+          </executions>
+          <configuration>
+              <version>2.1.1</version>
+          </configuration>
+      </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.2</version>
@@ -314,74 +229,6 @@
           <arguments>-DskipTests</arguments>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>com.googlecode.maven-download-plugin</groupId>
-        <artifactId>download-maven-plugin</artifactId>
-        <version>1.2.1</version>
-        <executions>
-          <execution>
-            <id>get-node</id>
-            <phase>initialize</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <url>https://nodejs.org/dist/v${node.version}/${node.download.file}</url>
-              <unpack>false</unpack>
-              <outputDirectory>
-                ${project.build.directory}/frontend/v${node.version}${node.download.classifier}
-              </outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>get-npm</id>
-            <phase>initialize</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <url>http://registry.npmjs.org/npm/-/npm-${npm.version}.tgz</url>
-              <unpack>false</unpack>
-              <outputDirectory>${project.build.directory}/frontend/</outputDirectory>
-              <outputFileName>npm-${npm.version}.tgz</outputFileName>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>com.github.eirslett</groupId>
-        <artifactId>frontend-maven-plugin</artifactId>
-        <version>0.0.23</version>
-
-        <executions>
-
-          <execution>
-            <phase>initialize</phase>
-            <id>install node and npm</id>
-            <goals>
-              <goal>install-node-and-npm</goal>
-            </goals>
-            <configuration>
-              <nodeVersion>v${node.version}</nodeVersion>
-              <npmVersion>${npm.version}</npmVersion>
-              <!-- Use the pre-download node and npm packages. See download-maven-plugin config above. -->
-              <downloadRoot>${project.baseUri}target/frontend/</downloadRoot>
-            </configuration>
-          </execution>
-
-          <execution>
-            <phase>initialize</phase>
-            <id>npm install</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <configuration>
-              <arguments>install</arguments>
-            </configuration>
-          </execution>
-
-        </executions>
-      </plugin>
     </plugins>
-  </build>  
+  </build>
 </project>

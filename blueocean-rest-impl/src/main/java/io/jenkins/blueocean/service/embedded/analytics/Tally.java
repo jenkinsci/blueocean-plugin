@@ -12,13 +12,7 @@ public final class Tally {
      * @param key to increment tally by 1
      */
     public void count(String key) {
-        Integer count = tally.get(key);
-        if (count == null) {
-            count = 1;
-        } else {
-            count++;
-        }
-        tally.put(key, count);
+        tally.put(key, tally.getOrDefault(key, 0) + 1);
     }
 
     /**

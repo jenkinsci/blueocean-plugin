@@ -66,7 +66,7 @@ public final class Links extends HashMap<String,Link>{
      * Add a new link with key 'ref' and href being self.href+ref
      * <pre>
      * <code>
-     *     links.addRelative("testResult");
+     *     links.add("testResult");
      *
      *     {
      *         "_links":[

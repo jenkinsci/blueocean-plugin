@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.blueocean</groupId>
@@ -11,17 +10,16 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <node.version>6.4.0</node.version>
-        <npm.version>3.10.3</npm.version>
+        <phantomjs.binary.path>./target/phantomjs-maven-plugin/phantomjs-2.1.1-linux-x86_64/bin/phantomjs</phantomjs.binary.path>
         <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
     </properties>
 
 
     <repositories>
-      <repository>
-        <id>repo.jenkins-ci.org</id>
-        <url>http://repo.jenkins-ci.org/public/</url>
-      </repository>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
         <repository>
             <snapshots>
                 <enabled>false</enabled>
@@ -32,10 +30,10 @@
         </repository>
     </repositories>
     <pluginRepositories>
-      <pluginRepository>
-        <id>repo.jenkins-ci.org</id>
-        <url>http://repo.jenkins-ci.org/public/</url>
-      </pluginRepository>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
     </pluginRepositories>
 
     <dependencies>
@@ -47,12 +45,12 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>2.53.0</version>
+            <version>3.141.59</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-firefox-driver</artifactId>
-            <version>2.53.0</version>
+            <version>3.141.59</version>
         </dependency>
         <!-- begin HttpRequest helper -->
         <dependency>
@@ -128,22 +126,10 @@
             <version>2.7.1</version>
         </dependency>
         <!-- end wiremock -->
-        <!-- override guava from bitbucket-rest but ensure UrlEscapers is available -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>18.0</version>
-        </dependency>
         <dependency>
             <groupId>com.cdancy</groupId>
             <artifactId>bitbucket-rest</artifactId>
-            <version>1.0.3</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>2.3.0</version>
         </dependency>
         <!-- end guava -->
     </dependencies>
@@ -160,73 +146,19 @@
         </pluginManagement>
         <plugins>
             <plugin>
-                <groupId>com.googlecode.maven-download-plugin</groupId>
-                <artifactId>download-maven-plugin</artifactId>
-                <version>1.2.1</version>
+                <groupId>com.github.klieber</groupId>
+                <artifactId>phantomjs-maven-plugin</artifactId>
+                <version>0.7</version>
                 <executions>
                     <execution>
-                        <id>get-node</id>
-                        <phase>initialize</phase>
                         <goals>
-                            <goal>wget</goal>
+                            <goal>install</goal>
                         </goals>
-                        <configuration>
-                            <url>https://nodejs.org/dist/v${node.version}/${node.download.file}</url>
-                            <unpack>false</unpack>
-                            <outputDirectory>
-                                ${project.build.directory}/frontend/v${node.version}${node.download.classifier}
-                            </outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>get-npm</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>http://registry.npmjs.org/npm/-/npm-${npm.version}.tgz</url>
-                            <unpack>false</unpack>
-                            <outputDirectory>${project.build.directory}/frontend/</outputDirectory>
-                            <outputFileName>npm-${npm.version}.tgz</outputFileName>
-                        </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>0.0.23</version>
-
-                <executions>
-
-                    <execution>
-                        <phase>initialize</phase>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                        <configuration>
-                            <nodeVersion>v${node.version}</nodeVersion>
-                            <npmVersion>${npm.version}</npmVersion>
-                            <!-- Use the pre-download node and npm packages. See download-maven-plugin config above. -->
-                            <downloadRoot>${project.baseUri}target/frontend/</downloadRoot>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <phase>initialize</phase>
-                        <id>npm install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>install</arguments>
-                        </configuration>
-                    </execution>
-
-                </executions>
+                <configuration>
+                    <version>2.1.1</version>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -268,28 +200,8 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <includes>
-                              <include>**/live/*Test.java</include>
+                                <include>**/live/*Test.java</include>
                             </includes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>nightwatch</id>
-            <activation>
-                <property>
-                    <name>profile</name>
-                    <value>nightwatch</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <includes>**/nightwatch/*Test.java</includes>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -310,7 +222,6 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <includes>
-                                <include>**/nightwatch/*Test.java</include>
                                 <include>**/offline/**/*Test.java</include>
                             </includes>
                         </configuration>
@@ -335,102 +246,6 @@
                             <includes>
                                 <include>**/*Test.java</include>
                             </includes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <!--
-      Node/NPM download, install and initialize.
-   -->
-        <profile>
-            <id>node-classifier-linux</id>
-            <activation>
-                <os>
-                    <family>Linux</family>
-                    <arch>amd64</arch>
-                </os>
-            </activation>
-            <properties>
-                <node.download.file>node-v${node.version}-linux-x64.tar.gz</node.download.file>
-                <node.download.classifier />
-            </properties>
-        </profile>
-        <profile>
-            <id>node-classifier-mac</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-            <properties>
-                <node.download.file>node-v${node.version}-darwin-x64.tar.gz</node.download.file>
-                <node.download.classifier />
-            </properties>
-        </profile>
-        <profile>
-            <id>node-classifier-windows</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                    <arch>x64</arch>
-                </os>
-            </activation>
-            <properties>
-                <node.download.file>win-x64/node.exe</node.download.file>
-                <node.download.classifier>/x64</node.download.classifier>
-            </properties>
-        </profile>
-        <profile>
-            <id>node-classifier-windows-amd64</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                    <arch>amd64</arch>
-                </os>
-            </activation>
-            <properties>
-                <node.download.file>win-x64/node.exe</node.download.file>
-                <node.download.classifier>/x64</node.download.classifier>
-            </properties>
-        </profile>
-        <profile>
-            <id>node-classifier-windows-x86</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                    <arch>x86</arch>
-                </os>
-            </activation>
-            <properties>
-                <node.download.file>win-x86/node.exe</node.download.file>
-                <node.download.classifier />
-            </properties>
-        </profile>
-
-        <profile>
-            <id>clean-node</id>
-            <activation>
-                <property>
-                    <name>cleanNode</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-clean-plugin</artifactId>
-                        <configuration>
-                            <filesets>
-                                <fileset>
-                                    <directory>node</directory>
-                                    <followSymlinks>false</followSymlinks>
-                                </fileset>
-                                <fileset>
-                                    <directory>node_modules</directory>
-                                    <followSymlinks>false</followSymlinks>
-                                </fileset>
-                            </filesets>
                         </configuration>
                     </plugin>
                 </plugins>

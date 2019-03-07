@@ -20,6 +20,7 @@ public class DashboardPage implements WebDriverMixin {
     public void open() {
         go("/blue/");
         logger.info("Navigated to dashboard page");
+        wait.untilSSEReady();
     }
 
     public static By getSelectorForJob(String job) {

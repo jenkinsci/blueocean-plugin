@@ -106,7 +106,7 @@ public class ActivityPage {
     }
 
     public WebElement getRunRowForBranch(String branchName) {
-        return wait.until(getSelectorForBranch(branchName));
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(getSelectorForBranch(branchName)));
     }
 
     public By getSelectorForRowCells() {

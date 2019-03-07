@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { JTable, TableRow, TableHeader, TableCell } from '@jenkins-cd/design-language';
-import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { JTable, TableRow, TableHeader, TableCell, Icon } from '@jenkins-cd/design-language';
+import { capable, RunButton, ShowMoreButton, DisablePipelineButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { ActivityDetailsRow } from './ActivityDetailsRow';
 import { ChangeSetRecord } from './records';
@@ -29,6 +29,7 @@ function extractLatestRecord(run) {
 export class Activity extends Component {
     state = {
         actionExtensionCount: 0,
+        pipelineDisabled: this.props.pipeline.disabled,
     };
 
     componentWillMount() {
@@ -97,9 +98,15 @@ export class Activity extends Component {
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
         const hasBranches = pipeline.branchNames && !!pipeline.branchNames.length;
 
+        const disableablePipeline = pipeline.disabled !== undefined && pipeline.disabled !== null ? true : false;
+
         const onNavigation = url => {
             this.context.location.pathname = url;
             this.context.router.push(this.context.location);
+        };
+
+        const onChangeDisableState = newDisableState => {
+            this.setState({ pipelineDisabled: newDisableState });
         };
 
         const latestRun = runs && runs[0];
@@ -107,9 +114,22 @@ export class Activity extends Component {
         // Only show the Run button for non multi-branch pipelines.
         // Multi-branch pipelines have the Run/play button beside them on
         // the Branches/PRs tab.
-        const runButton = isMultiBranchPipeline ? null : (
-            <RunButton buttonType="run-only" innerButtonClasses="btn-secondary" runnable={pipeline} latestRun={latestRun} onNavigation={onNavigation} />
-        );
+        let runButton = null;
+
+        if (!isMultiBranchPipeline) {
+            if (this.state.pipelineDisabled) {
+                runButton = (
+                    <span className="pipeline-disabled-label">
+                        <Icon size={24} icon="ActionInfoOutline" style={{ marginRight: '5px' }} />
+                        <span>{t('pipelinedetail.activity.header.disabled.pipeline', { defaultValue: 'This Pipeline is currently disabled' })}</span>
+                    </span>
+                );
+            } else {
+                runButton = (
+                    <RunButton buttonType="run-only" innerButtonClasses="btn-secondary" runnable={pipeline} latestRun={latestRun} onNavigation={onNavigation} />
+                );
+            }
+        }
 
         if (!isLoading) {
             if (isMultiBranchPipeline && !hasBranches) {
@@ -204,7 +224,12 @@ export class Activity extends Component {
         return (
             <main>
                 <article className="activity">
-                    {runButton}
+                    <div className="activity-actions-container">
+                        {runButton}
+                        {disableablePipeline && (
+                            <DisablePipelineButton t={t} innerButtonClasses="btn-secondary" pipeline={pipeline} onChangeDisableState={onChangeDisableState} />
+                        )}
+                    </div>
                     {runsTable}
                     {!isLoading && !runs.length && branch && <NoRunsForBranchPlaceholder t={t} branchName={branch} />}
                     {runs && runs.length > 0 && <ShowMoreButton pager={this.pager} />}

@@ -11,6 +11,7 @@ import io.blueocean.ath.pages.blue.DashboardPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
 import io.blueocean.ath.pages.blue.PullRequestsPage;
 import io.blueocean.ath.sse.SSEClientRule;
+import io.blueocean.ath.util.GithubHelper;
 import org.apache.log4j.Logger;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -31,16 +32,6 @@ import java.util.Properties;
 public class GithubCreationTest{
     private Logger logger = Logger.getLogger(GithubCreationTest.class);
 
-    private Properties props = new Properties();
-    private String token;
-    private String organization;
-    private String repo;
-    private Boolean deleteRepo = false;
-    private Boolean randomSuffix = false;
-
-    private GitHub github;
-    private GHRepository ghRepository;
-
     @Inject
     GithubCreationPage creationPage;
 
@@ -55,6 +46,9 @@ public class GithubCreationTest{
     @Inject
     CustomJenkinsServer jenkins;
 
+    @Inject
+    GithubHelper helper;
+
     /**
      * Cleans up repository after the test has completed.
      *
@@ -62,15 +56,7 @@ public class GithubCreationTest{
      */
     @After
     public void deleteRepository() throws IOException {
-        if(deleteRepo) {
-            try {
-                GHRepository repositoryToDelete = github.getRepository(organization + "/" + repo);
-                repositoryToDelete.delete();
-                logger.info("Deleted repository " + repo);
-            } catch (FileNotFoundException e) {
-
-            }
-        }
+        helper.cleanupRepository();
     }
 
     /**
@@ -80,33 +66,7 @@ public class GithubCreationTest{
      */
     @Before
     public void createBlankRepo() throws IOException {
-        props.load(new FileInputStream("live.properties"));
-        token = props.getProperty("github.token");
-        organization = props.getProperty("github.org");
-        repo = props.getProperty("github.repo");
-        deleteRepo = Boolean.parseBoolean(props.getProperty("github.deleteRepo", "false"));
-        randomSuffix = Boolean.parseBoolean(props.getProperty("github.randomSuffix", "false"));
-
-        Assert.assertNotNull(token);
-        Assert.assertNotNull(organization);
-        Assert.assertNotNull(repo);
-
-        logger.info("Loaded test properties");
-        if(randomSuffix) {
-            SecureRandom random = new SecureRandom();
-            repo = repo + "-" + new BigInteger(50, random).toString(16);
-        }
-
-        github = GitHub.connectUsingOAuth(token);
-        Assert.assertTrue(github.isCredentialValid());
-        logger.info("Github credentials are valid");
-
-        deleteRepository();
-
-        ghRepository = github.createRepository(repo)
-            .autoInit(true)
-            .create();
-        logger.info("Created repository " + repo);
+        helper.createEmptyRepository();
     }
 
     /**
@@ -119,12 +79,12 @@ public class GithubCreationTest{
     @Retry(3)
     public void testCreatePipelineFull() throws IOException {
         byte[] content = "stage('build') { echo 'yes' }".getBytes("UTF-8");
-        GHContentUpdateResponse updateResponse = ghRepository.createContent(content, "Jenkinsfile", "Jenkinsfile", "master");
-        ghRepository.createRef("refs/heads/branch1", updateResponse.getCommit().getSHA1());
-        logger.info("Created master and branch1 branches in " + repo);
-        ghRepository.createContent("hi there","newfile", "newfile", "branch1");
+        GHContentUpdateResponse updateResponse = helper.getGithubRepository().createContent(content, "Jenkinsfile", "Jenkinsfile", "master");
+        helper.getGithubRepository().createRef("refs/heads/branch1", updateResponse.getCommit().getSHA1());
+        logger.info("Created master and branch1 branches in " + helper.getGithubRepository().getFullName());
+        helper.getGithubRepository().createContent("hi there","newfile", "newfile", "branch1");
 
-        creationPage.createPipeline(token, organization, repo);
+        creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName());
     }
 
     /**
@@ -143,23 +103,23 @@ public class GithubCreationTest{
     public void testCreatePullRequest() throws IOException {
         String branchToCreate = "new-branch";
         String commitMessage = "Add new-file to our repo";
-        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
         byte[] firstJenkinsfile = "stage('first-build') { echo 'first-build' }".getBytes("UTF-8");
-        GHContentUpdateResponse initialUpdateResponse = ghRepository.createContent(firstJenkinsfile, "firstJenkinsfile", "Jenkinsfile", "master");
-        ghRepository.createRef(("refs/heads/" + branchToCreate), initialUpdateResponse.getCommit().getSHA1());
-        logger.info("Created master and " + branchToCreate + " branches in " + repo);
+        GHContentUpdateResponse initialUpdateResponse = helper.getGithubRepository().createContent(firstJenkinsfile, "firstJenkinsfile", "Jenkinsfile", "master");
+        helper.getGithubRepository().createRef(("refs/heads/" + branchToCreate), initialUpdateResponse.getCommit().getSHA1());
+        logger.info("Created master and " + branchToCreate + " branches in " + helper.getActualRepositoryName());
 
-        ghRepository.createContent("hi there","newfile", "new-file", branchToCreate);
-        creationPage.createPipeline(token, organization, repo);
+        helper.getGithubRepository().createContent("hi there","newfile", "new-file", branchToCreate);
+        creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName());
         dashboardPage.open();
-        ghRepository.createPullRequest(
+        helper.getGithubRepository().createPullRequest(
             commitMessage,
             branchToCreate,
             "master",
             "My first pull request is very exciting.");
         // Fire the rescan.
         pipeline.rescanThisPipeline();
-        dashboardPage.clickPipeline(repo);
+        dashboardPage.clickPipeline(helper.getActualRepositoryName());
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
         PullRequestsPage pullRequestsPage = activityPage.clickPullRequestsTab();
         pullRequestsPage.clickRunButton("1");

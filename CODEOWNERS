@@ -2,8 +2,11 @@
 # Each line is a file pattern followed by one or more owners.
 # See: https://github.com/blog/2392-introducing-code-owners for details
 
+# Everything else
+* @vivek @kzantow @sophistifunk @NicuPascu @scherler @imeredith @halkeye
+
 # We need to keep tight control on dependencies
-pom.xml    @vivek @kzantow @jennbriden @olamy
+pom.xml    @vivek @jennbriden @olamy @kzantow @sophistifunk @NicuPascu @scherler @imeredith @halkeye
 
 # Jenkins design language is used outside of blue ocean repo, so want to watch changes closely for approval
-jenkins-design-language/*   @kzantow @scherler
+jenkins-design-language/*   @kzantow @sophistifunk @NicuPascu @scherler @imeredith @halkeye

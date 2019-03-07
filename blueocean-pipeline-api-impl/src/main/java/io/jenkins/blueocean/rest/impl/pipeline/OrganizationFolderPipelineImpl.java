@@ -2,8 +2,10 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Item;
 import hudson.model.Queue;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.ServiceException.UnexpectedErrorException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
@@ -299,5 +301,21 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
     @Override
     public BlueTrendContainer getTrends() {
         return null;
+    }
+
+    @Override
+    @SuppressFBWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "isDisabled will return null if the job type doesn't support it")
+    public Boolean getDisabled() {
+        return null; // NOT SUPPORTED
+    }
+
+    @Override
+    public void enable() throws IOException {
+        throw new ServiceException.MethodNotAllowedException("Cannot enable this item");
+    }
+
+    @Override
+    public void disable() throws IOException {
+        throw new ServiceException.MethodNotAllowedException("Cannot disable this item");
     }
 }

@@ -3,6 +3,7 @@ package io.blueocean.ath;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.JavascriptExecutor;
 
 import java.util.List;
 import java.util.Set;
@@ -15,19 +16,40 @@ import java.util.Set;
  */
 public class LocalDriver implements WebDriver {
     private static ThreadLocal<WebDriver> CURRENT_WEB_DRIVER = new ThreadLocal<>();
+    private static boolean sauceLabsMode;
 
     public static void setCurrent(WebDriver driver) {
         CURRENT_WEB_DRIVER.set(driver);
+        sauceLabsMode = false;
     }
 
     public static WebDriver getDriver() {
         return CURRENT_WEB_DRIVER.get();
     }
 
+    public static void executeScript(String str) {
+        WebDriver driver = CURRENT_WEB_DRIVER.get();
+        if (driver != null) {
+            ((JavascriptExecutor) driver).executeScript(str);
+        }
+    }
+
+    public static void annotate(String text) {
+        LocalDriver.executeSauce("context=" + text);
+    }
+
+    public static void executeSauce(String s) {
+        WebDriver driver = CURRENT_WEB_DRIVER.get();
+        if (driver != null && sauceLabsMode) {
+            LocalDriver.executeScript("sauce:" + s);
+        }
+    }
+
     public static void destroy() {
         WebDriver driver = CURRENT_WEB_DRIVER.get();
         if (driver != null) {
             try {
+                driver.quit();
                 driver.close();
             } catch(Exception e) {
                 // ignore, this happens when running individual tests sometimes
@@ -43,6 +65,14 @@ public class LocalDriver implements WebDriver {
 
     public static void setUrlBase(String base) {
         urlBase = base;
+    }
+
+    public static void enableSauce() {
+        sauceLabsMode = true;
+    }
+
+    public static boolean isSauceLabsMode() {
+        return sauceLabsMode;
     }
 
     /**
