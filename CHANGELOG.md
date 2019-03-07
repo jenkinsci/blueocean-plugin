@@ -7,7 +7,7 @@
 
 ## 1.13.1 (March 1st, 2019)
 
-**NOTE:** blueocean-executor-info is now included in the main blueocean-plugin repository (but not as a required dependancy yet)
+**NOTE:** blueocean-executor-info is now included in the main blueocean-plugin repository (but not as a required dependency yet)
 
 * [JENKINS-53188](https://issues.jenkins-ci.org/browse/JENKINS-53188) New jobs created from Blue Ocean are tied with username that created them
 * [JENKINS-53019](https://issues.jenkins-ci.org/browse/JENKINS-53019) Changes tab does not group changes for multiple SCM providers by SCM
