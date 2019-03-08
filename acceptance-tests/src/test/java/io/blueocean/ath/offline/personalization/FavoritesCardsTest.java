@@ -1,6 +1,7 @@
 package io.blueocean.ath.offline.personalization;
 
 import com.google.common.collect.ImmutableList;
+import com.offbytwo.jenkins.model.BuildResult;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.factory.ActivityPageFactory;
 import io.blueocean.ath.model.ClassicPipeline;
@@ -57,7 +58,6 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         String jobName = "favoritescards-freestyle";
         FreestyleJob freestyle = freestyleFactory.pipeline(FOLDER, jobName).create("echo hello\nsleep 5\necho world");
         String fullName = freestyle.getFullName();
-        
         dashboardPage.open();
 
         dashboardPage.togglePipelineListFavorite(jobName);
@@ -76,6 +76,8 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         String jobName = "favoritescards-pipeline";
         String script = resources.loadJenkinsFile();
         ClassicPipeline pipeline = pipelineFactory.pipeline(FOLDER, jobName).createPipeline(script).build();
+
+        wait.until(jobApi.untilJobResultFunction(pipeline, BuildResult.SUCCESS), 15*1000);
 
         String fullName = pipeline.getFullName();
 
