@@ -57,13 +57,15 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         String jobName = "favoritescards-freestyle";
         FreestyleJob freestyle = freestyleFactory.pipeline(FOLDER, jobName).create("echo hello\nsleep 5\necho world");
         String fullName = freestyle.getFullName();
-
+        
         dashboardPage.open();
 
         dashboardPage.togglePipelineListFavorite(jobName);
         dashboardPage.checkFavoriteCardCount(1);
         dashboardPage.clickFavoriteCardRunButton(fullName);
-        dashboardPage.checkFavoriteCardStatus(fullName, RUNNING, SUCCESS);
+        dashboardPage.checkFavoriteCardStatus(fullName, RUNNING);
+        sseClientRule.untilEvents(freestyle.buildsFinished);
+        dashboardPage.checkFavoriteCardStatus(fullName, SUCCESS);
         dashboardPage.removeFavoriteCard(fullName);
         dashboardPage.checkFavoriteCardCount(0);
         dashboardPage.checkIsPipelineListItemFavorited(jobName, false);
@@ -74,18 +76,24 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         String jobName = "favoritescards-pipeline";
         String script = resources.loadJenkinsFile();
         ClassicPipeline pipeline = pipelineFactory.pipeline(FOLDER, jobName).createPipeline(script).build();
+
         String fullName = pipeline.getFullName();
 
         dashboardPage.open();
 
         dashboardPage.togglePipelineListFavorite(jobName);
         dashboardPage.checkFavoriteCardCount(1);
-
         dashboardPage.checkFavoriteCardStatus(fullName, SUCCESS);
+
         dashboardPage.clickFavoriteCardRunButton(fullName);
-        dashboardPage.checkFavoriteCardStatus(fullName, RUNNING, SUCCESS);
+        dashboardPage.checkFavoriteCardStatus(fullName, RUNNING);
+        sseClientRule.untilEvents(pipeline.buildsFinished);
+        dashboardPage.checkFavoriteCardStatus(fullName, SUCCESS);
+
         dashboardPage.clickFavoriteCardReplayButton(fullName);
-        dashboardPage.checkFavoriteCardStatus(fullName, RUNNING, SUCCESS);
+        dashboardPage.checkFavoriteCardStatus(fullName, RUNNING);
+        sseClientRule.untilEvents(pipeline.buildsFinished);
+        dashboardPage.checkFavoriteCardStatus(fullName, SUCCESS);
         dashboardPage.removeFavoriteCard(fullName);
         dashboardPage.checkFavoriteCardCount(0);
         dashboardPage.checkIsPipelineListItemFavorited(jobName, false);
