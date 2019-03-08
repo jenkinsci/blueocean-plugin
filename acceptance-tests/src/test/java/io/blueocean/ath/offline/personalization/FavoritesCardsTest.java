@@ -73,15 +73,15 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
 
     @Test
     public void testClassicPipeline() throws IOException {
+        dashboardPage.open();
+
         String jobName = "favoritescards-pipeline";
         String script = resources.loadJenkinsFile();
         ClassicPipeline pipeline = pipelineFactory.pipeline(FOLDER, jobName).createPipeline(script).build();
 
-        wait.until(jobApi.untilJobResultFunction(pipeline, BuildResult.SUCCESS), 15*1000);
+        sseClientRule.untilEvents(pipeline.buildsFinished);
 
         String fullName = pipeline.getFullName();
-
-        dashboardPage.open();
 
         dashboardPage.togglePipelineListFavorite(jobName);
         dashboardPage.checkFavoriteCardCount(1);
