@@ -4,6 +4,7 @@ import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
 import io.blueocean.ath.Retry;
+import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
@@ -13,23 +14,19 @@ import io.blueocean.ath.pages.blue.PullRequestsPage;
 import io.blueocean.ath.sse.SSEClientRule;
 import io.blueocean.ath.util.GithubHelper;
 import org.apache.log4j.Logger;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kohsuke.github.GHContentUpdateResponse;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
 
 import javax.inject.Inject;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.Properties;
 
 @Login
 @RunWith(ATHJUnitRunner.class)
-public class GithubCreationTest{
+public class GithubCreationTest {
     private Logger logger = Logger.getLogger(GithubCreationTest.class);
 
     @Inject
@@ -49,6 +46,9 @@ public class GithubCreationTest{
     @Inject
     GithubHelper helper;
 
+    @Inject
+    ClassicJobApi jobApi;
+
     /**
      * Cleans up repository after the test has completed.
      *
@@ -57,6 +57,14 @@ public class GithubCreationTest{
     @After
     public void deleteRepository() throws IOException {
         helper.cleanupRepository();
+    }
+
+    /**
+     * Clean up the job so it can't conflict/mess up other tests
+     */
+    @After
+    public void deletePipeline() throws IOException {
+        jobApi.deletePipeline(helper.getActualRepositoryName());
     }
 
     /**
