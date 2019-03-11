@@ -51,20 +51,14 @@ public class GithubCreationTest {
 
     /**
      * Cleans up repository after the test has completed.
+     * Clean up the job so it can't conflict/mess up other tests
      *
      * @throws IOException
      */
     @After
-    public void deleteRepository() throws IOException {
-        helper.cleanupRepository();
-    }
-
-    /**
-     * Clean up the job so it can't conflict/mess up other tests
-     */
-    @After
-    public void deletePipeline() throws IOException {
+    public void tearDown() throws IOException {
         jobApi.deletePipeline(helper.getActualRepositoryName());
+        helper.cleanupRepository();
     }
 
     /**
