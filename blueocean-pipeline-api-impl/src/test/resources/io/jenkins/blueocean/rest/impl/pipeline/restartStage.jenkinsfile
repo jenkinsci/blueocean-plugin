@@ -41,7 +41,7 @@ pipeline {
     }
     stage('Deploy') {
       parallel {
-        stage('Deploy') {
+        stage('DeployX') {
           steps {
             echo 'mvn source:jar package -Dmaven.test.skip'
           }

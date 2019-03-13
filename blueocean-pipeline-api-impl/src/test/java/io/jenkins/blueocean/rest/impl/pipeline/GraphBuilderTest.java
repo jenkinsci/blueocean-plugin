@@ -1,0 +1,385 @@
+package io.jenkins.blueocean.rest.impl.pipeline;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+import hudson.model.Result;
+import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
+import io.jenkins.blueocean.rest.model.BlueRun;
+import org.apache.commons.lang3.StringUtils;
+import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.junit.Assert;
+import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
+
+import java.net.URL;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
+
+/**
+ * These tests are for regresions in the Graph Builder code, to make sure the same input produces the same output nodes
+ * and connections over time. We're not trying to excercise Pipeline edge cases, but edge cases for the code that
+ * simplifies the complete Pipeline graph to the cut-down Blue Ocean graph. Jobs that run to completion or failure, and
+ * produce a working Pipeline DAG. Not for testing HTTP infrastructure or Stapler's JSON code.
+ */
+public class GraphBuilderTest extends PipelineBaseTest {
+
+    // TODO: something that tests the merging functionality
+
+    @Test
+    public void jenkins53311() throws Exception {
+        WorkflowRun run = buildAndRun("JENKINS-53311", "JENKINS-53311.jenkinsfile");
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "Parallel", "Nested A", "Nested B");
+        assertStageAndEdges(nodes, "Nested A");
+        assertStageAndEdges(nodes, "Nested B", "Nested B-1");
+        assertStageAndEdges(nodes, "Nested B-1");
+
+        assertEquals("Unexpected stages in graph", 4, nodes.size());
+    }
+
+    @Test
+    @Issue("JENKINS-56383")
+    public void multipleParallelsRegression() throws Exception {
+        WorkflowRun run = buildAndRun("JENKINS-56383", "JENKINS-56383.jenkinsfile");
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "Top1", "TOP1-P1", "TOP1-P2");
+        assertStageAndEdges(nodes, "TOP1-P1", "TOP2");
+        assertStageAndEdges(nodes, "TOP1-P2", "TOP2");
+
+        assertStageAndEdges(nodes, "TOP2", "TOP2-P1", "TOP2-P2");
+        assertStageAndEdges(nodes, "TOP2-P1", "TOP3");
+        assertStageAndEdges(nodes, "TOP2-P2", "TOP3");
+
+        assertStageAndEdges(nodes, "TOP3");
+
+        assertEquals("Unexpected stages in graph", 7, nodes.size());
+    }
+
+    @Test
+    public void declarativeQueuedAgent() throws Exception {
+        WorkflowRun run = buildAndRun("declarativeQueuedAgent", "declarativeQueuedAgent.jenkinsfile");
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "yo");
+
+        assertEquals("Unexpected stages in graph", 1, nodes.size());
+    }
+
+    @Test
+    public void declarativeThreeStages() throws Exception {
+        WorkflowRun run = buildAndRun("declarativeThreeStages", "declarativeThreeStages.jenkinsfile");
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "first", "second");
+        assertStageAndEdges(nodes, "second", "third");
+        assertStageAndEdges(nodes, "third");
+
+        assertEquals("Unexpected stages in graph", 3, nodes.size());
+    }
+
+    @Test
+    public void downstreamBuildLinks() throws Exception {
+
+        // Any simple pipeline would do for these
+        buildAndRun("downstream1", "declarativeQueuedAgent.jenkinsfile");
+        buildAndRun("downstream2", "declarativeQueuedAgent.jenkinsfile");
+
+        WorkflowRun run = buildAndRun("downstreamBuildLinks", "downstreamBuildLinks.jenkinsfile");
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "Stage the first", "Stage the second");
+        assertStageAndEdges(nodes, "Stage the second", "downstream1", "downstream2");
+        FlowNodeWrapper ds1Node = assertStageAndEdges(nodes, "downstream1", "Double-downstream");
+        FlowNodeWrapper ds2Node = assertStageAndEdges(nodes, "downstream2", "Double-downstream");
+        FlowNodeWrapper ddsNode = assertStageAndEdges(nodes, "Double-downstream");
+
+        assertEquals("Unexpected stages in graph", 5, nodes.size());
+
+        Collection<NodeDownstreamBuildAction> actions = ds1Node.getPipelineActions(NodeDownstreamBuildAction.class);
+
+        assertEquals("downstream1 stage built downstream1", 1,
+                     ds1Node.getPipelineActions(NodeDownstreamBuildAction.class).stream()
+                            .filter(action -> action.getLink().getHref().contains("downstream1"))
+                            .count());
+
+        assertEquals("downstream2 stage built downstream2", 1,
+                     ds2Node.getPipelineActions(NodeDownstreamBuildAction.class).stream()
+                            .filter(action -> action.getLink().getHref().contains("downstream2"))
+                            .count());
+
+        assertEquals("Double-downstream stage built downstream1", 1,
+                     ddsNode.getPipelineActions(NodeDownstreamBuildAction.class).stream()
+                            .filter(action -> action.getLink().getHref().contains("downstream1"))
+                            .count());
+
+        assertEquals("Double-downstream stage built downstream2", 1,
+                     ddsNode.getPipelineActions(NodeDownstreamBuildAction.class).stream()
+                            .filter(action -> action.getLink().getHref().contains("downstream2"))
+                            .count());
+    }
+
+    @Test
+    public void sillyLongName() throws Exception {
+        WorkflowRun run = buildAndRun("SillyLongName",
+                                      "earlyUnstableStatusShouldReportPunStateAsRunningAndResultAsUnknown.jenkinsfile",
+                                      Result.UNSTABLE);
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "stage 1 marked as unstable", BlueRun.BlueRunState.NOT_BUILT, BlueRun.BlueRunResult.NOT_BUILT, "stage 2 wait");
+        assertStageAndEdges(nodes, "stage 2 wait", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.UNSTABLE);
+
+        assertEquals("Unexpected stages in graph", 2, nodes.size());
+    }
+
+    @Test
+    public void nestedStagesGroups() throws Exception {
+        WorkflowRun run = buildAndRun("nestedStagesGroups", "nestedStagesGroups.jenkinsfile");
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "top", "first");
+        assertStageAndEdges(nodes, "first", "first-inner-first");
+        assertStageAndEdges(nodes, "first-inner-first", "first-inner-second");
+        assertStageAndEdges(nodes, "first-inner-second", "second");
+        assertStageAndEdges(nodes, "second", "second-inner-first");
+        assertStageAndEdges(nodes, "second-inner-first", "second-inner-second");
+        assertStageAndEdges(nodes, "second-inner-second", BlueRun.BlueRunState.SKIPPED, BlueRun.BlueRunResult.NOT_BUILT);
+
+        assertEquals("Unexpected stages in graph", 7, nodes.size());
+    }
+
+    @Test
+    public void parallelStagesGroupsAndStages() throws Exception {
+        WorkflowRun run = buildAndRun("parallelStagesGroupsAndStages", "parallelStagesGroupsAndStages.jenkinsfile");
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "top", "first", "second");
+        assertStageAndEdges(nodes, "first", "first-inner-first");
+        assertStageAndEdges(nodes, "second", "second-inner-first");
+        assertStageAndEdges(nodes, "first-inner-first", "first-inner-second");
+        assertStageAndEdges(nodes, "first-inner-second");
+        assertStageAndEdges(nodes, "second-inner-first", "second-inner-second");
+        assertStageAndEdges(nodes, "second-inner-second");
+
+        assertEquals("Unexpected stages in graph", 7, nodes.size());
+    }
+
+    @Test
+    public void parallelStagesNonNested() throws Exception {
+        WorkflowRun run = buildAndRun("parallelStagesNonNested", "parallelStagesNonNested.jenkinsfile");
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "top", "first", "second");
+        assertStageAndEdges(nodes, "first");
+        assertStageAndEdges(nodes, "second");
+
+        assertEquals("Unexpected stages in graph", 3, nodes.size());
+    }
+
+    @Test
+    public void restartStage() throws Exception {
+
+        WorkflowRun run = buildAndRun("restartStage", "restartStage.jenkinsfile");
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "Build", "Browser Tests");
+        assertStageAndEdges(nodes, "Browser Tests", "Chrome", "Firefox", "Internet Explorer", "Safari");
+        assertStageAndEdges(nodes, "Chrome", "Static Analysis");
+        assertStageAndEdges(nodes, "Firefox", "Static Analysis");
+        assertStageAndEdges(nodes, "Internet Explorer", "Static Analysis");
+        assertStageAndEdges(nodes, "Safari", "Static Analysis");
+        assertStageAndEdges(nodes, "Static Analysis", "Deploy");
+        assertStageAndEdges(nodes, "Deploy", "DeployX", "final");
+        assertStageAndEdges(nodes, "DeployX");
+        assertStageAndEdges(nodes, "final");
+
+        assertEquals("Unexpected stages in graph", 10, nodes.size());
+    }
+
+    @Test
+    public void sequentialParallel() throws Exception {
+        WorkflowRun run = buildAndRun("sequentialParallel", "sequentialParallel.jenkinsfile");
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "first-solo", "parent");
+        assertStageAndEdges(nodes, "parent", "multiple-stages", "other-single-stage", "single-stage");
+        assertStageAndEdges(nodes, "multiple-stages", "first-sequential-stage");
+        assertStageAndEdges(nodes, "other-single-stage", "second-solo");
+        assertStageAndEdges(nodes, "single-stage", "second-solo");
+        assertStageAndEdges(nodes, "second-solo");
+        assertStageAndEdges(nodes, "first-sequential-stage", "second-sequential-stage");
+        assertStageAndEdges(nodes, "second-sequential-stage", "third-sequential-stage");
+        assertStageAndEdges(nodes, "third-sequential-stage", "second-solo");
+
+        assertEquals("Unexpected stages in graph", 9, nodes.size());
+    }
+
+    @Test
+    public void sequentialParallelWithPost() throws Exception {
+        WorkflowRun run = buildAndRun("sequentialParallelWithPost", "sequentialParallelWithPost.jenkinsfile");
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "first-solo", "parent");
+        assertStageAndEdges(nodes, "parent", "multiple-stages", "other-single-stage", "single-stage");
+        assertStageAndEdges(nodes, "multiple-stages", "first-sequential-stage");
+        assertStageAndEdges(nodes, "other-single-stage", "second-solo");
+        assertStageAndEdges(nodes, "single-stage", "second-solo");
+        assertStageAndEdges(nodes, "second-solo");
+        assertStageAndEdges(nodes, "first-sequential-stage", "second-sequential-stage");
+        assertStageAndEdges(nodes, "second-sequential-stage", "third-sequential-stage");
+        assertStageAndEdges(nodes, "third-sequential-stage", "second-solo");
+
+        assertEquals("Unexpected stages in graph", 9, nodes.size());
+    }
+
+    @Test
+    public void secondStageFails() throws Exception {
+        WorkflowRun run = buildAndRun("secondStageFails", "successfulStepWithBlockFailureAfterward.jenkinsfile", Result.FAILURE);
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "first", "second");
+        assertStageAndEdges(nodes, "second", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.FAILURE);
+
+        assertEquals("Unexpected stages in graph", 2, nodes.size());
+    }
+
+    @Test
+    public void testDynamicInnerStage() throws Exception {
+        WorkflowRun run = buildAndRun("testDynamicInnerStage", "testDynamicInnerStage.jenkinsfile");
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "test", "parallel stage");
+        assertStageAndEdges(nodes, "parallel stage", "a_1");
+        assertStageAndEdges(nodes, "a_1", "test2");
+        assertStageAndEdges(nodes, "test2");
+
+        assertEquals("Unexpected stages in graph", 4, nodes.size());
+    }
+
+//    @Test
+//    public void xxxxxx() throws Exception {
+//        WorkflowRun run = buildAndRun("xxxxxx", "xxxxxx.jenkinsfile");
+//        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+//        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+//
+//        dumpAssertions(nodes);
+//
+//        assertEquals("Unexpected stages in graph", 999, nodes.size());
+//    }
+
+    private FlowNodeWrapper assertStageAndEdges(Collection<FlowNodeWrapper> searchNodes, String stageName, String... edgeNames) {
+        return assertStageAndEdges(searchNodes, stageName, BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.SUCCESS, edgeNames);
+    }
+
+    private FlowNodeWrapper assertStageAndEdges(Collection<FlowNodeWrapper> searchNodes, String stageName,
+                                                BlueRun.BlueRunState expectedState,
+                                                BlueRun.BlueRunResult expectedResult,
+                                                String... edgeNames) {
+
+        FlowNodeWrapper stage = null;
+        for (FlowNodeWrapper node : searchNodes) {
+            if (StringUtils.equals(node.getDisplayName(), stageName)) {
+                stage = node;
+                break;
+            }
+        }
+
+        if (stage == null) {
+            Assert.fail("could not find stage named \"" + stageName + "\"");
+        }
+
+        assertEquals("stage state", expectedState, stage.getStatus().state);
+        assertEquals("stage result", expectedResult, stage.getStatus().result);
+
+        for (String edgeName : edgeNames) {
+            boolean found = false;
+            for (FlowNodeWrapper toNode : stage.edges) {
+                if (StringUtils.equals(toNode.getDisplayName(), edgeName)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                Assert.fail(String.format("Stage \"%s\" should be connected to stage \"%s\"", stageName, edgeName));
+            }
+        }
+
+        assertEquals(String.format("Too many edges from \"%s\".", stageName), edgeNames.length, stage.edges.size());
+
+        return stage;
+    }
+
+    private FlowNodeWrapper findStageNamed(String stageName, Collection<FlowNodeWrapper> searchNodes) {
+        for (FlowNodeWrapper node : searchNodes) {
+            if (StringUtils.equals(node.getDisplayName(), stageName)) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    private void dumpEdges(Collection<FlowNodeWrapper> nodes) {
+        // TODO: remove this when we're finished
+        for (FlowNodeWrapper fromNode : nodes) {
+            System.out.println(String.format("#%s \"%s\"", fromNode.getId(), fromNode.getDisplayName()));
+            for (FlowNodeWrapper toNode : fromNode.edges) {
+                System.out.println(String.format("\t-> #%s \"%s\"", toNode.getId(), toNode.getDisplayName()));
+            }
+        }
+    }
+
+    private void dumpAssertions(Collection<FlowNodeWrapper> nodes) {
+        // TODO: remove this when we're finished
+        for (FlowNodeWrapper fromNode : nodes) {
+            if (fromNode.edges.size() == 0) {
+                // Simple is-present assertion
+                System.out.println(String.format("assertStageAndEdges(nodes, \"%s\");", fromNode.getDisplayName()));
+            } else {
+                // Need edge name params
+                String edgeNamesList =
+                    fromNode.edges.stream()
+                                  .map(edgeNode -> String.format("\"%s\"", edgeNode.getDisplayName()))
+                                  .collect(Collectors.joining(", "));
+                System.out.println(String.format("assertStageAndEdges(nodes, \"%s\", %s);",
+                                                 fromNode.getDisplayName(),
+                                                 edgeNamesList));
+            }
+        }
+    }
+
+    private WorkflowRun buildAndRun(String jobName, String jenkinsFileName) throws Exception {
+        return buildAndRun(jobName, jenkinsFileName, Result.SUCCESS);
+    }
+
+    private WorkflowRun buildAndRun(String jobName, String jenkinsFileName, Result expextedResult) throws Exception {
+        WorkflowJob job = j.createProject(WorkflowJob.class, jobName);
+
+        URL resource = Resources.getResource(getClass(), jenkinsFileName);
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        job.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+
+        j.assertBuildStatus(expextedResult, job.scheduleBuild2(0));
+
+        return job.getLastBuild();
+    }
+}
