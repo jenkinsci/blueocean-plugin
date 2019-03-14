@@ -27,11 +27,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class GraphBuilderTest extends PipelineBaseTest {
 
-    // TODO: something that tests the merging functionality
-
     @Test
     public void jenkins53311() throws Exception {
-        WorkflowRun run = buildAndRun("JENKINS-53311", "JENKINS-53311.jenkinsfile");
+        WorkflowRun run = createAndRunJob("JENKINS-53311", "JENKINS-53311.jenkinsfile");
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -46,7 +44,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
     @Test
     @Issue("JENKINS-56383")
     public void multipleParallelsRegression() throws Exception {
-        WorkflowRun run = buildAndRun("JENKINS-56383", "JENKINS-56383.jenkinsfile");
+        WorkflowRun run = createAndRunJob("JENKINS-56383", "JENKINS-56383.jenkinsfile");
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -65,7 +63,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
 
     @Test
     public void declarativeQueuedAgent() throws Exception {
-        WorkflowRun run = buildAndRun("declarativeQueuedAgent", "declarativeQueuedAgent.jenkinsfile");
+        WorkflowRun run = createAndRunJob("declarativeQueuedAgent", "declarativeQueuedAgent.jenkinsfile");
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -76,7 +74,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
 
     @Test
     public void declarativeThreeStages() throws Exception {
-        WorkflowRun run = buildAndRun("declarativeThreeStages", "declarativeThreeStages.jenkinsfile");
+        WorkflowRun run = createAndRunJob("declarativeThreeStages", "declarativeThreeStages.jenkinsfile");
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -91,10 +89,10 @@ public class GraphBuilderTest extends PipelineBaseTest {
     public void downstreamBuildLinks() throws Exception {
 
         // Any simple pipeline would do for these
-        buildAndRun("downstream1", "declarativeQueuedAgent.jenkinsfile");
-        buildAndRun("downstream2", "declarativeQueuedAgent.jenkinsfile");
+        createJob("downstream1", "declarativeQueuedAgent.jenkinsfile");
+        createJob("downstream2", "declarativeQueuedAgent.jenkinsfile");
 
-        WorkflowRun run = buildAndRun("downstreamBuildLinks", "downstreamBuildLinks.jenkinsfile");
+        WorkflowRun run = createAndRunJob("downstreamBuildLinks", "downstreamBuildLinks.jenkinsfile");
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -133,10 +131,10 @@ public class GraphBuilderTest extends PipelineBaseTest {
     public void downstreamBuildLinksDecl() throws Exception {
 
         // Any simple pipeline would do for these
-        buildAndRun("downstream1", "declarativeQueuedAgent.jenkinsfile");
-        buildAndRun("downstream2", "declarativeQueuedAgent.jenkinsfile");
+        createJob("downstream1", "declarativeQueuedAgent.jenkinsfile");
+        createJob("downstream2", "declarativeQueuedAgent.jenkinsfile");
 
-        WorkflowRun run = buildAndRun("downstreamBuildLinksDecl", "downstreamBuildLinksDecl.jenkinsfile");
+        WorkflowRun run = createAndRunJob("downstreamBuildLinksDecl", "downstreamBuildLinksDecl.jenkinsfile");
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -175,12 +173,12 @@ public class GraphBuilderTest extends PipelineBaseTest {
     public void downstreamBuildLinksSeq() throws Exception {
 
         // Any simple pipeline would do for these
-        buildAndRun("downstream1", "declarativeQueuedAgent.jenkinsfile");
-        buildAndRun("downstream2", "declarativeQueuedAgent.jenkinsfile");
-        buildAndRun("downstream3", "declarativeQueuedAgent.jenkinsfile");
-        buildAndRun("downstream4", "declarativeQueuedAgent.jenkinsfile");
+        createJob("downstream1", "declarativeQueuedAgent.jenkinsfile");
+        createJob("downstream2", "declarativeQueuedAgent.jenkinsfile");
+        createJob("downstream3", "declarativeQueuedAgent.jenkinsfile");
+        createJob("downstream4", "declarativeQueuedAgent.jenkinsfile");
 
-        WorkflowRun run = buildAndRun("downstreamBuildLinksSeq", "downstreamBuildLinksSeq.jenkinsfile");
+        WorkflowRun run = createAndRunJob("downstreamBuildLinksSeq", "downstreamBuildLinksSeq.jenkinsfile");
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -219,9 +217,9 @@ public class GraphBuilderTest extends PipelineBaseTest {
 
     @Test
     public void sillyLongName() throws Exception {
-        WorkflowRun run = buildAndRun("SillyLongName",
-                                      "earlyUnstableStatusShouldReportPunStateAsRunningAndResultAsUnknown.jenkinsfile",
-                                      Result.UNSTABLE);
+        WorkflowRun run = createAndRunJob("SillyLongName",
+                                          "earlyUnstableStatusShouldReportPunStateAsRunningAndResultAsUnknown.jenkinsfile",
+                                          Result.UNSTABLE);
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -233,7 +231,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
 
     @Test
     public void nestedStagesGroups() throws Exception {
-        WorkflowRun run = buildAndRun("nestedStagesGroups", "nestedStagesGroups.jenkinsfile");
+        WorkflowRun run = createAndRunJob("nestedStagesGroups", "nestedStagesGroups.jenkinsfile");
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -250,7 +248,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
 
     @Test
     public void parallelStagesGroupsAndStages() throws Exception {
-        WorkflowRun run = buildAndRun("parallelStagesGroupsAndStages", "parallelStagesGroupsAndStages.jenkinsfile");
+        WorkflowRun run = createAndRunJob("parallelStagesGroupsAndStages", "parallelStagesGroupsAndStages.jenkinsfile");
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -267,7 +265,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
 
     @Test
     public void parallelStagesNonNested() throws Exception {
-        WorkflowRun run = buildAndRun("parallelStagesNonNested", "parallelStagesNonNested.jenkinsfile");
+        WorkflowRun run = createAndRunJob("parallelStagesNonNested", "parallelStagesNonNested.jenkinsfile");
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -281,7 +279,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
     @Test
     public void restartStage() throws Exception {
 
-        WorkflowRun run = buildAndRun("restartStage", "restartStage.jenkinsfile");
+        WorkflowRun run = createAndRunJob("restartStage", "restartStage.jenkinsfile");
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -301,7 +299,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
 
     @Test
     public void sequentialParallel() throws Exception {
-        WorkflowRun run = buildAndRun("sequentialParallel", "sequentialParallel.jenkinsfile");
+        WorkflowRun run = createAndRunJob("sequentialParallel", "sequentialParallel.jenkinsfile");
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -320,7 +318,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
 
     @Test
     public void sequentialParallelWithPost() throws Exception {
-        WorkflowRun run = buildAndRun("sequentialParallelWithPost", "sequentialParallelWithPost.jenkinsfile");
+        WorkflowRun run = createAndRunJob("sequentialParallelWithPost", "sequentialParallelWithPost.jenkinsfile");
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -339,7 +337,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
 
     @Test
     public void secondStageFails() throws Exception {
-        WorkflowRun run = buildAndRun("secondStageFails", "successfulStepWithBlockFailureAfterward.jenkinsfile", Result.FAILURE);
+        WorkflowRun run = createAndRunJob("secondStageFails", "successfulStepWithBlockFailureAfterward.jenkinsfile", Result.FAILURE);
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -351,7 +349,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
 
     @Test
     public void testDynamicInnerStage() throws Exception {
-        WorkflowRun run = buildAndRun("testDynamicInnerStage", "testDynamicInnerStage.jenkinsfile");
+        WorkflowRun run = createAndRunJob("testDynamicInnerStage", "testDynamicInnerStage.jenkinsfile");
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
@@ -409,7 +407,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
 
     //    @Test
     //    public void xxxxxx() throws Exception {
-    //        WorkflowRun run = buildAndRun("xxxxxx", "xxxxxx.jenkinsfile");
+    //        WorkflowRun run = createAndRunJob("xxxxxx", "xxxxxx.jenkinsfile");
     //        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
     //        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
     //
@@ -436,19 +434,22 @@ public class GraphBuilderTest extends PipelineBaseTest {
     //        }
     //    }
 
-    private WorkflowRun buildAndRun(String jobName, String jenkinsFileName) throws Exception {
-        return buildAndRun(jobName, jenkinsFileName, Result.SUCCESS);
+    private WorkflowRun createAndRunJob(String jobName, String jenkinsFileName) throws Exception {
+        return createAndRunJob(jobName, jenkinsFileName, Result.SUCCESS);
     }
 
-    private WorkflowRun buildAndRun(String jobName, String jenkinsFileName, Result expextedResult) throws Exception {
+    private WorkflowRun createAndRunJob(String jobName, String jenkinsFileName, Result expextedResult) throws Exception {
+        WorkflowJob job = createJob(jobName, jenkinsFileName);
+        j.assertBuildStatus(expextedResult, job.scheduleBuild2(0));
+        return job.getLastBuild();
+    }
+
+    private WorkflowJob createJob(String jobName, String jenkinsFileName) throws java.io.IOException {
         WorkflowJob job = j.createProject(WorkflowJob.class, jobName);
 
         URL resource = Resources.getResource(getClass(), jenkinsFileName);
         String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
         job.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
-
-        j.assertBuildStatus(expextedResult, job.scheduleBuild2(0));
-
-        return job.getLastBuild();
+        return job;
     }
 }
