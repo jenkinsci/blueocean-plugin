@@ -413,6 +413,10 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     // ...but first we need to poach any actions from the stage node we'll be discarding
                     branchActions.addAll(firstNodeWrapper.getPipelineActions());
 
+                    if (nextStage != null) {
+                        branch.addEdge(nextStage);
+                    }
+
                 } else {
                     // We've got nested stages for sequential stage branches and/or branch labelling purposes
 
