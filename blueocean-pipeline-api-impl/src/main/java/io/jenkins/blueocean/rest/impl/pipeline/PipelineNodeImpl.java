@@ -3,7 +3,6 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Action;
 import hudson.model.Queue;
-import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
@@ -20,7 +19,6 @@ import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
-import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
@@ -37,8 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.CheckForNull;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -224,9 +220,10 @@ public class PipelineNodeImpl extends BluePipelineNode {
                         rsp.getOutputStream().print( Export.toJson( queueItem.toRun() ) );
                     };
                 }
-                WorkflowRun restartRun = QueueUtil.getRun(run.getParent(), item.getId());
+
+                final WorkflowRun restartRun = getRun(run.getParent(), item.getId());
                 if (restartRun != null) {
-                    return ( req, rsp, node1 ) -> {
+                    return (req, rsp, node1 ) -> {
                         rsp.setStatus( HttpServletResponse.SC_OK );
                         rsp.getOutputStream().print( Export.toJson( new PipelineRunImpl(restartRun, parent,
                                                                                         bluePipeline.getOrganization()) ) );
@@ -241,6 +238,18 @@ public class PipelineNodeImpl extends BluePipelineNode {
             throw new ServiceException.UnexpectedErrorException( e.getMessage());
         }
         return null;
+    }
+
+    protected static WorkflowRun getRun(WorkflowJob job, long itemId) throws InterruptedException {
+        WorkflowRun restartRun = QueueUtil.getRun(job, itemId);
+        if (restartRun == null) {
+            long startTimeMs = System.currentTimeMillis();
+            while (restartRun == null && System.currentTimeMillis()-startTimeMs < 1000) {
+                Thread.sleep(100);
+                restartRun = QueueUtil.getRun(job, itemId);
+            }
+        }
+        return restartRun;
     }
 
     public static class EdgeImpl extends Edge {
