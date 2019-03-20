@@ -57,6 +57,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
     private final Link self;
     private final WorkflowRun run;
     private final Reachable parent;
+    public static final int waitJobInqueueTimeout = Integer.getInteger("blueocean.wait.job.inqueue", 1000);
 
     public PipelineNodeImpl(FlowNodeWrapper node, Reachable parent, WorkflowRun run) {
         this.node = node;
@@ -244,7 +245,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
         WorkflowRun restartRun = QueueUtil.getRun(job, itemId);
         if (restartRun == null) {
             long startTimeMs = System.currentTimeMillis();
-            while (restartRun == null && System.currentTimeMillis()-startTimeMs < 1000) {
+            while (restartRun == null && System.currentTimeMillis()-startTimeMs < waitJobInqueueTimeout) {
                 Thread.sleep(100);
                 restartRun = QueueUtil.getRun(job, itemId);
             }
