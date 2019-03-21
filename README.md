@@ -124,7 +124,7 @@ Ask for help in the gitter room or on the jenkins-ux google group if you are wor
 
 #### Extension points
 
-Blue Ocean has javascript extension points that currently work with react components. This area is a work in progress, and there is no programmatic listing of all the current extension points in a plugin. However, you can grep/search for '<Extensions.Renderer extensionPoint=' and find named extension points. Plugins can contribute to these by declaring what components to plugin in those extension points in their jenkins-js-extension.yaml file (see https://github.com/jenkinsci/blueocean-pipeline-editor-plugin/blob/master/src/main/js/jenkins-js-extension.yaml for a real world example - the editor implements a few extension points as react components, even css). The editor plugin is a good reference point for blue ocean plugins: https://github.com/jenkinsci/blueocean-pipeline-editor-plugin.
+Blue Ocean has javascript extension points that currently work with react components. This area is a work in progress, and there is no programmatic listing of all the current extension points in a plugin. However, you can grep/search for '<Extensions.Renderer extensionPoint=' and find named extension points. Plugins can contribute to these by declaring what components to plugin in those extension points in their jenkins-js-extension.yaml file (see [link](./blueocean-pipeline-editor/src/main/js/jenkins-js-extension.yaml) for a real world example - the editor implements a few extension points as react components, even css). The editor plugin is a good reference point for blue ocean plugins: [blueocean-pipeline-editor](./blueocean-pipeline-editor).
 
 
 #### Tools needed
@@ -257,7 +257,7 @@ Gitter is the day to day chat venue used, you can log in with your github identi
 * Post to the mailing list: https://groups.google.com/forum/#!forum/jenkinsci-ux
 
 
-The Acceptance test suite is located here: https://github.com/jenkinsci/blueocean-acceptance-test
+The Acceptance test suite is located here: [accpetance-tests](./acceptance-tests)
 
 
 ## Releasing
