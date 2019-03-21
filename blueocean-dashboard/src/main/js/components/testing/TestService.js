@@ -3,6 +3,18 @@ import TestLogService from './TestLogService';
 
 const PAGE_SIZE = 100;
 
+// Source: https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript/38340730#38340730
+const stripNullAndUndefined = obj =>
+    Object.keys(obj)
+        .filter(k => obj[k] !== null && obj[k] !== undefined) // Remove undef. and null.
+        .reduce(
+            (newObj, k) =>
+                typeof obj[k] === 'object'
+                    ? Object.assign(newObj, { [k]: stripNullAndUndefined(obj[k]) }) // Recurse.
+                    : Object.assign(newObj, { [k]: obj[k] }), // Copy value.
+            {}
+        );
+
 export default class TestService extends BunkerService {
     constructor(pagerService) {
         super(pagerService);
@@ -19,7 +31,7 @@ export default class TestService extends BunkerService {
     newExistingFailedPager(pipeline, run) {
         return this.pagerService.getPager({
             key: `tests/existingFailures/${pipeline.organization}-${pipeline.name}-${run.id}/`,
-            lazyPager: () => new Pager(TestService.createURL({ run, status: 'FAILED', state: null }), PAGE_SIZE, this),
+            lazyPager: () => new Pager(TestService.createURL({ run, status: 'FAILED', state: '!REGRESSION' }), PAGE_SIZE, this),
         });
     }
 
@@ -47,17 +59,12 @@ export default class TestService extends BunkerService {
         return this._logs;
     }
 
-    static createURL({ run, status, state }) {
-        if (status && state) {
-            throw new Error('status and state are exclusive');
-        }
+    static createURL({ run, status, state, age }) {
         const testBaseUrl = run._links.tests.href;
-        if (status) {
-            return `${testBaseUrl}?status=${status}`;
+        const params = new URLSearchParams(stripNullAndUndefined({ status, state, age }));
+        if (!params) {
+            throw new Error('must provide either stage, status or age');
         }
-        if (state) {
-            return `${testBaseUrl}?state=${state}`;
-        }
-        throw new Error('must provide either status or state');
+        return `${testBaseUrl}?${params}`;
     }
 }
