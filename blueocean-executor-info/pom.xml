@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
@@ -13,11 +14,11 @@
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
     <developers>
-      <developer>
-        <id>kzantow</id>
-        <name>Keith Zantow</name>
-        <email>kzantow@cloudbees.com</email>
-      </developer>
+        <developer>
+            <id>kzantow</id>
+            <name>Keith Zantow</name>
+            <email>kzantow@cloudbees.com</email>
+        </developer>
     </developers>
 
     <dependencies>
@@ -50,12 +51,6 @@
 
         <dependency>
             <groupId>io.jenkins.blueocean</groupId>
-            <artifactId>blueocean</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.jenkins.blueocean</groupId>
             <artifactId>blueocean-rest</artifactId>
         </dependency>
         <dependency>
@@ -70,39 +65,14 @@
 
     <repositories>
         <repository>
-        <id>repo.jenkins-ci.org</id>
-        <url>https://repo.jenkins-ci.org/public/</url>
+            <id>repo.jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/public/</url>
         </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
-        <id>repo.jenkins-ci.org</id>
-        <url>https://repo.jenkins-ci.org/public/</url>
+            <id>repo.jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
     </pluginRepositories>
-
-    <build>
-        <plugins>
-            <!-- run upstream dependency fetches for all js plugins -->
-            <plugin>
-                <groupId>io.jenkins.blueocean</groupId>
-                <artifactId>blueocean-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>upstream-dependencies</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>process-node-dependencies</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>package</id>
-                        <goals>
-                            <goal>package-blueocean-resources</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

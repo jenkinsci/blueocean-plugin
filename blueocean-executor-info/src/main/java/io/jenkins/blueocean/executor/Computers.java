@@ -152,9 +152,7 @@ public class Computers extends Resource implements OrganizationRoute {
             }
             if (r != null) {
                 Item pipelineJobItem = r.getParent();
-                System.out.println(pipelineJobItem.getFullDisplayName());
                 BluePipeline pipeline = (BluePipeline)BluePipelineFactory.resolve(pipelineJobItem); //BluePipelineFactory.getPipelineInstance(item, getOrganization());
-                System.out.println(pipeline.getFullDisplayName());
                 return BlueRunFactory.getRun(r, pipeline);
             }
             return null;
