@@ -1,18 +1,19 @@
 import {Enum} from "../../flow2/Enum";
 import {AppConfig, capabilityAugmenter, Fetch, UrlConfig, Utils} from "@jenkins-cd/blueocean-core-js";
-import GithubApiUtils from "../../github/api/GithubApiUtils";
+import {CreateMbpOutcome} from "../../bitbucket/api/BbCreationApi";
 
-const INVALID_ACCESS_TOKEN_CODE = 428;
-const INVALID_ACCESS_TOKEN_MSG = 'Invalid Github accessToken';
-const INVALID_SCOPES_MSG = 'Github accessToken does not have required scopes';
+const ERROR_FIELD_SCM_CREDENTIAL = 'credentialId';
 
-export const ListOrganizationsOutcome = new Enum({
+export const ListProjectsOutcome = new Enum({
     SUCCESS: 'success',
-    INVALID_TOKEN_REVOKED: 'revoked_token',
-    INVALID_TOKEN_SCOPES: 'invalid_token_scopes',
+    INVALID_CREDENTIAL_ID: 'invalid_credential_id',
     ERROR: 'error',
 });
 
+
+function hasErrorFieldName(errors, fieldName) {
+    return errors.filter(err => err.field === fieldName).length > 0;
+}
 
 /**
  * Handles lookup of Perforce projects and repos.
@@ -21,23 +22,109 @@ export default class PerforceCreationApi {
     constructor(scmId) {
         this._fetch = Fetch.fetchJSON;
         this.organization = AppConfig.getOrganizationName();
-        console.log("PerforceCreationApi: constructor: scmId: " + scmId);
-        this.scmId = scmId || 'perforce';
+        this.scmId = scmId;
+        this.partialLoadedProjects = [];
         console.log("PerforceCreationApi: constructor: scmId: " + this.scmId);
-
     }
 
-    /*listOrganizations(credentialId, apiUrl) {
+    listProjects(credentialId, apiUrl, pagedOrgsStart = 0, pageSize = 100) {
         const path = UrlConfig.getJenkinsRootURL();
         const orgsUrl = Utils.cleanSlashes(
-            `${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/organizations/?credentialId=${credentialId}`,
+            `${path}/blue/rest/organizations/${this.organization}/scm/${
+                this.scmId
+                }/organizations/?credentialId=${credentialId}&start=${pagedOrgsStart}&limit=100&apiUrl=${apiUrl}`,
             false
         );
-        //TODO Do this only if required
-        //orgsUrl = GithubApiUtils.appendApiUrlParam(orgsUrl, apiUrl);
 
-        return this._fetch(orgsUrl)
-            .then(orgs => capabilityAugmenter.augmentCapabilities(orgs))
-            .then(orgs => this._listOrganizationsSuccess(orgs), error => this._listOrganizationsFailure(error));
-    }*/
+        //TODO Change this
+
+        return this._fetch("http://localhost:4567/user/getUsers")
+            .then(projects => capabilityAugmenter.augmentCapabilities(projects))
+            .then(projects => this._listProjectsSuccess(projects, credentialId, apiUrl, pagedOrgsStart), error => this._listProjectsFailure(error));
+    }
+
+    _listProjectsSuccess(projects, credentialId, apiUrl, pagedOrgsStart) {
+        this.partialLoadedProjects = this.partialLoadedProjects.concat(projects);
+
+        if (projects.length >= 100) {
+            //if we got 100 or more projects, we need to check the next page to see if there are any more projects
+            return this.listProjects(credentialId, apiUrl, pagedOrgsStart + 100);
+        } else {
+            return {
+                outcome: 'SUCCESS',
+                projects: this.partialLoadedProjects,
+            };
+        }
+    }
+
+    _listProjectsFailure(error) {
+        const { code, message, errors } = error.responseBody;
+
+        if (code === 400) {
+            if (hasErrorFieldName(errors, ERROR_FIELD_SCM_CREDENTIAL)) {
+                return {
+                    outcome: ListProjectsOutcome.INVALID_CREDENTIAL_ID,
+                };
+            }
+        }
+        return {
+            outcome: ListProjectsOutcome.ERROR,
+            error: message,
+        };
+    }
+
+    createMbp(credentialId, scmId, apiUrl, itemName, bbOrganizationKey, repoName, creatorClass) {
+        /*const path = UrlConfig.getJenkinsRootURL();
+        const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/pipelines/`);
+
+        const requestBody = this._buildRequestBody(credentialId, scmId, apiUrl, itemName, bbOrganizationKey, repoName, creatorClass);
+
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        };*/
+
+        return this._fetch("http://localhost:4567/user/getUsers")
+            .then(data => capabilityAugmenter.augmentCapabilities(data))
+            .then(pipeline => this._createMbpSuccess(pipeline), error => this._createMbpFailure(error));
+    }
+
+    _createMbpSuccess(pipeline) {
+        return {
+            outcome: CreateMbpOutcome.SUCCESS,
+            pipeline,
+        };
+    }
+
+    _createMbpFailure(error) {
+        //const { code, errors } = error.responseBody;
+
+     /*   if (code === CODE_VALIDATION_FAILED) {
+            if (errors.length === 1 && hasErrorFieldCode(errors, ERROR_FIELD_CODE_CONFLICT)) {
+                return {
+                    outcome: CreateMbpOutcome.INVALID_NAME,
+                };
+            }
+
+            if (hasErrorFieldName(errors, ERROR_FIELD_SCM_URI)) {
+                return {
+                    outcome: CreateMbpOutcome.INVALID_URI,
+                };
+            } else if (hasErrorFieldName(errors, ERROR_FIELD_SCM_CREDENTIAL)) {
+                return {
+                    outcome: CreateMbpOutcome.INVALID_CREDENTIAL,
+                };
+            }
+        }
+*/
+        return {
+            outcome: CreateMbpOutcome.ERROR,
+            error: error.responseBody,
+        };
+    }
+
+
 }

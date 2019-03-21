@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import FlowStep from '../../flow2/FlowStep';
 
 @observer
-export default class GithubUnknownErrorStep extends React.Component {
+export default class PerforceUnknownErrorStep extends React.Component {
     render() {
         return (
             <FlowStep {...this.props} title="Unknown Error" error>
@@ -16,7 +16,7 @@ export default class GithubUnknownErrorStep extends React.Component {
     }
 }
 
-GithubUnknownErrorStep.propTypes = {
+PerforceUnknownErrorStep.propTypes = {
     flowManager: PropTypes.object,
     message: PropTypes.string,
 };

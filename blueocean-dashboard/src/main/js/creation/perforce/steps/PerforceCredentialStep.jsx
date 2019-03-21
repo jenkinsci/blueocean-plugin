@@ -1,69 +1,73 @@
 import React, { PropTypes } from 'react';
-import Extensions from '@jenkins-cd/js-extensions';
-
+import { observer } from 'mobx-react';
+import {Dropdown, FormElement} from '@jenkins-cd/design-language';
 import FlowStep from '../../flow2/FlowStep';
 
-export default class PerforceCredentialsStep extends React.Component {
+
+let t = null;
+
+@observer
+class PerforceCredentialsStep extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            loading: false,
-            complete: false,
+            selectedCredential: null,
         };
+        this.dropdown = null;
+        this.credManager = props.flowManager.credManager;
     }
 
-    _onStatus(status) {
-        const loading = status === 'promptLoading';
-
-        this.setState({
-            loading,
-        });
-    }
-
-    _onComplete(credential, selectionType) {
-        this.setState({
-            complete: true,
-        });
-
-        if (this.props.onCredentialSelected) {
-            this.props.onCredentialSelected(credential, selectionType);
-        }
+    componentWillMount() {
+        t = this.props.flowManager.translate;
     }
 
     render() {
         console.log("PerforceCredentialStep render");
-        const scmId = this.props.flowManager.getScmId();
-        const loading = this.state.loading;
         const disabled = this.state.complete;
-        const title = loading ? 'P4 Loading...' : 'Connect to Perforce';
-
-        const perforceConfig = {
-            scmId,
-            apiUrl: this.props.flowManager.getApiUrl(),
-        };
-        const githubConfig = {
-            scmId,
-            apiUrl: this.props.flowManager.getApiUrl(),
-        };
-        console.log("githubConfig: " + githubConfig);
+        const { flowManager } = this.props;
+        const { serverManager } = flowManager;
+        //TODO Change below title
+        const title = t('creation.p4.step1.title');
+        //TODO Change the below title
+        //TODO Change bb references
 
         return (
-            <FlowStep {...this.props} className="perforce-credentials-step" disabled={disabled} loading={loading} title={title}>
-                <Extensions.Renderer
-                    extensionPoint="jenkins.credentials.selection"
-                    onStatus={status => this._onStatus(status)}
-                    onComplete={(credential, selectionType) => this._onComplete(credential, selectionType)}
-                    type={scmId}
-                    githubConfig={githubConfig}
-                />
+            <FlowStep {...this.props} className="credentials-picker-github" title={title}>
+                <FormElement title={t('creation.p4.step1.instructions')}>
+                    <Dropdown
+                        ref={dropdown => {
+                            this.dropdown = dropdown;
+                        }}
+                        options={this.credManager.credentials}
+                        labelField="loginName"
+                        onChange={option => this._onChangeDropdown(option)}
+                    />
+                    <button className="button-next-step" onClick={() => this._onClickNextButton()}>
+                        {t('creation.p4.button_next')}
+                    </button>
+                </FormElement>
             </FlowStep>
         );
         //return ("","","");
+    }
+
+    _onChangeDropdown(option) {
+        const { serverManager } = this.props.flowManager;
+        //TODO may want to do validation later
+        //serverManager.validateVersion(option.id).then(success => this._onValidateVersion(success), error => this._onValidateVersion(error));
+        this.setState({
+            selectedCredential: option,
+        });
+    }
+
+    _onClickNextButton() {
+        this.props.flowManager.selectCredential(this.state.selectedCredential);
     }
 }
 
 PerforceCredentialsStep.propTypes = {
     flowManager: PropTypes.object,
-    onCredentialSelected: PropTypes.func,
 };
+
+export default PerforceCredentialsStep;

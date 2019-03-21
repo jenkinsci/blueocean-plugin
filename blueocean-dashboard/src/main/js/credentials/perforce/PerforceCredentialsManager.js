@@ -2,49 +2,34 @@ import { action, observable } from 'mobx';
 
 import PromiseDelayUtils from '../../util/PromiseDelayUtils';
 
-import PerforceCredentialsApi from './PerforceCredentialsApi';
-import PerforceCredentialsState from './PerforceCredentialsState';
-import { LoadError, SaveError } from './PerforceCredentialsApi';
-
-
 const MIN_DELAY = 500;
 const { delayBoth } = PromiseDelayUtils;
 
 /**
- * Manages retrieving, validating and saving the Github access token.
- * Also holds the state of the token for use in GithubCredentialStep.
+ * Manages retrieving, validating and saving the Perforce credentials.
+ * Also holds the state of the credential for use in PerforceCredentialStep.
  */
 class PerforceCredentialsManager {
-    @observable stateId = null;
+    @observable credentials = [];
 
-    @observable pendingValidation = false;
 
-    configure(scmId, apiUrl) {
-        this._credentialsApi = new PerforceCredentialsApi(scmId);
-        this.apiUrl = apiUrl;
+    constructor(credentialsApi) {
+        this.credentialsApi = credentialsApi;
     }
 
     @action
     findExistingCredential() {
-        this.stateId = PerforceCredentialsState.PENDING_LOADING_CREDS;
-        return this._credentialsApi
-            .findExistingCredential(this.apiUrl)
-            .then(...delayBoth(MIN_DELAY))
-            .catch(error => this._findExistingCredentialFailure(error));
+        return this.credentialsApi.findExistingCredential().then(credentials => this._onfindCredSuccess(credentials));
     }
 
     @action
-    _findExistingCredentialFailure(error) {
-        if (error.type === LoadError.TOKEN_NOT_FOUND) {
-            this.stateId = PerforceCredentialsState.NEW_REQUIRED;
-        } else if (error.type === LoadError.TOKEN_REVOKED) {
-            this.stateId = PerforceCredentialsState.EXISTING_REVOKED;
-        } else if (error.type === LoadError.TOKEN_MISSING_SCOPES) {
-            this.stateId = PerforceCredentialsState.EXISTING_MISSING_SCOPES;
-        } else {
-            this.stateId = PerforceCredentialsState.ERROR_UNKNOWN;
-        }
+    _onfindCredSuccess(credentials) {
+        this.credentials.replace(credentials);
+        console.log("PerforceCredentialsManager._onfindCredSuccess: " + credentials);
+        return credentials;
     }
+
+
 
     /*@action
     createAccessToken(token) {

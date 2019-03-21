@@ -5,11 +5,9 @@ import { Enum } from '../flow2/Enum';
  */
 const PerforceCreationState = new Enum({
     PENDING_LOADING_CREDS: 'pending_loading_creds',
-    STEP_ACCESS_TOKEN: 'step_access_token',
-    PENDING_LOADING_ORGANIZATIONS: 'pending_loading_organizations',
-    STEP_CHOOSE_ORGANIZATION: 'step_choose_organization',
-    PENDING_LOADING_REPOSITORIES: 'pending_loading_repositories',
-    STEP_CHOOSE_REPOSITORY: 'step_choose_repository',
+    PENDING_LOADING_PROJECTS: 'pending_loading_projects',
+    STEP_CHOOSE_CREDENTIAL: 'step_choose_credential',
+    STEP_CHOOSE_PROJECT: 'step_choose_project',
     PENDING_CREATION_SAVING: 'pending_creation_saving',
     STEP_COMPLETE_SAVING_ERROR: 'step_complete_saving_error',
     PENDING_CREATION_EVENTS: 'pending_creation_events',
@@ -18,7 +16,7 @@ const PerforceCreationState = new Enum({
     STEP_COMPLETE_MISSING_JENKINSFILE: 'step_complete_missing_jenkinsfile',
     STEP_COMPLETE_SUCCESS: 'step_complete_success',
     STEP_RENAME: 'step_rename',
-    ERROR_UNKOWN: 'error_unkown',
+    ERROR_UNKNOWN: 'error_unknown',
 });
 
 export default PerforceCreationState;

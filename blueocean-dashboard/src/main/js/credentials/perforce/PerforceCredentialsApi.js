@@ -33,13 +33,18 @@ class PerforceCredentialsApi {
         const path = UrlConfig.getJenkinsRootURL();
         const credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}`);
         console.log("PerforceCredentialsApi: findExistingCredential: credUrl: " + credUrl);
-        return this._fetch("http://localhost:9090/jenkins/credentials/").then(result => this._findExistingCredentialSuccess(result), error => this._findExistingCredentialFailure(error));
+        //return this._fetch("http://localhost:9090/jenkins/credentials/").then(result => this._findExistingCredentialSuccess(result), error => this._findExistingCredentialFailure(error));
+        //return this._fetch("http://localhost:4567/user/getUsers").then(result => this._findExistingCredentialSuccess(result), error => this._findExistingCredentialFailure(error));
+        return this._fetch("http://localhost:4567/user/getUsers");
+        //http://localhost:4567/user/getUsers
 
     }
 
     _findExistingCredentialSuccess(credential) {
-        console.log("_findExistingCredentialSuccess");
+        console.log("credential.credentialId =" + credential.credentialId);
+        //console.log("credential.loginName =" + credential.loginName);
         if (credential && credential.credentialId) {
+
             return credential;
         }
 

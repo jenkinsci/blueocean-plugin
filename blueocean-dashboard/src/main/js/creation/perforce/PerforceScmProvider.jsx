@@ -1,10 +1,10 @@
 import React from 'react';
 import ScmProvider from '../ScmProvider';
 import PerforceDefaultOption from './PerforceDefaultOption';
-import PerforceCreationApi from './api/PerforceCreationApi';
+import PerforceCreationApi from '../perforce/api/PerforceCreationApi';
 
 import PerforceFlowManager from './PerforceFlowManager';
-import {BbCreationApi} from "../bitbucket/api/BbCreationApi";
+import PerforceCredentialsApi from "../../credentials/perforce/PerforceCredentialsApi";
 
 
 /**
@@ -16,9 +16,10 @@ export default class PerforceScmProvider extends ScmProvider {
     }
 
     getFlowManager() {
-        const createApi = new PerforceCreationApi();
-        //const createApi = new BbCreationApi('github');
-        return new PerforceFlowManager(createApi);
+        //TODO Remove perforce hardcoding
+        const createApi = new PerforceCreationApi('perforce');
+        const credentialApi = new PerforceCredentialsApi('perforce');
+        return new PerforceFlowManager(createApi, credentialApi);
     }
 
     destroyFlowManager() {}

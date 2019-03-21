@@ -10,10 +10,12 @@ import waitAtLeast from '../flow2/waitAtLeast';
 import STATE from "../perforce/PerforceCreationState";
 import PerforceLoadingStep from "./steps/PerforceLoadingStep";
 import PerforceCredentialsStep from "./steps/PerforceCredentialStep";
-import {ListOrganizationsOutcome} from "./api/PerforceCreationApi";
-import PerforceOrgListStep from "./steps/PerforceOrgListStep";
+import PerforceCredentialsManager from "../../credentials/perforce/PerforceCredentialsManager";
+import { ListProjectsOutcome } from './api/PerforceCreationApi';
 import PerforceUnknownErrorStep from "./steps/PerforceUnknownErrorStep";
-import GithubLoadingStep from "../github/steps/GithubLoadingStep";
+import PerforceProjectListStep from './steps/PerforceProjectListStep';
+import PerforceCompleteStep from './steps/PerforceCompleteStep';
+
 
 const LOGGER = logging.logger('io.jenkins.blueocean.p4-pipeline');
 const MIN_DELAY = 500;
@@ -23,57 +25,18 @@ const SAVE_DELAY = 1000;
  * Impl of FlowManager for perforce creation flow.
  */
 export default class PerforceFlowManager extends FlowManager {
-    apiUrl = null;
-
     credentialId = null;
 
-    credentialSelected = false;
+    selectedCred = null;
+    @observable projects = [];
+    //@observable credentials = [];
+    @observable selectedProject = null;
 
-    @observable organizations = [];
-
-    @observable repositories = [];
-
-    @observable repositoriesLoading = false;
-
-    @computed
-    get selectableRepositories() {
-        if (!this.repositories) {
-            return [];
-        }
-        return this.repositories;
-    }
-
-    @observable selectedOrganization = null;
-
-    @observable selectedRepository = null;
-
-    @computed
-    get stepsDisabled() {
-        return (
-            this.stateId === STATE.PENDING_CREATION_SAVING ||
-            this.stateId === STATE.STEP_COMPLETE_SAVING_ERROR ||
-            this.stateId === STATE.PENDING_CREATION_EVENTS ||
-            this.stateId === STATE.STEP_COMPLETE_EVENT_ERROR ||
-            this.stateId === STATE.STEP_COMPLETE_EVENT_TIMEOUT ||
-            this.stateId === STATE.STEP_COMPLETE_MISSING_JENKINSFILE ||
-            this.stateId === STATE.STEP_COMPLETE_SUCCESS
-        );
-    }
-
-    _repositoryCache = {};
-
-    _creationApi = null;
-
-    _sseSubscribeId = null;
-
-    _sseTimeoutId = null;
-
-    pipeline = null;
-    pipelineName = null;
-
-    constructor(creationApi) {
+    constructor(creationApi, credentialApi) {
         super();
         this._creationApi = creationApi;
+        //this._credentialApi = credentialApi;
+        this.credManager = new PerforceCredentialsManager(credentialApi);
     }
 
     translate(key, opts) {
@@ -91,19 +54,14 @@ export default class PerforceFlowManager extends FlowManager {
     getInitialStep() {
         return {
             stateId: STATE.PENDING_LOADING_CREDS,
-            //TODO Change this to perforce?
-            stepElement: <GithubLoadingStep />,
+            stepElement: <PerforceLoadingStep />,
         };
     }
 
     onInitialized() {
-        this._renderCredentialsStep();
-        this.setPlaceholders('Complete');
+        this._loadCredentialsList();
+        this.setPlaceholders(translate('creation.core.status.completed'));
         console.log("PerforceFlowManager onInitialized complete");
-    }
-
-    destroy() {
-        this._cleanupListeners();
     }
 
     getScmId() {
@@ -111,81 +69,66 @@ export default class PerforceFlowManager extends FlowManager {
     }
 
     getApiUrl() {
-        // TODO For test. Change this.
-        return 'https://api.git.com';
+        return this.selectedCred ? this.selectedCred.apiUrl : null;
     }
 
-    /**
-     * stateId of the step after which the 'GithubCredentialsStep' should be added
-     * @returns {string}
-     * @private
-     */
-    _getCredentialsStepAfterStateId() {
-        // the credentials step is always added at the beginning
+    _loadCredentialsList() {
+        return this.credManager
+            .findExistingCredential()
+            .then(waitAtLeast(MIN_DELAY))
+            .then(success => this._loadCredentialsComplete(success));
+    }
+
+    _loadCredentialsComplete(response) {
+        console.log("PerforceFlowManager._loadCredentialsComplete(): " + response);
+        //this.credentials = response;
+        this.renderStep({
+            stateId: STATE.STEP_CHOOSE_CREDENTIAL,
+            stepElement: <PerforceCredentialsStep />,
+        });
+    }
+
+    selectCredential(credential){
+        this.selectedCred = credential;
+        this._renderLoadingProjects();
+    }
+
+    _renderLoadingProjects() {
+        this.renderStep({
+            stateId: STATE.PENDING_LOADING_PROJECTS,
+            stepElement: <PerforceLoadingStep />,
+            afterStateId: this._getProjectsStepAfterStateId(),
+        });
+
+        this.listProjects();
+    }
+
+    //TODO Do I need this?
+    _getProjectsStepAfterStateId() {
         return null;
     }
 
-    _renderCredentialsStep() {
-        console.log("PerforceFlowManager _renderCredentialsStep");
-        this.renderStep({
-            stateId: STATE.STEP_ACCESS_TOKEN,
-            stepElement: (
-                <PerforceCredentialsStep
-                    scmId={this.getScmId()}
-                    onCredentialSelected={(cred, selectionType) => this._onCredentialSelected(cred, selectionType)}
-                />
-            ),
-            afterStateId: this._getCredentialsStepAfterStateId(),
-        });
-    }
-
-    _onCredentialSelected(credential, selectionType) {
-        console.log("PerforceFlowManager _onCredentialSelected");
-        this.credentialId = credential.credentialId;
-        this.credentialSelected = selectionType === 'userSelected';
-        //this._renderLoadingOrganizations();
-        console.log("PerforceFlowManager _onCredentialSelected end");
-    }
-
-    /**
-     * stateId of the step after which the 'PerforceOrgListStep' should be added
-     * @returns {string}
-     * @private
-     */
-    _getOrganizationsStepAfterStateId() {
-        // if the credential was manually selected, add the organizations step after it
-        // if auto-selected, just replace it altogether
-        return this.credentialSelected ? STATE.STEP_ACCESS_TOKEN : null;
-    }
-
-    _renderLoadingOrganizations() {
-        this.renderStep({
-            stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
-            stepElement: <PerforceLoadingStep />,
-            afterStateId: this._getOrganizationsStepAfterStateId(),
-        });
-
-        this.listOrganizations();
-    }
-
     @action
-    listOrganizations() {
+    listProjects() {
         this._creationApi
-            .listOrganizations(this.credentialId, this.getApiUrl())
+            .listProjects(this.credentialId, this.getApiUrl())
             .then(waitAtLeast(MIN_DELAY))
-            .then(orgs => this._listOrganizationsSuccess(orgs));
+            .then(projects => this._listProjectsSuccess(projects));
     }
 
     @action
-    _listOrganizationsSuccess(response) {
-        if (response.outcome === ListOrganizationsOutcome.SUCCESS) {
-            this.organizations = response.organizations;
-            const afterStateId = this._getOrganizationsStepAfterStateId();
+    _listProjectsSuccess(response) {
+        if (response.outcome === ListProjectsOutcome.SUCCESS) {
+            this.projects = response.projects;
+
+            //TODO
+            this._renderChooseProject();
+        } else if (response.outcome === ListProjectsOutcome.INVALID_CREDENTIAL_ID) {
+            this.projects = response.projects;
 
             this.renderStep({
-                stateId: STATE.STEP_CHOOSE_ORGANIZATION,
-                stepElement: <PerforceOrgListStep />,
-                afterStateId,
+                stateId: STATE.STEP_CREDENTIAL,
+                stepElement: <PerforceCredentialsStep />,
             });
         } else {
             this.renderStep({
@@ -195,51 +138,81 @@ export default class PerforceFlowManager extends FlowManager {
         }
     }
 
-    @action
-    selectOrganization(organization) {
-        this.selectedOrganization = organization;
+    _renderChooseProject() {
         this.renderStep({
-            stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
-            stepElement: <PerforceLoadingStep />,
-            afterStateId: STATE.STEP_CHOOSE_ORGANIZATION,
+            stateId: STATE.STEP_CHOOSE_PROJECT,
+            stepElement: <PerforceProjectListStep />,
+            afterStateId: this._getProjectsStepAfterStateId(),
         });
-        this._loadAllRepositories(this.selectedOrganization);
     }
 
     @action
-    _loadAllRepositories(organization) {
-        this.repositories.replace([]);
-        this.repositoriesLoading = true;
+    selectProject(project) {
+        this.selectedProject = project;
+        this.renderStep({
+            // stateId: STATE.PENDING_LOADING_PROJECTS,
+            // stepElement: <PerforceLoadingStep />,
+            stateId: STATE.PENDING_CREATION_SAVING,
+            stepElement: <PerforceLoadingStep />,
+            afterStateId: STATE.STEP_CHOOSE_PROJECT,
+        });
+    }
 
-        let promise = null;
-        const cachedRepos = this._repositoryCache[organization.name];
+    saveRepo() {
+        this._saveRepo();
+    }
 
-        if (cachedRepos) {
-            promise = new Promise(resolve => resolve({ repositories: { items: cachedRepos } }));
-        } else {
-            promise = this._loadPagedRepository(organization.name, FIRST_PAGE);
+    @action
+    _saveRepo() {
+        const afterStateId = this.isStateAdded(STATE.STEP_RENAME) ? STATE.STEP_RENAME : STATE.STEP_CHOOSE_PROJECT;
+
+        this.renderStep({
+            stateId: STATE.PENDING_CREATION_SAVING,
+            stepElement: <PerforceCompleteStep />,
+            afterStateId,
+        });
+
+        this.setPlaceholders();
+
+        this._initListeners();
+
+        this._creationApi
+            .createMbp(
+                this.credentialId,
+                this.getScmId(),
+                this.getApiUrl(),
+                this.pipelineName,
+                this.selectedCred.key,
+                this.selectedProject.name,
+                'io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest'
+            )
+            .then(waitAtLeast(MIN_DELAY * 2))
+            .then(result => this._createPipelineComplete(result));
+    }
+
+    @action
+    setPlaceholders(placeholders) {
+        let array = [];
+
+        if (typeof placeholders === 'string') {
+            array.push(placeholders);
+        } else if (placeholders) {
+            array = placeholders;
         }
 
-        promise
-            .then(waitAtLeast(MIN_DELAY))
-            .then(repos => this._updateRepositories(organization.name, repos))
-            .catch(error => console.log(error));
+        this.placeholders.replace(array);
     }
 
-    _loadPagedRepository(organizationName, pageNumber, pageSize = PAGE_SIZE) {
-        return this._creationApi.listRepositories(this.credentialId, this.getApiUrl(), organizationName, pageNumber, pageSize);
+    _initListeners() {
+        this._cleanupListeners();
+
+        LOGGER.debug('P4: listening for project folder and multi-branch indexing events...');
+
+        //TODO Add code here later
     }
 
-    //TODO here
-
-    createPipeline(repositoryUrl, credential) {
-        console.log(repositoryUrl);
-        console.log(credential);
-        this.repositoryUrl = repositoryUrl;
-        this.selectedCredential = credential;
-        //TODO What is the need of this method? Find out then add
-        //this.pipelineName = this._createNameFromRepoUrl(repositoryUrl);
-        return this._initiateCreatePipeline();
+    _cleanupListeners() {
+        //TODO Add cleanup code here
     }
 
 }
