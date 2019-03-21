@@ -4,6 +4,7 @@ import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.branch.OrganizationFolder;
 import jenkins.scm.api.SCMHead;
+import org.jenkinsci.plugins.github_branch_source.GitHubTagSCMHead;
 import org.jenkinsci.plugins.github_branch_source.PullRequestSCMHead;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,5 +43,17 @@ public class PipelineJobFiltersTest {
         assertTrue(PipelineJobFilters.isPullRequest(organizationFolder));
         assertFalse(new PipelineJobFilters.OriginFilter().getFilter().apply(organizationFolder));
         assertTrue(new PipelineJobFilters.PullRequestFilter().getFilter().apply(organizationFolder));
+    }
+
+    @Test
+    public void testIsTag(){
+        BlueOrganization organization = mockOrganization();
+        OrganizationFolder organizationFolder = mockOrgFolder(organization);
+        GitHubTagSCMHead tagSCMHead = mock(GitHubTagSCMHead.class);
+        mockStatic(SCMHead.HeadByItem.class);
+        when(SCMHead.HeadByItem.findHead(organizationFolder)).thenReturn(tagSCMHead);
+        assertTrue(PipelineJobFilters.isTag(organizationFolder));
+        assertFalse(new PipelineJobFilters.OriginFilter().getFilter().apply(organizationFolder));
+        assertTrue(new PipelineJobFilters.TagFilter().getFilter().apply(organizationFolder));
     }
 }

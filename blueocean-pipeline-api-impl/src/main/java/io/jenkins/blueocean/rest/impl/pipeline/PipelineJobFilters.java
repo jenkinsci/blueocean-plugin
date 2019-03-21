@@ -8,6 +8,7 @@ import io.jenkins.blueocean.service.embedded.rest.ContainerFilter;
 import jenkins.branch.OrganizationFolder;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.mixin.ChangeRequestSCMHead;
+import jenkins.scm.api.mixin.TagSCMHead;
 
 public class PipelineJobFilters {
     public static boolean isPullRequest(Item item) {
@@ -15,6 +16,9 @@ public class PipelineJobFilters {
         return SCMHead.HeadByItem.findHead(item) instanceof ChangeRequestSCMHead;
     }
 
+    public static boolean isTag(Item item){
+        return SCMHead.HeadByItem.findHead(item) instanceof TagSCMHead;
+    }
     @Extension
     public static class FolderJobFilter extends ContainerFilter {
         private final Predicate<Item> filter = job -> !(Folder.class.equals(job.getClass()) || job instanceof OrganizationFolder);
@@ -30,7 +34,7 @@ public class PipelineJobFilters {
 
     @Extension
     public static class OriginFilter extends ContainerFilter {
-        private final Predicate<Item> filter = job -> !isPullRequest(job);
+        private final Predicate<Item> filter = job -> !isPullRequest(job) && !isTag(job);
 
         @Override
         public String getName() {
@@ -49,6 +53,20 @@ public class PipelineJobFilters {
         @Override
         public String getName() {
             return "pull-requests";
+        }
+        @Override
+        public Predicate<Item> getFilter() {
+            return filter;
+        }
+    }
+
+    @Extension
+    public static class TagFilter extends ContainerFilter {
+        private final Predicate<Item> filter = job ->  isTag(job);
+
+        @Override
+        public String getName() {
+            return "tags";
         }
         @Override
         public Predicate<Item> getFilter() {
