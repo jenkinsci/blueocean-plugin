@@ -85,6 +85,7 @@ export default class PerforceFlowManager extends FlowManager {
         this.renderStep({
             stateId: STATE.STEP_CHOOSE_CREDENTIAL,
             stepElement: <PerforceCredentialsStep />,
+            afterStateId: null,
         });
     }
 
@@ -103,9 +104,8 @@ export default class PerforceFlowManager extends FlowManager {
         this.listProjects();
     }
 
-    //TODO Do I need this?
     _getProjectsStepAfterStateId() {
-        return null;
+        return STATE.STEP_CHOOSE_CREDENTIAL;
     }
 
     @action

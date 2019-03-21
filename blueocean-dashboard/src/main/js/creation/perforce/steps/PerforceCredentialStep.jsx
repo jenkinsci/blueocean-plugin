@@ -27,11 +27,8 @@ class PerforceCredentialsStep extends React.Component {
         const disabled = this.state.complete;
         const { flowManager } = this.props;
         const { serverManager } = flowManager;
-        //TODO Change below title
         const title = t('creation.p4.step1.title');
-        //TODO Change the below title
-        //TODO Change bb references
-
+        //TODO Change the below github title
         return (
             <FlowStep {...this.props} className="credentials-picker-github" title={title}>
                 <FormElement title={t('creation.p4.step1.instructions')}>
