@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterators;
 import hudson.Util;
 import hudson.model.FreeStyleProject;
 import hudson.model.Queue;
@@ -14,6 +15,7 @@ import hudson.security.LegacyAuthorizationStrategy;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
+import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
@@ -1135,5 +1137,64 @@ public class MultiBranchTest extends PipelineBaseTest {
             assertNotNull(blueQueueItem);
             assertTrue(blueQueueItems.hasNext());
         }
+    }
+
+    @Test
+    public void testMultiBranchPipelineRunContainer() throws Exception {
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        sampleRepo1.init();
+        sampleRepo1.write("Jenkinsfile", "stage 'build'\n " + "node {echo 'Building'}\n" +
+            "stage 'test'\nnode { echo 'Testing'}\n" +
+            "sleep 10000 \n" +
+            "stage 'deploy'\nnode { echo 'Deploying'}\n"
+        );
+        sampleRepo1.write("file", "initial content");
+        sampleRepo1.git("add", "Jenkinsfile");
+        sampleRepo1.git("commit", "--all", "--message=flow");
+
+        //create feature branch
+        sampleRepo1.git("checkout", "-b", "abc");
+        sampleRepo1.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; " + "node {" +
+            "   stage ('Build'); " +
+            "   echo ('Building'); " +
+            "   stage ('Test'); echo hello; " +
+            "   echo ('Testing'); " +
+            "   stage ('Deploy'); " +
+            "   echo ('Deploying'); " +
+            "}");
+        sampleRepo1.write("file", "subsequent content1");
+        sampleRepo1.git("commit", "--all", "--message=tweaked1");
+
+
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo1.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+        scheduleAndFindBranchProject(mp);
+        Resource r = BluePipelineFactory.resolve(mp);
+        assertTrue(r instanceof MultiBranchPipelineImpl);
+
+        WorkflowJob job = (WorkflowJob) (mp.getItems().toArray()[0]);
+        job.setConcurrentBuild(false);
+        job.scheduleBuild2(0).waitForStart();
+        job.scheduleBuild2(0).waitForStart();
+        job.scheduleBuild2(0).waitForStart();
+        job.scheduleBuild2(0).waitForStart();
+
+        WorkflowJob job2 = (WorkflowJob) (mp.getItems().toArray()[1]);
+        job2.scheduleBuild2(0).waitForStart();
+        job2.scheduleBuild2(0).waitForStart();
+        MultibranchPipelineRunContainer mbpRunContainer =
+            new MultibranchPipelineRunContainer((MultiBranchPipelineImpl) r);
+        Iterator<BlueRun> blueRunIterator = mbpRunContainer.iterator(0,100);
+
+        assertEquals(8, Iterators.size(blueRunIterator));
+
+        blueRunIterator = mbpRunContainer.iterator(4,2);
+        assertEquals(2,Iterators.size(blueRunIterator));
+
+        blueRunIterator = mbpRunContainer.iterator(100,0);
+        assertEquals(0,Iterators.size(blueRunIterator));
     }
 }
