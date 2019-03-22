@@ -11,7 +11,7 @@ export class Alerts extends Component {
                 <div className="border">&nbsp;</div>
                 <div className="title-div">
                     <span className="title">{title}</span>
-                    <span className="message">{message}</span>
+                    <span className="message" dangerouslySetInnerHTML={{ __html: message }} />
                 </div>
             </div>
         );
