@@ -1191,6 +1191,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         assertEquals(8, Iterators.size(blueRunIterator));
 
+        // should get 2 run, but only get one in job
         blueRunIterator = mbpRunContainer.iterator(4,2);
         assertEquals(2,Iterators.size(blueRunIterator));
 
