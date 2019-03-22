@@ -9,6 +9,7 @@ import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.MultiBranchPipeline;
+import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.*;
@@ -29,6 +30,10 @@ public class ParallelNavigationTest {
     @Rule
     @Inject
     public GitRepositoryRule git;
+
+    @Rule
+    @Inject
+    public SSEClientRule sseClientRule;
 
     @Inject
     ClassicJobApi jobApi;
@@ -151,6 +156,7 @@ public class ParallelNavigationTest {
         git.commit("Initial commit for " + navTestWithNoStepsNoStages);
         logger.info("Committed Jenkinsfile for " + navTestWithNoStepsNoStages);
         navTestWithNoStepsNoStagesPipeline = mbpFactory.pipeline(navTestWithNoStepsNoStages).createPipeline(git);
+        sseClientRule.untilEvents(navTestWithNoStepsNoStagesPipeline.buildsFinished);
         logger.info("Finished creating " + navTestWithNoStepsNoStages);
 
         navTestWithNoStepsNoStagesPipeline.getRunDetailsPipelinePage().open(1);

@@ -68,6 +68,7 @@ public class RunDetailsPipelinePage implements WebDriverMixin {
         checkPipeline();
         driver.get(getUrl(branch, runNumber));
         checkUrl(branch, runNumber);
+        wait.untilSSEReady();
         logger.info("Opened RunDetailsPipeline page for " + pipeline.getName());
         return this;
     }

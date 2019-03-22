@@ -7,6 +7,7 @@ import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.model.Folder;
 import io.blueocean.ath.pages.blue.DashboardPage;
 import org.apache.log4j.Logger;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -23,6 +24,11 @@ public class SearchTest {
     @Inject
     ClassicJobApi jobApi;
 
+    @After
+    public void tearDown() throws IOException {
+        // wipe out all jobs to avoid causing issues w/ SearchTest
+        jobApi.deleteFolder("folder1");
+    }
     @Test
     public void testSearch() throws InterruptedException, UnirestException, IOException {
         int totalJobs = 4;

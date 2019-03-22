@@ -57,7 +57,7 @@ node() {
 
         stage('ATH - Jenkins 2.138.4') {
           timeout(time: 90, unit: 'MINUTES') {
-            sh "cd acceptance-tests && ./run.sh -v=2.138.4 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+            sh "cd acceptance-tests && bash -x ./run.sh -v=2.138.4 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
             junit 'acceptance-tests/target/surefire-reports/*.xml'
             archive 'acceptance-tests/target/screenshots/**/*'
           }
@@ -65,19 +65,19 @@ node() {
 
         if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
           stage('ATH - Jenkins 2.73.2') {
-            sh "cd acceptance-tests && ./run.sh -v=2.73.2 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+            sh "cd acceptance-tests && bash -x ./run.sh -v=2.73.2 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
             junit 'acceptance-tests/target/surefire-reports/*.xml'
           }
           stage('ATH - Jenkins 2.73.3') {
-            sh "cd acceptance-tests && ./run.sh -v=2.73.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+            sh "cd acceptance-tests && bash -x ./run.sh -v=2.73.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
             junit 'acceptance-tests/target/surefire-reports/*.xml'
           }
           stage('ATH - Jenkins 2.107.2') {
-            sh "cd acceptance-tests && ./run.sh -v=2.107.2 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+            sh "cd acceptance-tests && bash -x ./run.sh -v=2.107.2 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
             junit 'acceptance-tests/target/surefire-reports/*.xml'
           }
           stage('ATH - Jenkins 2.121.1') {
-            sh "cd acceptance-tests && ./run.sh -v=2.121.1 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+            sh "cd acceptance-tests && bash -x ./run.sh -v=2.121.1 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
             junit 'acceptance-tests/target/surefire-reports/*.xml'
           }
         }
