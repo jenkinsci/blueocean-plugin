@@ -139,7 +139,6 @@ export default (
             <Route path=":pipeline/tg" component={Tags} onEnter={analytics.trackPipelineTagsVisited} />
             <Route path=":pipeline/pr" component={PullRequests} onEnter={analytics.trackPipelinePullRequestsVisited} />
             {trends && <Route path=":pipeline/trends" component={PipelineTrends} />}
-
             <Route path=":pipeline/detail/:branch/:runId" component={RunDetails} onLeave={onLeaveCheckBackground}>
                 <IndexRedirect to="pipeline" />
                 <Route path="pipeline" component={RunDetailsPipeline} onEnter={analytics.trackPipelineRunVisited}>

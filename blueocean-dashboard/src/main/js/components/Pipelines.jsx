@@ -110,7 +110,7 @@ export class Pipelines extends Component {
             JTable.column(640, labelName, true),
             JTable.column(70, labelHealth),
             JTable.column(70, labelBranches),
-            JTable.column(70, labelTags),
+            JTable.column(35, labelTags),
             JTable.column(70, labelPullReqs),
             JTable.column(actionExtensionCount * 24, ''),
         ];
