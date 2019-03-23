@@ -62,8 +62,6 @@ public class MultibranchPipelineRunContainer extends BlueRunContainer{
      */
     @Override
     public Iterator<BlueRun> iterator(int start, int limit) {
-        List<BlueRun> c = new ArrayList<>();
-
         List<BluePipeline> branches;
 
         // Check for branch filter
@@ -85,22 +83,26 @@ public class MultibranchPipelineRunContainer extends BlueRunContainer{
             sortBranchesByLatestRun(branches);
         }
 
+        List<BlueRun> allRunList = new ArrayList<BlueRun>();
         for (final BluePipeline b : branches) {
             BlueRunContainer blueRunContainer = b.getRuns();
             if(blueRunContainer==null){
                 continue;
             }
-            Iterator<BlueRun> it = blueRunContainer.iterator(0, MAX_MBP_RUNS_ROWS);
-            int count = 0;
-            Utils.skip(it, start);
-            while (it.hasNext() && count++ < limit) {
-                c.add(it.next());
+            List<BlueRun> it = Lists.newArrayList(blueRunContainer.list());
+            allRunList.addAll(it);
+            if (allRunList.size() > start + limit){
+                break;
             }
         }
 
-        Collections.sort(c, LATEST_RUN_START_TIME_COMPARATOR);
+        if (start < allRunList.size()) {
+            List<BlueRun> c = allRunList.subList(start, allRunList.size());
+            Collections.sort(c, LATEST_RUN_START_TIME_COMPARATOR);
 
-        return Iterators.limit(c.iterator(), limit);
+            return Iterators.limit(c.iterator(), limit);
+        }
+        return Iterators.emptyIterator();
     }
 
     static void sortBranchesByLatestRun(List<BluePipeline> branches) {
