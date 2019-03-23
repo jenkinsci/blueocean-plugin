@@ -1,6 +1,7 @@
 import Pipelines from './Pipelines';
 import MultiBranch from './MultiBranch';
 import Activity from './Activity';
+import Tags from './Tags';
 import PullRequests from './PullRequests';
 import PipelineTrends from './PipelineTrends';
 import PipelinePage from './PipelinePage';
@@ -14,6 +15,7 @@ export {
     Pipelines,
     MultiBranch,
     Activity,
+    Tags,
     PullRequests,
     PipelineTrends,
     PipelinePage,

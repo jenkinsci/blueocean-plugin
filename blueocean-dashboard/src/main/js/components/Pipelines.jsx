@@ -103,12 +103,14 @@ export class Pipelines extends Component {
         const labelName = translate('home.pipelineslist.header.name', { defaultValue: 'Name' });
         const labelHealth = translate('home.pipelineslist.header.health', { defaultValue: 'Health' });
         const labelBranches = translate('home.pipelineslist.header.branches', { defaultValue: 'Branches' });
+        const labelTags = translate('home.pipelineslist.header.tags', { defaultValue: 'TAG' });
         const labelPullReqs = translate('home.pipelineslist.header.pullrequests', { defaultValue: 'PR' });
 
         const columns = [
             JTable.column(640, labelName, true),
             JTable.column(70, labelHealth),
             JTable.column(70, labelBranches),
+            JTable.column(70, labelTags),
             JTable.column(70, labelPullReqs),
             JTable.column(actionExtensionCount * 24, ''),
         ];
