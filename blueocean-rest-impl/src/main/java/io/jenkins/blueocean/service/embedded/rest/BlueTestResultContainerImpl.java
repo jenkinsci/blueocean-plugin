@@ -76,7 +76,7 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
     @VisibleForTesting
     public Iterator<BlueTestResult> getBlueTestResultIterator(Iterable<BlueTestResult> results, String status, String state, String age) {
         if (isEmpty(status) && isEmpty(state) && isEmpty(age)) {
-            results.iterator();
+            return results.iterator();
         }
 
         Predicate<BlueTestResult> predicate = Predicates.alwaysTrue();

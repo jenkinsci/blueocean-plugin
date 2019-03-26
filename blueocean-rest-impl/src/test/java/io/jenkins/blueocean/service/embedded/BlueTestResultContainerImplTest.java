@@ -65,6 +65,14 @@ public class BlueTestResultContainerImplTest extends BaseTest {
     }
 
     @Test
+    public void testsNoFiltered() throws Exception {
+        List<BlueTestResult> allResults = Lists.newArrayList(container.iterator());
+        List<BlueTestResult> all = Lists.newArrayList(container.getBlueTestResultIterator(allResults, null, null, null));
+        assertEquals(allResults.size(), all.size());
+        assertEquals(allResults, all);
+    }
+
+    @Test
     public void testGetTestExists() throws Exception {
         boolean caught = false;
         try {
