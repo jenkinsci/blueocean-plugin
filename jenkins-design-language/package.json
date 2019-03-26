@@ -80,8 +80,6 @@
     "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.3.3",
-    "@jenkins-cd/js-builder": "0.0.64",
-    "@jenkins-cd/js-builder-jest": "0.0.4",
     "@storybook/addon-actions": "^5.0.5",
     "@storybook/addon-links": "^5.0.5",
     "@storybook/addons": "^5.0.5",
