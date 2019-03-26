@@ -1,7 +1,8 @@
 /**
  * Created by cmeyers on 10/4/16.
  */
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Icon } from './Icon';
 
 const SHOW_LABEL_CLASS = 'show-label';

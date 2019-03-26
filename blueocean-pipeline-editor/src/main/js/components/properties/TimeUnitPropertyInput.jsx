@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Dropdown } from '@jenkins-cd/design-language';
 import { getArg, setArg } from '../../services/PipelineMetadataService';
 
@@ -24,10 +25,10 @@ export default class TimeUnitPropertyInput extends React.Component {
 }
 
 TimeUnitPropertyInput.propTypes = {
-    propName: React.PropTypes.string,
-    step: React.PropTypes.any,
-    onChange: React.PropTypes.func,
-    type: React.PropTypes.any,
+    propName: PropTypes.string,
+    step: PropTypes.any,
+    onChange: PropTypes.func,
+    type: PropTypes.any,
 };
 
 TimeUnitPropertyInput.dataTypes = ['java.util.concurrent.TimeUnit'];

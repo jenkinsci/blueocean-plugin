@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FormElement, TextInput } from '@jenkins-cd/design-language';
 import { getArg, setArg } from '../../services/PipelineMetadataService';
 
@@ -23,10 +24,10 @@ export default class StringPropertyInput extends React.Component {
 }
 
 StringPropertyInput.propTypes = {
-    propName: React.PropTypes.string,
-    step: React.PropTypes.any,
-    onChange: React.PropTypes.func,
-    type: React.PropTypes.any,
+    propName: PropTypes.string,
+    step: PropTypes.any,
+    onChange: PropTypes.func,
+    type: PropTypes.any,
 };
 
 StringPropertyInput.dataTypes = ['java.lang.String'];

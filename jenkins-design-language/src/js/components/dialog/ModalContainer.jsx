@@ -1,6 +1,7 @@
 // @flow
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 /**
  Wraps children in a .ModalContainer, shows a dark screen over page content, and listens for user dismiss events.

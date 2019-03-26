@@ -1,6 +1,7 @@
 // @flow
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import moment from 'moment';
 // needs to be loaded since the moment lib will use require which in run time will fail
 import 'moment/min/locales.min';

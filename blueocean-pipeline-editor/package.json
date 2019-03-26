@@ -51,6 +51,7 @@
     "jsdom": "7.2.2",
     "mocha": "2.4.5",
     "nock": "8.0.0",
+    "prop-types": "15.7.2",
     "react-addons-test-utils": "15.4.2",
     "ts-jest": "19.0.2",
     "tsify": "4.0.0",

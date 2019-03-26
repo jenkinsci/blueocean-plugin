@@ -1,6 +1,7 @@
 // @flow
 
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { JTable } from './jtable/JTable';
 import { TableRow } from './jtable/TableRow';
 import { TableCell } from './jtable/TableCell';

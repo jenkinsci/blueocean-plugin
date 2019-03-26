@@ -38,6 +38,7 @@
     "gulp": "^3.9.1",
     "gulp-mocha": "^2.2.0",
     "jsdom": "^9.5.0",
+    "prop-types": "15.7.2",
     "react": "15.4.2",
     "react-addons-test-utils": "15.4.2",
     "react-dom": "15.4.2"

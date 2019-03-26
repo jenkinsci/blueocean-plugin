@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export default class PipelineCreateButton extends React.Component {
     render() {
@@ -10,10 +11,10 @@ export default class PipelineCreateButton extends React.Component {
 }
 
 PipelineCreateButton.propTypes = {
-    organization: React.PropTypes.string,
-    fullName: React.PropTypes.string,
+    organization: PropTypes.string,
+    fullName: PropTypes.string,
 };
 
 PipelineCreateButton.contextTypes = {
-    router: React.PropTypes.object,
+    router: PropTypes.object,
 };

@@ -1,5 +1,6 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var PropTypes = require('prop-types');
 var ContextBridge = require('./ContextBridge').ContextBridge;
 var importedExtensionStore = require('./ExtensionStore.js').instance;
 var importedResourceLoadTracker = require('./ResourceLoadTracker').instance;
@@ -191,13 +192,13 @@ ExtensionRenderer.defaultProps = {
 };
 
 ExtensionRenderer.propTypes = {
-    children: React.PropTypes.node,
-    extensionPoint: React.PropTypes.string.isRequired,
-    filter: React.PropTypes.any,
-    wrappingElement: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.element]),
+    children: PropTypes.node,
+    extensionPoint: PropTypes.string.isRequired,
+    filter: PropTypes.any,
+    wrappingElement: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
 };
 
 ExtensionRenderer.contextTypes = {
-    router: React.PropTypes.object,
-    config: React.PropTypes.object,
+    router: PropTypes.object,
+    config: PropTypes.object,
 };

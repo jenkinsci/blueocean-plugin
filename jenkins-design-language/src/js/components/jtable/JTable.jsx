@@ -1,6 +1,8 @@
 // @flow
 
-import React, { Component, PropTypes, Children } from 'react';
+import PropTypes from 'prop-types';
+
+import React, { Component, Node } from 'react';
 
 export const TABLE_LEFT_RIGHT_PADDING = 23; // 24 inc border
 export const TABLE_COLUMN_SPACING = 32;
@@ -15,7 +17,7 @@ export type ColumnDescription = {
 type Props = {
     onClick?: Function,
     className?: string,
-    children?: ReactChildren,
+    children?: Node,
     columns: Array<ColumnDescription>,
     style?: Object,
 };

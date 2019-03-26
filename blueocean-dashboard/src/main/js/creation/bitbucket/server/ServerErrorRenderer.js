@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { ErrorMessage } from '@jenkins-cd/design-language';
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 

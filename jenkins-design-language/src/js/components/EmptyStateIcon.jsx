@@ -1,6 +1,7 @@
 // @flow
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * Displays one of the available "Noun Project" icons used in empty state panels

@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
 import { GitCredentialsPickerSSH } from './GitCredentialsPickerSSH';
 import { GitCredentialsPickerPassword } from './GitCredentialsPickerPassword';
 
@@ -49,7 +50,7 @@ GitCredentialsPicker.propTypes = {
 };
 
 GitCredentialsPicker.contextTypes = {
-    router: React.PropTypes.object,
+    router: PropTypes.object,
 };
 
 export default GitCredentialsPicker;

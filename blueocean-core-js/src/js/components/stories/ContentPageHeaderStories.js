@@ -1,6 +1,8 @@
 /* eslint-disable */
 
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+
+import React, { Component } from 'react';
 import { storiesOf } from '@kadira/storybook';
 import { BlueLogo } from '../BlueLogo';
 import { ContentPageHeader } from '../ContentPageHeader';

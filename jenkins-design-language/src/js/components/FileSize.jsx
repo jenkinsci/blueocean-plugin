@@ -1,6 +1,7 @@
 // @flow
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 const { oneOfType, number, string } = PropTypes;
 const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];

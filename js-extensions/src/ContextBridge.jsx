@@ -1,8 +1,8 @@
+var PropTypes = require('prop-types');
 /**
  * Created by cmeyers on 10/21/16.
  */
 var React = require('react');
-var PropTypes = React.PropTypes;
 
 /**
  * An internal component that inserts things into the (separate) context of mounted extensions. We need this for our

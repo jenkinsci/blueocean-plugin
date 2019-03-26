@@ -3,7 +3,7 @@
  */
 var React = require('react');
 var ReactDOM = require('react-dom');
-var PropTypes = React.PropTypes;
+var PropTypes = require('prop-types');
 
 var ContextBridge = require('./ContextBridge').ContextBridge;
 var ErrorUtils = require('./ErrorUtils').default;

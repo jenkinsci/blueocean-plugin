@@ -1,7 +1,7 @@
 // @flow
 
 import React from 'react';
-import { PropTypes } from 'react';
+import PropTypes from 'prop-types';
 import OriginalLinkify from 'linkifyjs/react';
 
 // Makes sure we only linkify explicit URLs with expected protocols

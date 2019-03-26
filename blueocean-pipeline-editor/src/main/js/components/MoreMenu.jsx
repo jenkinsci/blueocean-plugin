@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Icon } from '@jenkins-cd/design-language';
 
@@ -82,5 +83,5 @@ export class MoreMenu extends React.Component {
 }
 
 MoreMenu.propTypes = {
-    children: React.PropTypes.any,
+    children: PropTypes.any,
 };

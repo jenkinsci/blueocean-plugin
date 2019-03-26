@@ -1,4 +1,5 @@
-import React, { PropTypes, Component } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { FormElement } from '@jenkins-cd/design-language';
 import { Fetch, AppConfig, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 import { Button } from '../../creation/github/Button';
@@ -162,5 +163,5 @@ GitCredentialsPickerSSH.propTypes = {
 };
 
 GitCredentialsPickerSSH.contextTypes = {
-    router: React.PropTypes.object,
+    router: PropTypes.object,
 };

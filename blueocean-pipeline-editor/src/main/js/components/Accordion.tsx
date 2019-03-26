@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import { Icon } from '@jenkins-cd/design-language';
 
 interface Props {
@@ -11,7 +12,7 @@ interface State {
 }
 export class Accordion extends React.Component<Props, State> {
     static propTypes = {
-        children: React.PropTypes.object,
+        children: PropTypes.object,
     };
     constructor(props: Props) {
         super(props);

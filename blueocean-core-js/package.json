@@ -91,6 +91,7 @@
     "jest-cli": "19.0.2",
     "less": "2.7.2",
     "nock": "9.0.14",
+    "prop-types": "15.7.2",
     "react-addons-test-utils": "15.4.2",
     "reactify": "1.1.1",
     "run-sequence": "1.2.2",

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FormElement } from '@jenkins-cd/design-language';
 import { getArg, setArg } from '../../services/PipelineMetadataService';
 
@@ -27,9 +28,9 @@ export default class DecimalPropertyInput extends React.Component {
 }
 
 DecimalPropertyInput.propTypes = {
-    propName: React.PropTypes.string,
-    step: React.PropTypes.any,
-    onChange: React.PropTypes.func,
+    propName: PropTypes.string,
+    step: PropTypes.any,
+    onChange: PropTypes.func,
 };
 
 DecimalPropertyInput.dataTypes = ['float', 'double', 'java.lang.Float', 'java.lang.Double', 'java.math.BigDecimal'];

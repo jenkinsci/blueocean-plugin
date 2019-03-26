@@ -1,6 +1,7 @@
 // @flow
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { describeArcAsPath } from '../SVG';
 
 export const strokeWidth = 3.5; // px. Maybe we can fetch this from CSS at runtime in the future

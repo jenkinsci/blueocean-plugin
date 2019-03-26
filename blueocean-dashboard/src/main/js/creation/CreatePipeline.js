@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { Page } from '@jenkins-cd/design-language';
 import { ContentPageHeader, i18nTranslator, loadingIndicator } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';

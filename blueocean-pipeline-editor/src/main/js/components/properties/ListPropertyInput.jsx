@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { TextInput } from '@jenkins-cd/design-language';
 
 export default class ListPropertyInput extends React.Component {
@@ -13,10 +14,10 @@ export default class ListPropertyInput extends React.Component {
 }
 
 ListPropertyInput.propTypes = {
-    propName: React.PropTypes.string,
-    step: React.PropTypes.any,
-    onChange: React.PropTypes.func,
-    type: React.PropTypes.any,
+    propName: PropTypes.string,
+    step: PropTypes.any,
+    onChange: PropTypes.func,
+    type: PropTypes.any,
 };
 
 ListPropertyInput.dataTypes = ['java.util.List'];

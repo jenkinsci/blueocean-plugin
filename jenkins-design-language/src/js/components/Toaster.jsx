@@ -1,7 +1,8 @@
 /**
  * Created by cmeyers on 8/17/16.
  */
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import TransitionGroup from 'react-addons-css-transition-group';
 
 import { Toast } from './Toast';

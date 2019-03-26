@@ -1,6 +1,7 @@
 // @flow
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 function getStatusClassName(successpc) {
     if (successpc < 21) return 'weather-storm';

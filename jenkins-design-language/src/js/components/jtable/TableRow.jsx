@@ -1,6 +1,7 @@
 // @flow
 
-import React, { Component, PropTypes, Children } from 'react';
+import React, { Component, Node } from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 import { TableHeader } from '../';
 import { TABLE_COLUMN_SPACING, TABLE_LEFT_RIGHT_PADDING } from './JTable';
@@ -10,7 +11,7 @@ import type { ColumnDescription } from './JTable';
 type Props = {
     onClick?: Function,
     className?: string,
-    children?: ReactChildren,
+    children?: Node,
     href?: string,
     linkTo?: string,
     onClick?: Function,

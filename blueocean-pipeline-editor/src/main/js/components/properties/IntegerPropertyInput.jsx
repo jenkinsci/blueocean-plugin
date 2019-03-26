@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FormElement } from '@jenkins-cd/design-language';
 import { getArg, setArg } from '../../services/PipelineMetadataService';
 
@@ -27,9 +28,9 @@ export default class IntegerPropertyInput extends React.Component {
 }
 
 IntegerPropertyInput.propTypes = {
-    propName: React.PropTypes.string,
-    step: React.PropTypes.any,
-    onChange: React.PropTypes.func,
+    propName: PropTypes.string,
+    step: PropTypes.any,
+    onChange: PropTypes.func,
 };
 
 IntegerPropertyInput.dataTypes = [

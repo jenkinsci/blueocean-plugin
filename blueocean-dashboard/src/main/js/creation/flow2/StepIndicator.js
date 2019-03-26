@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { StatusIndicator } from '@jenkins-cd/design-language';
 import Status from './FlowStepStatus';
 

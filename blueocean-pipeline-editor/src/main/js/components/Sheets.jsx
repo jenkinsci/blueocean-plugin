@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Icon } from '@jenkins-cd/design-language';
 
@@ -78,12 +79,12 @@ export class Sheets extends React.Component {
 }
 
 Sheet.propTypes = {
-    active: React.PropTypes.bool,
+    active: PropTypes.bool,
 };
 
 Sheets.propTypes = {
-    children: React.PropTypes.any,
-    transitionDuration: React.PropTypes.number,
-    transitionClass: React.PropTypes.string,
-    className: React.PropTypes.string,
+    children: PropTypes.any,
+    transitionDuration: PropTypes.number,
+    transitionClass: PropTypes.string,
+    className: PropTypes.string,
 };

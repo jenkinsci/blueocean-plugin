@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Extensions from '@jenkins-cd/js-extensions';
 import {
     Fetch,
@@ -162,9 +163,9 @@ class SaveDialog extends React.Component {
 }
 
 SaveDialog.propTypes = {
-    branch: React.PropTypes.string,
-    functions: React.PropTypes.object,
-    cancel: React.PropTypes.function,
+    branch: PropTypes.string,
+    functions: PropTypes.object,
+    cancel: PropTypes.function,
 };
 
 @observer
@@ -689,12 +690,12 @@ class PipelineLoader extends React.Component {
 }
 
 PipelineLoader.contextTypes = {
-    router: React.PropTypes.object,
-    location: React.PropTypes.object,
+    router: PropTypes.object,
+    location: PropTypes.object,
 };
 
 PipelineLoader.propTypes = {
-    params: React.PropTypes.object,
+    params: PropTypes.object,
 };
 
 export const EditorPage = PipelineLoader;
