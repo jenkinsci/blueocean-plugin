@@ -2,7 +2,7 @@
  * Created by cmeyers on 10/4/16.
  */
 import React from 'react';
-import { storiesOf } from '@kadira/storybook';
+import { storiesOf } from '@storybook/react';
 import { ExpandablePath } from '../components';
 
 storiesOf('ExpandablePath', module)

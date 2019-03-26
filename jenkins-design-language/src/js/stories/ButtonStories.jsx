@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React from 'react';
-import { storiesOf } from '@kadira/storybook';
+import { storiesOf } from '@storybook/react';
 
 storiesOf('Button', module)
     .add('general', General)

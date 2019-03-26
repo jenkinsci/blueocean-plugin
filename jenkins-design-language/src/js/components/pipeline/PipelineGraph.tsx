@@ -203,7 +203,7 @@ export class PipelineGraph extends React.Component {
             position: 'absolute' as 'absolute',
             maxWidth: sequentialStagesLabelOffset,
             textAlign: 'center' as 'center',
-            overflow: 'hidden',
+            overflow: 'hidden' as 'hidden',
             textOverflow: 'ellipsis',
             background: 'white',
             padding: '0 7px',

@@ -1,5 +1,6 @@
-import React, {Component, PropTypes} from 'react';
-import { storiesOf } from '@kadira/storybook';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { storiesOf } from '@storybook/react';
 
 import { FloatingElement, PositionFunctions } from '../components';
 

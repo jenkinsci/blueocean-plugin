@@ -1,4 +1,5 @@
 /* eslint-disable */
+import PropTypes from 'prop-types';
 import React from 'react';
 
 // Pulled from https://github.com/mattzeunert/react-with-context (MIT) because it's a one-file module, doesn't build
@@ -18,7 +19,7 @@ export default class WithContext extends React.Component {
         DynamicWithContext.childContextTypes = {};
         var context = this.props.context;
         for (var propertyName in context) {
-            DynamicWithContext.childContextTypes[propertyName] = React.PropTypes.any;
+            DynamicWithContext.childContextTypes[propertyName] = PropTypes.any;
         }
 
         this.validateChildren();

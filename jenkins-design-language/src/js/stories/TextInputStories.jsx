@@ -1,5 +1,5 @@
 import React from 'react';
-import { storiesOf } from '@kadira/storybook';
+import { storiesOf } from '@storybook/react';
 import { PasswordInput } from '../components/forms/PasswordInput';
 import { TextInput } from '../components/forms/TextInput';
 

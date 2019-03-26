@@ -1,5 +1,5 @@
 import React from 'react';
-import { storiesOf } from '@kadira/storybook';
+import { storiesOf } from '@storybook/react';
 import { PipelineGraph } from '../components/pipeline/PipelineGraph';
 
 import { StatusIndicator } from '../components';

@@ -1,5 +1,6 @@
-import React, { PropTypes } from 'react';
-import { storiesOf } from '@kadira/storybook';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { storiesOf } from '@storybook/react';
 import { ErrorMessage } from '../components/ErrorMessage';
 
 storiesOf('ErrorMessage', module)

@@ -1,5 +1,5 @@
 import React from 'react';
-import {storiesOf} from '@kadira/storybook';
+import {storiesOf} from '@storybook/react';
 import {TruncatingLabel} from '../components/TruncatingLabel';
 import {hgw} from './data/textdata';
 

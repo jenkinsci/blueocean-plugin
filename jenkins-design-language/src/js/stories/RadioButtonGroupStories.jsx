@@ -1,5 +1,5 @@
 import React from 'react';
-import { storiesOf } from '@kadira/storybook';
+import { storiesOf } from '@storybook/react';
 import { RadioButtonGroup } from '../components/forms/RadioButtonGroup';
 
 storiesOf('RadioButtonGroup', module)

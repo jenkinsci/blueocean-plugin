@@ -1,8 +1,9 @@
 /**
  * Created by cmeyers on 8/17/16.
  */
-import React, { Component, PropTypes } from 'react';
-import { storiesOf } from '@kadira/storybook';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { storiesOf } from '@storybook/react';
 
 import { Toaster } from '../components/Toaster';
 

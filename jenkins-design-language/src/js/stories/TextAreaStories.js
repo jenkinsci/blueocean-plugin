@@ -1,5 +1,5 @@
 import React from 'react';
-import { storiesOf } from '@kadira/storybook';
+import { storiesOf } from '@storybook/react';
 import { TextArea } from '../components/forms/TextArea';
 
 storiesOf('TextArea', module)

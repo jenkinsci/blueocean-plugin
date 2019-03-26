@@ -1,5 +1,5 @@
 import React from 'react';
-import { storiesOf } from '@kadira/storybook';
+import { storiesOf } from '@storybook/react';
 
 import { Icon } from '../components/Icon';
 import * as IconId from '@jenkins-cd/blueocean-material-icons';

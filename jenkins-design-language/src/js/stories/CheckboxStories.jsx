@@ -2,7 +2,7 @@
  * Created by cmeyers on 11/14/16.
  */
 import React from 'react';
-import { storiesOf } from '@kadira/storybook';
+import { storiesOf } from '@storybook/react';
 import { Checkbox } from '../components/forms/Checkbox';
 
 storiesOf('Checkbox', module)

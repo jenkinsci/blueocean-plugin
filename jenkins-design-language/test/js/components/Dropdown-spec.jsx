@@ -1,4 +1,3 @@
-import 'babel-polyfill';
 import React from 'react';
 import { assert } from 'chai';
 import { mount } from 'enzyme';
