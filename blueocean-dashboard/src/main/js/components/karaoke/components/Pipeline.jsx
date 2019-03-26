@@ -255,15 +255,12 @@ export default class Pipeline extends Component {
         // Underlying tasks are fetching nodes information for the selected node
         const afterClick = id => {
             logger.debug('clicked on node with id:', id);
-            console.log('Pipeline.jsx - clicked on node with id:', id); // TODO: RM
             this.showPending = false; // Configure flag to not show pending anymore -> reduce flicker
             const nextNode = this.pager.nodes.data.model.filter(item => item.id === id)[0];
-            console.log('Pipeline.jsx - nextNode:', nextNode.id); // TODO: RM
             // remove trailing /
             const pathname = location.pathname.replace(/\/$/, '');
             let nextPath;
             if (pathname.endsWith('pipeline')) {
-                console.log('\tPipeline.jsx - AAA'); // TODO: RM
                 nextPath = pathname;
             } else {
                 // means we are in a node url
@@ -271,21 +268,13 @@ export default class Pipeline extends Component {
                 const pathArray = pathname.split('/');
                 pathArray.pop();
                 pathArray.shift();
-                console.log('\tPipeline.jsx - BBB'); // TODO: RM
                 nextPath = `/${pathArray.join('/')}`;
             }
             // check whether we have a parallel node or seq parallel nodes
             const isParallel = nextNode.isParallel || nextNode.isSequential;
 
-            console.log('\t            isParallel', isParallel); // TODO: RM
-            console.log('\t   nextNode.isParallel', nextNode.isParallel); // TODO: RM
-            console.log('\t   nextNode.isParallel', nextNode.isSequential); // TODO: RM
-            console.log('\t  nextNode.firstParent', nextNode.firstParent); // TODO: RM
-            console.log('\t       nextNode.parent', nextNode.parent); // TODO: RM
-
             // see whether we need to update the state
             if (nextNode.state === 'FINISHED' || isParallel) {
-                console.log('\tPipeline.jsx - CCC'); // TODO: RM
                 nextPath = `${nextPath}/${id}`; // only allow node param in finished nodes
             }
             // see whether we need to update the karaoke mode
@@ -297,7 +286,6 @@ export default class Pipeline extends Component {
                 logger.debug('turning on karaoke since we need it because we are focusing on a new node.');
                 this.karaoke = true;
             }
-            console.log('Pipeline.jsx - nextPath:', nextPath); // TODO: RM
             location.pathname = nextPath;
             logger.debug('redirecting now to:', location.pathname);
             router.push(location);

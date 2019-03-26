@@ -74,8 +74,7 @@ export const getNodesInformation = nodes => {
             computedResult,
             isInputStep,
         };
-        // do not set the parent node in parallel, since we already have this information
-        // TODO: This is part of the problem, and doesn't work with sequential parallels, screws up parent for whole graph
+        // Update the parent whenever we encounter a top-level node
         if (!(isParallel || isSequential)) {
             parent = item.id;
         }

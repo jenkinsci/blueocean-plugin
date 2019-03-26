@@ -27,11 +27,7 @@ export default class PipelineRunGraph extends Component {
         this.lastData = newData;
         const isCompleted = run.state.toUpperCase() === 'FINISHED';
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
-        console.log('PipelineRunGraph.jsx convertJenkinsNodeGraph'); // TODO: RM
         const convertedGraph = convertJenkinsNodeGraph(newData, isCompleted, skewMillis);
-
-        // console.log('original graph', JSON.stringify(newData)); // TODO: RM
-        // console.log('converted graph', JSON.stringify(convertedGraph)); // TODO: RM
 
         this.setState({
             graphNodes: convertedGraph,
@@ -39,7 +35,6 @@ export default class PipelineRunGraph extends Component {
     }
 
     graphNodeClicked = (name, stageId) => {
-        console.log('graphNodeClicked', name, stageId); // TODO: RM
         const { callback } = this.props;
         if (callback) {
             callback(stageId);
