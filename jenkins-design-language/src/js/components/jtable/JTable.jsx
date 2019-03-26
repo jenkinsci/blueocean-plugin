@@ -2,7 +2,7 @@
 
 import PropTypes from 'prop-types';
 
-import React, { Component, Node } from 'react';
+import React, { Component, Node, Children } from 'react';
 
 export const TABLE_LEFT_RIGHT_PADDING = 23; // 24 inc border
 export const TABLE_COLUMN_SPACING = 32;
