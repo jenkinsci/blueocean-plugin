@@ -69,6 +69,8 @@ export class PipelinePager {
      */
     @action
     fetchNodes({ node }) {
+        console.log('pager fetch fetchNodes() for node', node); // TODO: RM
+        console.log('bunker is', this.bunker.constructor.name); // TODO: RM
         logger.debug('Fetching now nodes url and further process it');
         // while fetching we are pending
         this.pending = true;
@@ -110,9 +112,11 @@ export class PipelinePager {
                     // set either the focused node determined by the script or the last node
                     if (focused) {
                         this.currentNode = focused;
+                        console.log('AAAA pager set currentNode ', this.currentNode); // TODO: RM
                     } else {
                         // Actually we should only come here on a not running job
                         logger.debug('Actually we should only come here on a not running job');
+                        console.log('PipelinePager.js convertJenkinsNodeGraph'); // TODO: RM
                         const convertedNodes = convertJenkinsNodeGraph(logData.data.model, result.isFinished, 0);
                         let lastConvertedNode = convertedNodes[convertedNodes.length - 1];
 
@@ -130,6 +134,7 @@ export class PipelinePager {
 
                         const lastNode = logData.data.model.filter(node => node.id === lastConvertedNode.id)[0];
                         this.currentNode = lastNode;
+                        console.log('BBBB pager set currentNode ', this.currentNode); // TODO: RM
                     }
                     this.currentStepsUrl = prefixIfNeeded(this.currentNode._links.steps.href);
                     logger.debug('saved data', logData);

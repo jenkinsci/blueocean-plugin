@@ -39,6 +39,7 @@ export const getNodesInformation = nodes => {
         const isRunning = runningNodes.indexOf(item.id) > -1;
 
         const isParallel = item.type === 'PARALLEL';
+        const isSequential = item.firstParent && item.firstParent !== parent;
 
         const logActions = item.actions ? item.actions.filter(action => capable(action, 'org.jenkinsci.plugins.workflow.actions.LogAction')) : [];
         const hasLogs = logActions.length > 0;
@@ -65,6 +66,7 @@ export const getNodesInformation = nodes => {
             hasLogs,
             logUrl: hasLogs ? logActions[0]._links.self.href : undefined,
             isParallel,
+            isSequential,
             parent,
             firstParent: item.firstParent || undefined,
             isRunning,
@@ -73,7 +75,8 @@ export const getNodesInformation = nodes => {
             isInputStep,
         };
         // do not set the parent node in parallel, since we already have this information
-        if (!isParallel) {
+        // TODO: This is part of the problem, and doesn't work with sequential parallels, screws up parent for whole graph
+        if (!(isParallel || isSequential)) {
             parent = item.id;
         }
         if (item.type === 'WorkflowRun') {

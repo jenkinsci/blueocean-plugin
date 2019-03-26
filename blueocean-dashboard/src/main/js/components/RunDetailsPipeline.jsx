@@ -28,6 +28,7 @@ export class RunDetailsPipeline extends Component {
         }
     }
     componentWillReceiveProps(nextProps) {
+        console.log('RunDetailsPipeline.jsx nextProps.params.node', nextProps.params.node); // TODO: RM
         if (KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value !== 'never') {
             logger.debug('Augmenting next properties');
             this.augment(nextProps);
