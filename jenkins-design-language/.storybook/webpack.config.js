@@ -13,7 +13,7 @@ module.exports = ({ config, mode }) => {
                         // resourcePath - path to css file
 
                         // `url()` with `octicons` stay untouched because they get merged in later
-                        return url.includes('octicons') || url.includes('weather');
+                        return url.includes('octicons');
                     },
                 },
             },

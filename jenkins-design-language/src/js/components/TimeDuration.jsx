@@ -40,7 +40,7 @@ export class TimeDuration extends Component {
         super(props);
         // track how much time has elapsed since live updating tracking started
         this.state = { elapsed: 0 };
-        const { updatePeriod = 5000 } = this.props;
+        const { updatePeriod = 5000 } = props;
         this.timerPeriodMillis = typeof updatePeriod !== 'number' || isNaN(updatePeriod) ? 5000 : updatePeriod;
         this.clearIntervalId = 0;
     }
