@@ -6,6 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -127,6 +128,9 @@ public class WaitUtil {
                     logger.info(String.format("Retry click successful on attempt " + i + " for %s", by.toString()));
                 }
                 return;
+            } catch (StaleElementReferenceException ex) {
+                // item went away while we were trying to click (like auto complete)
+                // so try again
             } catch (WebDriverException ex) {
                 if (ex.getMessage().contains("is not clickable at point")) {
                     logger.warn(String.format("%s not clickable on attempt " + i + ", will sleep and retry ", by.toString()));

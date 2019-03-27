@@ -4,7 +4,7 @@ pipeline {
     stage("First") {
       steps {
         echo "Hello"
-        sleep 5
+        sleep 10
         echo "World"
       }
     }

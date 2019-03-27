@@ -8,24 +8,28 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.Build;
+import com.offbytwo.jenkins.model.BuildResult;
 import com.offbytwo.jenkins.model.FolderJob;
 import com.offbytwo.jenkins.model.Job;
 import com.offbytwo.jenkins.model.JobWithDetails;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.GitRepositoryRule;
 import io.blueocean.ath.JenkinsUser;
+import io.blueocean.ath.model.AbstractPipeline;
 import io.blueocean.ath.model.Folder;
-import java.io.IOException;
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.NotFoundException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 @Singleton
 public class ClassicJobApi {
@@ -209,6 +213,20 @@ public class ClassicJobApi {
                 abortAllBuilds(folder.append(pipeline), s);
             }
         }
+    }
+
+
+    public com.google.common.base.Function<WebDriver, Boolean> untilJobResultFunction(AbstractPipeline pipeline, BuildResult desiredResult) {
+        return driver -> {
+            try {
+                JobWithDetails job = ClassicJobApi.this.jenkins.getJob(ClassicJobApi.this.getFolder(pipeline.getFolder(), false), pipeline.getName());
+                BuildResult result = job.getLastBuild().details().getResult();
+                return result == desiredResult;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        };
     }
 }
 

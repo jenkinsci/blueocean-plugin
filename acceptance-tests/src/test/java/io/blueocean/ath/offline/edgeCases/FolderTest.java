@@ -21,9 +21,11 @@ import io.blueocean.ath.sse.SSEClientRule;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,6 +66,17 @@ public class FolderTest extends BlueOceanAcceptanceTest {
     @Inject
     DashboardPage dashboardPage;
 
+    ArrayList<Folder> createdFolders = new ArrayList();
+
+    @After
+    public void tearDown() throws IOException {
+        // wipe out all jobs to avoid causing issues w/ SearchTest
+        for (Folder folder : createdFolders) {
+            jobApi.deleteFolder(folder.get(0));
+        }
+        createdFolders.clear();
+    }
+
     /**
      * Tests that the activity page works when there are multiple layers of folders, and with funky characters.
      *
@@ -90,6 +103,8 @@ public class FolderTest extends BlueOceanAcceptanceTest {
 
         Folder folder = Folder.folders("firstFolder","三百", "ñba","七");
         FolderJob folderJob = jobApi.createFolders(folder, true);
+        createdFolders.add(folder);
+
         jobApi.createFreeStyleJob(folderJob, pipelineName, "echo 'hello world!'");
         driver.get(folderJob.getUrl()+"/job/"+pipelineName+"/");
         driver.findElement(By.xpath("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']")).click();
@@ -114,6 +129,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
     public void anotherFoldersTest() throws IOException, GitAPIException, UnirestException {
         Folder anotherFolder =  Folder.folders("anotherFolder", "三百", "ñba", "七");
         FolderJob folderJob = jobApi.createFolders(anotherFolder, true);
+        createdFolders.add(anotherFolder);
 
         git.writeJenkinsFile(loadJenkinsFile());
         git.writeFile("TEST-failure.TestThisWillFailAbunch.xml", loadResource("/TEST-failure.TestThisWillFailAbunch.xml"));
