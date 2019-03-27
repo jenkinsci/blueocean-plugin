@@ -48,8 +48,7 @@ export default class PerforceProjectListStep extends React.Component {
                     onItemSelect={(idx, proj) => this.selectProject(proj)}
                     labelFunction={proj => proj.loginName}
                     defaultContainerClass={false}
-                >
-                </List>
+                />
                 <button className="button-create" onClick={(proj) => this.beginCreation(proj)} disabled={buttonDisabled}>
                     {t('creation.core.header.title')}
                 </button>
