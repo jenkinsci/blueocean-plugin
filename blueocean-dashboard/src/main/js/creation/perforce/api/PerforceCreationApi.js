@@ -1,6 +1,5 @@
 import {Enum} from "../../flow2/Enum";
 import {AppConfig, capabilityAugmenter, Fetch, UrlConfig, Utils} from "@jenkins-cd/blueocean-core-js";
-import {CreateMbpOutcome} from "../../bitbucket/api/BbCreationApi";
 
 const ERROR_FIELD_SCM_CREDENTIAL = 'credentialId';
 
@@ -10,6 +9,13 @@ export const ListProjectsOutcome = new Enum({
     ERROR: 'error',
 });
 
+export const CreateMbpOutcome = new Enum({
+    SUCCESS: 'success',
+    INVALID_URI: 'invalid_uri',
+    INVALID_CREDENTIAL: 'invalid_credential',
+    INVALID_NAME: 'invalid_name',
+    ERROR: 'error',
+});
 
 function hasErrorFieldName(errors, fieldName) {
     return errors.filter(err => err.field === fieldName).length > 0;
@@ -44,7 +50,9 @@ export default class PerforceCreationApi {
     }
 
     _listProjectsSuccess(projects, credentialId, apiUrl, pagedOrgsStart) {
-        this.partialLoadedProjects = this.partialLoadedProjects.concat(projects);
+        //TODO Understand why this was done?
+        //this.partialLoadedProjects = this.partialLoadedProjects.concat(projects);
+        this.partialLoadedProjects = projects;
 
         if (projects.length >= 100) {
             //if we got 100 or more projects, we need to check the next page to see if there are any more projects
@@ -126,5 +134,27 @@ export default class PerforceCreationApi {
         };
     }
 
+    findBranches(pipelineName) {
+        const path = UrlConfig.getJenkinsRootURL();
+        const pipelineUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/pipelines/${pipelineName}/`);
+        return this._fetch(pipelineUrl)
+            .then(response => capabilityAugmenter.augmentCapabilities(response))
+            .then(pipeline => this._findBranchesSuccess(pipeline), error => this._findBranchesFailure(error));
+    }
+
+    _findBranchesSuccess(pipeline) {
+        return {
+            isFound: pipeline.getTotalNumberOfBranches > 0,
+            hasError: false,
+            pipeline,
+        };
+    }
+
+    _findBranchesFailure(error) {
+        return {
+            hasError: true,
+            error,
+        };
+    }
 
 }

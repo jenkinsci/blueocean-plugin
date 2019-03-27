@@ -26,7 +26,7 @@ ProjectRenderer.propTypes = {
 export default class PerforceProjectListStep extends React.Component {
     selectProject(proj) {
         this.props.flowManager.selectProject(proj);
-        console.log("PerforceProjectListStep: " + proj);
+        console.log("PerforceProjectListStep: " + proj.loginName);
     }
 
     beginCreation() {
@@ -42,15 +42,13 @@ export default class PerforceProjectListStep extends React.Component {
         const buttonDisabled = !flowManager.selectedProject;
 
         return (
-            <FlowStep {...this.props} className="github-org-list-step layout-large" title={titleString} disabled={disabled}>
+            <FlowStep {...this.props} title={titleString} disabled={disabled}>
                 <List
-                    className="org-list"
                     data={flowManager.projects}
                     onItemSelect={(idx, proj) => this.selectProject(proj)}
-                    labelFunction={proj => proj.name}
+                    labelFunction={proj => proj.loginName}
                     defaultContainerClass={false}
                 >
-                    <ProjectRenderer />
                 </List>
                 <button className="button-create" onClick={(proj) => this.beginCreation(proj)} disabled={buttonDisabled}>
                     {t('creation.core.header.title')}

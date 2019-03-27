@@ -15,6 +15,9 @@ import { ListProjectsOutcome } from './api/PerforceCreationApi';
 import PerforceUnknownErrorStep from "./steps/PerforceUnknownErrorStep";
 import PerforceProjectListStep from './steps/PerforceProjectListStep';
 import PerforceCompleteStep from './steps/PerforceCompleteStep';
+import {CreateMbpOutcome} from "./api/PerforceCreationApi";
+import BbRenameStep from "../bitbucket/steps/BbRenameStep";
+import BbUnknownErrorStep from "../bitbucket/steps/BbUnknownErrorStep";
 
 
 const LOGGER = logging.logger('io.jenkins.blueocean.p4-pipeline');
@@ -29,8 +32,20 @@ export default class PerforceFlowManager extends FlowManager {
 
     selectedCred = null;
     @observable projects = [];
-    //@observable credentials = [];
+
     @observable selectedProject = null;
+
+    @computed
+    get stepsDisabled() {
+        return (
+            this.stateId === STATE.STEP_COMPLETE_EVENT_ERROR ||
+            this.stateId === STATE.STEP_COMPLETE_EVENT_TIMEOUT ||
+            this.stateId === STATE.STEP_COMPLETE_MISSING_JENKINSFILE ||
+            this.stateId === STATE.PENDING_CREATION_SAVING ||
+            this.stateId === STATE.PENDING_CREATION_EVENTS ||
+            this.stateId === STATE.STEP_COMPLETE_SUCCESS
+        );
+    }
 
     constructor(creationApi, credentialApi) {
         super();
@@ -80,7 +95,6 @@ export default class PerforceFlowManager extends FlowManager {
     }
 
     _loadCredentialsComplete(response) {
-        console.log("PerforceFlowManager._loadCredentialsComplete(): " + response);
         //this.credentials = response;
         this.renderStep({
             stateId: STATE.STEP_CHOOSE_CREDENTIAL,
@@ -149,13 +163,6 @@ export default class PerforceFlowManager extends FlowManager {
     @action
     selectProject(project) {
         this.selectedProject = project;
-        this.renderStep({
-            // stateId: STATE.PENDING_LOADING_PROJECTS,
-            // stepElement: <PerforceLoadingStep />,
-            stateId: STATE.PENDING_CREATION_SAVING,
-            stepElement: <PerforceLoadingStep />,
-            afterStateId: STATE.STEP_CHOOSE_PROJECT,
-        });
     }
 
     saveRepo() {
@@ -176,7 +183,9 @@ export default class PerforceFlowManager extends FlowManager {
 
         this._initListeners();
 
-        this._creationApi
+        //TODO Change this
+        this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+        /*this._creationApi
             .createMbp(
                 this.credentialId,
                 this.getScmId(),
@@ -187,7 +196,65 @@ export default class PerforceFlowManager extends FlowManager {
                 'io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest'
             )
             .then(waitAtLeast(MIN_DELAY * 2))
-            .then(result => this._createPipelineComplete(result));
+            .then(result => this._createPipelineComplete(result));*/
+    }
+
+    @action
+    _createPipelineComplete(result) {
+        this.outcome = result.outcome;
+        if (result.outcome === CreateMbpOutcome.SUCCESS) {
+            if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE)) {
+                this._checkForBranchCreation(
+                    result.pipeline.name,
+                    true,
+                    ({ isFound, hasError, pipeline }) => {
+                        if (!hasError && isFound) {
+                            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+                            this.pipeline = pipeline;
+                            this.pipelineName = pipeline.name;
+                        }
+                    },
+                    this.redirectTimeout
+                );
+                if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE) && !this.isStateAdded(STATE.STEP_COMPLETE_SUCCESS)) {
+                    this.changeState(STATE.PENDING_CREATION_EVENTS);
+                    this.pipeline = result.pipeline;
+                    this.pipelineName = result.pipeline.name;
+                }
+            }
+        } else if (result.outcome === CreateMbpOutcome.INVALID_NAME) {
+            this.renderStep({
+                stateId: STATE.STEP_RENAME,
+                stepElement: <BbRenameStep pipelineName={this.pipelineName} />,
+                afterStateId: STATE.STEP_CHOOSE_REPOSITORY,
+            });
+            this._showPlaceholder();
+        } else if (result.outcome === CreateMbpOutcome.INVALID_URI || result.outcome === CreateMbpOutcome.INVALID_CREDENTIAL) {
+            this.removeSteps({ afterStateId: STATE.STEP_CREDENTIAL });
+            this._showPlaceholder();
+        } else if (result.outcome === CreateMbpOutcome.ERROR) {
+            const afterStateId = this.isStateAdded(STATE.STEP_RENAME) ? STATE.STEP_RENAME : STATE.STEP_CHOOSE_REPOSITORY;
+            this.renderStep({
+                stateId: STATE.ERROR,
+                stepElement: <BbUnknownErrorStep error={result.error} />,
+                afterStateId,
+            });
+        }
+    }
+
+    _checkForBranchCreation(pipelineName, multiBranchIndexingComplete, onComplete, delay = 500) {
+        if (multiBranchIndexingComplete) {
+            LOGGER.debug(`multibranch indexing for ${pipelineName} completed`);
+        }
+
+        LOGGER.debug(`will check for branches of ${pipelineName} in ${delay}ms`);
+
+        setTimeout(() => {
+            this._creationApi.findBranches(pipelineName).then(data => {
+                LOGGER.debug(`check for pipeline complete. created? ${data.isFound}`);
+                onComplete(data);
+            });
+        }, delay);
     }
 
     @action
@@ -213,6 +280,12 @@ export default class PerforceFlowManager extends FlowManager {
 
     _cleanupListeners() {
         //TODO Add cleanup code here
+    }
+
+    _finishListening(stateId) {
+        LOGGER.debug('finishListening', stateId);
+        this.changeState(stateId);
+        this._cleanupListeners();
     }
 
 }
