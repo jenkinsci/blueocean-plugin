@@ -1,17 +1,16 @@
-import keymirror from 'keymirror';
 import { capable } from '@jenkins-cd/blueocean-core-js';
 
-export const RESULTS = keymirror({
-    UNKNOWN: null,
-    SUCCESS: null,
-    FAILURE: null,
-});
+const RESULTS = {
+    UNKNOWN: 'UNKNOWN',
+    SUCCESS: 'SUCCESS',
+    FAILURE: 'FAILURE',
+};
 
-export const STATES = keymirror({
-    RUNNING: null,
-    PAUSED: null,
-    FINISHED: null,
-});
+const STATES = {
+    RUNNING: 'RUNNING',
+    PAUSED: 'PAUSED',
+    FINISHED: 'FINISHED',
+};
 
 function isRunningNode(item) {
     return item.state === STATES.RUNNING || item.state === STATES.PAUSED;

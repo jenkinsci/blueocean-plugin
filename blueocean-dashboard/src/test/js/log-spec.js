@@ -7,7 +7,7 @@ import { firstFinishedSecondRunning } from './data/runs/nodes/runNodes-firstFini
 import { firstRunning } from './data/runs/nodes/runNodes-firstRunning';
 import { finishedMultipleFailure } from './data/runs/nodes/runNodes-finishedMultipleFailure';
 import { queuedAborted } from './data/runs/nodes/runNodes-QueuedAborted';
-import { getNodesInformation } from './../../main/js/util/logDisplayHelper';
+import { getNodesInformation } from '../../main/js/components/karaoke/rest/getNodesInformation';
 import runningFailing from './data/steps/failingRunningSteps';
 import { poststagefail } from './data/runs/nodes/poststagefail';
 import { nullNodes } from './data/runs/nodes/nodesAllNull';

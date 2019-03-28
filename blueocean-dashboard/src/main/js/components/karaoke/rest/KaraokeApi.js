@@ -1,7 +1,7 @@
 import { Fetch, logging } from '@jenkins-cd/blueocean-core-js';
 import debounce from 'lodash.debounce';
 import { generateDetailUrl } from '../urls/detailUrl';
-import { getNodesInformation } from '../../../util/logDisplayHelper';
+import { getNodesInformation } from './getNodesInformation';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RestApi');
 
