@@ -1,9 +1,8 @@
-import React, {PropTypes} from 'react';
+import React, { PropTypes } from 'react';
 
 import GitCredentialsPicker from './git/GitCredentialsPicker';
 import GithubCredentialsPicker from './github/GithubCredentialsPicker';
 import BbCredentialsPicker from './bitbucket/BbCredentialsPicker';
-import PerforceCredentialsPicker from './perforce/PerforceCredentialsPicker';
 
 /**
  * Provides UI and backend integration for acquiring a credential.
@@ -48,8 +47,6 @@ class CredentialsPicker extends React.Component {
         } else if (type === 'git') {
             const repositoryUrl = this.props.repositoryUrl || scmSource.apiUrl;
             children = <GitCredentialsPicker repositoryUrl={repositoryUrl} />;
-        } else if (type === 'perforce') {
-            children = <PerforceCredentialsPicker scmId={scmSource.id} apiUrl={scmSource.apiUrl} />;
         } else {
             children = <div>No credential picker could be found for type={type}</div>;
         }
