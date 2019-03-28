@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>3.36</version>
+    <version>3.40</version>
   </parent>
 
   <groupId>io.jenkins.blueocean</groupId>

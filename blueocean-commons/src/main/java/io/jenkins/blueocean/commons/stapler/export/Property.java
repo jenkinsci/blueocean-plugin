@@ -413,7 +413,7 @@ public abstract class Property implements Comparable<Property> {
     private void writeStartObjectNullType(DataWriter writer) throws IOException {
         try {
             writer.type(null,null);
-        } catch (AbstractMethodError _) {
+        } catch (AbstractMethodError e) {
             // legacy client that doesn't understand this
         }
         writer.startObject();
