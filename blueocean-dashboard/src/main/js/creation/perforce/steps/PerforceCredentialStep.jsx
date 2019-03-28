@@ -50,7 +50,7 @@ class PerforceCredentialsStep extends React.Component {
     }
 
     _onChangeDropdown(option) {
-        const { serverManager } = this.props.flowManager;
+        const { flowManager } = this.props.flowManager;
         //TODO may want to do validation later
         //serverManager.validateVersion(option.id).then(success => this._onValidateVersion(success), error => this._onValidateVersion(error));
         this.setState({

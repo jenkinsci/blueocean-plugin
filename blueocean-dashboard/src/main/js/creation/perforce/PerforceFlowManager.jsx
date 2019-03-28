@@ -12,12 +12,11 @@ import PerforceLoadingStep from "./steps/PerforceLoadingStep";
 import PerforceCredentialsStep from "./steps/PerforceCredentialStep";
 import PerforceCredentialsManager from "../../credentials/perforce/PerforceCredentialsManager";
 import { ListProjectsOutcome } from './api/PerforceCreationApi';
-import PerforceUnknownErrorStep from "./steps/PerforceUnknownErrorStep";
 import PerforceProjectListStep from './steps/PerforceProjectListStep';
 import PerforceCompleteStep from './steps/PerforceCompleteStep';
 import {CreateMbpOutcome} from "./api/PerforceCreationApi";
 import BbRenameStep from "../bitbucket/steps/BbRenameStep";
-import BbUnknownErrorStep from "../bitbucket/steps/BbUnknownErrorStep";
+import PerforceUnknownErrorStep from "./steps/PerforceUnknownErrorStep";
 
 
 const LOGGER = logging.logger('io.jenkins.blueocean.p4-pipeline');
@@ -223,6 +222,7 @@ export default class PerforceFlowManager extends FlowManager {
                 }
             }
         } else if (result.outcome === CreateMbpOutcome.INVALID_NAME) {
+            //TODO Use PerforceRenameStep instead of BbRenameStep
             this.renderStep({
                 stateId: STATE.STEP_RENAME,
                 stepElement: <BbRenameStep pipelineName={this.pipelineName} />,
@@ -236,7 +236,7 @@ export default class PerforceFlowManager extends FlowManager {
             const afterStateId = this.isStateAdded(STATE.STEP_RENAME) ? STATE.STEP_RENAME : STATE.STEP_CHOOSE_REPOSITORY;
             this.renderStep({
                 stateId: STATE.ERROR,
-                stepElement: <BbUnknownErrorStep error={result.error} />,
+                stepElement: <PerforceUnknownErrorStep error={result.error} />,
                 afterStateId,
             });
         }

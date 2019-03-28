@@ -42,7 +42,7 @@ export default class PerforceCreationApi {
             false
         );
 
-        //TODO Change this
+        //TODO Change this to get actual project list from Swarm
 
         return this._fetch("http://localhost:4567/user/getUsers")
             .then(projects => capabilityAugmenter.augmentCapabilities(projects))

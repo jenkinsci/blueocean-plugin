@@ -6,12 +6,12 @@ import {i18nTranslator} from "@jenkins-cd/blueocean-core-js";
 const t = i18nTranslator('blueocean-dashboard');
 
 @observer
-export default class PerforceLoadingStep extends React.Component {
+export default class PerforceCompleteStep extends React.Component {
     render() {
         return <FlowStep {...this.props} title={t('creation.core.status.completed')} loading scrollOnActive={false} />;
     }
 }
 
-PerforceLoadingStep.propTypes = {
+PerforceCompleteStep.propTypes = {
     flowManager: PropTypes.object,
 };

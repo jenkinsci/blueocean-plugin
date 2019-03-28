@@ -34,7 +34,6 @@ export default class PerforceProjectListStep extends React.Component {
     }
 
     render() {
-        //TODO change title
         const { flowManager, title = 'creation.p4.project_step.title' } = this.props;
 
         const titleString = t(title);
