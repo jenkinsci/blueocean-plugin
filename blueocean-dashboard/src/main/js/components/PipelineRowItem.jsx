@@ -51,13 +51,14 @@ export class PipelineRowItem extends Component {
             numberOfFailingPullRequests,
         } = pipeline;
 
+        const hasTags = false;
         const hasPullRequests = !simple && (numberOfSuccessfulPullRequests || numberOfFailingPullRequests);
 
         const baseUrl = UrlBuilder.buildPipelineUrl(organization, fullName);
         const multiBranchURL = `${baseUrl}/branches`;
         const pullRequestsURL = `${baseUrl}/pr`;
         const activitiesURL = `${baseUrl}/activity`;
-
+        const tagsURL = `${baseUrl}/tg`;
         const fullDisplayPath = showOrganization ? `${organization}/${fullDisplayName}` : fullDisplayName;
 
         // Build the row link properties. Matrix jobs get sent to classic, hence the logic here.
@@ -82,6 +83,9 @@ export class PipelineRowItem extends Component {
         let pullRequestsLabel = ' - ';
         let pullRequestsLinkProps = { ...linkProps }; // Default to "show pipeline"
 
+        let tagsLabel = ' - ';
+        let tagsLinkProps = { ...linkProps };
+
         if (!simple) {
             // Labels
             multiBranchLabel = this.calculateResponse(numberOfSuccessfulBranches, numberOfFailingBranches);
@@ -93,6 +97,11 @@ export class PipelineRowItem extends Component {
             if (hasPullRequests) {
                 pullRequestsLinkProps = { linkTo: pullRequestsURL };
             }
+
+            if (hasTags) {
+                tagsLinkProps = { linkTo: tagsURL };
+            }
+
         }
 
         return (
@@ -105,6 +114,7 @@ export class PipelineRowItem extends Component {
                     <WeatherIcon score={weatherScore} />
                 </TableCell>
                 <TableCell {...multiBranchLinkProps}>{multiBranchLabel}</TableCell>
+                <TableCell {...tagsLinkProps}>{tagsLabel}</TableCell>
                 <TableCell {...pullRequestsLinkProps}>{pullRequestsLabel}</TableCell>
                 <TableCell className="TableCell--actions">
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.list.action" store={this.context.store} pipeline={this.props.pipeline} />
