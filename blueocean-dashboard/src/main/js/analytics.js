@@ -14,6 +14,10 @@ class Analytics {
         analyticsService.track('pipeline_branches_visited');
     }
 
+    trackPipelineTagsVisited() {
+        analyticsService.track('pipeline_tags_visited');
+    }
+
     trackPipelinePullRequestsVisited() {
         analyticsService.track('pipeline_pull_requests_visited');
     }

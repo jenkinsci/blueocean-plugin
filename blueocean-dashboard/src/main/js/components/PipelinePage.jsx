@@ -88,6 +88,7 @@ export class PipelinePage extends Component {
         const pageTabLinks = [
             <TabLink to="/activity">{translate('pipelinedetail.common.tab.activity', { defaultValue: 'Activity' })}</TabLink>,
             <TabLink to="/branches">{translate('pipelinedetail.common.tab.branches', { defaultValue: 'Branches' })}</TabLink>,
+            <TabLink to="/tg">{translate('pipelinedetail.common.tab.tags', { defaultValue: 'Tags' })}</TabLink>,
             <TabLink to="/pr">{translate('pipelinedetail.common.tab.pullrequests', { defaultValue: 'Pull Requests' })}</TabLink>,
             trendsEnabled && <TabLink to="/trends">{translate('pipelinedetail.common.tab.trends', { defaultValue: 'Trends' })}</TabLink>,
         ];
