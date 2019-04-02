@@ -69,6 +69,7 @@ export class PipelinePager {
      */
     @action
     fetchNodes({ node }) {
+        console.log('PipelinePager.fetchNodes (and do stuff)', node); // TODO: RM
         logger.debug('Fetching now nodes url and further process it');
         // while fetching we are pending
         this.pending = true;
@@ -143,6 +144,7 @@ export class PipelinePager {
                 });
             });
     }
+
     /**
      * Fetches the detail from the backend but only the nodes part
      *
@@ -150,6 +152,7 @@ export class PipelinePager {
      */
     @action
     fetchNodesOnly() {
+        console.log('PipelinePager.fetchNodesOnly'); // TODO: RM
         logger.debug('Fetching now nodes url and further process it');
         // while fetching we are pending
         this.pending = true;
@@ -185,6 +188,7 @@ export class PipelinePager {
                 });
             });
     }
+
     @action
     fetchCurrentStepUrl() {
         this.pending = true;

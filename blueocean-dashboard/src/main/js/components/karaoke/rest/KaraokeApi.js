@@ -90,6 +90,7 @@ export class KaraokeApi {
     }
 
     getNodes(href) {
+        console.log('KaraokeAPI.getNodes', href); // TODO: RM
         // creating a new promise to be able to debounce the fetching
         return new Promise(resolve => {
             debounce(() => {

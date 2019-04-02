@@ -16,7 +16,98 @@ function isRunningNode(item) {
     return item.state === STATES.RUNNING || item.state === STATES.PAUSED;
 }
 
-export const getNodesInformation = nodes => {
+// TODO: put these types somewhere better
+
+interface Action {
+    name: string;
+    urlName: string;
+    _links: Links;
+}
+
+interface Edge {
+    id: string;
+    type: string;
+}
+
+interface Links {
+    [name: string]: Link;
+
+    self: Link;
+}
+
+interface Link {
+    href: string;
+}
+
+type APIResult = 'SUCCESS' | 'UNSTABLE' | 'FAILURE' | 'NOT_BUILT' | 'UNKNOWN' | 'ABORTED';
+
+type APIState = 'QUEUED' | 'RUNNING' | 'PAUSED' | 'SKIPPED' | 'NOT_BUILT' | 'FINISHED';
+
+type APIInput = object; // TODO: Specify
+
+interface APINode {
+    actions: Array<Action>;
+    _links: Links;
+    id: string;
+    displayName: string;
+    result: APIResult | null;
+    state: APIState | null;
+    displayDescription: string | null;
+    edges: Array<Edge>;
+    firstParent: string | null; // Immediately previous node within the graph, could be a container or sibling
+    restartable: boolean;
+    estimatedDurationInMillis?: number;
+    durationInMillis: number;
+    type: string;
+    startTime: string; // ISO
+    input: APIInput | null;
+    causeOfBlockage: string | null;
+}
+
+interface ModelNode {
+    // Calculated
+    key: string;
+    title: string;
+    hasLogs: boolean;
+    logUrl?: string;
+    isInputStep: boolean;
+    isParallel: boolean; // Set for the first (or only) stage in each parallel branch
+    isSequential: boolean; // Set for second through last stages in a multi-stage parallel branch
+    parent: string | null; // Containing stop stage node id for parallels, or previous top-level stage for top-level stages
+    isRunning: boolean;
+    isCompleted: boolean; // Running and completed are separate, because a job might be paused or waiting for resources or input
+    computedResult: APIResult | APIState;
+
+    // Promoted from APINode
+    actions: Array<Action>;
+    _links: Links;
+    id: string;
+    displayName: string;
+    result: APIResult | null;
+    state: APIState | null;
+    displayDescription: string | null;
+    edges: Array<Edge>;
+    firstParent?: string;
+    restartable: boolean;
+    estimatedDurationInMillis?: number;
+    durationInMillis?: number;
+    type: string;
+    startTime?: string; // ISO
+    input?: APIInput;
+    isMultiBranch?: boolean;
+    isFocused?: boolean;
+}
+
+interface NodesInformation {
+    isFinished: boolean;
+    hasResultsForSteps: boolean;
+    model: Array<ModelNode>;
+    isError: boolean | null;
+    runningNodes?: Array<string>;
+    errorNodes?: Array<string>;
+}
+
+export function getNodesInformation(nodes: Array<APINode>): NodesInformation {
     // calculation of information about stages
     // nodes in Running state
     const runningNodes = nodes.filter(item => isRunningNode(item) && (!item.edges || item.edges.length < 2)).map(item => item.id);
@@ -38,19 +129,19 @@ export const getNodesInformation = nodes => {
         const isRunning = runningNodes.indexOf(item.id) > -1;
 
         const isParallel = item.type === 'PARALLEL';
-        const isSequential = item.firstParent && item.firstParent !== parent;
+        const isSequential = !!item.firstParent && item.firstParent !== parent;
 
         const logActions = item.actions ? item.actions.filter(action => capable(action, 'org.jenkinsci.plugins.workflow.actions.LogAction')) : [];
         const hasLogs = logActions.length > 0;
         const isCompleted = item.result !== 'UNKNOWN' && item.result !== null;
-        const computedResult = isCompleted ? item.result : item.state;
-        const isInputStep = item.input && item.input !== null;
-        const key = index + isRunning + computedResult;
+        const computedResult = (isCompleted ? item.result : item.state) || 'UNKNOWN';
+        const isInputStep = !!item.input;
+        const key = '' + index + isRunning + computedResult; // TODO: just use the node id
         const title = item.displayDescription ? item.displayName + ': ' + item.displayDescription : item.displayName;
-        const modelItem = {
+        const modelItem: ModelNode = {
             actions: item.actions,
             _links: item._links,
-            key: key || undefined,
+            key: key,
             id: item.id,
             edges: item.edges,
             type: item.type,
@@ -59,8 +150,8 @@ export const getNodesInformation = nodes => {
             title: title || `runId: ${item.id}`,
             durationInMillis: item.durationInMillis || undefined,
             startTime: item.startTime || undefined,
-            result: item.result || undefined,
-            state: item.state || undefined,
+            result: item.result,
+            state: item.state,
             restartable: item.restartable,
             hasLogs,
             logUrl: hasLogs ? logActions[0]._links.self.href : undefined,
@@ -86,7 +177,7 @@ export const getNodesInformation = nodes => {
             modelItem.isFocused = true;
         }
         if (isInputStep) {
-            modelItem.input = item.input;
+            modelItem.input = item.input as APIInput;
         }
         return modelItem;
     });
@@ -96,10 +187,11 @@ export const getNodesInformation = nodes => {
         model[0].isFocused = true;
     }
     // creating the response object
-    const information = {
+    const information: NodesInformation = {
         isFinished: finished,
         hasResultsForSteps,
         model,
+        isError: null,
     };
     // on not finished we return null and not a bool since we do not know the result yet
     if (!finished) {
@@ -113,4 +205,4 @@ export const getNodesInformation = nodes => {
         information.errorNodes = errorNodes;
     }
     return information;
-};
+}
