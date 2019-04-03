@@ -1,5 +1,5 @@
-import React, { PropTypes } from 'react';
-import { observer } from 'mobx-react';
+import React, {PropTypes} from 'react';
+import {observer} from 'mobx-react';
 import {Dropdown, FormElement} from '@jenkins-cd/design-language';
 import FlowStep from '../../flow2/FlowStep';
 
@@ -25,8 +25,8 @@ class PerforceCredentialsStep extends React.Component {
     render() {
         console.log("PerforceCredentialStep render");
         const disabled = this.state.complete;
-        const { flowManager } = this.props;
-        const { serverManager } = flowManager;
+        const {flowManager} = this.props;
+        const {serverManager} = flowManager;
         const title = t('creation.p4.step1.title');
         //TODO Change the below github title
         return (
@@ -37,7 +37,7 @@ class PerforceCredentialsStep extends React.Component {
                             this.dropdown = dropdown;
                         }}
                         options={this.credManager.credentials}
-                        labelField="loginName"
+                        labelField="id"
                         onChange={option => this._onChangeDropdown(option)}
                     />
                     <button className="button-next-step" onClick={() => this._onClickNextButton()}>
@@ -50,7 +50,7 @@ class PerforceCredentialsStep extends React.Component {
     }
 
     _onChangeDropdown(option) {
-        const { flowManager } = this.props.flowManager;
+        const {flowManager} = this.props.flowManager;
         //TODO may want to do validation later
         //serverManager.validateVersion(option.id).then(success => this._onValidateVersion(success), error => this._onValidateVersion(error));
         this.setState({

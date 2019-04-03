@@ -1,9 +1,9 @@
-import { action, observable } from 'mobx';
+import {action, observable} from 'mobx';
 
 import PromiseDelayUtils from '../../util/PromiseDelayUtils';
 
 const MIN_DELAY = 500;
-const { delayBoth } = PromiseDelayUtils;
+const {delayBoth} = PromiseDelayUtils;
 
 /**
  * Manages retrieving, validating and saving the Perforce credentials.
@@ -24,11 +24,10 @@ class PerforceCredentialsManager {
 
     @action
     _onfindCredSuccess(credentials) {
-        this.credentials.replace(credentials);
-        console.log("PerforceCredentialsManager._onfindCredSuccess: " + credentials);
+        //this.credentials.replace(credentials);
+        this.credentials = credentials.credentials;
         return credentials;
     }
-
 
 
     /*@action
