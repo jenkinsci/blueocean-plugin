@@ -1,6 +1,5 @@
 import React from 'react';
 import { assert } from 'chai';
-import { shallow } from 'enzyme';
 
 import { runNodesSuccess, runNodesFail, runNodesRunning } from './data/runs/nodes/runNodes';
 import { firstFinishedSecondRunning } from './data/runs/nodes/runNodes-firstFinishedSecondRunning';
@@ -12,8 +11,7 @@ import runningFailing from './data/steps/failingRunningSteps';
 import { poststagefail } from './data/runs/nodes/poststagefail';
 import { nullNodes } from './data/runs/nodes/nodesAllNull';
 import stepsDescriptions from './data/runs/nodes/steps/steps-descriptions';
-import Steps from '../../main/js/components/karaoke/components/Steps';
-
+import { mockExtensionsForI18n } from './mock-extensions-i18n';
 
 const assertResult = (item, {finished = true, failed = false, errors = 0, running = 0}) => {
     assert.equal(item.isFinished, finished);
@@ -23,6 +21,11 @@ const assertResult = (item, {finished = true, failed = false, errors = 0, runnin
 };
 
 describe("Logic test of different runs", () => {
+
+    beforeAll(() => {
+        mockExtensionsForI18n();
+    });
+
     it('running and failing', () => {
        const stagesInformationRunningFailing = getNodesInformation(runningFailing);
        assert.equal(stagesInformationRunningFailing.model[2].isFocused, true);
@@ -75,20 +78,5 @@ describe("Logic test of different runs", () => {
             assert.isOk(step.displayName);
             assert.isOk(step.displayDescription);
         });
-    });
-});
-
-describe("React component test of different runs", () => {
-    it("handles success", () => {
-        const wrapper = shallow(
-            <Steps nodeInformation={getNodesInformation(runNodesSuccess)}/>);
-        assert.isNotNull(wrapper);
-        assert.equal(wrapper.find('Step').length, runNodesSuccess.length)
-    });
-    it("handles error", () => {
-        const wrapper = shallow(
-            <Steps nodeInformation={getNodesInformation(runNodesFail)}/>);
-        assert.isNotNull(wrapper);
-        assert.equal(wrapper.find('Step').length, runNodesFail.length)
     });
 });

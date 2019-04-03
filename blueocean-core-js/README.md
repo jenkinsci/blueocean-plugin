@@ -65,6 +65,6 @@ Test reports and coverage are skipped.
 
 All of the above profiles support executing one or more tests via jest's `testPathPattern` parameter:
 
-`npm run test-fast -- --test test/js/UrlUtils-spec.js` // one test
-`npm run test-fast -- --test /capability/` // any tests in a 'capability' dir
-`npm run test-fast -- --test Url` // any test with 'Url' in the name
+`npm run test-fast -- --testPathPattern test/js/UrlUtils-spec.js` // one test
+`npm run test-fast -- --testPathPattern /capability/` // any tests in a 'capability' dir
+`npm run test-fast -- --testPathPattern Url` // any test with 'Url' in the name

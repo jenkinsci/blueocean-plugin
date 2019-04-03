@@ -45,7 +45,14 @@ export default [
         "id": "5",
         "result": "FAILURE",
         "startTime": "2016-09-27T16:03:50.439+0200",
-        "state": "FINISHED"
+        "state": "FINISHED",
+        "edges": [
+            {
+                "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+                "id": "6",
+                "type": "STAGE"
+            }
+        ]
     },
     {
         "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
@@ -85,7 +92,14 @@ export default [
         "id": "6",
         "result": "SUCCESS",
         "startTime": "2016-09-27T16:03:50.719+0200",
-        "state": "FINISHED"
+        "state": "FINISHED",
+        "edges": [
+            {
+                "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+                "id": "7",
+                "type": "STAGE"
+            }
+        ]
     },
     {
         "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl",
