@@ -11,9 +11,7 @@ function badNode(jenkinsNode) {
 }
 
 function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
-    console.log('      ------------------ AAA'); // TODO: RM
     if (!jenkinsNode || !jenkinsNode.id) {
-        console.log('      ------------------ BBB'); // TODO: RM
         throw badNode(jenkinsNode);
     }
     logger.debug('jenkinsNode', jenkinsNode);
@@ -30,8 +28,6 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
 
     const { durationInMillis, startTime } = jenkinsNode;
 
-    console.log('      ------------------ CCC'); // TODO: RM
-
     // we need to make sure that we calculate with the correct time offset
     const harmonized = timeManager.harmonizeTimes(
         {
@@ -41,9 +37,6 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
         },
         skewMillis
     );
-
-    console.log('      ------------------ DDD'); // TODO: RM
-
     let completePercent = 0;
     let state = 'unknown';
 
@@ -121,12 +114,9 @@ function buildSequentialStages(originalNodes, convertedNodes, sequentialNodeKey,
  * pending or simply weren't executed due to pipeline logic (skipped) or early-abort (either failure or intervention)
  */
 export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
-    console.log('------------------ AAA'); // TODO: RM
     if (!jenkinsGraph || !jenkinsGraph.length) {
-        console.log('------------------ XXX'); // TODO: RM
         return [];
     }
-    console.log('------------------ BBB'); // TODO: RM
 
     const results = [];
     const originalNodeForId = {};
@@ -136,7 +126,6 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
     // const edgeCountFromNode = {}; // id => int
     let firstNode = undefined;
     // Convert the basic details of nodes, and index them by id
-    console.log('------------------ CCC'); // TODO: RM
     jenkinsGraph.forEach(jenkinsNode => {
         const convertedNode = convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis);
         const { id } = convertedNode;
@@ -147,11 +136,10 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
         edgeCountToNode[id] = 0;
         // edgeCountFromNode[id] = 0;
 
-        for (const edge of jenkinsNode.edges || []) {
+        for (const edge of jenkinsNode.edges) {
             allEdges.push([id, edge.id]);
         }
     });
-    console.log('------------------ DDD'); // TODO: RM
 
     // Filter out any edges to missing nodes
     allEdges.filter(([src, dest]) => src in convertedNodeForId && dest in convertedNodeForId);
@@ -161,7 +149,6 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
         const dest = edgePair[1];
         edgeCountToNode[dest] = edgeCountToNode[dest] + 1;
     }
-    console.log('------------------ EEE'); // TODO: RM
 
     // Follow the graph and build our results
     let currentNode = firstNode;
@@ -240,7 +227,6 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
 
         currentNode = nextNode;
     }
-    console.log('------------------ FFF'); // TODO: RM
 
     return results;
 }

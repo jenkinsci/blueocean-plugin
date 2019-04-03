@@ -52,6 +52,9 @@ describe("Logic test of different runs", () => {
         assertResult(stagesInformationFail, {failed: true, errors: 3});
         assert.equal(stagesInformationFail.hasResultsForSteps, true);
     });
+    describe("handles running", () => {
+
+    });
     it("handles running", () => {
         const runningSamples = [runNodesRunning, firstRunning, firstFinishedSecondRunning];
         runningSamples

@@ -17,12 +17,9 @@ describe('getNodesInformation', () => {
             const nodes = getNodesInformation(nodesNamedSequentialParralels).model;
 
             function getNode(named) {
-                // console.log('getNode', named);         // TODO: RM
                 const result = nodes.find(node => {
-                    // console.log('\tnode.displayName', node.displayName);             // TODO: RM
                     return node.displayName === named;
                 });
-                // console.log('\tresult =',  typeof result);
                 return result;
             }
 
@@ -53,7 +50,7 @@ describe('getNodesInformation', () => {
             assert.equal(node.isParallel, true, 'isParallel');
             assert.equal(node.isSequential, false, 'isSequential');
 
-            // Second parallel (hotel, indigo)
+            // Second parallel (Echo, hotel, indigo)
             node = getNode('Hotel');
             assert(node, 'node exists');
             assert.equal(node.id, 29, 'node id');
@@ -61,7 +58,7 @@ describe('getNodesInformation', () => {
             assert.equal(node.parent, 11, 'node parent');
             assert.equal(node.isParallel, false, 'isParallel');
             assert.equal(node.isSequential, true, 'isSequential');
-            // TODO: add and test for branch label
+            assert.equal(node.seqContainerName, 'Echo', 'seqContainerName');
 
             node = getNode('Indigo');
             assert(node, 'node exists');
@@ -70,10 +67,36 @@ describe('getNodesInformation', () => {
             assert.equal(node.parent, 11, 'node parent');
             assert.equal(node.isParallel, false, 'isParallel');
             assert.equal(node.isSequential, true, 'isSequential');
-            // TODO: add and test for branch label
+            assert.equal(node.seqContainerName, '', 'seqContainerName');  // TODO: this should be Echo also I think. See if it breaks shit.
 
-            // TODO: third parallel (foxtrot, juliet keeeeeelo)
-            // TODO: fourth parallel (golf)
+            // Third parallel (foxtrot, juliet keeeeeelo)
+            node = getNode('Juliet');
+            assert(node, 'node exists');
+            assert.equal(node.id, 31, 'node id');
+            assert.equal(node.firstParent, 18, 'node first parent');
+            assert.equal(node.parent, 11, 'node parent');
+            assert.equal(node.isParallel, false, 'isParallel');
+            assert.equal(node.isSequential, true, 'isSequential');
+            assert.equal(node.seqContainerName, 'Foxtrot', 'seqContainerName');
+
+            node = getNode('Keeeeeelo');
+            assert(node, 'node exists');
+            assert.equal(node.id, 50, 'node id');
+            assert.equal(node.firstParent, 31, 'node first parent');
+            assert.equal(node.parent, 11, 'node parent');
+            assert.equal(node.isParallel, false, 'isParallel');
+            assert.equal(node.isSequential, true, 'isSequential');
+            assert.equal(node.seqContainerName, '', 'seqContainerName');  // TODO: this should be Foxtrot also I think. See if it breaks shit.
+
+            // Fourth parallel (golf)
+            node = getNode('Golf');
+            assert(node, 'node exists');
+            assert.equal(node.id, 19, 'node id');
+            assert.equal(node.firstParent, 11, 'node first parent');
+            assert.equal(node.parent, 11, 'node parent');
+            assert.equal(node.isParallel, true, 'isParallel');
+            assert.equal(node.isSequential, false, 'isSequential');
+            assert.equal(node.seqContainerName, '', 'seqContainerName');
 
             // Third top-level stage
             node = getNode('Charlie');

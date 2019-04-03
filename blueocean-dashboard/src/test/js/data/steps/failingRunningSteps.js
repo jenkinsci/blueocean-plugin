@@ -139,6 +139,7 @@ export default [
         "id": "7",
         "result": "UNKNOWN",
         "startTime": "2016-09-27T16:03:50.996+0200",
-        "state": "RUNNING"
+        "state": "RUNNING",
+        "edges":[]
     }
 ]

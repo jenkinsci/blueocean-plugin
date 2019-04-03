@@ -29,5 +29,6 @@ export default [{
     "input": null,
     "result": "SUCCESS",
     "startTime": "2017-06-05T09:56:27.681-0400",
-    "state": "FINISHED"
+    "state": "FINISHED",
+    "edges":[]
 }];

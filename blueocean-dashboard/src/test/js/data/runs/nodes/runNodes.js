@@ -138,5 +138,6 @@ export const runNodesRunning = [{
     startTime: '2016-05-25T11:37:02.249+0200',
     state: 'RUNNING',
     type: 'WorkflowRun',
-    commitId: 'e14d77d0d441da163c2ca5c617ed586aa928c8f0'
+    commitId: 'e14d77d0d441da163c2ca5c617ed586aa928c8f0',
+    edges:[],
 }];
