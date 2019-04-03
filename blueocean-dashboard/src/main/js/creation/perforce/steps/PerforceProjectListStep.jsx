@@ -1,18 +1,19 @@
-import React, { PropTypes } from 'react';
-import { observer } from 'mobx-react';
-import { List } from '@jenkins-cd/design-language';
+import React, {PropTypes} from 'react';
+import {observer} from 'mobx-react';
+import {List} from '@jenkins-cd/design-language';
 
 import FlowStep from '../../flow2/FlowStep';
-import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+
 const t = i18nTranslator('blueocean-dashboard');
 
 function ProjectRenderer(props) {
-    const { listItem } = props;
-    const { name, avatar } = listItem;
+    const {listItem} = props;
+    const {name, avatar} = listItem;
 
     return (
         <div className="org-list-item">
-            <img className="avatar" width="30" height="30" src={`${avatar}`} />
+            <img className="avatar" width="30" height="30" src={`${avatar}`}/>
             <span>{name}</span>
         </div>
     );
@@ -26,7 +27,6 @@ ProjectRenderer.propTypes = {
 export default class PerforceProjectListStep extends React.Component {
     selectProject(proj) {
         this.props.flowManager.selectProject(proj);
-        console.log("PerforceProjectListStep: " + proj.loginName);
     }
 
     beginCreation() {
@@ -34,7 +34,7 @@ export default class PerforceProjectListStep extends React.Component {
     }
 
     render() {
-        const { flowManager, title = 'creation.p4.project_step.title' } = this.props;
+        const {flowManager, title = 'creation.p4.project_step.title'} = this.props;
 
         const titleString = t(title);
         const disabled = flowManager.stepsDisabled;
@@ -45,10 +45,11 @@ export default class PerforceProjectListStep extends React.Component {
                 <List
                     data={flowManager.projects}
                     onItemSelect={(idx, proj) => this.selectProject(proj)}
-                    labelFunction={proj => proj.loginName}
+                    labelFunction={proj => proj.id}
                     defaultContainerClass={false}
                 />
-                <button className="button-create" onClick={(proj) => this.beginCreation(proj)} disabled={buttonDisabled}>
+                <button className="button-create" onClick={(proj) => this.beginCreation(proj)}
+                        disabled={buttonDisabled}>
                     {t('creation.core.header.title')}
                 </button>
             </FlowStep>

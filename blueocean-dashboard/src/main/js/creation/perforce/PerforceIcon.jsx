@@ -2,7 +2,8 @@ import React from 'react';
 
 export function PerforceIcon() {
     return (
-        <svg width="24px" height="24px" viewBox="0 0 24 24" enable-background="new 0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <svg width="24px" height="24px" viewBox="0 0 24 24" enable-background="new 0 0 24 24" version="1.1"
+             xmlns="http://www.w3.org/2000/svg">
             <path fill="#4A4A4A" d="M22.215,5.793l-9.93-5.741C12.129,0,11.871,0,11.715,0.052L1.836,5.793C1.681,5.896,1.526,6.104,1.526,6.311
 	v11.431c0,0.207,0.155,0.414,0.311,0.518L11.715,24c0.155,0.104,0.414,0.104,0.569,0l9.93-5.793
 	c0.156-0.104,0.311-0.311,0.311-0.518V6.311C22.525,6.104,22.371,5.896,22.215,5.793z M6.595,11.845

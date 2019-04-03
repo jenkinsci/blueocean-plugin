@@ -1,5 +1,5 @@
-import React, { PropTypes } from 'react';
-import { observer } from 'mobx-react';
+import React, {PropTypes} from 'react';
+import {observer} from 'mobx-react';
 
 import FlowStep from '../../flow2/FlowStep';
 

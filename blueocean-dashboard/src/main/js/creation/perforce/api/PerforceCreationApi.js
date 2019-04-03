@@ -35,16 +35,16 @@ export default class PerforceCreationApi {
 
     listProjects(credentialId, apiUrl, pagedOrgsStart = 0, pageSize = 100) {
         const path = UrlConfig.getJenkinsRootURL();
-        const orgsUrl = Utils.cleanSlashes(
+        /*const orgsUrl = Utils.cleanSlashes(
             `${path}/blue/rest/organizations/${this.organization}/scm/${
                 this.scmId
                 }/organizations/?credentialId=${credentialId}&start=${pagedOrgsStart}&limit=100&apiUrl=${apiUrl}`,
             false
-        );
-
+        );*/
+        const credUrl = Utils.cleanSlashes(`${path}/credentials/store/system/domain/_/api/json?tree=credentials[id,typeName]`);
         //TODO Change this to get actual project list from Swarm
 
-        return this._fetch("http://localhost:4567/user/getUsers")
+        return this._fetch(credUrl)
             .then(projects => capabilityAugmenter.augmentCapabilities(projects))
             .then(projects => this._listProjectsSuccess(projects, credentialId, apiUrl, pagedOrgsStart), error => this._listProjectsFailure(error));
     }
@@ -53,6 +53,7 @@ export default class PerforceCreationApi {
         //TODO Understand why this was done?
         //this.partialLoadedProjects = this.partialLoadedProjects.concat(projects);
         this.partialLoadedProjects = projects;
+        console.log("PerforceCreationApi._listProjectsSuccess(): Projects: " + projects);
 
         if (projects.length >= 100) {
             //if we got 100 or more projects, we need to check the next page to see if there are any more projects
@@ -66,7 +67,7 @@ export default class PerforceCreationApi {
     }
 
     _listProjectsFailure(error) {
-        const { code, message, errors } = error.responseBody;
+        const {code, message, errors} = error.responseBody;
 
         if (code === 400) {
             if (hasErrorFieldName(errors, ERROR_FIELD_SCM_CREDENTIAL)) {
@@ -82,19 +83,6 @@ export default class PerforceCreationApi {
     }
 
     createMbp(credentialId, scmId, apiUrl, itemName, bbOrganizationKey, repoName, creatorClass) {
-        /*const path = UrlConfig.getJenkinsRootURL();
-        const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/pipelines/`);
-
-        const requestBody = this._buildRequestBody(credentialId, scmId, apiUrl, itemName, bbOrganizationKey, repoName, creatorClass);
-
-        const fetchOptions = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody),
-        };*/
-
         return this._fetch("http://localhost:4567/user/getUsers")
             .then(data => capabilityAugmenter.augmentCapabilities(data))
             .then(pipeline => this._createMbpSuccess(pipeline), error => this._createMbpFailure(error));
@@ -110,24 +98,24 @@ export default class PerforceCreationApi {
     _createMbpFailure(error) {
         //const { code, errors } = error.responseBody;
 
-     /*   if (code === CODE_VALIDATION_FAILED) {
-            if (errors.length === 1 && hasErrorFieldCode(errors, ERROR_FIELD_CODE_CONFLICT)) {
-                return {
-                    outcome: CreateMbpOutcome.INVALID_NAME,
-                };
-            }
+        /*   if (code === CODE_VALIDATION_FAILED) {
+               if (errors.length === 1 && hasErrorFieldCode(errors, ERROR_FIELD_CODE_CONFLICT)) {
+                   return {
+                       outcome: CreateMbpOutcome.INVALID_NAME,
+                   };
+               }
 
-            if (hasErrorFieldName(errors, ERROR_FIELD_SCM_URI)) {
-                return {
-                    outcome: CreateMbpOutcome.INVALID_URI,
-                };
-            } else if (hasErrorFieldName(errors, ERROR_FIELD_SCM_CREDENTIAL)) {
-                return {
-                    outcome: CreateMbpOutcome.INVALID_CREDENTIAL,
-                };
-            }
-        }
-*/
+               if (hasErrorFieldName(errors, ERROR_FIELD_SCM_URI)) {
+                   return {
+                       outcome: CreateMbpOutcome.INVALID_URI,
+                   };
+               } else if (hasErrorFieldName(errors, ERROR_FIELD_SCM_CREDENTIAL)) {
+                   return {
+                       outcome: CreateMbpOutcome.INVALID_CREDENTIAL,
+                   };
+               }
+           }
+   */
         return {
             outcome: CreateMbpOutcome.ERROR,
             error: error.responseBody,

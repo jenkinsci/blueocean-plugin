@@ -12,7 +12,7 @@ import PerforceCredentialsApi from "../../credentials/perforce/PerforceCredentia
  */
 export default class PerforceScmProvider extends ScmProvider {
     getDefaultOption() {
-        return <PerforceDefaultOption />;
+        return <PerforceDefaultOption/>;
     }
 
     getFlowManager() {
@@ -22,5 +22,6 @@ export default class PerforceScmProvider extends ScmProvider {
         return new PerforceFlowManager(createApi, credentialApi);
     }
 
-    destroyFlowManager() {}
+    destroyFlowManager() {
+    }
 }

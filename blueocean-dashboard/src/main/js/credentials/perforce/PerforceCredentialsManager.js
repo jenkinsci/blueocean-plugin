@@ -24,42 +24,19 @@ class PerforceCredentialsManager {
 
     @action
     _onfindCredSuccess(credentials) {
-        //this.credentials.replace(credentials);
-        this.credentials = credentials.credentials;
+        // We need only perforce credentials, so filter the non Perforce credentials out
+        //TODO Is there a better way of doing this?
+        const length = credentials.credentials.length;
+        for (let i = 0; i < length; i++) {
+            const obj = credentials.credentials[i];
+            if (obj.typeName.startsWith("Perforce")) {
+                this.credentials.push(obj);
+                console.log(this.credentials.length);
+            }
+        }
         return credentials;
     }
 
-
-    /*@action
-    createAccessToken(token) {
-        this.pendingValidation = true;
-
-        return this._credentialsApi
-            .createAccessToken(token, this.apiUrl)
-            .then(...delayBoth(MIN_DELAY))
-            .then(cred => this._onCreateTokenSuccess(cred))
-            .catch(error => this._onCreateTokenFailure(error));
-    }
-
-    @action
-    _onCreateTokenSuccess(credential) {
-        this.pendingValidation = false;
-        this.stateId = GithubCredentialsState.SAVE_SUCCESS;
-        return credential;
-    }
-
-    @action
-    _onCreateTokenFailure(error) {
-        this.pendingValidation = false;
-
-        if (error.type === SaveError.TOKEN_INVALID) {
-            this.stateId = GithubCredentialsState.VALIDATION_FAILED_TOKEN;
-        } else if (error.type === SaveError.TOKEN_MISSING_SCOPES) {
-            this.stateId = GithubCredentialsState.VALIDATION_FAILED_SCOPES;
-        } else {
-            throw error;
-        }
-    }*/
 }
 
 export default PerforceCredentialsManager;

@@ -1,4 +1,4 @@
-import { Enum } from '../flow2/Enum';
+import {Enum} from '../flow2/Enum';
 
 /**
  * Valid stateId's for PerforceFlowManager.

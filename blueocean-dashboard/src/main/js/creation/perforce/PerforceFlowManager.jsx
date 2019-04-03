@@ -1,8 +1,9 @@
 import React from 'react';
-import { action, computed, observable } from 'mobx';
+import {action, computed, observable} from 'mobx';
 import Promise from 'bluebird';
 
-import { i18nTranslator, logging, sseService, pipelineService } from '@jenkins-cd/blueocean-core-js';
+import {i18nTranslator, logging, sseService, pipelineService} from '@jenkins-cd/blueocean-core-js';
+
 const translate = i18nTranslator('blueocean-dashboard');
 
 import FlowManager from '../CreationFlowManager';
@@ -11,7 +12,7 @@ import STATE from "../perforce/PerforceCreationState";
 import PerforceLoadingStep from "./steps/PerforceLoadingStep";
 import PerforceCredentialsStep from "./steps/PerforceCredentialStep";
 import PerforceCredentialsManager from "../../credentials/perforce/PerforceCredentialsManager";
-import { ListProjectsOutcome } from './api/PerforceCreationApi';
+import {ListProjectsOutcome} from './api/PerforceCreationApi';
 import PerforceProjectListStep from './steps/PerforceProjectListStep';
 import PerforceCompleteStep from './steps/PerforceCompleteStep';
 import {CreateMbpOutcome} from "./api/PerforceCreationApi";
@@ -68,7 +69,7 @@ export default class PerforceFlowManager extends FlowManager {
     getInitialStep() {
         return {
             stateId: STATE.PENDING_LOADING_CREDS,
-            stepElement: <PerforceLoadingStep />,
+            stepElement: <PerforceLoadingStep/>,
         };
     }
 
@@ -97,12 +98,12 @@ export default class PerforceFlowManager extends FlowManager {
         //this.credentials = response;
         this.renderStep({
             stateId: STATE.STEP_CHOOSE_CREDENTIAL,
-            stepElement: <PerforceCredentialsStep />,
+            stepElement: <PerforceCredentialsStep/>,
             afterStateId: null,
         });
     }
 
-    selectCredential(credential){
+    selectCredential(credential) {
         this.selectedCred = credential;
         this._renderLoadingProjects();
     }
@@ -110,7 +111,7 @@ export default class PerforceFlowManager extends FlowManager {
     _renderLoadingProjects() {
         this.renderStep({
             stateId: STATE.PENDING_LOADING_PROJECTS,
-            stepElement: <PerforceLoadingStep />,
+            stepElement: <PerforceLoadingStep/>,
             afterStateId: this._getProjectsStepAfterStateId(),
         });
 
@@ -132,7 +133,7 @@ export default class PerforceFlowManager extends FlowManager {
     @action
     _listProjectsSuccess(response) {
         if (response.outcome === ListProjectsOutcome.SUCCESS) {
-            this.projects = response.projects;
+            this.projects = response.projects.credentials;
 
             //TODO
             this._renderChooseProject();
@@ -141,12 +142,12 @@ export default class PerforceFlowManager extends FlowManager {
 
             this.renderStep({
                 stateId: STATE.STEP_CREDENTIAL,
-                stepElement: <PerforceCredentialsStep />,
+                stepElement: <PerforceCredentialsStep/>,
             });
         } else {
             this.renderStep({
                 stateId: STATE.ERROR_UNKOWN,
-                stepElement: <PerforceUnknownErrorStep message={response.error} />,
+                stepElement: <PerforceUnknownErrorStep message={response.error}/>,
             });
         }
     }
@@ -154,7 +155,7 @@ export default class PerforceFlowManager extends FlowManager {
     _renderChooseProject() {
         this.renderStep({
             stateId: STATE.STEP_CHOOSE_PROJECT,
-            stepElement: <PerforceProjectListStep />,
+            stepElement: <PerforceProjectListStep/>,
             afterStateId: this._getProjectsStepAfterStateId(),
         });
     }
@@ -174,7 +175,7 @@ export default class PerforceFlowManager extends FlowManager {
 
         this.renderStep({
             stateId: STATE.PENDING_CREATION_SAVING,
-            stepElement: <PerforceCompleteStep />,
+            stepElement: <PerforceCompleteStep/>,
             afterStateId,
         });
 
@@ -206,7 +207,7 @@ export default class PerforceFlowManager extends FlowManager {
                 this._checkForBranchCreation(
                     result.pipeline.name,
                     true,
-                    ({ isFound, hasError, pipeline }) => {
+                    ({isFound, hasError, pipeline}) => {
                         if (!hasError && isFound) {
                             this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
                             this.pipeline = pipeline;
@@ -225,18 +226,18 @@ export default class PerforceFlowManager extends FlowManager {
             //TODO Use PerforceRenameStep instead of BbRenameStep
             this.renderStep({
                 stateId: STATE.STEP_RENAME,
-                stepElement: <BbRenameStep pipelineName={this.pipelineName} />,
+                stepElement: <BbRenameStep pipelineName={this.pipelineName}/>,
                 afterStateId: STATE.STEP_CHOOSE_REPOSITORY,
             });
             this._showPlaceholder();
         } else if (result.outcome === CreateMbpOutcome.INVALID_URI || result.outcome === CreateMbpOutcome.INVALID_CREDENTIAL) {
-            this.removeSteps({ afterStateId: STATE.STEP_CREDENTIAL });
+            this.removeSteps({afterStateId: STATE.STEP_CREDENTIAL});
             this._showPlaceholder();
         } else if (result.outcome === CreateMbpOutcome.ERROR) {
             const afterStateId = this.isStateAdded(STATE.STEP_RENAME) ? STATE.STEP_RENAME : STATE.STEP_CHOOSE_REPOSITORY;
             this.renderStep({
                 stateId: STATE.ERROR,
-                stepElement: <PerforceUnknownErrorStep error={result.error} />,
+                stepElement: <PerforceUnknownErrorStep error={result.error}/>,
                 afterStateId,
             });
         }
