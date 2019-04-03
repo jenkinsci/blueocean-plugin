@@ -2,7 +2,7 @@
 
 if (JENKINS_URL == 'https://ci.jenkins.io/') {
     buildPlugin(
-      platforms: ['linux'],
+      configurations: buildPlugin.recommendedConfigurations().findAll { it.platform == 'linux' },
       tests: [skip: true]
     )
     return
