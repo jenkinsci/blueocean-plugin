@@ -24,6 +24,7 @@
     "@jenkins-cd/design-language": "0.0.162",
     "@jenkins-cd/js-extensions": "0.0.44",
     "@jenkins-cd/js-modules": "0.0.10",
+    "lodash.throttle": "^4.1.1",
     "mobx": "2.6.0",
     "mobx-react": "3.5.7",
     "react": "15.4.2",
