@@ -3,7 +3,7 @@ import { Fetch, UrlConfig, AppConfig, sseConnection } from '@jenkins-cd/blueocea
 import throttle from 'lodash.throttle';
 
 
-const FETCH_TIMEOUT = 30 /* seconds */ * 1000 /* milliseconds */;
+const FETCH_TIMEOUT_MS = 30 /* seconds */ * 1000 /* milliseconds */;
 export class ExecutorInfoService {
     @observable
     computers;
@@ -14,7 +14,7 @@ export class ExecutorInfoService {
             switch (event.jenkins_event) {
                 case 'pipeline_block_start':
                 case 'pipeline_block_end': {
-                    throttle(this.fetchExecutorInfo.bind(this), FETCH_TIMEOUT)();
+                    throttle(this.fetchExecutorInfo.bind(this), FETCH_TIMEOUT_MS)();
                 }
             }
         });
