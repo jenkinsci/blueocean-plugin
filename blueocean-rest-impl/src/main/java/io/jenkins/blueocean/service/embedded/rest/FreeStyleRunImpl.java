@@ -32,24 +32,6 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
     }
 
     @Override
-    @Nonnull
-    public Container<BlueChangeSetEntry> getChangeSet() {
-
-        Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
-        int cnt=0;
-        for (ChangeLogSet.Entry e : run.getChangeSet()) {
-            cnt++;
-            String id = e.getCommitId();
-            if (id==null)
-            {
-                id = String.valueOf(cnt);
-            }
-            m.put(id, new ChangeSetResource(organization, e, this));
-        }
-        return Containers.fromResourceMap(this.getLink(),m);
-    }
-
-    @Override
     public BlueRun stop(@QueryParameter("blocking") Boolean blocking, @QueryParameter("timeOutInSecs") Integer timeOutInSecs){
         return stop(blocking, timeOutInSecs, new StoppableRun() {
             @Override

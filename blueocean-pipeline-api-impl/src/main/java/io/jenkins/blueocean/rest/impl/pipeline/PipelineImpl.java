@@ -76,10 +76,5 @@ public class PipelineImpl extends AbstractPipelineImpl {
         public PipelineRunSummary(BlueRun blueRun, Run run, Reachable parent, BlueOrganization organization) {
             super(blueRun, run, parent, organization);
         }
-
-        @Override
-        public Container<BlueChangeSetEntry> getChangeSet() {
-            return blueRun.getChangeSet();
-        }
     }
 }

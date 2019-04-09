@@ -44,6 +44,7 @@ public interface BlueItemRun {
      */
     @Exported(inline = true)
     @Nonnull
+    @Navigable
     Container<BlueChangeSetEntry> getChangeSet();
 
     /**

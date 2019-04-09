@@ -87,6 +87,7 @@ public abstract class BlueRun extends Resource implements BlueItemRun {
      */
     @Exported(inline = true)
     @Nonnull
+    @Navigable
     public abstract Container<BlueChangeSetEntry> getChangeSet();
 
     /**

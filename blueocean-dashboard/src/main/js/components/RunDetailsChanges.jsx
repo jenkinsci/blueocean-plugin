@@ -1,8 +1,11 @@
 import React, { Component, PropTypes } from 'react';
+import { observer } from 'mobx-react';
 import { CommitId, PlaceholderTable, ReadableDate, JTable, TableHeaderRow, TableRow, TableCell } from '@jenkins-cd/design-language';
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
 import LinkifiedText from './LinkifiedText';
+import { Paths, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+const { rest: RestPaths } = Paths;
 
 function NoChangesPlaceholder(props) {
     const { t } = props;
@@ -30,15 +33,36 @@ NoChangesPlaceholder.propTypes = {
     t: PropTypes.func,
 };
 
+@observer
 export default class RunDetailsChanges extends Component {
-    render() {
-        const { result, t, locale } = this.props;
+    componentWillMount() {
+        this._fetchChangeSet(this.props);
+    }
 
-        if (!result) {
-            return null;
+    componentWillReceiveProps(nextProps) {
+        this._fetchChangeSet(nextProps);
+    }
+
+    _fetchChangeSet(props) {
+        this.href = RestPaths.run({
+            organization: props.params.organization,
+            pipeline: props.params.pipeline,
+            branch: this.isMultiBranch && props.params.branch,
+            runId: props.params.runId,
+        });
+        console.log('context', this.context);
+        die();
+        this.pager = this.context.activityService.changeSetPager(`${this.href}changeSet`);
+    }
+
+    render() {
+        const { t, locale } = this.props;
+
+        if (!this.pager || this.pager.pendingD) {
+            return <NoChangesPlaceholder t={t} />;
         }
 
-        const { changeSet } = result;
+        const changeSet = this.pager.data;
 
         if (!changeSet || !changeSet.length) {
             return <NoChangesPlaceholder t={t} />;
@@ -91,15 +115,23 @@ export default class RunDetailsChanges extends Component {
                         ))}
                     </JTable>
                 ))}
+                <ShowMoreButton pager={this.pager} />
             </div>
         );
     }
 }
 
-const { func, object, string } = PropTypes;
-
 RunDetailsChanges.propTypes = {
-    result: object,
-    locale: string,
-    t: func,
+    result: PropTypes.object,
+    locale: PropTypes.string,
+    t: PropTypes.func,
+    params: PropTypes.any,
+    pipeline: PropTypes.object,
+    results: PropTypes.object,
+};
+
+RunDetailsChanges.contextTypes = {
+    config: PropTypes.object.isRequired,
+    params: PropTypes.object,
+    activityService: PropTypes.object.isRequired,
 };

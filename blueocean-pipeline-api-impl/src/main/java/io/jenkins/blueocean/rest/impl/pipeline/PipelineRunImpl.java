@@ -23,6 +23,7 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
+import io.jenkins.blueocean.service.embedded.rest.ChangeSetContainerImpl;
 import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
@@ -67,41 +68,6 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     @Exported(name = PullRequest.PULL_REQUEST, inline = true)
     public PullRequest getPullRequest() {
         return PullRequest.get(run.getParent());
-    }
-
-    @Override
-    @Nonnull
-    public Container<BlueChangeSetEntry> getChangeSet() {
-        // If this run is a replay then return the changesets from the original run
-        ReplayCause replayCause = run.getCause(ReplayCause.class);
-        if (replayCause != null) {
-            Run run = this.run.getParent().getBuildByNumber(replayCause.getOriginalNumber());
-            if (run == null) {
-                return Containers.empty(getLink());
-            }
-            BlueRun blueRun = BlueRunFactory.getRun(run, parent);
-            if (blueRun == null) {
-                return Containers.empty(getLink());
-            }
-            return blueRun.getChangeSet();
-        } else {
-            Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
-            int cnt = 0;
-            int checkoutCount = 0;
-            for (ChangeLogSet<? extends Entry> cs : run.getChangeSets()) {
-                for (ChangeLogSet.Entry e : cs) {
-                    cnt++;
-                    String id = e.getCommitId();
-                    if (id == null)
-                    {
-                        id = String.valueOf( cnt );
-                    }
-                    m.put(id, new ChangeSetResource(organization, e, this).setCheckoutCount(checkoutCount));
-                }
-                checkoutCount++;
-            }
-            return Containers.fromResourceMap(getLink(), m);
-        }
     }
 
     @Override
