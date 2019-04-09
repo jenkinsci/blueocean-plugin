@@ -32,7 +32,7 @@ describe('RunDetailsChanges', () => {
     beforeAll(() => mockExtensionsForI18n());
 
     it('renders nothing with no data', () => {
-        const wrapper = render(<RunDetailsChanges t={t} params={params} />, { buildContext() });
+        const wrapper = render(<RunDetailsChanges t={t} params={params} />, { context: buildContext() });
 
         assert.equal(wrapper.html(), '', 'output should be empty');
     });
