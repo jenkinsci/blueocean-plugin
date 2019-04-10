@@ -87,7 +87,12 @@
                 <dependency>
                     <groupId>io.jenkins.blueocean</groupId>
                     <artifactId>blueocean</artifactId>
-                    <version>1.14.0-SNAPSHOT</version>
+                    <version>[1.14.0-SNAPSHOT,)</version>
+                </dependency>
+                <dependency>
+                    <groupId>io.jenkins.blueocean</groupId>
+                    <artifactId>blueocean-executor-info</artifactId>
+                    <version>[1.14.0-SNAPSHOT,)</version>
                 </dependency>
             </dependencies>
         </profile>
