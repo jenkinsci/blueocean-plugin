@@ -15,14 +15,23 @@ import static io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.model.BbCl
 public class BbCloudUser extends BbUser {
     private final String userName;
     private final String displayName;
+    @Nonnull
+    private final String nickName;
+    @Nonnull
+    private final String accountId;
     private final String avatar;
 
     @JsonCreator
-    public BbCloudUser(@Nonnull @JsonProperty("username") String userName,
+    public BbCloudUser(@Nonnull @JsonProperty("uuid") String uuid,
                        @Nonnull @JsonProperty("display_name") String displayName,
-                       @Nonnull @JsonProperty("links") Map<String, Map<String, String>> links) {
-        this.userName = userName;
+                       @Nonnull @JsonProperty("links") Map<String, Map<String, String>> links,
+                       @Nonnull @JsonProperty("nickname") String nickName,
+                       @Nonnull @JsonProperty("account_id") String accountId
+    ) {
+        this.userName = uuid;
         this.displayName = displayName;
+        this.nickName = nickName;
+        this.accountId = accountId;
         Map<String,String> a = links.get("avatar");
         if(a != null){
             this.avatar = avatar50(a.get("href"));

@@ -17,10 +17,10 @@ public class BbCloudTeam extends BbOrg {
     private final String avatar;
 
     @JsonCreator
-    public BbCloudTeam(@Nonnull @JsonProperty("username") String teamName,
+    public BbCloudTeam(@Nonnull @JsonProperty("uuid") String uuid,
                        @Nonnull @JsonProperty("display_name") String displayName,
                        @Nonnull @JsonProperty("links") Map<String, Map<String, String>> links) {
-        this.teamName = teamName;
+        this.teamName = uuid;
         this.displayName = displayName;
         Map<String,String> a = links.get("avatar");
         if(a != null){
