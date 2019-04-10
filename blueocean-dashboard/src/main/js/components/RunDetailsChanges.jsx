@@ -50,8 +50,6 @@ export default class RunDetailsChanges extends Component {
             branch: this.isMultiBranch && props.params.branch,
             runId: props.params.runId,
         });
-        console.log('context', this.context);
-        die();
         this.pager = this.context.activityService.changeSetPager(`${this.href}changeSet`);
     }
 
