@@ -77,13 +77,15 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
         SCMSource source = createSource(project, scmConfig).withId("blueocean");
         project.setSourcesList(ImmutableList.of(new BranchSource(source)));
         project.save();
+
+        AbstractScmSourceEvent scmSourceEvent = getScmSourceEvent(project, source);
+        if(scmSourceEvent != null) {
+            SCMSourceEvent.fireNow(scmSourceEvent);
+        }
+
         final boolean hasJenkinsfile = repoHasJenkinsFile(source);
         if(!hasJenkinsfile){
             sendMultibranchIndexingCompleteEvent(project, 5);
-            AbstractScmSourceEvent scmSourceEvent = getScmSourceEvent(project, source);
-            if(scmSourceEvent != null) {
-                SCMSourceEvent.fireNow(scmSourceEvent);
-            }
         }else{
             project.scheduleBuild(new Cause.UserIdCause());
         }
