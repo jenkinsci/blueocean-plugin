@@ -1,7 +1,7 @@
 {
   "id": "ecc0dbb8-a907-3556-93e1-718653651f1a",
   "request": {
-    "url": "/api/2.0/repositories/{1c5c9255-d59f-47e2-b5c7-52269c0332b9}/demo1/src/0a094f774e33b8a0ad144b9dacf476e594a0f78c/foo",
+    "url": "/api/2.0/repositories/%7B1c5c9255-d59f-47e2-b5c7-52269c0332b9%7D/demo1/src/0a094f774e33b8a0ad144b9dacf476e594a0f78c/foo",
     "method": "GET"
   },
   "response": {

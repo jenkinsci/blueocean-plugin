@@ -1,7 +1,7 @@
 {
   "id": "ba174ecb-9006-37a2-a6f5-40de3319d8d5",
   "request": {
-    "url": "/api/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}?page=1&limit=100",
+    "url": "/api/2.0/repositories/%7B47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe%7D?page=1&limit=100",
     "method": "GET"
   },
   "response": {

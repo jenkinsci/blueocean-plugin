@@ -1,7 +1,7 @@
 {
   "id": "f910f317-a5b0-3922-b8d1-5e92c20f6790",
   "request": {
-    "url": "/api/2.0/teams/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}",
+    "url": "/api/2.0/teams/%7B47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe%7D",
     "method": "GET"
   },
   "response": {
