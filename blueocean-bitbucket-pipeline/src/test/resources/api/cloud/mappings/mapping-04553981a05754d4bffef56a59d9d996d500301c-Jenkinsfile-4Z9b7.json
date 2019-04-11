@@ -1,7 +1,7 @@
 {
   "id": "69a425d2-ec82-38db-bc1a-65531db5942b",
   "request": {
-    "url": "/api/2.0/repositories%7B1c5c9255-d59f-47e2-b5c7-52269c0332b9%7D/demo1/src/04553981a05754d4bffef56a59d9d996d500301c/Jenkinsfile",
+    "url": "/api/2.0/repositories{1c5c9255-d59f-47e2-b5c7-52269c0332b9}/demo1/src/04553981a05754d4bffef56a59d9d996d500301c/Jenkinsfile",
     "method": "GET"
   },
   "response": {

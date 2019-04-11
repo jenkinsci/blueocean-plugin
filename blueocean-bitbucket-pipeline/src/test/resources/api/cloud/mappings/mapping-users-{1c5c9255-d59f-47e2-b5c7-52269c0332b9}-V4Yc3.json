@@ -1,12 +1,12 @@
 {
   "id": "f73d5452-73dc-3af8-a103-8d087f4c2119",
   "request": {
-    "url": "/api/2.0/users/%7B1c5c9255-d59f-47e2-b5c7-52269c0332b9%7D",
+    "url": "/api/2.0/users/{1c5c9255-d59f-47e2-b5c7-52269c0332b9}",
     "method": "GET"
   },
   "response": {
     "status": 200,
-    "bodyFileName": "body-users-%7B1c5c9255-d59f-47e2-b5c7-52269c0332b9%7D-V4Yc3.json",
+    "bodyFileName": "body-users-{1c5c9255-d59f-47e2-b5c7-52269c0332b9}-V4Yc3.json",
     "headers": {
       "Server": "nginx",
       "Vary": "Authorization",

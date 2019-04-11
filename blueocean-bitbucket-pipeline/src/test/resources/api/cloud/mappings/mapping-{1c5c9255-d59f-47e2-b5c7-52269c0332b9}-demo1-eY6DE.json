@@ -1,12 +1,12 @@
 {
   "id": "2d0f3e13-f9a7-36e9-85bb-0b9f55893aad",
   "request": {
-    "url": "/api/2.0/repositories/%7B1c5c9255-d59f-47e2-b5c7-52269c0332b9%7D/demo1/?fields=mainbranch.*,mainbranch.target.*,mainbranch.target.repository.*,mainbranch.target.repository.mainbranch.name,mainbranch.target.repository.owner.*,mainbranch.target.repository.owner.links.avatar.*",
+    "url": "/api/2.0/repositories/{1c5c9255-d59f-47e2-b5c7-52269c0332b9}/demo1/?fields=mainbranch.*,mainbranch.target.*,mainbranch.target.repository.*,mainbranch.target.repository.mainbranch.name,mainbranch.target.repository.owner.*,mainbranch.target.repository.owner.links.avatar.*",
     "method": "GET"
   },
   "response": {
     "status": 200,
-    "bodyFileName": "body-%7B1c5c9255-d59f-47e2-b5c7-52269c0332b9%7D-demo1-eY6DE.json",
+    "bodyFileName": "body-{1c5c9255-d59f-47e2-b5c7-52269c0332b9}-demo1-eY6DE.json",
     "headers": {
       "Server": "nginx",
       "Vary": [
