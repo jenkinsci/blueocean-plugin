@@ -14,16 +14,14 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 public class BbServerUser extends BbUser {
-    private final String name;
     private final String displayName;
     private final String slug;
     private final String emailAddress;
     private final String avatar;
 
     @JsonCreator
-    public BbServerUser(@Nonnull @JsonProperty("name") String name, @Nonnull @JsonProperty("displayName") String displayName,
+    public BbServerUser(@Nonnull @JsonProperty("displayName") String displayName,
                         @Nonnull @JsonProperty("slug") String slug, @Nonnull @JsonProperty("emailAddress") String emailAddress, @JsonProperty("links") Map<String, List<Map<String,String>>> links) {
-        this.name = name;
         this.displayName = displayName;
         this.slug = slug;
         this.emailAddress = emailAddress;
@@ -37,12 +35,6 @@ public class BbServerUser extends BbUser {
             }
         }
         this.avatar = a;
-    }
-
-    @Override
-    @JsonProperty("name")
-    public String getName() {
-        return name;
     }
 
     @Override
