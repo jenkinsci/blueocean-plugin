@@ -1,29 +1,29 @@
 {
-  "id": "69a425d2-ec82-38db-bc1a-65531db5942b",
+  "id": "e76df509-031a-3424-aafd-1c400445e0f5",
   "request": {
-    "url": "/api/2.0/repositories{1c5c9255-d59f-47e2-b5c7-52269c0332b9}/demo1/src/04553981a05754d4bffef56a59d9d996d500301c/Jenkinsfile",
+    "url": "/api/2.0/teams//{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}",
     "method": "GET"
   },
   "response": {
     "status": 404,
-    "bodyFileName": "body-04553981a05754d4bffef56a59d9d996d500301c-Jenkinsfile-4Z9b7.json",
+    "bodyFileName": "body-teams-{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}-MhScC.json",
     "headers": {
       "Server": "nginx",
       "Vary": "Authorization",
       "Content-Type": "application/json; charset=utf-8",
       "X-OAuth-Scopes": "webhook, pullrequest:write, project, team, email",
       "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
-      "Date": "Tue, 27 Jun 2017 16:31:10 GMT",
-      "X-Served-By": "app-142",
+      "Date": "Tue, 27 Jun 2017 17:42:04 GMT",
+      "X-Served-By": "app-140",
       "X-Static-Version": "dce5f507b47a",
       "ETag": "\"2b62f73138bb745c0a65d30d15361a22\"",
-      "X-Render-Time": "0.0222110748291",
+      "X-Render-Time": "0.0253429412842",
       "X-Credential-Type": "apppassword",
       "Connection": "keep-alive",
       "X-Version": "dce5f507b47a",
-      "X-Request-Count": "133",
+      "X-Request-Count": "510",
       "X-Frame-Options": "SAMEORIGIN"
     }
   },
-  "uuid": "69a425d2-ec82-38db-bc1a-65531db5942b"
+  "uuid": "e76df509-031a-3424-aafd-1c400445e0f5"
 }

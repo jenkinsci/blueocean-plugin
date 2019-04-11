@@ -18,16 +18,15 @@
         "mainbranch": {
           "name": "master"
         },
-        "full_name": "vivekp7/demo1",
+        "full_name": "{1c5c9255-d59f-47e2-b5c7-52269c0332b9}/demo1",
         "has_issues": false,
         "owner": {
-          "username": "vivekp7",
           "website": null,
           "display_name": "Vivek Pandey",
           "account_id": "557058:a764abd6-befb-4cdc-8918-b8d612b96dda",
           "links": {
             "avatar": {
-              "href": "https://bitbucket.org/account/vivekp7/avatar/32/"
+              "href": "https://bitbucket.org/account/{1c5c9255-d59f-47e2-b5c7-52269c0332b9}/avatar/32/"
             }
           },
           "created_on": "2017-06-26T12:34:37.354705+00:00",

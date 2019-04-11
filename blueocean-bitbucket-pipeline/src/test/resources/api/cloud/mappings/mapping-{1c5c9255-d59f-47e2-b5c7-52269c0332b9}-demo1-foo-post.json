@@ -1,18 +1,18 @@
 {
-  "request" : {
-    "url" : "/api/2.0/repositories/vivekp7/demo1/src",
-    "method" : "POST"
+  "request": {
+    "url": "/api/2.0/repositories/{1c5c9255-d59f-47e2-b5c7-52269c0332b9}/demo1/src",
+    "method": "POST"
   },
-  "response" : {
-    "status" : 201,
-    "headers" : {
+  "response": {
+    "status": 201,
+    "headers": {
       "Server": "nginx",
       "Vary": "Authorization",
       "Content-Type": "text/html; charset=utf-8",
       "X-OAuth-Scopes": "webhook, pullrequest:write, project, team, email",
       "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
       "Date": "Tue, 27 Jun 2017 17:08:41 GMT",
-      "Location": "https://api.bitbucket.org/2.0/repositories/vivekp7/demo1/commit/0a094f774e33b8a0ad144b9dacf476e594a0f78c",
+      "Location": "https://api.bitbucket.org/2.0/repositories/{1c5c9255-d59f-47e2-b5c7-52269c0332b9}/demo1/commit/0a094f774e33b8a0ad144b9dacf476e594a0f78c",
       "X-Served-By": "app-142",
       "ETag": "d41d8cd98f00b204e9800998ecf8427e",
       "X-Static-Version": "dce5f507b47a",

@@ -1,0 +1,40 @@
+{
+  "website": null,
+  "display_name": "Vivek's Team",
+  "uuid": "{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}",
+  "links": {
+    "hooks": {
+      "href": "https://api.bitbucket.org/2.0/teams/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/hooks"
+    },
+    "self": {
+      "href": "https://api.bitbucket.org/2.0/teams/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}"
+    },
+    "repositories": {
+      "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}"
+    },
+    "html": {
+      "href": "https://bitbucket.org/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/"
+    },
+    "followers": {
+      "href": "https://api.bitbucket.org/2.0/teams/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/followers"
+    },
+    "avatar": {
+      "href": "https://bitbucket.org/account/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/avatar/32/"
+    },
+    "members": {
+      "href": "https://api.bitbucket.org/2.0/teams/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/members"
+    },
+    "following": {
+      "href": "https://api.bitbucket.org/2.0/teams/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/following"
+    },
+    "projects": {
+      "href": "https://api.bitbucket.org/2.0/teams/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/projects/"
+    },
+    "snippets": {
+      "href": "https://api.bitbucket.org/2.0/snippets/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}"
+    }
+  },
+  "created_on": "2017-06-26T12:36:31.226808+00:00",
+  "location": null,
+  "type": "team"
+}

@@ -1,0 +1,204 @@
+{
+  "pagelen": 10,
+  "values": [
+    {
+      "scm": "git",
+      "website": "",
+      "has_wiki": false,
+      "name": "pipeline-demo-test",
+      "links": {
+        "watchers": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/pipeline-demo-test/watchers"
+        },
+        "branches": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/pipeline-demo-test/refs/branches"
+        },
+        "tags": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/pipeline-demo-test/refs/tags"
+        },
+        "commits": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/pipeline-demo-test/commits"
+        },
+        "clone": [
+          {
+            "href": "https://{1c5c9255-d59f-47e2-b5c7-52269c0332b9}@bitbucket.org/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/pipeline-demo-test.git",
+            "name": "https"
+          },
+          {
+            "href": "ssh://git@bitbucket.org/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/pipeline-demo-test.git",
+            "name": "ssh"
+          }
+        ],
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/pipeline-demo-test"
+        },
+        "html": {
+          "href": "https://bitbucket.org/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/pipeline-demo-test"
+        },
+        "avatar": {
+          "href": "https://bitbucket.org/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/pipeline-demo-test/avatar/32/"
+        },
+        "hooks": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/pipeline-demo-test/hooks"
+        },
+        "forks": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/pipeline-demo-test/forks"
+        },
+        "downloads": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/pipeline-demo-test/downloads"
+        },
+        "pullrequests": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/pipeline-demo-test/pullrequests"
+        }
+      },
+      "fork_policy": "no_public_forks",
+      "uuid": "{411b37db-a9d2-4a56-b0b4-f5165f718a75}",
+      "project": {
+        "key": "TES",
+        "type": "project",
+        "uuid": "{0c1851d7-ef83-458c-8f33-4a9754674771}",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/teams/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/projects/TES"
+          },
+          "html": {
+            "href": "https://bitbucket.org/account/user/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/projects/TES"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/account/user/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/projects/TES/avatar/32"
+          }
+        },
+        "name": "TESTP"
+      },
+      "language": "",
+      "created_on": "2017-06-26T12:39:16.087579+00:00",
+      "mainbranch": {
+        "type": "branch",
+        "name": "master"
+      },
+      "full_name": "{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/pipeline-demo-test",
+      "has_issues": false,
+      "owner": {
+        "display_name": "Vivek's Team",
+        "type": "team",
+        "uuid": "{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/teams/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}"
+          },
+          "html": {
+            "href": "https://bitbucket.org/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/account/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/avatar/32/"
+          }
+        }
+      },
+      "updated_on": "2017-06-26T12:39:16.276647+00:00",
+      "size": 352353,
+      "type": "repository",
+      "slug": "pipeline-demo-test",
+      "is_private": true,
+      "description": ""
+    },
+    {
+      "scm": "git",
+      "website": "",
+      "has_wiki": false,
+      "name": "emptyrepo",
+      "links": {
+        "watchers": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/emptyrepo/watchers"
+        },
+        "branches": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/emptyrepo/refs/branches"
+        },
+        "tags": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/emptyrepo/refs/tags"
+        },
+        "commits": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/emptyrepo/commits"
+        },
+        "clone": [
+          {
+            "href": "https://{1c5c9255-d59f-47e2-b5c7-52269c0332b9}@bitbucket.org/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/emptyrepo.git",
+            "name": "https"
+          },
+          {
+            "href": "ssh://git@bitbucket.org/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/emptyrepo.git",
+            "name": "ssh"
+          }
+        ],
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/emptyrepo"
+        },
+        "html": {
+          "href": "https://bitbucket.org/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/emptyrepo"
+        },
+        "avatar": {
+          "href": "https://bitbucket.org/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/emptyrepo/avatar/32/"
+        },
+        "hooks": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/emptyrepo/hooks"
+        },
+        "forks": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/emptyrepo/forks"
+        },
+        "downloads": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/emptyrepo/downloads"
+        },
+        "pullrequests": {
+          "href": "https://api.bitbucket.org/2.0/repositories/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/emptyrepo/pullrequests"
+        }
+      },
+      "fork_policy": "no_public_forks",
+      "uuid": "{2e2a63ee-70a4-4343-98ca-a040d6ecb732}",
+      "project": {
+        "key": "TES",
+        "type": "project",
+        "uuid": "{0c1851d7-ef83-458c-8f33-4a9754674771}",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/teams/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/projects/TES"
+          },
+          "html": {
+            "href": "https://bitbucket.org/account/user/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/projects/TES"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/account/user/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/projects/TES/avatar/32"
+          }
+        },
+        "name": "TESTP"
+      },
+      "language": "",
+      "created_on": "2017-06-26T17:43:32.518072+00:00",
+      "mainbranch": null,
+      "full_name": "{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/emptyrepo",
+      "has_issues": false,
+      "owner": {
+        "display_name": "Vivek's Team",
+        "type": "team",
+        "uuid": "{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/teams/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}"
+          },
+          "html": {
+            "href": "https://bitbucket.org/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/account/{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}/avatar/32/"
+          }
+        }
+      },
+      "updated_on": "2017-06-26T17:43:32.571002+00:00",
+      "size": 33348,
+      "type": "repository",
+      "slug": "emptyrepo",
+      "is_private": true,
+      "description": ""
+    }
+  ],
+  "page": 1,
+  "size": 2
+}
