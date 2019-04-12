@@ -129,7 +129,6 @@ RunDetailsChanges.propTypes = {
 };
 
 RunDetailsChanges.contextTypes = {
-    config: PropTypes.object.isRequired,
-    params: PropTypes.object,
+    params: PropTypes.object.isRequired,
     activityService: PropTypes.object.isRequired,
 };

@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import React from 'react';
-import { render } from 'enzyme';
+import { mount } from 'enzyme';
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import { latestRuns } from './data/runs/latestRuns';
@@ -18,6 +18,12 @@ const params = {
 
 function buildContext(changeSetPagerData) {
     return {
+        params: {
+            organization: 'jenkins',
+            pipeline: 'job1',
+            branch: 'master',
+            runId: '2',
+        },
         activityService: {
             changeSetPager() {
                 return {
@@ -32,13 +38,18 @@ describe('RunDetailsChanges', () => {
     beforeAll(() => mockExtensionsForI18n());
 
     it('renders nothing with no data', () => {
-        const wrapper = render(<RunDetailsChanges t={t} params={params} />, { context: buildContext() });
+        const wrapper = mount(<RunDetailsChanges t={t} params={params} />, { context: buildContext() });
 
-        assert.equal(wrapper.html(), '', 'output should be empty');
+        const output = wrapper.html();
+
+        // Class names we expect to see
+        assert(output.match('RunDetailsEmpty'), 'output should contain "RunDetailsEmpty"');
+        assert(output.match('NoChanges'), 'output should contain "NoChanges"');
+        assert(output.match('PlaceholderTable'), 'output should contain "PlaceholderTable"');
     });
 
     it('renders empty changeset', () => {
-        const wrapper = render(<RunDetailsChanges t={t} params={params} />, { context: buildContext([]) });
+        const wrapper = mount(<RunDetailsChanges t={t} params={params} />, { context: buildContext([]) });
 
         const output = wrapper.html();
 
@@ -50,7 +61,7 @@ describe('RunDetailsChanges', () => {
 
     it('renders a valid changeset', () => {
         const runs = latestRuns.map(run => run.latestRun);
-        const wrapper = render(<RunDetailsChanges t={t} params={params} />, { context: buildContext(runs.changeSet) });
+        const wrapper = mount(<RunDetailsChanges t={t} params={params} />, { context: buildContext(runs[0].changeSet) });
         const output = wrapper.html();
 
         // Class names we expect to see
