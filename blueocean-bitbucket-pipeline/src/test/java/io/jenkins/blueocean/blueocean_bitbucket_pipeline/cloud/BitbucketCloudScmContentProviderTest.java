@@ -42,8 +42,6 @@ import static org.powermock.api.mockito.PowerMockito.*;
 @PrepareForTest({Stapler.class})
 @PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock {
-    private static String USER_KEY = "{1c5c9255-d59f-47e2-b5c7-52269c0332b9}"; // vivekp7;
-
     @Test
     public void getContent() throws UnirestException, IOException {
         String credentialId = createCredential(BitbucketCloudScm.ID);

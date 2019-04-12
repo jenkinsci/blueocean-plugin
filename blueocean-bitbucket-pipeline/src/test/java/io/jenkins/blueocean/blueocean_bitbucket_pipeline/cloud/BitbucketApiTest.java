@@ -33,8 +33,6 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class BitbucketApiTest extends BbCloudWireMock {
 
     private BitbucketApi api;
-    private static String USER_KEY = "{1c5c9255-d59f-47e2-b5c7-52269c0332b9}"; // vivekp7;
-    private static String TEAM_KEY = "{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}"; // vivektestteam
 
     @Override
     public void setup() throws Exception {
