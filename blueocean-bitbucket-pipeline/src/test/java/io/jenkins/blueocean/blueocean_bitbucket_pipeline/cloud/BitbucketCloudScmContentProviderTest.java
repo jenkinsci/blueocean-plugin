@@ -52,7 +52,7 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock {
         assertEquals("Jenkinsfile", content.getContent().getName());
         assertEquals("04553981a05754d4bffef56a59d9d996d500301c", content.getContent().getCommitId());
         assertEquals("demo1", content.getContent().getRepo());
-        assertEquals(USER_KEY, content.getContent().getOwner());
+        assertEquals(BbCloudWireMock.USER_KEY, content.getContent().getOwner());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock {
         MultiBranchProject mbp = mockMbp(credentialId);
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("VGhpcyBpcyB0ZXN0IGNvbnRlbnQgaW4gbmV3IGZpbGUK")
-                .branch("master").message("new commit").owner(USER_KEY).path("foo").repo("demo1").build();
+                .branch("master").message("new commit").owner(BbCloudWireMock.USER_KEY).path("foo").repo("demo1").build();
 
         when(staplerRequest.bindJSON(Mockito.eq(BitbucketScmSaveFileRequest.class), Mockito.any(JSONObject.class))).thenReturn(new BitbucketScmSaveFileRequest(content));
 
@@ -105,7 +105,7 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock {
         assertEquals("foo", respContent.getContent().getName());
         assertEquals(respContent.getContent().getCommitId(), respContent.getContent().getCommitId());
         assertEquals("demo1", respContent.getContent().getRepo());
-        assertEquals(USER_KEY, respContent.getContent().getOwner());
+        assertEquals(BbCloudWireMock.USER_KEY, respContent.getContent().getOwner());
         assertEquals("master", respContent.getContent().getBranch());
     }
 
