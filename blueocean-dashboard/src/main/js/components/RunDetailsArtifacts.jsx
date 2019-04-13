@@ -66,6 +66,7 @@ export default class RunDetailsArtifacts extends Component {
 
         const nameLabel = t('rundetail.artifacts.header.name', { defaultValue: 'Name' });
         const sizeLabel = t('rundetail.artifacts.header.size', { defaultValue: 'Size' });
+        const displayLabel =  t('rundetail.artifacts.button.display', { defaultValue: 'Display the artifact in new window' });
         const downloadLabel = t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' });
         const openLabel = t('rundetail.artifacts.button.open', { defaultValue: 'Open the artifact' });
 
@@ -78,8 +79,14 @@ export default class RunDetailsArtifacts extends Component {
             const fileName = urlArray[urlArray.length - 1];
             logger.debug('artifact - url:', artifact.url, 'artifact - fileName:', fileName);
 
+            let displayLink = null;
             let downloadLink = null;
             if (artifact.downloadable) {
+                displayLink = (
+                    <a target="_blank" className="action-button-colors" title={displayLabel} href={`${rootURL}${artifact.url}/*view*`}>
+                        <Icon icon="ActionLaunch" color="rgba(53, 64, 82, 0.25)" />
+                    </a>
+                );
                 downloadLink = (
                     <a target="_blank" className="action-button-colors" download={fileName} title={downloadLabel} href={`${rootURL}${artifact.url}`}>
                         <Icon icon="FileFileDownload" color="rgba(53, 64, 82, 0.25)" />
@@ -97,7 +104,7 @@ export default class RunDetailsArtifacts extends Component {
                         </a>
                     </TableCell>
                     <TableCell>{artifactSize}</TableCell>
-                    <TableCell className="TableCell--actions">{downloadLink}</TableCell>
+                    <TableCell className="TableCell--actions">{displayLink}{downloadLink}</TableCell>
                 </TableRow>
             );
         });
@@ -117,6 +124,9 @@ export default class RunDetailsArtifacts extends Component {
                         </TableCell>
                         <TableCell>-</TableCell>
                         <TableCell className="TableCell--actions">
+                            <a target="_blank" className="action-button-colors" title={displayLabel} href={`${logDownloadURL}/*view*`}>
+                                <Icon icon="ActionLaunch" color="rgba(53, 64, 82, 0.25)" />
+                            </a>
                             <a target="_blank" className="action-button-colors" title={downloadLabel} href={logDownloadURL}>
                                 <Icon icon="FileFileDownload" color="rgba(53, 64, 82, 0.25)" />
                             </a>
