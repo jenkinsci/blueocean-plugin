@@ -40,16 +40,12 @@ describe('RunDetailsChanges', () => {
     it('renders nothing with no data', () => {
         const wrapper = mount(<RunDetailsChanges t={t} params={params} />, { context: buildContext() });
 
-        const output = wrapper.html();
-
-        // Class names we expect to see
-        assert(output.match('RunDetailsEmpty'), 'output should contain "RunDetailsEmpty"');
-        assert(output.match('NoChanges'), 'output should contain "NoChanges"');
-        assert(output.match('PlaceholderTable'), 'output should contain "PlaceholderTable"');
+        assert.equal(wrapper.html(), null, 'output should be empty');
     });
 
     it('renders empty changeset', () => {
-        const wrapper = mount(<RunDetailsChanges t={t} params={params} />, { context: buildContext([]) });
+        const runs = latestRuns.map(run => run.latestRun);
+        const wrapper = mount(<RunDetailsChanges t={t} params={params} result={runs[0]} />, { context: buildContext([]) });
 
         const output = wrapper.html();
 
@@ -61,7 +57,7 @@ describe('RunDetailsChanges', () => {
 
     it('renders a valid changeset', () => {
         const runs = latestRuns.map(run => run.latestRun);
-        const wrapper = mount(<RunDetailsChanges t={t} params={params} />, { context: buildContext(runs[0].changeSet) });
+        const wrapper = mount(<RunDetailsChanges t={t} params={params} result={runs[0]} />, { context: buildContext(runs[0].changeSet) });
         const output = wrapper.html();
 
         // Class names we expect to see

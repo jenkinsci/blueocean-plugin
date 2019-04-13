@@ -4,8 +4,7 @@ import { CommitId, PlaceholderTable, ReadableDate, JTable, TableHeaderRow, Table
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
 import LinkifiedText from './LinkifiedText';
-import { Paths, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
-const { rest: RestPaths } = Paths;
+import { ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 
 function NoChangesPlaceholder(props) {
     const { t } = props;
@@ -44,19 +43,19 @@ export default class RunDetailsChanges extends Component {
     }
 
     _fetchChangeSet(props) {
-        this.href = RestPaths.run({
-            organization: props.params.organization,
-            pipeline: props.params.pipeline,
-            branch: this.isMultiBranch && props.params.branch,
-            runId: props.params.runId,
-        });
-        this.pager = this.context.activityService.changeSetPager(`${this.href}changeSet`);
+        if (props.result && props.result._links && props.result._links && props.result._links.self) {
+            this.pager = this.context.activityService.changeSetPager(`${props.result._links.self.href}changeSet/`);
+        }
     }
 
     render() {
         const { t, locale } = this.props;
 
-        if (!this.pager || this.pager.pendingD) {
+        if (!this.pager) {
+            return null;
+        }
+
+        if (this.pager.pendingD) {
             return <NoChangesPlaceholder t={t} />;
         }
 
@@ -88,8 +87,8 @@ export default class RunDetailsChanges extends Component {
 
         return (
             <div>
-                {changeSetSplitBySource.map(changeSet => (
-                    <JTable columns={columns} className="changeset-table">
+                {changeSetSplitBySource.map((changeSet, changeSetIdx) => (
+                    <JTable columns={columns} className="changeset-table" key={changeSetIdx}>
                         <TableHeaderRow />
                         {changeSet.map(commit => (
                             <TableRow key={commit.commitId}>

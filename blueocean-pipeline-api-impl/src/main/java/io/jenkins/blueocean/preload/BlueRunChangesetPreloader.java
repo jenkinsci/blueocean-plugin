@@ -32,6 +32,7 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.rest.pageable.PagedResponse;
 import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
@@ -71,15 +72,25 @@ public class BlueRunChangesetPreloader extends RESTFetchPreloader {
             return null;
         }
         BlueRun run = activitiesContainer.get(blueUrl.getPart(BlueUrlTokenizer.UrlPart.PIPELINE_RUN_DETAIL_ID));
-        Container<BlueChangeSetEntry> changeSetEntries = run.getChangeSet();
+        Container<BlueChangeSetEntry> containerChangeSets = run.getChangeSet();
+        return getFetchData(containerChangeSets);
+    }
 
+    public FetchData getFetchData(Container<BlueChangeSetEntry> containerChangeSets) {
         try {
+            JSONArray changeSetEntries = new JSONArray();
+
+            for (BlueChangeSetEntry changeSetEntry: containerChangeSets) {
+                changeSetEntries.add(JSONObject.fromObject(Export.toJson(changeSetEntry)));
+            };
+
+            // organizations/jenkins/pipelines/changes/runs/12/changeSet/?start=0&limit=101
             return new FetchData(
-                    changeSetEntries.getLink().getHref(),
-                    Export.toJson(changeSetEntries)
+                    containerChangeSets.getLink().getHref() + "?start=0&limit=101",
+                    changeSetEntries.toString()
             );
         } catch (IOException e) {
-            LOGGER.log(Level.FINE, String.format("Unable to preload changelog data '%s'. Failed to convert to Blue Ocean Resource.", changeSetEntries.getLink().getHref()));
+            LOGGER.log(Level.FINE, String.format("Unable to preload changelog data '%s'. Failed to convert to Blue Ocean Resource.", containerChangeSets.getLink().getHref()));
             return null;
         }
     }

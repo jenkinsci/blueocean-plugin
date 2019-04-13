@@ -30,7 +30,7 @@ public class ChangeSetContainerImpl extends Container<BlueChangeSetEntry> {
 
     @Override
     public Link getLink() {
-        return this.blueRun.getLink();
+        return this.blueRun.getLink().rel("changeSet");
     }
 
     @Override
