@@ -32,7 +32,7 @@ jenkinsVersions = ['2.138.4']
 
 if (params.USE_SAUCELABS) {
   credentials.add(usernamePassword(credentialsId: 'saucelabs', passwordVariable: 'SAUCE_ACCESS_KEY', usernameVariable: 'SAUCE_USERNAME'))
-  withCredentials(credentials) {
+  withCredentials([usernamePassword(credentialsId: 'saucelabs', passwordVariable: 'SAUCE_ACCESS_KEY', usernameVariable: 'SAUCE_USERNAME')]) {
     envs.add("webDriverUrl=https://${env.SAUCE_USERNAME}:${env.SAUCE_ACCESS_KEY}@ondemand.saucelabs.com/wd/hub")
   }
   envs.add("saucelabs=true")
