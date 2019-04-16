@@ -31,7 +31,7 @@ envs = [
 jenkinsVersions = ['2.138.4']
 
 if (params.USE_SAUCELABS) {
-  credentials.add(usernamePassword(credentialsId: 'saucelabs', passwordVariable: 'SAUCE_ACCESS_KEY', usernameVariable: 'SAUCE_USERNAME'));
+  credentials.add(usernamePassword(credentialsId: 'saucelabs', passwordVariable: 'SAUCE_ACCESS_KEY', usernameVariable: 'SAUCE_USERNAME'))
   withCredentials(credentials) {
     envs.add("webDriverUrl=https://${env.SAUCE_USERNAME}:${env.SAUCE_ACCESS_KEY}@ondemand.saucelabs.com/wd/hub")
   }
@@ -56,8 +56,7 @@ node() {
         configFileProvider([configFile(fileId: 'blueocean-maven-settings', variable: 'MAVEN_SETTINGS')]) {
           sh 'mv $MAVEN_SETTINGS settings.xml'
         }
-          sh 'mv $BO_ATH_KEY_FILE acceptance-tests/bo-ath.key'
-        }
+        sh 'mv $BO_ATH_KEY_FILE acceptance-tests/bo-ath.key'
         if (params.USE_SAUCELABS) {
           sh "./acceptance-tests/runner/scripts/start-sc.sh"
         } else {
