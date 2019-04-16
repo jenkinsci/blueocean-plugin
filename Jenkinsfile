@@ -8,8 +8,35 @@ if (JENKINS_URL == 'https://ci.jenkins.io/') {
     return
 }
 
-// only 20 builds
-properties([buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: '20'))])
+properties([
+  // only 20 builds,
+  buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: '20')),
+  parameters([
+    boolean(name: 'USE_SAUCELABS', defaultValue: false)
+  ])
+])
+
+envs = [
+  'GIT_COMMITTER_EMAIL=me@hatescake.com',
+  'GIT_COMMITTER_NAME=Hates',
+  'GIT_AUTHOR_NAME=Cake',
+  'GIT_AUTHOR_EMAIL=hates@cake.com'
+]
+
+jenkinsVersions = ['2.138.4']
+
+if (params.USE_SAUCELABS) {
+  withCredentials([usernamePassword(credentialsId: 'saucelabs', passwordVariable: 'SAUCE_ACCESS_KEY', usernameVariable: 'SAUCE_USERNAME')]) {
+    envs.add("webDriverUrl=https://${env.SAUCE_USERNAME}:${env.SAUCE_ACCESS_KEY}@ondemand.saucelabs.com/wd/hub")
+  }
+  envs.add("saucelabs=true")
+  envs.add("TUNNEL_IDENTIFIER=${env.BUILD_TAG}")
+}
+
+if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
+  jenkinsVersions.add('2.121.1')
+  jenkinsVersions.add('2.150.3')
+}
 
 node() {
   stage('Setup') {
@@ -25,13 +52,19 @@ node() {
     withCredentials([file(credentialsId: 'blueocean-ath-private-repo-key', variable: 'FILE')]) {
       sh 'mv $FILE acceptance-tests/bo-ath.key'
     }
-    sh "./acceptance-tests/runner/scripts/start-selenium.sh"
+    if (params.USE_SAUCELABS) {
+      sh "./acceptance-tests/runner/scripts/start-sc.sh"
+    } else {
+      sh "./acceptance-tests/runner/scripts/start-selenium.sh"
+    }
     sh "./acceptance-tests/runner/scripts/start-bitbucket-server.sh"
   }
 
   try {
     docker.image('blueocean_build_env').inside("--net=container:blueo-selenium") {
-      withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
+      withEnv(envs) {
+        ip = sh(returnStdout: true, script: "hostname -I  | awk '{print \$1}'").trim()
+        echo "IP: [${ip}]"
         stage('Sanity check dependencies') {
           sh "node ./bin/checkdeps.js"
           sh "node ./bin/checkshrinkwrap.js"
@@ -63,28 +96,23 @@ node() {
           }
         }
 
-        if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
-          stage('ATH - Jenkins 2.73.2') {
-            sh "cd acceptance-tests && bash -x ./run.sh -v=2.73.2 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
-            junit 'acceptance-tests/target/surefire-reports/*.xml'
-          }
-          stage('ATH - Jenkins 2.73.3') {
-            sh "cd acceptance-tests && bash -x ./run.sh -v=2.73.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
-            junit 'acceptance-tests/target/surefire-reports/*.xml'
-          }
-          stage('ATH - Jenkins 2.107.2') {
-            sh "cd acceptance-tests && bash -x ./run.sh -v=2.107.2 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
-            junit 'acceptance-tests/target/surefire-reports/*.xml'
-          }
-          stage('ATH - Jenkins 2.121.1') {
-            sh "cd acceptance-tests && bash -x ./run.sh -v=2.121.1 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
-            junit 'acceptance-tests/target/surefire-reports/*.xml'
+        jenkinsVersions.each { version ->
+          stage("ATH - Jenkins ${version}") {
+            timeout(time: 90, unit: 'MINUTES') {
+              dir('acceptance-tests') {
+                sh "bash -x ./run.sh -v=${version} --host=${ip} --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+                junit '**/target/surefire-reports/*.xml'
+                archive '**/target/screenshots/**/*'
+                saucePublisher()
+              }
+            }
           }
         }
       }
     }
 
   } catch(err) {
+    echo(err)
     currentBuild.result = "FAILURE"
 
     if (err.toString().contains('exit code 143')) {
@@ -92,7 +120,11 @@ node() {
     }
   } finally {
     stage('Cleanup') {
-      sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
+      if (params.USE_SAUCELABS) {
+        sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-sc.sh"
+      } else {
+        sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
+      }
       sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-bitbucket-server.sh"
       deleteDir()
     }

@@ -24,6 +24,7 @@ RUN apt-get update -qqy \
     build-essential \
     python \
     iputils-ping \
+    net-tools \
     locales \
     libsass-dev \
   && rm -rf /var/lib/apt/lists/* \
