@@ -12,7 +12,7 @@ properties([
   // only 20 builds,
   buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: '20')),
   parameters([
-    boolean(name: 'USE_SAUCELABS', defaultValue: false)
+    booleanParam(name: 'USE_SAUCELABS', defaultValue: false)
   ])
 ])
 
