@@ -88,9 +88,9 @@ node() {
             junit '**/target/surefire-reports/TEST-*.xml'
             junit '**/target/jest-reports/*.xml'
             jacoco execPattern: '**/target/jacoco.exec', classPattern : '**/target/classes', sourcePattern: '**/src/main/java', exclusionPattern: 'src/test*'
-            archive '*/target/code-coverage/**/*'
+            // archive '*/target/code-coverage/**/*'
             archive '*/target/*.hpi'
-            archive '*/target/jest-coverage/**/*'
+            // archive '*/target/jest-coverage/**/*'
           }
 
           stage('ATH - Jenkins 2.138.4') {
