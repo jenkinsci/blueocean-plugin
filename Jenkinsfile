@@ -93,14 +93,6 @@ node() {
             // archive '*/target/jest-coverage/**/*'
           }
 
-          stage('ATH - Jenkins 2.138.4') {
-            timeout(time: 90, unit: 'MINUTES') {
-              sh "cd acceptance-tests && bash -x ./run.sh -v=2.138.4 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
-              junit 'acceptance-tests/target/surefire-reports/*.xml'
-              archive 'acceptance-tests/target/screenshots/**/*'
-            }
-          }
-
           jenkinsVersions.each { version ->
             stage("ATH - Jenkins ${version}") {
               timeout(time: 90, unit: 'MINUTES') {
