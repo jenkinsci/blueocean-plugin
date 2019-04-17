@@ -29,6 +29,6 @@ assemble-plugins() {
     popd
 
     mkdir -p ./runner/runtime-plugins/runtime-deps/target/plugins-combined
-    cp -f $AGGREGATOR_DIR/target/plugins/* ./runner/runtime-plugins/runtime-deps/target/plugins-combined
     cp -f ./runner/runtime-plugins/runtime-deps/target/plugins/* ./runner/runtime-plugins/runtime-deps/target/plugins-combined
+    cp -f $AGGREGATOR_DIR/target/plugins/* ./runner/runtime-plugins/runtime-deps/target/plugins-combined
 }
