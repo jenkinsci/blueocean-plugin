@@ -1,5 +1,6 @@
 package io.blueocean.ath;
 
+import com.google.common.base.Strings;
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
@@ -78,6 +79,9 @@ public class AthModule extends AbstractModule {
             }
             capability.setCapability("extendedDebugging", "true");
             capability.setCapability("initialBrowserUrl", launchUrl);
+            if (!Strings.isNullOrEmpty(cfg.getString("TUNNEL_IDENTIFIER"))) {
+                capability.setCapability("tunnelIdentifier", cfg.getString("TUNNEL_IDENTIFIER"));
+            }
 
             WebDriver driver = new RemoteWebDriver(new URL(webDriverUrl), capability);
             LocalDriver.setCurrent(driver);
