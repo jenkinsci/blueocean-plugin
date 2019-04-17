@@ -34,7 +34,7 @@ fi
 
 function finish() {
     if [ "${RUN_SELENIUM}" == "true" ]; then
-        if [ "${SAUCE_ACCESS_KEY}" == "true" ]; then
+        if [ ! -z "${SAUCE_ACCESS_KEY}" ]; then
             ./runner/scripts/stop-sc.sh
         else
             ./runner/scripts/stop-selenium.sh
@@ -45,7 +45,7 @@ function finish() {
 
 function start() {
     if [ "${RUN_SELENIUM}" == "true" ]; then
-        if [ "${SAUCE_ACCESS_KEY}" == "true" ]; then
+        if [ ! -z "${SAUCE_ACCESS_KEY}" ]; then
             ./runner/scripts/start-sc.sh
         else
             ./runner/scripts/start-selenium.sh
@@ -85,13 +85,5 @@ if [ $? != 0 ];then
     EXIT_CODE=1
 fi
 popd
-
-
-if [ "${RUN_SELENIUM}" == "true" ]; then
-    ./runner/scripts/stop-selenium.sh
-    ./runner/scripts/stop-bitbucket-server.sh
-
-fi
-
 
 exit $EXIT_CODE
