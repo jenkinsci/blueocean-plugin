@@ -216,6 +216,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
     }
 
     @Test
+    @Issue("JENKINS-39203")
     public void sillyLongName() throws Exception {
         WorkflowRun run = createAndRunJob("SillyLongName",
                                           "earlyUnstableStatusShouldReportPunStateAsRunningAndResultAsUnknown.jenkinsfile",
@@ -223,8 +224,8 @@ public class GraphBuilderTest extends PipelineBaseTest {
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
-        assertStageAndEdges(nodes, "stage 1 marked as unstable", BlueRun.BlueRunState.NOT_BUILT, BlueRun.BlueRunResult.NOT_BUILT, "stage 2 wait");
-        assertStageAndEdges(nodes, "stage 2 wait", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.UNSTABLE);
+        assertStageAndEdges(nodes, "stage 1 marked as unstable", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.UNSTABLE, "stage 2 wait");
+        assertStageAndEdges(nodes, "stage 2 wait", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.SUCCESS);
 
         assertEquals("Unexpected stages in graph", 2, nodes.size());
     }
