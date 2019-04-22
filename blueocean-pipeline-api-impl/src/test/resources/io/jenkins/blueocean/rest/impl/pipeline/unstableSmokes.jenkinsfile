@@ -1,0 +1,21 @@
+stage('unstable-one') {
+    echo('foo')
+    timeout(1) {
+        unstable('oops-one')
+    }
+    echo('bar')
+}
+stage('success') {
+    echo('baz')
+}
+stage('unstable-two') {
+    try {
+        error('will-be-caught')
+    } catch (e) {
+        unstable('oops-two')
+    }
+}
+stage('failure') {
+    unstable('oops-masked')
+    error('oops-failure')
+}

@@ -395,6 +395,20 @@ public class GraphBuilderTest extends PipelineBaseTest {
         assertEquals("Unexpected stages in graph", 4, nodes.size());
     }
 
+    @Test
+    public void unstableSmokes() throws Exception {
+        WorkflowRun run = createAndRunJob("unstableSmokes", "unstableSmokes.jenkinsfile", Result.FAILURE);
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "unstable-one", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.UNSTABLE, "success");
+        assertStageAndEdges(nodes, "success", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.SUCCESS, "unstable-two");
+        assertStageAndEdges(nodes, "unstable-two", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.UNSTABLE, "failure");
+        assertStageAndEdges(nodes, "failure", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.FAILURE);
+
+        assertEquals("Unexpected stages in graph", 4, nodes.size());
+    }
+
     private FlowNodeWrapper assertStageAndEdges(Collection<FlowNodeWrapper> searchNodes, String stageName, String... edgeNames) {
         return assertStageAndEdges(searchNodes, stageName, BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.SUCCESS, edgeNames);
     }
