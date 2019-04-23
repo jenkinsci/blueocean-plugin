@@ -1,0 +1,11 @@
+name-template: v$NEXT_PATCH_VERSION 🌈
+tag-template: blueocean-parent-$NEXT_PATCH_VERSION
+categories:
+  - title: 🚀 Features
+    label: enhancement
+  - title: 🐛 Bug Fixes
+    label: bug
+template: |
+  ## What’s Changed
+
+  $CHANGES
