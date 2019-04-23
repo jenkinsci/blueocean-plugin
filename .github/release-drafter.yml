@@ -1,5 +1,7 @@
 name-template: v$NEXT_PATCH_VERSION 🌈
 tag-template: blueocean-parent-$NEXT_PATCH_VERSION
+exclude-lables:
+  - internal
 categories:
   - title: 🚀 Features
     label: enhancement
