@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import React from 'react';
-import { shallow, render } from 'enzyme';
+import { mount } from 'enzyme';
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import { latestRuns } from './data/runs/latestRuns';
@@ -11,19 +11,43 @@ const t = i18nTranslator('blueocean-dashboard');
 import { mockExtensionsForI18n } from './mock-extensions-i18n';
 mockExtensionsForI18n();
 
+const params = {
+    organization: 'jenkins',
+    pipeline: 'asdf',
+};
+
+function buildContext(changeSetPagerData) {
+    return {
+        params: {
+            organization: 'jenkins',
+            pipeline: 'job1',
+            branch: 'master',
+            runId: '2',
+        },
+        activityService: {
+            changeSetPager() {
+                return {
+                    data: changeSetPagerData,
+                };
+            },
+        },
+    };
+}
+
 describe('RunDetailsChanges', () => {
     beforeAll(() => mockExtensionsForI18n());
 
     it('renders nothing with no data', () => {
-        let wrapper = render(<RunDetailsChanges t={t} />);
+        const wrapper = mount(<RunDetailsChanges t={t} params={params} />, { context: buildContext() });
 
-        assert.equal(wrapper.html(), '', 'output should be empty');
+        assert.equal(wrapper.html(), null, 'output should be empty');
     });
 
     it('renders empty changeset', () => {
-        let wrapper = render(<RunDetailsChanges t={t} result={{ changeSet: [] }} />);
+        const runs = latestRuns.map(run => run.latestRun);
+        const wrapper = mount(<RunDetailsChanges t={t} params={params} result={runs[0]} />, { context: buildContext([]) });
 
-        let output = wrapper.html();
+        const output = wrapper.html();
 
         // Class names we expect to see
         assert(output.match('RunDetailsEmpty'), 'output should contain "RunDetailsEmpty"');
@@ -32,9 +56,9 @@ describe('RunDetailsChanges', () => {
     });
 
     it('renders a valid changeset', () => {
-        let runs = latestRuns.map(run => (run.latestRun));
-        let wrapper = render(<RunDetailsChanges t={t} result={runs[0]}/>);
-        let output = wrapper.html();
+        const runs = latestRuns.map(run => run.latestRun);
+        const wrapper = mount(<RunDetailsChanges t={t} params={params} result={runs[0]} />, { context: buildContext(runs[0].changeSet) });
+        const output = wrapper.html();
 
         // Class names we expect to see
         assert(output.match('JTable'), 'output should contain "JTable"');

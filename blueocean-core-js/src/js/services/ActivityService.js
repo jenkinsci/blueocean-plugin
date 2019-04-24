@@ -99,6 +99,21 @@ export class ActivityService extends BunkerService {
     }
 
     /**
+     * Fetch a pager for changeSet
+     *
+     * @param href (eg: myRun._links.changeSet.href )
+     */
+    changeSetPager(href) {
+        return this.pagerService.getPager({
+            key: href,
+            /**
+             * Lazily generate the pager incase its needed.
+             */
+            lazyPager: () => new Pager(href, 100, this),
+        });
+    }
+
+    /**
      * Fetches artifacts for a given run.
      *
      * @param {string} runHref The href of the run to fetcfh artifacts for.
