@@ -222,8 +222,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
         }
     }
 
-    //JENKINS-39203
     @Test
+    @Issue("JENKINS-39203")
     public void stepStatusForUnstableBuild() throws Exception {
         String p = "node {\n" +
             "   echo 'Hello World'\n" +
@@ -231,7 +231,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
             "    echo 'Inside try'\n" +
             "   }finally{\n" +
             "    sh 'echo \"blah\"' \n" +
-            "    currentBuild.result = \"UNSTABLE\"\n" +
+            "    unstable('foobar')\n" +
             "   }\n" +
             "}";
 
@@ -243,12 +243,15 @@ public class PipelineNodeTest extends PipelineBaseTest {
         j.assertBuildStatus(Result.UNSTABLE, b1);
 
         List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
-        Assert.assertEquals(resp.size(), 3);
+        assertEquals(4, resp.size());
 
         for (int i = 0; i < resp.size(); i++) {
             Map rn = resp.get(i);
-            Assert.assertEquals(rn.get("result"), "SUCCESS");
-            Assert.assertEquals(rn.get("state"), "FINISHED");
+            String expectedResult = "UnstableStep".equals(rn.get("displayName"))
+                    ? "UNSTABLE"
+                    : "SUCCESS";
+            assertEquals(expectedResult, rn.get("result"));
+            assertEquals("FINISHED", rn.get("state"));
         }
 
     }

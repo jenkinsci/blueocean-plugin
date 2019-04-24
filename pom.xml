@@ -362,7 +362,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-api</artifactId>
-            <version>2.34-rc893.b179faa50943</version> <!-- TODO: https://github.com/jenkinsci/workflow-api-plugin/pull/91 -->
+            <version>2.34-rc895.9a08467f4ffb</version> <!-- TODO: https://github.com/jenkinsci/workflow-api-plugin/pull/91 -->
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -372,7 +372,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-graph-analysis</artifactId>
-            <version>1.10-rc139.a41947b4c6f1</version> <!-- TODO: https://github.com/jenkinsci/pipeline-graph-analysis-plugin/pull/25 -->
+            <version>1.10-rc141.74d62cdabad2</version> <!-- TODO: https://github.com/jenkinsci/pipeline-graph-analysis-plugin/pull/25 -->
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
