@@ -252,7 +252,7 @@ public abstract class Property implements Comparable<Property> {
                             buffer.finished();
                         } catch (IOException x) {
                             if (x.getCause() instanceof InvocationTargetException) {
-                                LOGGER.log(Level.WARNING, "skipping export of " + e, x);
+                                LOGGER.log(Level.SEVERE, "skipping export of " + e, x);
                             }
                         }
                         buffer.commit(writer);
@@ -268,7 +268,7 @@ public abstract class Property implements Comparable<Property> {
                             buffer.finished();
                         } catch (IOException x) {
                             if (x.getCause() instanceof InvocationTargetException) {
-                                LOGGER.log(Level.WARNING, "skipping export of " + e, x);
+                                LOGGER.log(Level.SEVERE, "skipping export of " + e, x);
                             }
                         }
                         buffer.commit(writer);

@@ -25,6 +25,6 @@ public class NullAnalytics extends AbstractAnalytics {
 
     @Override
     protected void doTrack(String name, Map<String, Object> allProps) {
-        LOGGER.log(Level.FINE, "Analytics are disabled");
+        LOGGER.log(Level.FINEST, "Analytics are disabled");
     }
 }

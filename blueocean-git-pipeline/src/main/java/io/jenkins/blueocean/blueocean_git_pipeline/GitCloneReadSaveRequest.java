@@ -91,7 +91,7 @@ class GitCloneReadSaveRequest extends GitReadSaveRequest {
         try {
             git.clone(gitSource.getRemote(), "origin", true, null);
 
-            log.fine("Repository " + gitSource.getRemote() + " cloned to: " + repositoryPath.getCanonicalPath());
+            log.finest("Repository " + gitSource.getRemote() + " cloned to: " + repositoryPath.getCanonicalPath());
         } catch(GitException e) {
             // check if this is an empty repository
             boolean isEmptyRepo = false;

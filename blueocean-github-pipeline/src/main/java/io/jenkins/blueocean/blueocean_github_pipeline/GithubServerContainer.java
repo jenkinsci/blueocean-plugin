@@ -103,7 +103,7 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
                         isGithubCloud = code == 200 && responseBody.containsKey("current_user_url");
                         isGithubEnterprise = code == 401 && responseBody.containsKey("message");
                     } catch (IOException ioe) {
-                        LOGGER.log(Level.INFO, "Could not parse response body from Github");
+                        LOGGER.log(Level.SEVERE, "Could not parse response body from Github");
                     }
 
                     if (!isGithubCloud && !isGithubEnterprise) {
@@ -112,7 +112,7 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
                 }
             } catch (Throwable e) {
                 errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), e.toString()));
-                LOGGER.log(Level.INFO, "Could not connect to Github", e);
+                LOGGER.log(Level.SEVERE, "Could not connect to Github", e);
             }
         }
 

@@ -105,7 +105,7 @@ class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
                 Git activeRepo = getActiveRepository(repository);
                 Repository repo = activeRepo.getRepository();
                 File repoDir = repo.getDirectory().getParentFile();
-                log.fine("Repo cloned to: " + repoDir.getCanonicalPath());
+                log.finest("Repo cloned to: " + repoDir.getCanonicalPath());
                 try {
                     File f = new File(repoDir, filePath);
                     if (!f.exists() || f.canWrite()) {

@@ -69,7 +69,7 @@ public class PipelineStatePreloader extends RESTFetchPreloader {
                         return null;
                     }
                 } else {
-                    LOGGER.log(Level.FINE, String.format("Unable to preload pipeline '%s'. Failed to convert to Blue Ocean Resource.", pipelineJobItem.getUrl()));
+                    LOGGER.log(Level.FINEST, String.format("Unable to preload pipeline '%s'. Failed to convert to Blue Ocean Resource.", pipelineJobItem.getUrl()));
                     return null;
                 }
             }
