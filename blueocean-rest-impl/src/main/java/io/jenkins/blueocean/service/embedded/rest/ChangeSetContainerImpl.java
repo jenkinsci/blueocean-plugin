@@ -57,6 +57,9 @@ public class ChangeSetContainerImpl extends Container<BlueChangeSetEntry> {
             if (originalRun != null) {
                 run = originalRun;
                 replayCause = (ReplayCause) run.getCause(ReplayCause.class);
+            } else {
+                // the replay we are dependant on no longer exists
+                break;
             }
         }
 
