@@ -3,7 +3,7 @@ tag-template: blueocean-parent-$NEXT_PATCH_VERSION
 
 replacers:
   - search: '/JENKINS-(\d+)/g'
-    replace: 'https://issues.jenkins-ci.org/browse/JENKINS-$1'
+    replace: '[https://issues.jenkins-ci.org/browse/JENKINS-$1](JENKINS-$1)'
 exclude-lables:
   - internal
 categories:
