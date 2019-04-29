@@ -44,52 +44,52 @@ public class BitbucketApiTest extends BbCloudWireMock {
     public void getUser() {
         BbUser user = api.getUser();
         assertNotNull(user);
-        assertEquals(BbCloudWireMock.USER_KEY, user.getSlug());
-        assertEquals("https://bitbucket.org/account/" + BbCloudWireMock.USER_KEY + "/avatar/50/", user.getAvatar());
+        assertEquals(BbCloudWireMock.USER_UUID, user.getSlug());
+        assertEquals("https://bitbucket.org/account/" + BbCloudWireMock.USER_UUID + "/avatar/50/", user.getAvatar());
     }
 
     @Test
     public void getTeams() {
         BbPage<BbOrg> teams = api.getOrgs(1, 100);
         assertEquals(2, teams.getSize());
-        assertEquals(BbCloudWireMock.USER_KEY, teams.getValues().get(0).getKey());
+        assertEquals(BbCloudWireMock.USER_UUID, teams.getValues().get(0).getKey());
         assertEquals("Vivek Pandey", teams.getValues().get(0).getName());
-        assertEquals("https://bitbucket.org/account/" + BbCloudWireMock.USER_KEY + "/avatar/50/", teams.getValues().get(0).getAvatar());
+        assertEquals("https://bitbucket.org/account/" + BbCloudWireMock.USER_UUID + "/avatar/50/", teams.getValues().get(0).getAvatar());
 
-        assertEquals(BbCloudWireMock.TEAM_KEY, teams.getValues().get(1).getKey());
+        assertEquals(BbCloudWireMock.TEAM_UUID, teams.getValues().get(1).getKey());
         assertEquals("Vivek's Team", teams.getValues().get(1).getName());
-        assertEquals("https://bitbucket.org/account/" + BbCloudWireMock.TEAM_KEY + "/avatar/50/", teams.getValues().get(1).getAvatar());
+        assertEquals("https://bitbucket.org/account/" + BbCloudWireMock.TEAM_UUID + "/avatar/50/", teams.getValues().get(1).getAvatar());
     }
 
     @Test
     public void getUserTeam() {
-        BbOrg team = api.getOrg(BbCloudWireMock.USER_KEY);
-        assertEquals(BbCloudWireMock.USER_KEY, team.getKey());
+        BbOrg team = api.getOrg(BbCloudWireMock.USER_UUID);
+        assertEquals(BbCloudWireMock.USER_UUID, team.getKey());
         assertEquals("Vivek Pandey", team.getName());
-        assertEquals("https://bitbucket.org/account/" + BbCloudWireMock.USER_KEY + "/avatar/50/", team.getAvatar());
+        assertEquals("https://bitbucket.org/account/" + BbCloudWireMock.USER_UUID + "/avatar/50/", team.getAvatar());
     }
 
     @Test
     public void getUserTeamUsingEmail() {
         api = new BitbucketCloudApi(apiUrl, getMockedCredentials("x.y@gmail.com"));
-        BbOrg team = api.getOrg(BbCloudWireMock.USER_KEY);
-        assertEquals(BbCloudWireMock.USER_KEY, team.getKey());
+        BbOrg team = api.getOrg(BbCloudWireMock.USER_UUID);
+        assertEquals(BbCloudWireMock.USER_UUID, team.getKey());
         assertEquals("Vivek Pandey", team.getName());
-        assertEquals("https://bitbucket.org/account/" + BbCloudWireMock.USER_KEY + "/avatar/50/", team.getAvatar());
+        assertEquals("https://bitbucket.org/account/" + BbCloudWireMock.USER_UUID + "/avatar/50/", team.getAvatar());
     }
 
 
     @Test
     public void getTeam() {
-        BbOrg team = api.getOrg(BbCloudWireMock.TEAM_KEY);
-        assertEquals(BbCloudWireMock.TEAM_KEY, team.getKey());
+        BbOrg team = api.getOrg(BbCloudWireMock.TEAM_UUID);
+        assertEquals(BbCloudWireMock.TEAM_UUID, team.getKey());
         assertEquals("Vivek's Team", team.getName());
-        assertEquals("https://bitbucket.org/account/" + BbCloudWireMock.TEAM_KEY + "/avatar/50/", team.getAvatar());
+        assertEquals("https://bitbucket.org/account/" + BbCloudWireMock.TEAM_UUID + "/avatar/50/", team.getAvatar());
     }
 
     @Test
     public void getRepos() {
-        BbPage<BbRepo> repos = api.getRepos(BbCloudWireMock.TEAM_KEY, 1, 100);
+        BbPage<BbRepo> repos = api.getRepos(BbCloudWireMock.TEAM_UUID, 1, 100);
         assertEquals(2, repos.getSize());
         assertEquals("pipeline-demo-test", repos.getValues().get(0).getSlug());
         assertEquals("emptyrepo", repos.getValues().get(1).getSlug());
@@ -97,15 +97,15 @@ public class BitbucketApiTest extends BbCloudWireMock {
 
     @Test
     public void getRepo() {
-        BbRepo repo = api.getRepo(BbCloudWireMock.TEAM_KEY, "pipeline-demo-test");
+        BbRepo repo = api.getRepo(BbCloudWireMock.TEAM_UUID, "pipeline-demo-test");
         assertEquals("pipeline-demo-test", repo.getSlug());
     }
 
     @Test
     public void getRepoContent() {
-        BbBranch branch = api.getDefaultBranch(BbCloudWireMock.USER_KEY, "demo1");
+        BbBranch branch = api.getDefaultBranch(BbCloudWireMock.USER_UUID, "demo1");
         assertNotNull(branch);
-        String content = api.getContent(BbCloudWireMock.USER_KEY, "demo1", "Jenkinsfile", branch.getLatestCommit());
+        String content = api.getContent(BbCloudWireMock.USER_UUID, "demo1", "Jenkinsfile", branch.getLatestCommit());
         assertEquals("node{\n" +
                 "  echo 'hello world!'\n" +
                 "}", content);
@@ -115,11 +115,11 @@ public class BitbucketApiTest extends BbCloudWireMock {
     @Test
     public void createNewRepoContent() {
         //create new file
-        BbSaveContentResponse saveResponse = api.saveContent(BbCloudWireMock.USER_KEY, "demo1", "foo",
+        BbSaveContentResponse saveResponse = api.saveContent(BbCloudWireMock.USER_UUID, "demo1", "foo",
                 "This is test content in new file",
                 "first commit", "null", null, null);
         assertNotNull(saveResponse.getCommitId());
-        String content = api.getContent(BbCloudWireMock.USER_KEY, "demo1", "foo", (String) saveResponse.getCommitId());
+        String content = api.getContent(BbCloudWireMock.USER_UUID, "demo1", "foo", (String) saveResponse.getCommitId());
         assertEquals("This is test content in new file", content);
     }
 
