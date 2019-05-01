@@ -40,7 +40,6 @@ if (params.USE_SAUCELABS) {
 }
 
 if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
-  jenkinsVersions.add('2.121.1')
   jenkinsVersions.add('2.150.3')
 }
 
