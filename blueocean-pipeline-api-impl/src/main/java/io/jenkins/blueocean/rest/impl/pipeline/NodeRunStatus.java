@@ -22,6 +22,7 @@ public class NodeRunStatus {
     public NodeRunStatus(@Nonnull FlowNode endNode) {
         Result result = null;
         ErrorAction errorAction = endNode.getError();
+        WarningAction warningAction = endNode.getPersistentAction(WarningAction.class);
         if (errorAction != null) {
             if(errorAction.getError() instanceof FlowInterruptedException) {
                 result = ((FlowInterruptedException) errorAction.getError()).getResult();
@@ -32,8 +33,8 @@ public class NodeRunStatus {
                 this.result = BlueRun.BlueRunResult.ABORTED;
             }
             this.state = endNode.isActive() ? BlueRun.BlueRunState.RUNNING : BlueRun.BlueRunState.FINISHED;
-        } else if (endNode.getPersistentAction(WarningAction.class) != null) {
-            this.result = BlueRun.BlueRunResult.UNSTABLE;
+        } else if (warningAction != null) {
+            this.result = new NodeRunStatus(GenericStatus.fromResult(warningAction.getResult())).result;
             this.state = endNode.isActive() ? BlueRun.BlueRunState.RUNNING : BlueRun.BlueRunState.FINISHED;
         } else if (QueueItemAction.getNodeState(endNode) == QueueItemAction.QueueState.QUEUED) {
             this.result = BlueRun.BlueRunResult.UNKNOWN;

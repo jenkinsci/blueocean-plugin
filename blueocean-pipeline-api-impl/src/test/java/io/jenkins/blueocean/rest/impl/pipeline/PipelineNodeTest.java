@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import com.mashape.unirest.http.Unirest;
+import hudson.ExtensionList;
 import hudson.FilePath;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
@@ -34,6 +35,7 @@ import org.jenkinsci.plugins.workflow.graphanalysis.MemoryFlowChunk;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.jenkinsci.plugins.workflow.steps.UnstableStep;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 import org.junit.Assert;
@@ -245,9 +247,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
         List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
         assertEquals(4, resp.size());
 
+        String unstableStepDisplayName = ExtensionList.lookupSingleton(UnstableStep.DescriptorImpl.class).getDisplayName();
         for (int i = 0; i < resp.size(); i++) {
             Map rn = resp.get(i);
-            String expectedResult = "UnstableStep".equals(rn.get("displayName"))
+            String expectedResult = unstableStepDisplayName.equals(rn.get("displayName"))
                     ? "UNSTABLE"
                     : "SUCCESS";
             assertEquals(expectedResult, rn.get("result"));
