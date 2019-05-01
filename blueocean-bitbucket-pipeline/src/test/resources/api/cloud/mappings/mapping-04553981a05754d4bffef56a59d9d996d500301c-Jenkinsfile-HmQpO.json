@@ -1,31 +1,31 @@
 {
-  "id" : "6dd39995-e8cd-3f38-b90a-6430f8b6be32",
-  "request" : {
-    "url" : "/api/2.0/repositories/vivekp7/demo1/src/04553981a05754d4bffef56a59d9d996d500301c/Jenkinsfile",
-    "method" : "GET"
+  "id": "6dd39995-e8cd-3f38-b90a-6430f8b6be32",
+  "request": {
+    "url": "/api/2.0/repositories/%7B1c5c9255-d59f-47e2-b5c7-52269c0332b9%7D/demo1/src/04553981a05754d4bffef56a59d9d996d500301c/Jenkinsfile",
+    "method": "GET"
   },
-  "response" : {
-    "status" : 200,
-    "bodyFileName" : "body-04553981a05754d4bffef56a59d9d996d500301c-Jenkinsfile-HmQpO.txt",
-    "headers" : {
-      "Server" : "nginx",
-      "Vary" : "Authorization",
-      "Content-Type" : "text/plain",
-      "X-OAuth-Scopes" : "webhook, pullrequest:write, project, team, email",
-      "Strict-Transport-Security" : "max-age=31536000; includeSubDomains; preload",
-      "Date" : "Tue, 27 Jun 2017 16:37:03 GMT",
-      "X-Served-By" : "app-162",
-      "ETag" : "5399767577117303306",
-      "X-Static-Version" : "dce5f507b47a",
-      "X-Content-Type-Options" : "nosniff",
-      "X-Accepted-OAuth-Scopes" : "repository",
-      "X-Credential-Type" : "apppassword",
-      "X-Render-Time" : "0.0650877952576",
-      "Connection" : "keep-alive",
-      "X-Request-Count" : "33",
-      "X-Frame-Options" : "SAMEORIGIN",
-      "X-Version" : "dce5f507b47a"
+  "response": {
+    "status": 200,
+    "bodyFileName": "body-04553981a05754d4bffef56a59d9d996d500301c-Jenkinsfile-HmQpO.txt",
+    "headers": {
+      "Server": "nginx",
+      "Vary": "Authorization",
+      "Content-Type": "text/plain",
+      "X-OAuth-Scopes": "webhook, pullrequest:write, project, team, email",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+      "Date": "Tue, 27 Jun 2017 16:37:03 GMT",
+      "X-Served-By": "app-162",
+      "ETag": "5399767577117303306",
+      "X-Static-Version": "dce5f507b47a",
+      "X-Content-Type-Options": "nosniff",
+      "X-Accepted-OAuth-Scopes": "repository",
+      "X-Credential-Type": "apppassword",
+      "X-Render-Time": "0.0650877952576",
+      "Connection": "keep-alive",
+      "X-Request-Count": "33",
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-Version": "dce5f507b47a"
     }
   },
-  "uuid" : "6dd39995-e8cd-3f38-b90a-6430f8b6be32"
+  "uuid": "6dd39995-e8cd-3f38-b90a-6430f8b6be32"
 }

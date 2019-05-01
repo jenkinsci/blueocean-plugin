@@ -11,6 +11,8 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
  */
 public class BbCloudWireMock extends BitbucketWireMockBase {
 
+    protected static String USER_UUID = "{1c5c9255-d59f-47e2-b5c7-52269c0332b9}";
+    protected static String TEAM_UUID = "{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}";
     @Rule
     public WireMockRule bitbucketApi = new WireMockRule(wireMockConfig().
             dynamicPort().dynamicHttpsPort()

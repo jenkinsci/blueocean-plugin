@@ -1,29 +1,29 @@
 {
-  "id" : "3d59d9d9-0001-3c4b-a332-134f8c7adcaf",
-  "request" : {
-    "url" : "/rest/api/1.0/projects/vivektestteam/repos/pipeline-demo-test",
-    "method" : "GET"
+  "id": "3d59d9d9-0001-3c4b-a332-134f8c7adcaf",
+  "request": {
+    "url": "/rest/api/1.0/projects/%7B47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe%7D/repos/pipeline-demo-test",
+    "method": "GET"
   },
-  "response" : {
-    "status" : 401,
-    "bodyFileName" : "body-repos-pipeline-demo-test-GBviK.txt",
-    "headers" : {
-      "Server" : "nginx",
-      "Vary" : "Accept-Language, Cookie",
-      "WWW-Authenticate" : "Basic realm=\"Bitbucket.org HTTP\"",
-      "Content-Type" : "text/html; charset=utf-8",
-      "Strict-Transport-Security" : "max-age=31536000; includeSubDomains; preload",
-      "Date" : "Wed, 09 Aug 2017 20:55:11 GMT",
-      "X-Served-By" : "app-172",
-      "Content-Language" : "en",
-      "X-Static-Version" : "997008ecea1d",
-      "ETag" : "\"d41d8cd98f00b204e9800998ecf8427e\"",
-      "X-Render-Time" : "0.0141670703888",
-      "Connection" : "keep-alive",
-      "X-Version" : "997008ecea1d",
-      "X-Request-Count" : "788",
-      "X-Frame-Options" : "SAMEORIGIN"
+  "response": {
+    "status": 401,
+    "bodyFileName": "body-repos-pipeline-demo-test-GBviK.txt",
+    "headers": {
+      "Server": "nginx",
+      "Vary": "Accept-Language, Cookie",
+      "WWW-Authenticate": "Basic realm=\"Bitbucket.org HTTP\"",
+      "Content-Type": "text/html; charset=utf-8",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+      "Date": "Wed, 09 Aug 2017 20:55:11 GMT",
+      "X-Served-By": "app-172",
+      "Content-Language": "en",
+      "X-Static-Version": "997008ecea1d",
+      "ETag": "\"d41d8cd98f00b204e9800998ecf8427e\"",
+      "X-Render-Time": "0.0141670703888",
+      "Connection": "keep-alive",
+      "X-Version": "997008ecea1d",
+      "X-Request-Count": "788",
+      "X-Frame-Options": "SAMEORIGIN"
     }
   },
-  "uuid" : "3d59d9d9-0001-3c4b-a332-134f8c7adcaf"
+  "uuid": "3d59d9d9-0001-3c4b-a332-134f8c7adcaf"
 }

@@ -107,6 +107,6 @@ public class ChangeSetResource extends BlueChangeSetEntry {
 
     @Override
     public Link getLink() {
-        return parent.getLink().rel("changeset/"+getCommitId());
+        return parent.getLink().rel(getCommitId());
     }
 }

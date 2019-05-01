@@ -20,7 +20,6 @@ assemble-plugins() {
             popd
         fi
     fi
-    echo asdfasdfad $PWD
     echo "Assembling ATH dependency plugins (non Blue Ocean) ..."
     pushd runner/runtime-plugins
     mvn clean install -B -DskipTests -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
@@ -30,6 +29,6 @@ assemble-plugins() {
     popd
 
     mkdir -p ./runner/runtime-plugins/runtime-deps/target/plugins-combined
-    cp -f $AGGREGATOR_DIR/target/plugins/* ./runner/runtime-plugins/runtime-deps/target/plugins-combined
     cp -f ./runner/runtime-plugins/runtime-deps/target/plugins/* ./runner/runtime-plugins/runtime-deps/target/plugins-combined
+    cp -f $AGGREGATOR_DIR/target/plugins/* ./runner/runtime-plugins/runtime-deps/target/plugins-combined
 }

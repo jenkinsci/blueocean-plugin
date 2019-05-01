@@ -101,10 +101,12 @@
             <artifactId>blueocean-jira</artifactId>
         </dependency>
 
+        <!-- JENKINS-56773 - Disabled until executor plugin has performance improvements made
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-executor-info</artifactId>
         </dependency>
+        -->
 
         <!-- Bundled plugins for improved out of the box experience -->
         <dependency>

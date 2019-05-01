@@ -1,31 +1,31 @@
 {
-  "id" : "2b98ec6d-ecac-39d7-9fbf-5ca115099e31",
-  "request" : {
-    "url" : "/api/2.0/user",
-    "method" : "GET"
+  "id": "2b98ec6d-ecac-39d7-9fbf-5ca115099e31",
+  "request": {
+    "url": "/api/2.0/user",
+    "method": "GET"
   },
-  "response" : {
-    "status" : 200,
-    "bodyFileName" : "body-2.0-user-hs3Pn.json",
-    "headers" : {
-      "Server" : "nginx",
-      "Vary" : "Authorization",
-      "Content-Type" : "application/json; charset=utf-8",
-      "Strict-Transport-Security" : "max-age=31536000; includeSubDomains; preload",
-      "Date" : "Mon, 17 Jul 2017 19:32:43 GMT",
-      "X-Served-By" : "app-142",
-      "X-Static-Version" : "3ff83bd3deed",
-      "ETag" : "\"eae76734b8471cd264c5b81d87c446cd\"",
-      "X-Content-Type-Options" : "nosniff",
-      "X-Render-Time" : "0.0324440002441",
-      "X-Credential-Type" : "password",
-      "X-Accepted-OAuth-Scopes" : "account",
-      "Connection" : "keep-alive",
-      "X-Version" : "3ff83bd3deed",
-      "X-Request-Count" : "129",
-      "X-Frame-Options" : "SAMEORIGIN",
-      "X-Cache-Info" : "not cacheable; request contained Authorization header"
+  "response": {
+    "status": 200,
+    "bodyFileName": "body-2.0-user-hs3Pn.json",
+    "headers": {
+      "Server": "nginx",
+      "Vary": "Authorization",
+      "Content-Type": "application/json; charset=utf-8",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+      "Date": "Mon, 17 Jul 2017 19:32:43 GMT",
+      "X-Served-By": "app-142",
+      "X-Static-Version": "3ff83bd3deed",
+      "ETag": "\"eae76734b8471cd264c5b81d87c446cd\"",
+      "X-Content-Type-Options": "nosniff",
+      "X-Render-Time": "0.0324440002441",
+      "X-Credential-Type": "password",
+      "X-Accepted-OAuth-Scopes": "account",
+      "Connection": "keep-alive",
+      "X-Version": "3ff83bd3deed",
+      "X-Request-Count": "129",
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-Cache-Info": "not cacheable; request contained Authorization header"
     }
   },
-  "uuid" : "2b98ec6d-ecac-39d7-9fbf-5ca115099e31"
+  "uuid": "2b98ec6d-ecac-39d7-9fbf-5ca115099e31"
 }
