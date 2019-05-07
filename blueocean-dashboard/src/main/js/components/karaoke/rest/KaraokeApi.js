@@ -1,7 +1,8 @@
 import { Fetch, logging } from '@jenkins-cd/blueocean-core-js';
 import debounce from 'lodash.debounce';
 import { generateDetailUrl } from '../urls/detailUrl';
-import { getNodesInformation } from '../../../util/logDisplayHelper';
+import { getNodesInformationForStages } from '../../../util/logDisplayHelper';
+import { getNodesInformationForSteps } from '../../../util/logDisplayHelper';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RestApi');
 
@@ -90,6 +91,8 @@ export class KaraokeApi {
     }
 
     getNodes(href) {
+        // TODO: clean this the F up.
+
         // creating a new promise to be able to debounce the fetching
         return new Promise(resolve => {
             debounce(() => {
@@ -100,12 +103,26 @@ export class KaraokeApi {
                     logger.warn('could not fetch with empty href');
                     resolve();
                 }
-                resolve(Fetch.fetchJSON(href, { fetchOptions }).then(getNodesInformation));
+                resolve(Fetch.fetchJSON(href, { fetchOptions }).then(nodes => getNodesInformationForStages(nodes)));
             }, 200)();
         });
     }
 
     getSteps(href) {
-        return this.getNodes(href);
+        // TODO: clean this the F up.
+
+        // creating a new promise to be able to debounce the fetching
+        return new Promise(resolve => {
+            debounce(() => {
+                const fetchOptions = prepareOptions();
+                logger.debug('Fetching with json enabled parsing the following href', href);
+                if (!href || href === undefined) {
+                    // leave a logger warning and abort
+                    logger.warn('could not fetch with empty href');
+                    resolve();
+                }
+                resolve(Fetch.fetchJSON(href, { fetchOptions }).then(steps => getNodesInformationForSteps(steps)));
+            }, 200)();
+        });
     }
 }
