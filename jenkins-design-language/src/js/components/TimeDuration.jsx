@@ -18,6 +18,7 @@ type Props = {
 
 type State = {
     elapsed: number,
+    startTime: number,
 };
 
 /**
@@ -38,7 +39,7 @@ export class TimeDuration extends Component {
     constructor(props: Props) {
         super(props);
         // track how much time has elapsed since live updating tracking started
-        this.state = { elapsed: 0 };
+        this.state = { elapsed: 0, startTime: 0 };
         const { updatePeriod = 5000 } = this.props;
         this.timerPeriodMillis = typeof updatePeriod !== 'number' || isNaN(updatePeriod) ? 5000 : updatePeriod;
         this.clearIntervalId = 0;
@@ -59,6 +60,12 @@ export class TimeDuration extends Component {
         }
 
         if (props.millis >= 0 && props.liveUpdate) {
+            if (!this.state.startTime) {
+                this.setState({
+                    startTime: (new Date()).getTime(),
+                });
+            }
+
             this.clearIntervalId = setInterval(() => {
                 this._updateTime();
             }, this.timerPeriodMillis);
@@ -68,12 +75,13 @@ export class TimeDuration extends Component {
         if (!props.liveUpdate) {
             this.setState({
                 elapsed: 0,
+                startTime: 0,
             });
         }
     }
 
     _updateTime() {
-        const elapsed = this.state.elapsed + this.timerPeriodMillis;
+        const elapsed = (new Date()).getTime() - this.state.startTime;
         this.setState({
             elapsed,
         });
