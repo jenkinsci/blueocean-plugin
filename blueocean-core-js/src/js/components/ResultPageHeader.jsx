@@ -8,7 +8,7 @@ const CloseButton = props => (
     <span title={props.t('creation.core.header.close', { defaultValue: 'Close' })}>
         <svg className="ResultPageHeader-close" width="24px" height="24px" viewBox="0 0 24 24" onClick={props.onClick} version="1.1">
             <g strokeWidth="1">
-                <polygon points="19 6.415 17.585 5 12 10.585 6.415 5 5 6.415 10.585 12 5 17.585 6.415 19 12 13.415 17.585 19 19 17.585 13.415 12" />
+                <path strokeWidth="2" d="M18,10l-6,-6l-6,6m6,-6v16" fill="none" stroke="white"/>
             </g>
         </svg>
     </span>
