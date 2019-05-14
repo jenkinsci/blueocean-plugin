@@ -15,6 +15,7 @@ import hudson.util.RunList;
 import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
+import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import jenkins.branch.BranchSource;
 import jenkins.model.Jenkins;
@@ -47,10 +48,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -2463,6 +2466,76 @@ public class PipelineNodeTest extends PipelineBaseTest {
     }
 
     @Test
+    @Issue("CORE-1742")
+    public void graphConsistentWhileExecuting() throws Exception {
+
+        final String expectedNodeNames =
+            "A, B, B-A, B-B, B-B-1, B-B-2, B-C, B-C-1, B-C-2, C, D, D-A, D-B, D-B-1, D-B-2, D-C, D-C-1, D-C-2";
+
+        String completeNodeNames = checkConsistencyWhileBuilding("CORE-1742.jenkinsfile");
+
+        assertEquals("node names", expectedNodeNames, completeNodeNames);
+    }
+
+    @Test
+    @Issue("CORE-1742")
+    public void graphConsistentWhileExecuting2() throws Exception {
+
+        final String expectedNodeNames =
+            "TODO: Get here";
+
+        String completeNodeNames = checkConsistencyWhileBuilding("sequential_parallel_stages_long_run_time.jenkinsfile");
+
+        assertEquals("node names", expectedNodeNames, completeNodeNames);
+    }
+
+    // TODO: Make some more of these ^^^
+
+    private String checkConsistencyWhileBuilding(String jenkinsFileName) throws Exception {
+
+        /*
+            Run a complex pipeline to completion, then start a new build and inspect it while it's running, to exercise
+            the code that merges incomplete runs with previous builds to generate a complete graph
+         */
+
+        WorkflowJob p = createWorkflowJobWithJenkinsfile(getClass(), jenkinsFileName);
+
+        Slave s = j.createOnlineSlave();   // TODO: Do we need this?
+        s.setNumExecutors(2);              // TODO: Do we need this?
+
+        // Do an initial run, collect the nodes
+        final WorkflowRun run1 = p.scheduleBuild2(0).waitForStart();
+        j.waitForCompletion(run1);
+
+        final List<BluePipelineNode> completeNodes = new PipelineNodeContainerImpl(run1, new Link("foo")).getNodes();
+
+        final String completeNodeNames = completeNodes.stream()
+                                                      .map(BluePipelineStep::getDisplayName)
+                                                      .sorted()
+                                                      .collect(Collectors.joining(", "));
+
+        // Start another build...
+        final WorkflowRun run2 = p.scheduleBuild2(0).waitForStart();
+
+        // ... then watch while it runs, checking for the same graph nodes
+
+        do {
+            Thread.sleep(500);
+
+            List<BluePipelineNode> runningNodes = new PipelineNodeContainerImpl(run2, new Link("foo")).getNodes();
+            String runningNodeNames = runningNodes.stream()
+                                                  .map(BluePipelineStep::getDisplayName)
+                                                  .sorted()
+                                                  .collect(Collectors.joining(", "));
+
+            assertEquals("running node names", completeNodeNames, runningNodeNames);
+
+        } while (run2.isBuilding());
+
+        return completeNodeNames; // So caller can do any additional checks
+    }
+
+    @Test
     public void sequentialParallelStagesLongRun() throws Exception {
         WorkflowJob p = createWorkflowJobWithJenkinsfile(getClass(), "sequential_parallel_stages_long_run_time.jenkinsfile");
         Slave s = j.createOnlineSlave();
@@ -2483,6 +2556,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
                     LOGGER.error("node {} has getFirstParent null", node);
                     fail("node with getFirstParent null:" + node);
                 }
+
                 // we try to find edges with id for a non existing node in the list
                 List<BluePipelineNode.Edge> emptyEdges =
                     node.getEdges().stream().filter(edge ->

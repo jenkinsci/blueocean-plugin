@@ -1,18 +1,60 @@
 import { capable } from '@jenkins-cd/blueocean-core-js';
 import { RESULTS, STATES } from './logDisplayHelper'; // TODO: Remove this keymirror rubbish
 
+/*
+
+ Fields that appear to be used, based on proxy recording:
+
+    isFocused
+    id
+    durationInMillis
+    startTime
+    state
+    result
+    displayName
+    type
+    edges
+    firstParent
+    _links
+    parent
+    isParallel
+    actions
+    isRunning
+    restartable
+    title
+
+ */
+
 function isRunningNode(item) {
     return item.state === STATES.RUNNING || item.state === STATES.PAUSED;
 }
 
+const proxyProps = {};
+const proxyHandler = {
+    get: function(obj, prop) {
+        proxyProps[prop] = prop;
+        console.log('AnnotatedStage', Object.keys(proxyProps));
+        return obj[prop];
+    },
+};
+
 function debugNodes(nodes) {
     // TODO: RM
-    const stats = {};
+    const stats = [];
 
     for (const node of nodes) {
-        stats.count = (stats.count || 0) + 1;
-        const result = '' + node.result + '_' + node.state;
-        stats[result] = (stats[result] || 0) + 1;
+        const { id, result, state, type, firstParent } = node;
+        const edges = node.edges.map(o => o.id + ' - ' + o.type).join(', ');
+        const name = node.displayName;
+        stats.push({
+            id,
+            name,
+            result,
+            state,
+            type,
+            firstParent,
+            edges,
+        });
     }
 
     // console.log(JSON.stringify(stats,null,4));
@@ -94,6 +136,7 @@ export function getNodesInformationForStages(nodes) {
         if (isInputStep) {
             modelItem.input = item.input;
         }
+        // return new Proxy(modelItem, proxyHandler);
         return modelItem;
     });
     // in case we have all null we will focus the first node since we assume that this would
@@ -101,6 +144,12 @@ export function getNodesInformationForStages(nodes) {
     if (queuedNodes.length === nodes.length && !wasFocused && model[0]) {
         model[0].isFocused = true;
     }
+
+    // debugNodes(model);
+    // console.log('\n\n\n---------------------------\n\n\n'); // TODO: RM
+
+    console.log('updated model has', model.length, 'stages'); // TODO: RM
+
     // creating the response object
     const information = {
         isFinished: finished,

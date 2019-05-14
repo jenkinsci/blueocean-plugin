@@ -653,80 +653,91 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         return new PipelineStepImpl(node, parent);
     }
 
+    public static List<BluePipelineNode> unionStatic(List<FlowNodeWrapper> incompleteNodes, List<FlowNodeWrapper> previousNodes, final Link parent) {
+        // TODO: rename
+
+
+        return Collections.emptyList();
+    }
+
     @Override
-    public List<BluePipelineNode> union(List<FlowNodeWrapper> that, final Link parent) {
-        List<FlowNodeWrapper> currentNodes = new ArrayList<>(nodes);
-        int currentNodeSize = nodes.size();
-        int futureNodeSize = that.size();
-        if (currentNodeSize < futureNodeSize) {
-            for (int i = currentNodeSize; i < futureNodeSize; i++) {
-                FlowNodeWrapper futureNode = that.get(i);
+    public List<BluePipelineNode> union(List<FlowNodeWrapper> previousNodes, final Link parent) {
 
-                //stitch future nodes to last nodes of current incomplete heads
-                if (currentNodeSize > 0 && i == currentNodeSize) {
-                    FlowNodeWrapper latestNode = currentNodes.get(i - 1);
-                    if (latestNode.type == FlowNodeWrapper.NodeType.STAGE) {
-                        if (futureNode.type == FlowNodeWrapper.NodeType.STAGE) {
-                            latestNode.addEdge(futureNode);
-                        } else if (futureNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
-                            FlowNodeWrapper thatStage = futureNode.getFirstParent();
-                            if (thatStage != null && thatStage.equals(latestNode)) {
-                                for (FlowNodeWrapper edge : thatStage.edges) {
-                                    if (!latestNode.edges.contains(edge)) {
-                                        latestNode.addEdge(edge);
-                                    }
-                                }
-                            }
-                        }
-                    } else if (latestNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
-                        FlowNodeWrapper futureStage = null;
-                        FlowNodeWrapper thatStage = null;
-                        FlowNodeWrapper futureNodeParent = futureNode.getFirstParent();
-                        if (futureNode.type == FlowNodeWrapper.NodeType.STAGE) {
-                            thatStage = futureNode;
-                            futureStage = futureNode;
-                        } else if (futureNode.type == FlowNodeWrapper.NodeType.PARALLEL &&
-                            futureNodeParent != null &&
-                            futureNodeParent.equals(latestNode.getFirstParent())) {
-                            thatStage = futureNode.getFirstParent();
-                            if (futureNode.edges.size() > 0) {
-                                futureStage = futureNode.edges.get(0);
-                            }
-                        }
-                        FlowNodeWrapper stage = latestNode.getFirstParent();
-                        if (stage != null) {
-                            //Add future node as edge to all edges of last stage
-                            for (FlowNodeWrapper edge : stage.edges) {
-                                FlowNodeWrapper node = nodeMap.get(edge.getId());
-                                if (node != null && futureStage != null) {
-                                    node.addEdge(futureStage);
-                                }
-                            }
+        return unionStatic(this.getPipelineNodes(), previousNodes, parent);
 
-                            //now patch edges in case its partial
-                            if (thatStage != null && futureNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
-                                for (FlowNodeWrapper edge : thatStage.edges) {
-                                    if (!stage.edges.contains(edge)) {
-                                        stage.addEdge(edge);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                FlowNodeWrapper n = new FlowNodeWrapper(futureNode.getNode(),
-                                                        new NodeRunStatus(null, null),
-                                                        new TimingInfo(), run);
-                n.addEdges(futureNode.edges);
-                n.addParents(futureNode.getParents());
-                currentNodes.add(n);
-            }
-        }
-        List<BluePipelineNode> newNodes = new ArrayList<>();
-        for (FlowNodeWrapper n : currentNodes) {
-            newNodes.add(new PipelineNodeImpl(n, () -> parent, run));
-        }
-        return newNodes;
+//
+//        List<FlowNodeWrapper> currentNodes = new ArrayList<>(nodes);
+//        int currentNodeSize = nodes.size();
+//        int futureNodeSize = previousNodes.size();
+//        if (currentNodeSize < futureNodeSize) {
+//            for (int i = currentNodeSize; i < futureNodeSize; i++) {
+//                FlowNodeWrapper futureNode = previousNodes.get(i);
+//
+//                //stitch future nodes to last nodes of current incomplete heads
+//                if (currentNodeSize > 0 && i == currentNodeSize) {
+//                    FlowNodeWrapper latestNode = currentNodes.get(i - 1);
+//                    if (latestNode.type == FlowNodeWrapper.NodeType.STAGE) {
+//                        if (futureNode.type == FlowNodeWrapper.NodeType.STAGE) {
+//                            latestNode.addEdge(futureNode);
+//                        } else if (futureNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
+//                            FlowNodeWrapper thatStage = futureNode.getFirstParent();
+//                            if (thatStage != null && thatStage.equals(latestNode)) {
+//                                for (FlowNodeWrapper edge : thatStage.edges) {
+//                                    if (!latestNode.edges.contains(edge)) {
+//                                        latestNode.addEdge(edge);
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    } else if (latestNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
+//                        FlowNodeWrapper futureStage = null;
+//                        FlowNodeWrapper thatStage = null;
+//                        FlowNodeWrapper futureNodeParent = futureNode.getFirstParent();
+//                        if (futureNode.type == FlowNodeWrapper.NodeType.STAGE) {
+//                            thatStage = futureNode;
+//                            futureStage = futureNode;
+//                        } else if (futureNode.type == FlowNodeWrapper.NodeType.PARALLEL &&
+//                            futureNodeParent != null &&
+//                            futureNodeParent.equals(latestNode.getFirstParent())) {
+//                            thatStage = futureNode.getFirstParent();
+//                            if (futureNode.edges.size() > 0) {
+//                                futureStage = futureNode.edges.get(0);
+//                            }
+//                        }
+//                        FlowNodeWrapper stage = latestNode.getFirstParent();
+//                        if (stage != null) {
+//                            //Add future node as edge to all edges of last stage
+//                            for (FlowNodeWrapper edge : stage.edges) {
+//                                FlowNodeWrapper node = nodeMap.get(edge.getId());
+//                                if (node != null && futureStage != null) {
+//                                    node.addEdge(futureStage);
+//                                }
+//                            }
+//
+//                            //now patch edges in case its partial
+//                            if (thatStage != null && futureNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
+//                                for (FlowNodeWrapper edge : thatStage.edges) {
+//                                    if (!stage.edges.contains(edge)) {
+//                                        stage.addEdge(edge);
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//                FlowNodeWrapper n = new FlowNodeWrapper(futureNode.getNode(),
+//                                                        new NodeRunStatus(null, null),
+//                                                        new TimingInfo(), run);
+//                n.addEdges(futureNode.edges);
+//                n.addParents(futureNode.getParents());
+//                currentNodes.add(n);
+//            }
+//        }
+//        List<BluePipelineNode> newNodes = new ArrayList<>();
+//        for (FlowNodeWrapper n : currentNodes) {
+//            newNodes.add(new PipelineNodeImpl(n, () -> parent, run));
+//        }
+//        return newNodes;
     }
 
 
