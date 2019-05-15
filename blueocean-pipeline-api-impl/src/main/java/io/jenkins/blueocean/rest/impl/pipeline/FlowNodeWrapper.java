@@ -25,6 +25,23 @@ import java.util.List;
  */
 public class FlowNodeWrapper {
 
+    // TODO: Docs
+    public boolean sameNode(FlowNodeWrapper that) {
+        if (this.type != that.type) {
+            return false;
+        }
+        if (!this.getId().equals(that.getId())) {
+            return false;
+        }
+        if (!this.displayName.equals(that.displayName)) {
+            return false;
+        }
+
+        // TODO: do we need to compare more things? Should we check edges? Will that break shit?
+
+        return true;
+    }
+
     public enum NodeType {STAGE, PARALLEL, STEP}
 
     private final FlowNode node;
@@ -44,13 +61,7 @@ public class FlowNodeWrapper {
 
 
     public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status, @Nonnull TimingInfo timingInfo, @Nonnull WorkflowRun run) {
-        this.node = node;
-        this.status = status;
-        this.timingInfo = timingInfo;
-        this.type = getNodeType(node);
-        this.displayName = PipelineNodeUtil.getDisplayName(node);
-        this.inputStep = null;
-        this.run = run;
+        this(node,status,timingInfo,null,run);
     }
 
     public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status,

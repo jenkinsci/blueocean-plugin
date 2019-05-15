@@ -48,6 +48,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -653,91 +654,151 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         return new PipelineStepImpl(node, parent);
     }
 
-    public static List<BluePipelineNode> unionStatic(List<FlowNodeWrapper> incompleteNodes, List<FlowNodeWrapper> previousNodes, final Link parent) {
-        // TODO: rename
-
-
-        return Collections.emptyList();
+    private static Optional<FlowNodeWrapper> findNodeWrapperByIdIn(String id, Collection<FlowNodeWrapper> nodes) {
+        for (FlowNodeWrapper node : nodes) {
+            if (node.getId().equals(id)) {
+                return Optional.of(node);
+            }
+        }
+        return Optional.empty();
     }
+
+    private static Optional<BluePipelineNode> findBlueNodeByIdIn(String id, Collection<BluePipelineNode> nodes) {
+        for (BluePipelineNode node : nodes) {
+            if (node.getId().equals(id)) {
+                return Optional.of(node);
+            }
+        }
+        return Optional.empty();
+    }
+
+
 
     @Override
     public List<BluePipelineNode> union(List<FlowNodeWrapper> previousNodes, final Link parent) {
 
-        return unionStatic(this.getPipelineNodes(), previousNodes, parent);
+        boolean graphsAreCompatible = true; // Assuming yes, can be flipped during processing
 
-//
-//        List<FlowNodeWrapper> currentNodes = new ArrayList<>(nodes);
-//        int currentNodeSize = nodes.size();
-//        int futureNodeSize = previousNodes.size();
-//        if (currentNodeSize < futureNodeSize) {
-//            for (int i = currentNodeSize; i < futureNodeSize; i++) {
-//                FlowNodeWrapper futureNode = previousNodes.get(i);
-//
-//                //stitch future nodes to last nodes of current incomplete heads
-//                if (currentNodeSize > 0 && i == currentNodeSize) {
-//                    FlowNodeWrapper latestNode = currentNodes.get(i - 1);
-//                    if (latestNode.type == FlowNodeWrapper.NodeType.STAGE) {
-//                        if (futureNode.type == FlowNodeWrapper.NodeType.STAGE) {
-//                            latestNode.addEdge(futureNode);
-//                        } else if (futureNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
-//                            FlowNodeWrapper thatStage = futureNode.getFirstParent();
-//                            if (thatStage != null && thatStage.equals(latestNode)) {
-//                                for (FlowNodeWrapper edge : thatStage.edges) {
-//                                    if (!latestNode.edges.contains(edge)) {
-//                                        latestNode.addEdge(edge);
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    } else if (latestNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
-//                        FlowNodeWrapper futureStage = null;
-//                        FlowNodeWrapper thatStage = null;
-//                        FlowNodeWrapper futureNodeParent = futureNode.getFirstParent();
-//                        if (futureNode.type == FlowNodeWrapper.NodeType.STAGE) {
-//                            thatStage = futureNode;
-//                            futureStage = futureNode;
-//                        } else if (futureNode.type == FlowNodeWrapper.NodeType.PARALLEL &&
-//                            futureNodeParent != null &&
-//                            futureNodeParent.equals(latestNode.getFirstParent())) {
-//                            thatStage = futureNode.getFirstParent();
-//                            if (futureNode.edges.size() > 0) {
-//                                futureStage = futureNode.edges.get(0);
-//                            }
-//                        }
-//                        FlowNodeWrapper stage = latestNode.getFirstParent();
-//                        if (stage != null) {
-//                            //Add future node as edge to all edges of last stage
-//                            for (FlowNodeWrapper edge : stage.edges) {
-//                                FlowNodeWrapper node = nodeMap.get(edge.getId());
-//                                if (node != null && futureStage != null) {
-//                                    node.addEdge(futureStage);
-//                                }
-//                            }
-//
-//                            //now patch edges in case its partial
-//                            if (thatStage != null && futureNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
-//                                for (FlowNodeWrapper edge : thatStage.edges) {
-//                                    if (!stage.edges.contains(edge)) {
-//                                        stage.addEdge(edge);
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//                FlowNodeWrapper n = new FlowNodeWrapper(futureNode.getNode(),
-//                                                        new NodeRunStatus(null, null),
-//                                                        new TimingInfo(), run);
-//                n.addEdges(futureNode.edges);
-//                n.addParents(futureNode.getParents());
-//                currentNodes.add(n);
-//            }
-//        }
-//        List<BluePipelineNode> newNodes = new ArrayList<>();
-//        for (FlowNodeWrapper n : currentNodes) {
-//            newNodes.add(new PipelineNodeImpl(n, () -> parent, run));
-//        }
-//        return newNodes;
+        ArrayList<BluePipelineNode> newList = new ArrayList<>(previousNodes.size());
+        Set<String> movedIds = new HashSet<>(previousNodes.size());
+
+        // Start with the current nodes
+        for (FlowNodeWrapper currentNodeWrapper : nodes) {
+            final String nodeId = currentNodeWrapper.getId();
+            Optional<FlowNodeWrapper> maybeOldNode = findNodeWrapperByIdIn(nodeId, previousNodes);
+
+            if (maybeOldNode.isPresent()) {
+                FlowNodeWrapper oldNodeWrapper = maybeOldNode.get();
+
+                if (!currentNodeWrapper.sameNode(oldNodeWrapper)) {
+                    // Graphs not the same, user probably changed pipleine
+                    System.out.println("!!!!! Node id " + nodeId + " not the same in previous graph!"); // TODO: RM
+                    graphsAreCompatible = false;
+                    break;
+                }
+
+//                newNodeWrapper = new FlowNodeWrapper()
+
+
+//                BluePipelineNode newBlueNode = new PipelineNodeImpl(newNodeWrapper, () -> parent, run);
+
+            } else {
+                // Node id does not exist in previous graph!
+                System.out.println("!!!!! Node id " + nodeId + " does not exist in previous graph!"); // TODO: RM
+                graphsAreCompatible = false;
+                break;
+            }
+        }
+
+
+
+        // TODO: add missing nodes from previous run
+
+        if (graphsAreCompatible) {
+            // TODO: sort list?
+            return newList;
+        }
+
+        return this.getPipelineNodes(parent);
+    }
+
+
+    public List<BluePipelineNode> unionXXXX(List<FlowNodeWrapper> previousNodes, final Link parent) {
+
+        // TODO: Remove this old impl
+
+        List<FlowNodeWrapper> currentNodes = new ArrayList<>(nodes);
+        int currentNodeSize = nodes.size();
+        int futureNodeSize = previousNodes.size();
+        if (currentNodeSize < futureNodeSize) {
+            for (int i = currentNodeSize; i < futureNodeSize; i++) {
+                FlowNodeWrapper futureNode = previousNodes.get(i);
+
+                //stitch future nodes to last nodes of current incomplete heads
+                if (currentNodeSize > 0 && i == currentNodeSize) {
+                    FlowNodeWrapper latestNode = currentNodes.get(i - 1);
+                    if (latestNode.type == FlowNodeWrapper.NodeType.STAGE) {
+                        if (futureNode.type == FlowNodeWrapper.NodeType.STAGE) {
+                            latestNode.addEdge(futureNode);
+                        } else if (futureNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
+                            FlowNodeWrapper thatStage = futureNode.getFirstParent();
+                            if (thatStage != null && thatStage.equals(latestNode)) {
+                                for (FlowNodeWrapper edge : thatStage.edges) {
+                                    if (!latestNode.edges.contains(edge)) {
+                                        latestNode.addEdge(edge);
+                                    }
+                                }
+                            }
+                        }
+                    } else if (latestNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
+                        FlowNodeWrapper futureStage = null;
+                        FlowNodeWrapper thatStage = null;
+                        FlowNodeWrapper futureNodeParent = futureNode.getFirstParent();
+                        if (futureNode.type == FlowNodeWrapper.NodeType.STAGE) {
+                            thatStage = futureNode;
+                            futureStage = futureNode;
+                        } else if (futureNode.type == FlowNodeWrapper.NodeType.PARALLEL &&
+                            futureNodeParent != null &&
+                            futureNodeParent.equals(latestNode.getFirstParent())) {
+                            thatStage = futureNode.getFirstParent();
+                            if (futureNode.edges.size() > 0) {
+                                futureStage = futureNode.edges.get(0);
+                            }
+                        }
+                        FlowNodeWrapper stage = latestNode.getFirstParent();
+                        if (stage != null) {
+                            //Add future node as edge to all edges of last stage
+                            for (FlowNodeWrapper edge : stage.edges) {
+                                FlowNodeWrapper node = nodeMap.get(edge.getId());
+                                if (node != null && futureStage != null) {
+                                    node.addEdge(futureStage);
+                                }
+                            }
+
+                            //now patch edges in case its partial
+                            if (thatStage != null && futureNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
+                                for (FlowNodeWrapper edge : thatStage.edges) {
+                                    if (!stage.edges.contains(edge)) {
+                                        stage.addEdge(edge);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                FlowNodeWrapper n = new FlowNodeWrapper(futureNode.getNode(),
+                                                        new NodeRunStatus(null, null),
+                                                        new TimingInfo(), run);
+                n.addEdges(futureNode.edges);
+                n.addParents(futureNode.getParents());
+                currentNodes.add(n);
+            }
+        }
+        List<BluePipelineNode> newNodes = new ArrayList<>();
+        for (FlowNodeWrapper n : currentNodes) {
+            newNodes.add(new PipelineNodeImpl(n, () -> parent, run));
+        }
+        return newNodes;
     }
 
 
@@ -851,5 +912,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     private @Nonnull
     String createSyntheticStageId(@Nonnull String firstNodeId, @Nonnull String syntheticStageName) {
         return String.format("%s-%s-synthetic", firstNodeId, syntheticStageName.toLowerCase());
+    }
+
+    // TODO: Docs
+    public static class IncompatibleGraphsException extends Exception {
     }
 }
