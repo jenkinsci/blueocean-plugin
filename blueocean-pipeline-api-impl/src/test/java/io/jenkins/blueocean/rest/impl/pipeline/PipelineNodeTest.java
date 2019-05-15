@@ -101,69 +101,6 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("FINISHED", secondStep.get("state"));
     }
 
-    //TODO: Enable this test if there is way to determine when test starts running and not waiting till launched
-    @Test
-    @Ignore
-    public void nodesTest1() throws IOException, ExecutionException, InterruptedException {
-        WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, "p1");
-        job.setDefinition(new CpsFlowDefinition("node {\n" +
-                                                    "    stage 'Stage 1a'\n" +
-                                                    "    echo 'Stage 1a'\n" +
-                                                    "\n" +
-                                                    "   stage 'Stage 2'\n" +
-                                                    "   echo 'Stage 2'\n" +
-                                                    "}\n" +
-                                                    "node {\n" +
-                                                    "    stage 'testing'\n" +
-                                                    "    echo 'testing'\n" +
-                                                    "}\n" +
-                                                    "\n" +
-                                                    "node {\n" +
-                                                    "    parallel firstBranch: {\n" +
-                                                    "    echo 'first Branch'\n" +
-                                                    "    sh 'sleep 1'\n" +
-                                                    "    echo 'first Branch end'\n" +
-                                                    "    }, secondBranch: {\n" +
-                                                    "       echo 'Hello second Branch'\n" +
-                                                    "    sh 'sleep 1'   \n" +
-                                                    "    echo 'second Branch end'\n" +
-                                                    "       \n" +
-                                                    "    },\n" +
-                                                    "    failFast: false\n" +
-                                                    "}", false));
-        job.scheduleBuild2(0).waitForStart();
-
-        Thread.sleep(1000);
-        List<Map> resp = get("/organizations/jenkins/pipelines/p1/runs/1/nodes/", List.class);
-
-        for (int i = 0; i < resp.size(); i++) {
-            Map rn = resp.get(i);
-            List<Map> edges = (List<Map>) rn.get("edges");
-
-            if (rn.get("displayName").equals("Stage 1a")) {
-                Assert.assertEquals(1, edges.size());
-                Assert.assertEquals(rn.get("result"), "SUCCESS");
-                Assert.assertEquals(rn.get("state"), "FINISHED");
-            } else if (rn.get("displayName").equals("Stage 2")) {
-                Assert.assertEquals(1, edges.size());
-                Assert.assertEquals(rn.get("result"), "SUCCESS");
-                Assert.assertEquals(rn.get("state"), "FINISHED");
-            } else if (rn.get("displayName").equals("testing")) {
-                Assert.assertEquals(2, edges.size());
-                Assert.assertEquals(rn.get("result"), "UNKNOWN");
-                Assert.assertEquals(rn.get("state"), "RUNNING");
-            } else if (rn.get("displayName").equals("firstBranch")) {
-                Assert.assertEquals(0, edges.size());
-                Assert.assertEquals(rn.get("result"), "UNKNOWN");
-                Assert.assertEquals(rn.get("state"), "RUNNING");
-            } else if (rn.get("displayName").equals("secondBranch")) {
-                Assert.assertEquals(0, edges.size());
-                Assert.assertEquals(rn.get("result"), "UNKNOWN");
-                Assert.assertEquals(rn.get("state"), "RUNNING");
-            }
-        }
-    }
-
     @Test
     @Issue("JENKINS-50532")
     public void statusForTwoLevelParallelBuild() throws Exception {
@@ -2481,8 +2418,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @Issue("CORE-1742")
     public void graphConsistentWhileExecuting2() throws Exception {
 
-        final String expectedNodeNames =
-            "TODO: Get here";
+        final String expectedNodeNames = "first-sequential-stage, first-solo, multiple-stages, other-single-stage, " +
+            "parent, second-sequential-stage, second-solo, single-stage, third-sequential-stage";
 
         String completeNodeNames = checkConsistencyWhileBuilding("sequential_parallel_stages_long_run_time.jenkinsfile");
 

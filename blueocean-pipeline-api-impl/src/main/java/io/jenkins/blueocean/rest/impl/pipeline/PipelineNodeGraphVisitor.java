@@ -673,16 +673,14 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     }
 
 
-
     @Override
     public List<BluePipelineNode> union(List<FlowNodeWrapper> previousNodes, final Link parent) {
 
-        boolean graphsAreCompatible = true; // Assuming yes, can be flipped during processing
+        boolean graphsAreCompatible = true;
 
-        ArrayList<BluePipelineNode> newList = new ArrayList<>(previousNodes.size());
-        Set<String> movedIds = new HashSet<>(previousNodes.size());
+        Map<String, FlowNodeWrapper> newNodes = new HashMap<>(previousNodes.size()); // indexed by id
 
-        // Start with the current nodes
+        // Start with the currently-executing nodes
         for (FlowNodeWrapper currentNodeWrapper : nodes) {
             final String nodeId = currentNodeWrapper.getId();
             Optional<FlowNodeWrapper> maybeOldNode = findNodeWrapperByIdIn(nodeId, previousNodes);
@@ -691,16 +689,22 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 FlowNodeWrapper oldNodeWrapper = maybeOldNode.get();
 
                 if (!currentNodeWrapper.sameNode(oldNodeWrapper)) {
-                    // Graphs not the same, user probably changed pipleine
+                    // Graphs not the same, user probably changed pipleine definition
                     System.out.println("!!!!! Node id " + nodeId + " not the same in previous graph!"); // TODO: RM
                     graphsAreCompatible = false;
                     break;
                 }
 
-//                newNodeWrapper = new FlowNodeWrapper()
+                // New wrapper object based on current execution
+                FlowNodeWrapper newNodeWrapper = new FlowNodeWrapper(
+                    currentNodeWrapper.getNode(),
+                    currentNodeWrapper.getStatus(),
+                    currentNodeWrapper.getTiming(),
+                    currentNodeWrapper.getInputStep(),
+                    run
+                );
 
-
-//                BluePipelineNode newBlueNode = new PipelineNodeImpl(newNodeWrapper, () -> parent, run);
+                newNodes.put(nodeId, newNodeWrapper);
 
             } else {
                 // Node id does not exist in previous graph!
@@ -710,15 +714,86 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             }
         }
 
-
-
-        // TODO: add missing nodes from previous run
-
+        // Walk the old graph, create new wrappers for any stages not yet started
         if (graphsAreCompatible) {
-            // TODO: sort list?
+            for (FlowNodeWrapper oldNodeWrapper : previousNodes) {
+                final String nodeId = oldNodeWrapper.getId();
+
+                if (!newNodes.containsKey(nodeId)) {
+                    FlowNodeWrapper newNodeWrapper = new FlowNodeWrapper(
+                        oldNodeWrapper.getNode(),
+                        new NodeRunStatus(null, null),
+                        new TimingInfo(),
+                        null,
+                        run
+                    );
+
+                    newNodes.put(nodeId, newNodeWrapper);
+                }
+            }
+        }
+
+        // Re-create edges and parentage based on previous run structure
+        if (graphsAreCompatible) {
+            for (FlowNodeWrapper oldNodeWrapper : previousNodes) {
+                final String nodeId = oldNodeWrapper.getId();
+
+                FlowNodeWrapper newNodeWrapper = newNodes.get(nodeId);
+
+                for (FlowNodeWrapper oldEdge : oldNodeWrapper.edges) {
+                    FlowNodeWrapper newEdge = newNodes.get(oldEdge.getId());
+                    newNodeWrapper.addEdge(newEdge);
+                }
+
+                for (FlowNodeWrapper oldParent: oldNodeWrapper.getParents()) {
+                    FlowNodeWrapper newParent = newNodes.get(oldParent.getId());
+                    newNodeWrapper.addParent(newParent);
+                }
+            }
+        }
+
+        // Convert the set of FlowNodeWrapper objs into a list of BluePipelineNode objs, and return it.
+        if (graphsAreCompatible) {
+
+            ArrayList<BluePipelineNode> newList = new ArrayList<>(newNodes.size());
+
+            // We'll add nodes to the list in the original order, to reduce risk to downstream
+            // code that makes too many assumptions
+
+            for (FlowNodeWrapper oldNodeWrapper : previousNodes) {
+                final String nodeId = oldNodeWrapper.getId();
+                FlowNodeWrapper newNodeWrapper = newNodes.get(nodeId);
+
+                newList.add(new PipelineNodeImpl(newNodeWrapper, () -> parent, run));
+            }
+
             return newList;
         }
 
+        // TODO: remove this debugging code
+
+        System.out.println("Current graph"); // TODO: RM
+        for (FlowNodeWrapper node: nodes) {
+            System.out.println(String.format("\t* %-3s '%s'", node.getId(), node.getDisplayName()));
+            for (FlowNodeWrapper other : node.getParents()) {
+                System.out.println(String.format("\t\t\tParent %-3s '%s'", other.getId(), other.getDisplayName()));
+            }
+            for (FlowNodeWrapper other : node.edges) {
+                System.out.println(String.format("\t\t\t  Edge %-3s '%s'", other.getId(), other.getDisplayName()));
+            }
+        }
+        System.out.println("Previous graph"); // TODO: RM
+        for (FlowNodeWrapper node: previousNodes) {
+            System.out.println(String.format("\t* %-3s %s", node.getId(), node.getDisplayName()));
+            for (FlowNodeWrapper other : node.getParents()) {
+                System.out.println(String.format("\t\t\tParent %-3s '%s'", other.getId(), other.getDisplayName()));
+            }
+            for (FlowNodeWrapper other : node.edges) {
+                System.out.println(String.format("\t\t\t  Edge %-3s '%s'", other.getId(), other.getDisplayName()));
+            }
+        }
+
+        // Fallback for when the graphs cannot be merged
         return this.getPipelineNodes(parent);
     }
 
