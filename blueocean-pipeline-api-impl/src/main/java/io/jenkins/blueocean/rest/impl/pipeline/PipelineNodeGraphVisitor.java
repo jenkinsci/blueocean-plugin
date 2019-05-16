@@ -654,6 +654,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         return new PipelineStepImpl(node, parent);
     }
 
+    // TODO: Docs
     private static Optional<FlowNodeWrapper> findNodeWrapperByIdIn(String id, Collection<FlowNodeWrapper> nodes) {
         for (FlowNodeWrapper node : nodes) {
             if (node.getId().equals(id)) {
@@ -663,15 +664,19 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         return Optional.empty();
     }
 
-    private static Optional<BluePipelineNode> findBlueNodeByIdIn(String id, Collection<BluePipelineNode> nodes) {
-        for (BluePipelineNode node : nodes) {
-            if (node.getId().equals(id)) {
+    // TODO: Docs
+    private static Optional<FlowNodeWrapper> findNodeWrapperByParentageIn(FlowNodeWrapper example, List<FlowNodeWrapper> nodes) {
+        final String exampleDisplayName = example.getDisplayName();
+        final String exampleParentName = example.getFirstParent() != null ?example.getFirstParent().getDisplayName() : "";
+
+        for (FlowNodeWrapper node : nodes) {
+            String nodeParentName = node.getFirstParent() != null ?node.getFirstParent().getDisplayName() : "";
+            if (node.getDisplayName().equals(exampleDisplayName) && nodeParentName.equals(exampleParentName)) {
                 return Optional.of(node);
             }
         }
         return Optional.empty();
     }
-
 
     @Override
     public List<BluePipelineNode> union(List<FlowNodeWrapper> previousNodes, final Link parent) {
@@ -685,6 +690,11 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             final String nodeId = currentNodeWrapper.getId();
             Optional<FlowNodeWrapper> maybeOldNode = findNodeWrapperByIdIn(nodeId, previousNodes);
 
+            // If we can't find the same node by ID, we will search via name + firstparent
+            if (!maybeOldNode.isPresent()) {
+                maybeOldNode = findNodeWrapperByParentageIn(currentNodeWrapper, previousNodes);
+            }
+
             if (maybeOldNode.isPresent()) {
                 FlowNodeWrapper oldNodeWrapper = maybeOldNode.get();
 
@@ -697,7 +707,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
                 // New wrapper object based on current execution
                 FlowNodeWrapper newNodeWrapper = new FlowNodeWrapper(
-                    currentNodeWrapper.getNode(),
+                    oldNodeWrapper.getNode(), // Use old node because we want to keep the final id
                     currentNodeWrapper.getStatus(),
                     currentNodeWrapper.getTiming(),
                     currentNodeWrapper.getInputStep(),
