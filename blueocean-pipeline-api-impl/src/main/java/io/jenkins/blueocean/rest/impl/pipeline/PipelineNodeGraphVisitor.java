@@ -702,7 +702,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             if (maybeOldNode.isPresent()) {
                 FlowNodeWrapper oldNodeWrapper = maybeOldNode.get();
 
-                if (!currentNodeWrapper.sameNode(oldNodeWrapper)) {
+                if (!currentNodeWrapper.probablySameNode(oldNodeWrapper)) {
                     // Graphs not the same, user probably changed pipleine definition
                     graphsAreCompatible = false;
                     break;

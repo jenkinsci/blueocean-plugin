@@ -25,31 +25,34 @@ import java.util.List;
  */
 public class FlowNodeWrapper {
 
-    // TODO: Docs
-    // TODO: Maybe rename, also
-    public boolean sameNode(FlowNodeWrapper that) {
+    /**
+     * Checks to see if `this` and `that` probably represent the same underlying pipeline graph node as far as the user
+     * is concerned. This is sloppier than an exact name and ID match because {@link PipelineNodeGraphVisitor} as of
+     * 2019-05-17 can return some IDs different during a build as compared to once the build is complete. As such we
+     * check name, type, and firstParent. But we need to check firstParent the same way for the same reason.
+     *
+     * @param that
+     * @return
+     */
+    public boolean probablySameNode(FlowNodeWrapper that) {
+
+        if (that == null) {
+            return false;
+        }
+
         if (this.type != that.type) {
             return false;
         }
+
         if (!this.displayName.equals(that.displayName)) {
             return false;
         }
 
-        // Should have the same firstParent (name at least)
-        FlowNodeWrapper thisParent = this.getFirstParent();
-        FlowNodeWrapper thatParent = that.getFirstParent();
-        if (thisParent != null) {
-            if (thatParent == null) {
-                return false;
-            }
-            if (!thisParent.displayName.equals(thatParent.displayName)) {
-                return false;
-            }
-        } else if (thatParent != null) {
-            return false;
+        if (this.getFirstParent() != null) {
+            return this.getFirstParent().probablySameNode(that.getFirstParent());
+        } else {
+            return that.getFirstParent() == null;
         }
-
-        return true;
     }
 
     public enum NodeType {STAGE, PARALLEL, STEP}
