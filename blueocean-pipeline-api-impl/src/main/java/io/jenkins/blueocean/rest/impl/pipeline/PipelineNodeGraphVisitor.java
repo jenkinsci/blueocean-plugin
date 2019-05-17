@@ -667,10 +667,12 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     // TODO: Docs
     private static Optional<FlowNodeWrapper> findNodeWrapperByParentageIn(FlowNodeWrapper example, List<FlowNodeWrapper> nodes) {
         final String exampleDisplayName = example.getDisplayName();
-        final String exampleParentName = example.getFirstParent() != null ?example.getFirstParent().getDisplayName() : "";
+        final FlowNodeWrapper firstParent = example.getFirstParent();
+        String exampleParentName = firstParent == null ? "" : firstParent.getDisplayName();
 
         for (FlowNodeWrapper node : nodes) {
-            String nodeParentName = node.getFirstParent() != null ?node.getFirstParent().getDisplayName() : "";
+            FlowNodeWrapper nodeParent = node.getFirstParent();
+            String nodeParentName = nodeParent == null ? "": nodeParent.getDisplayName();
             if (node.getDisplayName().equals(exampleDisplayName) && nodeParentName.equals(exampleParentName)) {
                 return Optional.of(node);
             }
@@ -997,9 +999,5 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     private @Nonnull
     String createSyntheticStageId(@Nonnull String firstNodeId, @Nonnull String syntheticStageName) {
         return String.format("%s-%s-synthetic", firstNodeId, syntheticStageName.toLowerCase());
-    }
-
-    // TODO: Docs
-    public static class IncompatibleGraphsException extends Exception {
     }
 }
