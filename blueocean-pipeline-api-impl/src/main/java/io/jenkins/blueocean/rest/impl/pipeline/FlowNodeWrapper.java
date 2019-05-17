@@ -34,7 +34,7 @@ public class FlowNodeWrapper {
      * @param that
      * @return
      */
-    public boolean probablySameNode(FlowNodeWrapper that) {
+    public boolean probablySameNode(@Nullable FlowNodeWrapper that) {
 
         if (that == null) {
             return false;
@@ -48,8 +48,9 @@ public class FlowNodeWrapper {
             return false;
         }
 
-        if (this.getFirstParent() != null) {
-            return this.getFirstParent().probablySameNode(that.getFirstParent());
+        final FlowNodeWrapper thisParent = this.getFirstParent();
+        if (thisParent != null) {
+            return thisParent.probablySameNode(that.getFirstParent());
         } else {
             return that.getFirstParent() == null;
         }
