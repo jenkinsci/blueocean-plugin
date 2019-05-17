@@ -31,9 +31,6 @@ public class FlowNodeWrapper {
         if (this.type != that.type) {
             return false;
         }
-//        if (!this.getId().equals(that.getId())) {
-//            return false;
-//        }
         if (!this.displayName.equals(that.displayName)) {
             return false;
         }
@@ -51,8 +48,6 @@ public class FlowNodeWrapper {
         } else if (thatParent != null) {
             return false;
         }
-
-        // TODO: do we need to compare more things? Should we check edges? Will that break shit?
 
         return true;
     }

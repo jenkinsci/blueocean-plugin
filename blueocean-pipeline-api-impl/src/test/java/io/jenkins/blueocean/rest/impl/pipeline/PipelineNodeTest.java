@@ -2426,8 +2426,6 @@ public class PipelineNodeTest extends PipelineBaseTest {
         assertEquals("node names", expectedNodeNames, completeNodeNames);
     }
 
-    // TODO: Make some more of these ^^^
-
     private String checkConsistencyWhileBuilding(String jenkinsFileName) throws Exception {
 
         /*
@@ -2436,9 +2434,6 @@ public class PipelineNodeTest extends PipelineBaseTest {
          */
 
         WorkflowJob p = createWorkflowJobWithJenkinsfile(getClass(), jenkinsFileName);
-
-        Slave s = j.createOnlineSlave();   // TODO: Do we need this?
-        s.setNumExecutors(2);              // TODO: Do we need this?
 
         // Do an initial run, collect the nodes
         final WorkflowRun run1 = p.scheduleBuild2(0).waitForStart();
@@ -2456,6 +2451,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         // ... then watch while it runs, checking for the same graph nodes
 
+        int loopCount = 0;
+
         do {
             Thread.sleep(500);
 
@@ -2467,7 +2464,12 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
             assertEquals("running node names", completeNodeNames, runningNodeNames);
 
+            loopCount++;
+
         } while (run2.isBuilding());
+
+        // Sanity check, make sure we're *actually* checking stuff.
+        assertTrue("Checked multiple times while building", loopCount > 5);
 
         return completeNodeNames; // So caller can do any additional checks
     }
