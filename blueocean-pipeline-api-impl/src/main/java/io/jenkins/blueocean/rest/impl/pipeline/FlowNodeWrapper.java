@@ -28,8 +28,8 @@ public class FlowNodeWrapper {
     /**
      * Checks to see if `this` and `that` probably represent the same underlying pipeline graph node as far as the user
      * is concerned. This is sloppier than an exact name and ID match because {@link PipelineNodeGraphVisitor} as of
-     * 2019-05-17 can return some IDs different during a build as compared to once the build is complete. As such we
-     * check name, type, and firstParent. But we need to check firstParent the same way for the same reason.
+     * 2019-05-17 can return some nodes with different IDs during a build as opposed to once the build is complete.
+     * As such we check name, type, and firstParent. But we need to check firstParent the same way for the same reason.
      *
      * @param that
      * @return
