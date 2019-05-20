@@ -2403,19 +2403,19 @@ public class PipelineNodeTest extends PipelineBaseTest {
     }
 
     @Test
-    @Issue("CORE-1742")
+    @Issue("JENKINS-53816")
     public void graphConsistentWhileExecuting() throws Exception {
 
         final String expectedNodeNames =
             "A, B, B-A, B-B, B-B-1, B-B-2, B-C, B-C-1, B-C-2, C, D, D-A, D-B, D-B-1, D-B-2, D-C, D-C-1, D-C-2";
 
-        String completeNodeNames = checkConsistencyWhileBuilding("CORE-1742.jenkinsfile");
+        String completeNodeNames = checkConsistencyWhileBuilding("JENKINS-53816.jenkinsfile");
 
         assertEquals("node names", expectedNodeNames, completeNodeNames);
     }
 
     @Test
-    @Issue("CORE-1742")
+    @Issue("JENKINS-53816")
     public void graphConsistentWhileExecuting2() throws Exception {
 
         final String expectedNodeNames = "first-sequential-stage, first-solo, multiple-stages, other-single-stage, " +
