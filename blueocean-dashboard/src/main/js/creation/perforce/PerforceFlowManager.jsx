@@ -1,6 +1,5 @@
 import React from 'react';
 import {action, computed, observable} from 'mobx';
-import Promise from 'bluebird';
 
 import {i18nTranslator, logging, sseService, pipelineService} from '@jenkins-cd/blueocean-core-js';
 
@@ -16,7 +15,7 @@ import {ListProjectsOutcome} from './api/PerforceCreationApi';
 import PerforceProjectListStep from './steps/PerforceProjectListStep';
 import PerforceCompleteStep from './steps/PerforceCompleteStep';
 import {CreateMbpOutcome} from "./api/PerforceCreationApi";
-import BbRenameStep from "../bitbucket/steps/BbRenameStep";
+import PerforceRenameStep from "./steps/PerforceRenameStep";
 import PerforceUnknownErrorStep from "./steps/PerforceUnknownErrorStep";
 
 
@@ -28,9 +27,11 @@ const SAVE_DELAY = 1000;
  * Impl of FlowManager for perforce creation flow.
  */
 export default class PerforceFlowManager extends FlowManager {
-    credentialId = null;
 
     selectedCred = null;
+    pipelineName = null;
+    pipeline = null;
+
     @observable projects = [];
 
     @observable selectedProject = null;
@@ -50,12 +51,15 @@ export default class PerforceFlowManager extends FlowManager {
     constructor(creationApi, credentialApi) {
         super();
         this._creationApi = creationApi;
-        //this._credentialApi = credentialApi;
         this.credManager = new PerforceCredentialsManager(credentialApi);
     }
 
     translate(key, opts) {
         return translate(key, opts);
+    }
+
+    getScmId() {
+        return 'perforce';
     }
 
     getState() {
@@ -76,16 +80,12 @@ export default class PerforceFlowManager extends FlowManager {
     onInitialized() {
         this._loadCredentialsList();
         this.setPlaceholders(translate('creation.core.status.completed'));
-        console.log("PerforceFlowManager onInitialized complete");
     }
 
-    getScmId() {
-        return 'perforce';
-    }
 
-    getApiUrl() {
+    /*getApiUrl() {
         return this.selectedCred ? this.selectedCred.apiUrl : null;
-    }
+    }*/
 
     _loadCredentialsList() {
         return this.credManager
@@ -125,7 +125,7 @@ export default class PerforceFlowManager extends FlowManager {
     @action
     listProjects() {
         this._creationApi
-            .listProjects(this.credentialId, this.getApiUrl())
+            .listProjects(this.selectedCred)
             .then(waitAtLeast(MIN_DELAY))
             .then(projects => this._listProjectsSuccess(projects));
     }
@@ -133,20 +133,18 @@ export default class PerforceFlowManager extends FlowManager {
     @action
     _listProjectsSuccess(response) {
         if (response.outcome === ListProjectsOutcome.SUCCESS) {
-            this.projects = response.projects.credentials;
-
-            //TODO
+            this.projects = response.projects;
             this._renderChooseProject();
         } else if (response.outcome === ListProjectsOutcome.INVALID_CREDENTIAL_ID) {
             this.projects = response.projects;
 
             this.renderStep({
-                stateId: STATE.STEP_CREDENTIAL,
+                stateId: STATE.STEP_CHOOSE_CREDENTIAL,
                 stepElement: <PerforceCredentialsStep/>,
             });
         } else {
             this.renderStep({
-                stateId: STATE.ERROR_UNKOWN,
+                stateId: STATE.ERROR_UNKNOWN,
                 stepElement: <PerforceUnknownErrorStep message={response.error}/>,
             });
         }
@@ -163,10 +161,32 @@ export default class PerforceFlowManager extends FlowManager {
     @action
     selectProject(project) {
         this.selectedProject = project;
+        this.pipelineName = project;
+        console.log("project and selectedProject: " + project + "::" + this.selectedProject);
     }
 
     saveRepo() {
+        /*
+        return this.credManager
+            .findExistingCredential()
+            .then(waitAtLeast(MIN_DELAY))
+            .then(success => this._loadCredentialsComplete(success));
+         */
+        /*console.log("Reached PerforceFlowManager.saveRepo(). Building project " + this.selectedProject);
+        const available = this._creationApi.checkPipelineNameAvailable(this.selectedProject);*/
+
+        /*
+        Check if the pipeline already exists
+         */
+
+
+        //console.log("PerforceCreationApi.saveRepo.available: " + available.outcome);
+
         this._saveRepo();
+    }
+
+    _checkNameAvailable() {
+
     }
 
     @action
@@ -183,8 +203,9 @@ export default class PerforceFlowManager extends FlowManager {
 
         this._initListeners();
 
-        //TODO Change this
-        this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+        this._creationApi.createMbp(this.selectedCred, this.selectedProject, this.pipelineName)
+            .then(waitAtLeast(MIN_DELAY * 2))
+            .then(result => this._createPipelineComplete(result));
         /*this._creationApi
             .createMbp(
                 this.credentialId,
@@ -199,19 +220,29 @@ export default class PerforceFlowManager extends FlowManager {
             .then(result => this._createPipelineComplete(result));*/
     }
 
+    saveRenamedPipeline(pipelineName) {
+        this.pipelineName = pipelineName;
+        return this._saveRepo();
+    }
+
     @action
     _createPipelineComplete(result) {
+        console.log("PerforceFlowManager._createPipelineComplete.result.pipeline.jobName: " + result.pipeline.pipeline_job_name);
+        console.log("PerforceFlowManager._createPipelineComplete.result.outcome: " + result.outcome);
         this.outcome = result.outcome;
         if (result.outcome === CreateMbpOutcome.SUCCESS) {
-            if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE)) {
+            this.changeState(STATE.STEP_COMPLETE_SUCCESS);
+            this.pipeline = this.pipelineName;
+
+            /*if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE)) {
                 this._checkForBranchCreation(
-                    result.pipeline.name,
+                    result.pipeline,
                     true,
                     ({isFound, hasError, pipeline}) => {
                         if (!hasError && isFound) {
                             this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
                             this.pipeline = pipeline;
-                            this.pipelineName = pipeline.name;
+                            this.pipelineName = pipeline.pipeline.name;
                         }
                     },
                     this.redirectTimeout
@@ -219,14 +250,13 @@ export default class PerforceFlowManager extends FlowManager {
                 if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE) && !this.isStateAdded(STATE.STEP_COMPLETE_SUCCESS)) {
                     this.changeState(STATE.PENDING_CREATION_EVENTS);
                     this.pipeline = result.pipeline;
-                    this.pipelineName = result.pipeline.name;
+                    this.pipelineName = result.pipeline;
                 }
-            }
+            }*/
         } else if (result.outcome === CreateMbpOutcome.INVALID_NAME) {
-            //TODO Use PerforceRenameStep instead of BbRenameStep
             this.renderStep({
                 stateId: STATE.STEP_RENAME,
-                stepElement: <BbRenameStep pipelineName={this.pipelineName}/>,
+                stepElement: <PerforceRenameStep pipelineName={this.pipelineName}/>,
                 afterStateId: STATE.STEP_CHOOSE_REPOSITORY,
             });
             this._showPlaceholder();
@@ -250,8 +280,9 @@ export default class PerforceFlowManager extends FlowManager {
 
         LOGGER.debug(`will check for branches of ${pipelineName} in ${delay}ms`);
 
+        //TODO change the this.selectedProject to actual pipeline name
         setTimeout(() => {
-            this._creationApi.findBranches(pipelineName).then(data => {
+            this._creationApi.findBranches(this.selectedProject).then(data => {
                 LOGGER.debug(`check for pipeline complete. created? ${data.isFound}`);
                 onComplete(data);
             });
@@ -274,7 +305,7 @@ export default class PerforceFlowManager extends FlowManager {
     _initListeners() {
         this._cleanupListeners();
 
-        LOGGER.debug('P4: listening for project folder and multi-branch indexing events...');
+        LOGGER.info('P4: listening for project folder and multi-branch indexing events...');
 
         //TODO Add code here later
     }
@@ -284,7 +315,7 @@ export default class PerforceFlowManager extends FlowManager {
     }
 
     _finishListening(stateId) {
-        LOGGER.debug('finishListening', stateId);
+        console.log('finishListening', stateId);
         this.changeState(stateId);
         this._cleanupListeners();
     }

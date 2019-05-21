@@ -32,7 +32,6 @@ class PerforceCredentialsApi {
     findExistingCredential(apiUrl) {
         const path = UrlConfig.getJenkinsRootURL(); // Value is /jenkins
         const credUrl = Utils.cleanSlashes(`${path}/credentials/store/system/domain/_/api/json?tree=credentials[id,typeName]`);
-        //http://localhost:9090/jenkins/credentials/store/system/domain/_/api/json?pretty=true&tree=credentials[id,type]
         //TODO fetchOptions are optional!
         const fetchOptions = {
             method: 'GET',
@@ -40,16 +39,13 @@ class PerforceCredentialsApi {
                 'Content-Type': 'application/json',
             },
         };
-        return this._fetch(credUrl, {fetchOptions});
-        //http://localhost:4567/user/getUsers
+        return this._fetch(credUrl, {fetchOptions}).then(result => this._findExistingCredentialSuccess(result), error => this._findExistingCredentialFailure(error));
     }
 
     _findExistingCredentialSuccess(credential) {
-        console.log("credential.credentialId =" + credential.credentialId);
-        //console.log("credential.loginName =" + credential.loginName);
-        if (credential && credential.credentialId) {
+        if (credential && credential.credentials) {
 
-            return credential;
+            return credential.credentials;
         }
 
         throw new TypedError(LoadError.TOKEN_NOT_FOUND);

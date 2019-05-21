@@ -13,6 +13,7 @@ class PerforceCredentialsStep extends React.Component {
 
         this.state = {
             selectedCredential: null,
+            disableNext: true,
         };
         this.dropdown = null;
         this.credManager = props.flowManager.credManager;
@@ -23,14 +24,13 @@ class PerforceCredentialsStep extends React.Component {
     }
 
     render() {
-        console.log("PerforceCredentialStep render");
-        const disabled = this.state.complete;
+        const disableNext = this.state.disableNext;
         const {flowManager} = this.props;
         const {serverManager} = flowManager;
         const title = t('creation.p4.step1.title');
         //TODO Change the below github title
         return (
-            <FlowStep {...this.props} className="credentials-picker-github" title={title}>
+            <FlowStep {...this.props} className="credentials-picker-perforce" title={title}>
                 <FormElement title={t('creation.p4.step1.instructions')}>
                     <Dropdown
                         ref={dropdown => {
@@ -40,10 +40,10 @@ class PerforceCredentialsStep extends React.Component {
                         labelField="id"
                         onChange={option => this._onChangeDropdown(option)}
                     />
-                    <button className="button-next-step" onClick={() => this._onClickNextButton()}>
-                        {t('creation.p4.button_next')}
-                    </button>
                 </FormElement>
+                <button className="button-next-step" disabled={disableNext} onClick={() => this._onClickNextButton()}>
+                    {t('creation.p4.button_next')}
+                </button>
             </FlowStep>
         );
         //return ("","","");
@@ -54,7 +54,8 @@ class PerforceCredentialsStep extends React.Component {
         //TODO may want to do validation later
         //serverManager.validateVersion(option.id).then(success => this._onValidateVersion(success), error => this._onValidateVersion(error));
         this.setState({
-            selectedCredential: option,
+            selectedCredential: option.id,
+            disableNext: false,
         });
     }
 
