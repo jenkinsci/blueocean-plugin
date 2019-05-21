@@ -21,7 +21,6 @@ import PerforceUnknownErrorStep from "./steps/PerforceUnknownErrorStep";
 
 const LOGGER = logging.logger('io.jenkins.blueocean.p4-pipeline');
 const MIN_DELAY = 500;
-const SAVE_DELAY = 1000;
 
 /**
  * Impl of FlowManager for perforce creation flow.
@@ -227,7 +226,6 @@ export default class PerforceFlowManager extends FlowManager {
 
     @action
     _createPipelineComplete(result) {
-        console.log("PerforceFlowManager._createPipelineComplete.result.pipeline.jobName: " + result.pipeline.pipeline_job_name);
         console.log("PerforceFlowManager._createPipelineComplete.result.outcome: " + result.outcome);
         this.outcome = result.outcome;
         if (result.outcome === CreateMbpOutcome.SUCCESS) {
@@ -254,12 +252,13 @@ export default class PerforceFlowManager extends FlowManager {
                 }
             }*/
         } else if (result.outcome === CreateMbpOutcome.INVALID_NAME) {
+            console.log("PerforceFlowManager._createPipelineComplete, invalid name ");
             this.renderStep({
                 stateId: STATE.STEP_RENAME,
                 stepElement: <PerforceRenameStep pipelineName={this.pipelineName}/>,
-                afterStateId: STATE.STEP_CHOOSE_REPOSITORY,
+                afterStateId: STATE.STEP_CHOOSE_PROJECT,
             });
-            this._showPlaceholder();
+            //this._showPlaceholder();
         } else if (result.outcome === CreateMbpOutcome.INVALID_URI || result.outcome === CreateMbpOutcome.INVALID_CREDENTIAL) {
             this.removeSteps({afterStateId: STATE.STEP_CREDENTIAL});
             this._showPlaceholder();
@@ -287,6 +286,14 @@ export default class PerforceFlowManager extends FlowManager {
                 onComplete(data);
             });
         }, delay);
+    }
+
+    checkPipelineNameAvailable(name) {
+        if (!name) {
+            return new Promise(resolve => resolve(false));
+        }
+
+        return this._creationApi.checkPipelineNameAvailable(name);
     }
 
     @action

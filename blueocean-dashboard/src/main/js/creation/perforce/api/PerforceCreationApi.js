@@ -113,8 +113,14 @@ export default class PerforceCreationApi {
         //TODO Replace jenkins with ${this.organization}
         const checkUrl = Utils.cleanSlashes(`${path}/organizations/jenkins/pipelines/${name}`);
 
-        return this._fetch(checkUrl)
-            .then(result => this._nameAvailableFailure(), result => this._nameAvailableSuccess());
+        const fetchOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+
+        return this._fetch(checkUrl, { fetchOptions }).then(() => false, () => true);
     }
 
     _nameAvailableSuccess() {
@@ -149,7 +155,7 @@ export default class PerforceCreationApi {
     }
 
     _createMbpFailure(error) {
-        console.log("PerforceCreationApi._createMbpFailure.error.responseBody: " + error.responseBody);
+        console.log("PerforceCreationApi._createMbpFailure.error.responseBody: here:  " + error.responseBody);
 
         //const { code, errors } = error.responseBody;
 
@@ -171,9 +177,10 @@ export default class PerforceCreationApi {
                }
            }
    */
+        //TODO Change this to handle better
         return {
-            outcome: CreateMbpOutcome.ERROR,
-            error: error.responseBody,
+            outcome: CreateMbpOutcome.INVALID_NAME,
+            //error: error.responseBody,
         };
     }
 

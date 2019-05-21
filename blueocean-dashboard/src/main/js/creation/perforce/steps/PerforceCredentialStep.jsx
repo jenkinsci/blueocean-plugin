@@ -10,11 +10,6 @@ let t = null;
 class PerforceCredentialsStep extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-            selectedCredential: null,
-            disableNext: true,
-        };
         this.dropdown = null;
         this.credManager = props.flowManager.credManager;
     }
@@ -24,7 +19,6 @@ class PerforceCredentialsStep extends React.Component {
     }
 
     render() {
-        const disableNext = this.state.disableNext;
         const {flowManager} = this.props;
         const {serverManager} = flowManager;
         const title = t('creation.p4.step1.title');
@@ -41,9 +35,7 @@ class PerforceCredentialsStep extends React.Component {
                         onChange={option => this._onChangeDropdown(option)}
                     />
                 </FormElement>
-                <button className="button-next-step" disabled={disableNext} onClick={() => this._onClickNextButton()}>
-                    {t('creation.p4.button_next')}
-                </button>
+
             </FlowStep>
         );
         //return ("","","");
@@ -53,14 +45,7 @@ class PerforceCredentialsStep extends React.Component {
         const {flowManager} = this.props.flowManager;
         //TODO may want to do validation later
         //serverManager.validateVersion(option.id).then(success => this._onValidateVersion(success), error => this._onValidateVersion(error));
-        this.setState({
-            selectedCredential: option.id,
-            disableNext: false,
-        });
-    }
-
-    _onClickNextButton() {
-        this.props.flowManager.selectCredential(this.state.selectedCredential);
+        this.props.flowManager.selectCredential(option.id);
     }
 }
 
