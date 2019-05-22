@@ -32,7 +32,6 @@ class PerforceCredentialsApi {
     findExistingCredential(apiUrl) {
         const path = UrlConfig.getJenkinsRootURL(); // Value is /jenkins
         const credUrl = Utils.cleanSlashes(`${path}/credentials/store/system/domain/_/api/json?tree=credentials[id,typeName]`);
-        //TODO fetchOptions are optional!
         const fetchOptions = {
             method: 'GET',
             headers: {

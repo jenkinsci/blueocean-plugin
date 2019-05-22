@@ -184,10 +184,6 @@ export default class PerforceFlowManager extends FlowManager {
         this._saveRepo();
     }
 
-    _checkNameAvailable() {
-
-    }
-
     @action
     _saveRepo() {
         const afterStateId = this.isStateAdded(STATE.STEP_RENAME) ? STATE.STEP_RENAME : STATE.STEP_CHOOSE_PROJECT;
@@ -205,18 +201,6 @@ export default class PerforceFlowManager extends FlowManager {
         this._creationApi.createMbp(this.selectedCred, this.selectedProject, this.pipelineName)
             .then(waitAtLeast(MIN_DELAY * 2))
             .then(result => this._createPipelineComplete(result));
-        /*this._creationApi
-            .createMbp(
-                this.credentialId,
-                this.getScmId(),
-                this.getApiUrl(),
-                this.pipelineName,
-                this.selectedCred.key,
-                this.selectedProject.name,
-                'io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest'
-            )
-            .then(waitAtLeast(MIN_DELAY * 2))
-            .then(result => this._createPipelineComplete(result));*/
     }
 
     saveRenamedPipeline(pipelineName) {
