@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import {observer} from 'mobx-react';
 
-import {UrlBuilder, UrlConfig, Utils} from '@jenkins-cd/blueocean-core-js';
+import {AppConfig, UrlBuilder, UrlConfig, Utils} from '@jenkins-cd/blueocean-core-js';
 
 import FlowStep from '../../flow2/FlowStep';
 import FlowStepStatus from '../../flow2/FlowStepStatus';
@@ -20,15 +20,14 @@ export default class PerforceCompleteStep extends React.Component {
     }
 
     navigatePipeline() {
-        this.props.flowManager.pipelineName;
-        /*const { pipeline } = this.props.flowManager;
-        const { organization, fullName } = pipeline;*/
-        //http://localhost:9090/jenkins/blue/organizations/jenkins/blueocean-plugin/activity
-        const path = UrlConfig.getJenkinsRootURL();
-        const url1 = Utils.cleanSlashes(`${path}/blue/organizations/jenkins/pipelines/`);
-        console.log("PerforceCompleteStep: url: " + url1);
-        const nav_url = UrlBuilder.buildPipelineUrl(url1, this.props.flowManager.selectedProject, 'activity');
-        this.props.flowManager.completeFlow({ nav_url });
+        const { pipelineName } = this.props.flowManager;
+
+        console.log("PerforceCompleteStep: organization: fullName: " + pipelineName + " : " + pipelineName);
+        const organization = AppConfig.getOrganizationName();
+        const url = UrlBuilder.buildPipelineUrl(organization, pipelineName, 'activity');
+
+        console.log("PerforceCompleteStep: url: " + url);
+        this.props.flowManager.completeFlow({ url });
     }
 
     _getStatus(state, status) {
