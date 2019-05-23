@@ -29,7 +29,6 @@ export default class PerforceFlowManager extends FlowManager {
 
     selectedCred = null;
     pipelineName = null;
-    pipeline = null;
 
     @observable projects = [];
 
@@ -214,27 +213,7 @@ export default class PerforceFlowManager extends FlowManager {
         this.outcome = result.outcome;
         if (result.outcome === CreateMbpOutcome.SUCCESS) {
             this.changeState(STATE.STEP_COMPLETE_SUCCESS);
-            this.pipeline = this.pipelineName;
-
-            /*if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE)) {
-                this._checkForBranchCreation(
-                    result.pipeline,
-                    true,
-                    ({isFound, hasError, pipeline}) => {
-                        if (!hasError && isFound) {
-                            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
-                            this.pipeline = pipeline;
-                            this.pipelineName = pipeline.pipeline.name;
-                        }
-                    },
-                    this.redirectTimeout
-                );
-                if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE) && !this.isStateAdded(STATE.STEP_COMPLETE_SUCCESS)) {
-                    this.changeState(STATE.PENDING_CREATION_EVENTS);
-                    this.pipeline = result.pipeline;
-                    this.pipelineName = result.pipeline;
-                }
-            }*/
+            this.pipelineName = result.pipeline.name;
         } else if (result.outcome === CreateMbpOutcome.INVALID_NAME) {
             console.log("PerforceFlowManager._createPipelineComplete, invalid name ");
             this.renderStep({
@@ -242,12 +221,12 @@ export default class PerforceFlowManager extends FlowManager {
                 stepElement: <PerforceRenameStep pipelineName={this.pipelineName}/>,
                 afterStateId: STATE.STEP_CHOOSE_PROJECT,
             });
-            //this._showPlaceholder();
+            this._showPlaceholder();
         } else if (result.outcome === CreateMbpOutcome.INVALID_URI || result.outcome === CreateMbpOutcome.INVALID_CREDENTIAL) {
             this.removeSteps({afterStateId: STATE.STEP_CREDENTIAL});
             this._showPlaceholder();
         } else if (result.outcome === CreateMbpOutcome.ERROR) {
-            const afterStateId = this.isStateAdded(STATE.STEP_RENAME) ? STATE.STEP_RENAME : STATE.STEP_CHOOSE_REPOSITORY;
+            const afterStateId = this.isStateAdded(STATE.STEP_RENAME) ? STATE.STEP_RENAME : STATE.STEP_CHOOSE_PROJECT;
             this.renderStep({
                 stateId: STATE.ERROR,
                 stepElement: <PerforceUnknownErrorStep error={result.error}/>,
@@ -256,21 +235,27 @@ export default class PerforceFlowManager extends FlowManager {
         }
     }
 
-    _checkForBranchCreation(pipelineName, multiBranchIndexingComplete, onComplete, delay = 500) {
-        if (multiBranchIndexingComplete) {
-            LOGGER.debug(`multibranch indexing for ${pipelineName} completed`);
-        }
-
-        LOGGER.debug(`will check for branches of ${pipelineName} in ${delay}ms`);
-
-        //TODO change the this.selectedProject to actual pipeline name
-        setTimeout(() => {
-            this._creationApi.findBranches(this.selectedProject).then(data => {
-                LOGGER.debug(`check for pipeline complete. created? ${data.isFound}`);
-                onComplete(data);
-            });
-        }, delay);
+    _showPlaceholder() {
+        this.setPlaceholders([
+            this.translate('creation.core.status.completed'),
+        ]);
     }
+
+    // _checkForBranchCreation(pipelineName, multiBranchIndexingComplete, onComplete, delay = 500) {
+    //     if (multiBranchIndexingComplete) {
+    //         LOGGER.debug(`multibranch indexing for ${pipelineName} completed`);
+    //     }
+    //
+    //     LOGGER.debug(`will check for branches of ${pipelineName} in ${delay}ms`);
+    //
+    //     //TODO change the this.selectedProject to actual pipeline name
+    //     setTimeout(() => {
+    //         this._creationApi.findBranches(this.selectedProject).then(data => {
+    //             LOGGER.debug(`check for pipeline complete. created? ${data.isFound}`);
+    //             onComplete(data);
+    //         });
+    //     }, delay);
+    // }
 
     checkPipelineNameAvailable(name) {
         if (!name) {
