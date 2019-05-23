@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 import {observer} from 'mobx-react';
-import { FilterableList } from '@jenkins-cd/design-language';
+import {FilterableList, FormElement} from '@jenkins-cd/design-language';
 
 import FlowStep from '../../flow2/FlowStep';
 import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
@@ -27,6 +27,7 @@ export default class PerforceProjectListStep extends React.Component {
 
         return (
             <FlowStep {...this.props} className="github-repo-list-step" title={titleString} disabled={disabled}>
+                <FormElement title={t('creation.p4.project_step.subtitle')}/>
                 <div className="container">
                 <FilterableList
                     className="repo-list"
