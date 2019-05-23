@@ -165,6 +165,8 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         tmpFile.createNewFile();
         sseClientRule.untilEvents(pipeline.buildsFinished);
 
+        dashboardPage.open(); // FIXME - because sse is not yet registered (started before the page was loaded)
+
         dashboardPage.checkFavoriteCardStatus(fullNameMaster, SUCCESS);
         dashboardPage.checkFavoriteCardStatus(fullNameOther, SUCCESS);
 
