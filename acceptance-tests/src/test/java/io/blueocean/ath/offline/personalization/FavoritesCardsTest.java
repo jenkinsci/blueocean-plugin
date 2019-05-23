@@ -163,6 +163,7 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         int count = 2;
 
         tmpFile.createNewFile();
+        sseClientRule.untilEvents(pipeline.buildsFinished);
 
         dashboardPage.checkFavoriteCardStatus(fullNameMaster, SUCCESS);
         dashboardPage.checkFavoriteCardStatus(fullNameOther, SUCCESS);
