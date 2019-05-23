@@ -10,6 +10,7 @@ import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,6 +55,11 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
     @Inject
     public SSEClientRule sseClientRule;
 
+    @After
+    public void clearEvents() {
+        sseClientRule.clear();
+    }
+
     @Test
     public void testFreestyle() throws IOException {
         File tmpFile = File.createTempFile(UUID.randomUUID().toString(), "");
@@ -77,6 +83,7 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         tmpFile.createNewFile();
 
         sseClientRule.untilEvents(freestyle.buildsFinished);
+        sseClientRule.clear();
         dashboardPage.checkFavoriteCardStatus(fullName, SUCCESS);
         dashboardPage.removeFavoriteCard(fullName);
         dashboardPage.checkFavoriteCardCount(0);
@@ -102,6 +109,7 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         dashboardPage.checkFavoriteCardStatus(fullName, RUNNING);
         tmpFile.createNewFile();
         sseClientRule.untilEvents(pipeline.buildsFinished);
+        sseClientRule.clear();
         dashboardPage.checkFavoriteCardStatus(fullName, SUCCESS);
 
         tmpFile.delete();
@@ -109,6 +117,7 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         dashboardPage.checkFavoriteCardStatus(fullName, RUNNING);
         tmpFile.createNewFile();
         sseClientRule.untilEvents(pipeline.buildsFinished);
+        sseClientRule.clear();
         dashboardPage.checkFavoriteCardStatus(fullName, SUCCESS);
         dashboardPage.removeFavoriteCard(fullName);
         dashboardPage.checkFavoriteCardCount(0);
@@ -163,6 +172,7 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
 
         tmpFile.createNewFile();
         sseClientRule.untilEvents(pipeline.buildsFinished);
+        sseClientRule.clear();
 
         dashboardPage.open(); // FIXME - because sse is not yet registered (started before the page was loaded)
 
@@ -195,6 +205,7 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
             dashboardPage.checkFavoriteCardStatus(fullName, RUNNING);
             tmpFile.createNewFile();
             sseClientRule.untilEvents(pipeline.buildsFinished);
+            sseClientRule.clear();
             dashboardPage.checkFavoriteCardStatus(fullName, SUCCESS);
             tmpFile.delete();
 
@@ -202,6 +213,7 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
             dashboardPage.checkFavoriteCardStatus(fullName, RUNNING);
             tmpFile.createNewFile();
             sseClientRule.untilEvents(pipeline.buildsFinished);
+            sseClientRule.clear();
             dashboardPage.checkFavoriteCardStatus(fullName, SUCCESS);
             tmpFile.delete();
             dashboardPage.removeFavoriteCard(fullName);
