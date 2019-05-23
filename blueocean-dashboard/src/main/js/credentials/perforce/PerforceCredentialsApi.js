@@ -63,39 +63,6 @@ class PerforceCredentialsApi {
         throw error;
     }
 
-    // createAccessToken(accessToken, apiUrl) {
-    //     const path = UrlConfig.getJenkinsRootURL();
-    //     let tokenUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/validate`);
-    //     tokenUrl = GithubApiUtils.appendApiUrlParam(tokenUrl, apiUrl);
-    //
-    //     const requestBody = {
-    //         accessToken,
-    //     };
-    //
-    //     const fetchOptions = {
-    //         method: 'PUT',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //         body: JSON.stringify(requestBody),
-    //     };
-    //
-    //     return this._fetch(tokenUrl, { fetchOptions }).catch(error => this._createAccessTokenFailure(error));
-    // }
-    //
-    // _createAccessTokenFailure(error) {
-    //     const { code, message } = error.responseBody;
-    //
-    //     if (code === 404 || message.indexOf(INVALID_API_URL) !== -1) {
-    //         throw new TypedError(SaveError.API_URL_INVALID, error);
-    //     } else if (message.indexOf(INVALID_TOKEN) !== -1) {
-    //         throw new TypedError(SaveError.TOKEN_INVALID);
-    //     } else if (message.indexOf(INVALID_SCOPES) !== -1) {
-    //         throw new TypedError(SaveError.TOKEN_MISSING_SCOPES);
-    //     }
-    //
-    //     throw error;
-    // }
 }
 
 export default PerforceCredentialsApi;
