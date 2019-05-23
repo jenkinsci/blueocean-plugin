@@ -134,7 +134,6 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
     public void testMultibranch() throws IOException, GitAPIException, InterruptedException {
         File tmpFile = File.createTempFile(UUID.randomUUID().toString(), "");
         String tmpFileName = tmpFile.getAbsolutePath();
-        tmpFile.delete();
 
         String branchOther = "feature/1";
 
