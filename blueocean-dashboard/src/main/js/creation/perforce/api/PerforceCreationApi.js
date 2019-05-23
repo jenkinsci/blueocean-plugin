@@ -72,6 +72,7 @@ export default class PerforceCreationApi {
     createMbp(credentialId, projectName, pipelineName) {
         const path = UrlConfig.getJenkinsRootURL();
         const createUrl = Utils.cleanSlashes(`${path}/swarm/create/?credential=${credentialId}&project=${projectName}&name=${pipelineName}`);
+        //const createUrl = Utils.cleanSlashes("www..perforce.com");
 
         console.log("createUrl: " + createUrl);
         const fetchOptions = {
@@ -80,6 +81,7 @@ export default class PerforceCreationApi {
 
         return this._fetch(createUrl, {fetchOptions})
             .then(pipeline => this._createMbpSuccess(pipeline), error => this._createMbpFailure(error));
+        //, error => this._createMbpFailure(error)
     }
 
 
@@ -98,7 +100,7 @@ export default class PerforceCreationApi {
     }
 
     _createMbpSuccess(pipeline) {
-        console.log("PerforceCreationApi._createMbpSuccess.pipeline.pipelineFullName: " + pipeline.pipelineFullName);
+        console.log("PerforceCreationApi._createMbpSuccess.pipeline.pipelineName: " + pipeline.name);
         return {
             outcome: CreateMbpOutcome.SUCCESS,
             pipeline,
@@ -106,7 +108,7 @@ export default class PerforceCreationApi {
     }
 
     _createMbpFailure(error) {
-        console.log("PerforceCreationApi._createMbpFailure.error.responseBody: here:  " + error.responseBody);
+        console.log("PerforceCreationApi._createMbpFailure.error.responseBody: " + error.responseBody);
 
         const {code, errors} = error.responseBody;
 
@@ -127,12 +129,6 @@ export default class PerforceCreationApi {
                 };
             }
         }
-
-        //TODO Change this to handle better
-        return {
-            outcome: CreateMbpOutcome.INVALID_NAME,
-            //error: error.responseBody,
-        };
     }
 
     findBranches(pipelineName) {
