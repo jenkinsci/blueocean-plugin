@@ -33,10 +33,7 @@ export default class PerforceRenameStep extends React.Component {
     }, 500);
 
     _validateName(pipelineName, available) {
-        console.log("pipelineName: " + pipelineName + " available: " + available);
         const isNameValid = !!pipelineName && available;
-        console.log("pipelineName: " + pipelineName + " isNameValid: " + isNameValid);
-
         this.setState({
             pipelineName,
             isNameValid,
