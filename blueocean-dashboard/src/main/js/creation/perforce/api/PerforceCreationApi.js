@@ -141,7 +141,7 @@ export default class PerforceCreationApi {
 
     _findBranchesSuccess(pipeline) {
         return {
-            isFound: pipeline.getTotalNumberOfBranches > -1,
+            isFound: pipeline.getTotalNumberOfBranches > 0,
             hasError: false,
             pipeline,
         };

@@ -1,7 +1,7 @@
 import React from 'react';
 import {action, computed, observable} from 'mobx';
 
-import {i18nTranslator, logging, sseService, pipelineService} from '@jenkins-cd/blueocean-core-js';
+import {i18nTranslator, logging, sseService, pipelineService, ToastService} from '@jenkins-cd/blueocean-core-js';
 
 const translate = i18nTranslator('blueocean-dashboard');
 
@@ -21,6 +21,7 @@ import PerforceUnknownErrorStep from "./steps/PerforceUnknownErrorStep";
 
 const LOGGER = logging.logger('io.jenkins.blueocean.p4-pipeline');
 const MIN_DELAY = 500;
+const SSE_TIMEOUT_DELAY = 1000 * 60;
 
 /**
  * Impl of FlowManager for perforce creation flow.
@@ -29,6 +30,10 @@ export default class PerforceFlowManager extends FlowManager {
 
     selectedCred = null;
     pipelineName = null;
+    pipeline = null;
+
+    _sseSubscribeId = null;
+    _sseTimeoutId = null;
 
     @observable projects = [];
 
@@ -212,8 +217,19 @@ export default class PerforceFlowManager extends FlowManager {
         console.log("PerforceFlowManager._createPipelineComplete.result.outcome: " + result.outcome);
         this.outcome = result.outcome;
         if (result.outcome === CreateMbpOutcome.SUCCESS) {
-            this.changeState(STATE.STEP_COMPLETE_SUCCESS);
-            this.pipelineName = result.pipeline.name;
+            //TODO Assumption here is Jenkinsfile is present. So not checking for it.
+            this._checkForBranchCreation(
+                result.pipeline.name,
+                true,
+                ({ isFound, hasError, pipeline }) => {
+                    if (!hasError && isFound) {
+                        this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+                        this.pipeline = pipeline;
+                        this.pipelineName = pipeline.name;
+                    }
+                },
+                this.redirectTimeout
+            );
         } else if (result.outcome === CreateMbpOutcome.INVALID_NAME) {
             console.log("PerforceFlowManager._createPipelineComplete, invalid name ");
             this.renderStep({
@@ -241,21 +257,20 @@ export default class PerforceFlowManager extends FlowManager {
         ]);
     }
 
-    // _checkForBranchCreation(pipelineName, multiBranchIndexingComplete, onComplete, delay = 500) {
-    //     if (multiBranchIndexingComplete) {
-    //         LOGGER.debug(`multibranch indexing for ${pipelineName} completed`);
-    //     }
-    //
-    //     LOGGER.debug(`will check for branches of ${pipelineName} in ${delay}ms`);
-    //
-    //     //TODO change the this.selectedProject to actual pipeline name
-    //     setTimeout(() => {
-    //         this._creationApi.findBranches(this.selectedProject).then(data => {
-    //             LOGGER.debug(`check for pipeline complete. created? ${data.isFound}`);
-    //             onComplete(data);
-    //         });
-    //     }, delay);
-    // }
+    _checkForBranchCreation(pipelineName, multiBranchIndexingComplete, onComplete, delay = 500) {
+        if (multiBranchIndexingComplete) {
+            LOGGER.debug(`multibranch indexing for ${pipelineName} completed`);
+        }
+
+        LOGGER.debug(`will check for branches of ${pipelineName} in ${delay}ms`);
+
+        setTimeout(() => {
+            this._creationApi.findBranches(pipelineName).then(data => {
+                LOGGER.debug(`check for pipeline complete. created? ${data.isFound}`);
+                onComplete(data);
+            });
+        }, delay);
+    }
 
     checkPipelineNameAvailable(name) {
         if (!name) {
@@ -283,15 +298,74 @@ export default class PerforceFlowManager extends FlowManager {
 
         LOGGER.info('P4: listening for project folder and multi-branch indexing events...');
 
-        //TODO Add code here later
+        this._sseSubscribeId = sseService.registerHandler(event => this._onSseEvent(event));
+        this._sseTimeoutId = setTimeout(() => {
+            this._onSseTimeout();
+        }, SSE_TIMEOUT_DELAY);
     }
 
     _cleanupListeners() {
-        //TODO Add cleanup code here
+        if (this._sseSubscribeId || this._sseTimeoutId) {
+            LOGGER.debug('cleaning up existing SSE listeners');
+        }
+
+        if (this._sseSubscribeId) {
+            sseService.removeHandler(this._sseSubscribeId);
+            this._sseSubscribeId = null;
+        }
+        if (this._sseTimeoutId) {
+            clearTimeout(this._sseTimeoutId);
+            this._sseTimeoutId = null;
+        }
+    }
+
+    _onSseTimeout() {
+        LOGGER.debug(`wait for events timed out after ${SSE_TIMEOUT_DELAY}ms`);
+        this.changeState(STATE.STEP_COMPLETE_EVENT_TIMEOUT);
+        this._cleanupListeners();
+    }
+
+    _onSseEvent(event) {
+        if (LOGGER.isDebugEnabled()) {
+            this._logEvent(event);
+        }
+
+        if (
+            event.blueocean_job_pipeline_name === this.pipelineName &&
+            event.jenkins_object_type === 'org.jenkinsci.plugins.workflow.job.WorkflowRun' &&
+            (event.job_run_status === 'ALLOCATED' ||
+                event.job_run_status === 'RUNNING' ||
+                event.job_run_status === 'SUCCESS' ||
+                event.job_run_status === 'FAILURE')
+        ) {
+            // set pipeline details that are needed later on in PerforceCompleteStep.navigatePipeline()
+            this.pipeline = { organization: event.jenkins_org, fullName: this.pipelineName };
+            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+            return;
+        }
+
+        const multiBranchIndexingComplete = event.job_multibranch_indexing_result === 'SUCCESS' && event.blueocean_job_pipeline_name === this.pipelineName;
+
+        if (multiBranchIndexingComplete) {
+            LOGGER.info(`creation succeeded for ${this.pipelineName}`);
+            if (event.jenkinsfile_present === 'false') {
+                this._finishListening(STATE.STEP_COMPLETE_MISSING_JENKINSFILE);
+            }
+        } else if (event.job_multibranch_indexing_result === 'FAILURE') {
+            this._finishListening(STATE.STEP_COMPLETE_EVENT_ERROR);
+        } else {
+            this._checkForBranchCreation(event.blueocean_job_pipeline_name, false, ({ isFound, hasError, pipeline }) => {
+                if (isFound && !hasError) {
+                    this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+                    this.pipeline = pipeline;
+                    this.pipelineName = pipeline.name;
+                }
+            });
+        }
     }
 
     _finishListening(stateId) {
-        console.log('finishListening', stateId);
+        console.log('PerforceFlowManager: finishListening()', stateId);
         this.changeState(stateId);
         this._cleanupListeners();
     }
