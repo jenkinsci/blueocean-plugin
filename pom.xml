@@ -689,7 +689,7 @@
         <dependency>
             <groupId>io.keen</groupId>
             <artifactId>keen-client-api-java</artifactId>
-            <version>5.2.0</version>
+            <version>5.5.0</version>
             <exclusions>
                 <!-- upper bound fix, git plugin pulls in later versions -->
                 <exclusion>
