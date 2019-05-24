@@ -15,6 +15,7 @@ import hudson.util.RunList;
 import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
+import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import jenkins.branch.BranchSource;
 import jenkins.model.Jenkins;
@@ -47,10 +48,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -96,69 +99,6 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Map secondStep = resp.get(1);
         Assert.assertEquals("FAILURE", secondStep.get("result"));
         Assert.assertEquals("FINISHED", secondStep.get("state"));
-    }
-
-    //TODO: Enable this test if there is way to determine when test starts running and not waiting till launched
-    @Test
-    @Ignore
-    public void nodesTest1() throws IOException, ExecutionException, InterruptedException {
-        WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, "p1");
-        job.setDefinition(new CpsFlowDefinition("node {\n" +
-                                                    "    stage 'Stage 1a'\n" +
-                                                    "    echo 'Stage 1a'\n" +
-                                                    "\n" +
-                                                    "   stage 'Stage 2'\n" +
-                                                    "   echo 'Stage 2'\n" +
-                                                    "}\n" +
-                                                    "node {\n" +
-                                                    "    stage 'testing'\n" +
-                                                    "    echo 'testing'\n" +
-                                                    "}\n" +
-                                                    "\n" +
-                                                    "node {\n" +
-                                                    "    parallel firstBranch: {\n" +
-                                                    "    echo 'first Branch'\n" +
-                                                    "    sh 'sleep 1'\n" +
-                                                    "    echo 'first Branch end'\n" +
-                                                    "    }, secondBranch: {\n" +
-                                                    "       echo 'Hello second Branch'\n" +
-                                                    "    sh 'sleep 1'   \n" +
-                                                    "    echo 'second Branch end'\n" +
-                                                    "       \n" +
-                                                    "    },\n" +
-                                                    "    failFast: false\n" +
-                                                    "}", false));
-        job.scheduleBuild2(0).waitForStart();
-
-        Thread.sleep(1000);
-        List<Map> resp = get("/organizations/jenkins/pipelines/p1/runs/1/nodes/", List.class);
-
-        for (int i = 0; i < resp.size(); i++) {
-            Map rn = resp.get(i);
-            List<Map> edges = (List<Map>) rn.get("edges");
-
-            if (rn.get("displayName").equals("Stage 1a")) {
-                Assert.assertEquals(1, edges.size());
-                Assert.assertEquals(rn.get("result"), "SUCCESS");
-                Assert.assertEquals(rn.get("state"), "FINISHED");
-            } else if (rn.get("displayName").equals("Stage 2")) {
-                Assert.assertEquals(1, edges.size());
-                Assert.assertEquals(rn.get("result"), "SUCCESS");
-                Assert.assertEquals(rn.get("state"), "FINISHED");
-            } else if (rn.get("displayName").equals("testing")) {
-                Assert.assertEquals(2, edges.size());
-                Assert.assertEquals(rn.get("result"), "UNKNOWN");
-                Assert.assertEquals(rn.get("state"), "RUNNING");
-            } else if (rn.get("displayName").equals("firstBranch")) {
-                Assert.assertEquals(0, edges.size());
-                Assert.assertEquals(rn.get("result"), "UNKNOWN");
-                Assert.assertEquals(rn.get("state"), "RUNNING");
-            } else if (rn.get("displayName").equals("secondBranch")) {
-                Assert.assertEquals(0, edges.size());
-                Assert.assertEquals(rn.get("result"), "UNKNOWN");
-                Assert.assertEquals(rn.get("state"), "RUNNING");
-            }
-        }
     }
 
     @Test
@@ -2463,6 +2403,78 @@ public class PipelineNodeTest extends PipelineBaseTest {
     }
 
     @Test
+    @Issue("JENKINS-53816")
+    public void graphConsistentWhileExecuting() throws Exception {
+
+        final String expectedNodeNames =
+            "A, B, B-A, B-B, B-B-1, B-B-2, B-C, B-C-1, B-C-2, C, D, D-A, D-B, D-B-1, D-B-2, D-C, D-C-1, D-C-2";
+
+        String completeNodeNames = checkConsistencyWhileBuilding("JENKINS-53816.jenkinsfile");
+
+        assertEquals("node names", expectedNodeNames, completeNodeNames);
+    }
+
+    @Test
+    @Issue("JENKINS-53816")
+    public void graphConsistentWhileExecuting2() throws Exception {
+
+        final String expectedNodeNames = "first-sequential-stage, first-solo, multiple-stages, other-single-stage, " +
+            "parent, second-sequential-stage, second-solo, single-stage, third-sequential-stage";
+
+        String completeNodeNames = checkConsistencyWhileBuilding("sequential_parallel_stages_long_run_time.jenkinsfile");
+
+        assertEquals("node names", expectedNodeNames, completeNodeNames);
+    }
+
+    private String checkConsistencyWhileBuilding(String jenkinsFileName) throws Exception {
+
+        /*
+            Run a complex pipeline to completion, then start a new build and inspect it while it's running, to exercise
+            the code that merges incomplete runs with previous builds to generate a complete graph
+         */
+
+        WorkflowJob p = createWorkflowJobWithJenkinsfile(getClass(), jenkinsFileName);
+
+        // Do an initial run, collect the nodes
+        final WorkflowRun run1 = p.scheduleBuild2(0).waitForStart();
+        j.waitForCompletion(run1);
+
+        final List<BluePipelineNode> completeNodes = new PipelineNodeContainerImpl(run1, new Link("foo")).getNodes();
+
+        final String completeNodeNames = completeNodes.stream()
+                                                      .map(BluePipelineStep::getDisplayName)
+                                                      .sorted()
+                                                      .collect(Collectors.joining(", "));
+
+        // Start another build...
+        final WorkflowRun run2 = p.scheduleBuild2(0).waitForStart();
+
+        // ... then watch while it runs, checking for the same graph nodes
+
+        int loopCount = 0;
+
+        do {
+            Thread.sleep(500);
+
+            List<BluePipelineNode> runningNodes = new PipelineNodeContainerImpl(run2, new Link("foo")).getNodes();
+            String runningNodeNames = runningNodes.stream()
+                                                  .map(BluePipelineStep::getDisplayName)
+                                                  .sorted()
+                                                  .collect(Collectors.joining(", "));
+
+            assertEquals("running node names", completeNodeNames, runningNodeNames);
+
+            loopCount++;
+
+        } while (run2.isBuilding());
+
+        // Sanity check, make sure we're *actually* checking stuff.
+        assertTrue("Checked multiple times while building", loopCount > 5);
+
+        return completeNodeNames; // So caller can do any additional checks
+    }
+
+    @Test
     public void sequentialParallelStagesLongRun() throws Exception {
         WorkflowJob p = createWorkflowJobWithJenkinsfile(getClass(), "sequential_parallel_stages_long_run_time.jenkinsfile");
         Slave s = j.createOnlineSlave();
@@ -2483,6 +2495,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
                     LOGGER.error("node {} has getFirstParent null", node);
                     fail("node with getFirstParent null:" + node);
                 }
+
                 // we try to find edges with id for a non existing node in the list
                 List<BluePipelineNode.Edge> emptyEdges =
                     node.getEdges().stream().filter(edge ->

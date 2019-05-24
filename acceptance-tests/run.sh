@@ -32,10 +32,31 @@ if [ -z "$JENKINS_WAR" ]; then
     export JENKINS_WAR=../bin/jenkins-${JENKINS_VERSION}.war
 fi
 
-if [ "${RUN_SELENIUM}" == "true" ]; then
-    ./runner/scripts/start-selenium.sh
-    ./runner/scripts/start-bitbucket-server.sh
-fi
+function finish() {
+    if [ "${RUN_SELENIUM}" == "true" ]; then
+        if [ ! -z "${SAUCE_ACCESS_KEY}" ]; then
+            ./runner/scripts/stop-sc.sh
+        else
+            ./runner/scripts/stop-selenium.sh
+        fi
+        ./runner/scripts/stop-bitbucket-server.sh
+    fi
+}
+
+function start() {
+    if [ "${RUN_SELENIUM}" == "true" ]; then
+        if [ ! -z "${SAUCE_ACCESS_KEY}" ]; then
+            ./runner/scripts/start-sc.sh
+        else
+            ./runner/scripts/start-selenium.sh
+        fi
+        ./runner/scripts/start-bitbucket-server.sh
+    fi
+}
+
+trap finish EXIT
+start
+
 
 while true; do
     curl -v http://localhost:7990 2>&1 | grep 'Location: http://localhost:7990/dashboard' > /dev/null
@@ -64,13 +85,5 @@ if [ $? != 0 ];then
     EXIT_CODE=1
 fi
 popd
-
-
-if [ "${RUN_SELENIUM}" == "true" ]; then
-    ./runner/scripts/stop-selenium.sh
-    ./runner/scripts/stop-bitbucket-server.sh
-
-fi
-
 
 exit $EXIT_CODE

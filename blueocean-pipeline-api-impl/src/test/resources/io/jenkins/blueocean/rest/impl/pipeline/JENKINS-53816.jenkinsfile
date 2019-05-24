@@ -1,0 +1,101 @@
+pipeline {
+
+agent any
+
+    stages {
+        stage('A') {
+            steps{
+                echo '1'
+                sleep 5
+            }
+        }
+        stage('B') {
+            //failFast false
+            parallel {
+                stage('B-B') {
+                    stages {
+                        stage('B-B-1') {
+                            steps {
+                                echo 'B-B-1'
+                            }
+                        }
+                        stage('B-B-2') {
+                            steps {
+                                sleep time: 15, unit: 'SECONDS'
+                            }
+                        }
+                    }
+                }
+                stage('B-C') {
+                    when {
+                        expression { true == true }
+                    }
+                    stages {
+                        stage('B-C-1') {
+                            steps {
+                                echo 'B-C-1'
+                            }
+                        }
+                        stage('B-C-2') {
+                            steps {
+                                echo 'B-C-2'
+                            }
+                        }
+                    }
+                }
+                stage('B-A') {
+                    steps {
+                        sleep time: 5, unit: 'SECONDS'
+                    }
+                }
+            }
+        }
+        stage('C') {
+            steps{
+                echo '1'
+                sleep 10
+            }
+        }
+        stage('D') {
+            //failFast false
+            parallel {
+                stage('D-B') {
+                    stages {
+                        stage('D-B-1') {
+                            steps {
+                                echo 'D-B-1'
+                            }
+                        }
+                        stage('D-B-2') {
+                            steps {
+                                sleep time: 5, unit: 'SECONDS'
+                            }
+                        }
+                    }
+                }
+                stage('D-C') {
+                    when {
+                        expression { true == true }
+                    }
+                    stages {
+                        stage('D-C-1') {
+                            steps {
+                                echo 'D-C-1'
+                            }
+                        }
+                        stage('D-C-2') {
+                            steps {
+                                echo 'D-C-2'
+                            }
+                        }
+                    }
+                }
+                stage('D-A') {
+                    steps {
+                        sleep time: 15, unit: 'SECONDS'
+                    }
+                }
+            }
+        }
+    }
+}

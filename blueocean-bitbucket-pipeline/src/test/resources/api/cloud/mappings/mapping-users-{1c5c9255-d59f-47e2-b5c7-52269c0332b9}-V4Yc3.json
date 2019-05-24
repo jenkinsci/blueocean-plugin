@@ -1,0 +1,30 @@
+{
+  "id": "f73d5452-73dc-3af8-a103-8d087f4c2119",
+  "request": {
+    "url": "/api/2.0/users/%7B1c5c9255-d59f-47e2-b5c7-52269c0332b9%7D",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "body-users-{1c5c9255-d59f-47e2-b5c7-52269c0332b9}-V4Yc3.json",
+    "headers": {
+      "Server": "nginx",
+      "Vary": "Authorization",
+      "Content-Type": "application/json; charset=utf-8",
+      "X-OAuth-Scopes": "webhook, pullrequest:write, project, team, email",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+      "Date": "Mon, 26 Jun 2017 16:50:01 GMT",
+      "X-Served-By": "app-143",
+      "X-Static-Version": "18a14bf82c46",
+      "ETag": "\"3999e299124b53a621f880e56e944ff4\"",
+      "X-Content-Type-Options": "nosniff",
+      "X-Render-Time": "0.0473940372467",
+      "X-Credential-Type": "apppassword",
+      "Connection": "keep-alive",
+      "X-Version": "18a14bf82c46",
+      "X-Request-Count": "490",
+      "X-Frame-Options": "SAMEORIGIN"
+    }
+  },
+  "uuid": "f73d5452-73dc-3af8-a103-8d087f4c2119"
+}

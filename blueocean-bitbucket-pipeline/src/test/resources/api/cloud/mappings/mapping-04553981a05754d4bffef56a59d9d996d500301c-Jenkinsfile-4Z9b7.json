@@ -1,29 +1,29 @@
 {
-  "id" : "69a425d2-ec82-38db-bc1a-65531db5942b",
-  "request" : {
-    "url" : "/api/2.0/repositoriesvivekp7/demo1/src/04553981a05754d4bffef56a59d9d996d500301c/Jenkinsfile",
-    "method" : "GET"
+  "id": "69a425d2-ec82-38db-bc1a-65531db5942b",
+  "request": {
+    "url": "/api/2.0/repositories{1c5c9255-d59f-47e2-b5c7-52269c0332b9}/demo1/src/04553981a05754d4bffef56a59d9d996d500301c/Jenkinsfile",
+    "method": "GET"
   },
-  "response" : {
-    "status" : 404,
-    "bodyFileName" : "body-04553981a05754d4bffef56a59d9d996d500301c-Jenkinsfile-4Z9b7.json",
-    "headers" : {
-      "Server" : "nginx",
-      "Vary" : "Authorization",
-      "Content-Type" : "application/json; charset=utf-8",
-      "X-OAuth-Scopes" : "webhook, pullrequest:write, project, team, email",
-      "Strict-Transport-Security" : "max-age=31536000; includeSubDomains; preload",
-      "Date" : "Tue, 27 Jun 2017 16:31:10 GMT",
-      "X-Served-By" : "app-142",
-      "X-Static-Version" : "dce5f507b47a",
-      "ETag" : "\"2b62f73138bb745c0a65d30d15361a22\"",
-      "X-Render-Time" : "0.0222110748291",
-      "X-Credential-Type" : "apppassword",
-      "Connection" : "keep-alive",
-      "X-Version" : "dce5f507b47a",
-      "X-Request-Count" : "133",
-      "X-Frame-Options" : "SAMEORIGIN"
+  "response": {
+    "status": 404,
+    "bodyFileName": "body-04553981a05754d4bffef56a59d9d996d500301c-Jenkinsfile-4Z9b7.json",
+    "headers": {
+      "Server": "nginx",
+      "Vary": "Authorization",
+      "Content-Type": "application/json; charset=utf-8",
+      "X-OAuth-Scopes": "webhook, pullrequest:write, project, team, email",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+      "Date": "Tue, 27 Jun 2017 16:31:10 GMT",
+      "X-Served-By": "app-142",
+      "X-Static-Version": "dce5f507b47a",
+      "ETag": "\"2b62f73138bb745c0a65d30d15361a22\"",
+      "X-Render-Time": "0.0222110748291",
+      "X-Credential-Type": "apppassword",
+      "Connection": "keep-alive",
+      "X-Version": "dce5f507b47a",
+      "X-Request-Count": "133",
+      "X-Frame-Options": "SAMEORIGIN"
     }
   },
-  "uuid" : "69a425d2-ec82-38db-bc1a-65531db5942b"
+  "uuid": "69a425d2-ec82-38db-bc1a-65531db5942b"
 }

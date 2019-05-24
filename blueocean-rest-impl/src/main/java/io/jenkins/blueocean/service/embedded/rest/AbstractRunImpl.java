@@ -9,6 +9,7 @@ import hudson.model.CauseAction;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -31,6 +32,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.export.Exported;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,9 +71,10 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
         this.organization = organization;
     }
 
-    @Nonnull
+    @Override
+    @Exported(inline = true)
     public Container<BlueChangeSetEntry> getChangeSet() {
-        return Containers.empty(getLink());
+        return new ChangeSetContainerImpl(organization, this, run);
     }
 
     @Override

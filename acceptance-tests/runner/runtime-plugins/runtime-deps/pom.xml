@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>2.35</version>
+        <version>3.40</version>
         <relativePath />
     </parent>
     <groupId>org.jenkins-ci.plugins.blueocean</groupId>
@@ -58,7 +58,6 @@
     </pluginRepositories>
     <properties>
         <jenkins.version>2.121.1</jenkins.version>
-        <jenkins-test-harness.version>2.30</jenkins-test-harness.version>
         <java.level>8</java.level>
     </properties>
     <dependencies>
@@ -66,6 +65,11 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>fake-realm</artifactId>
             <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jenkins.blueocean</groupId>
+            <artifactId>blueocean-executor-info</artifactId>
+            <version>[1.14.0-SNAPSHOT,)</version>
         </dependency>
 
         <!-- following are required to run on newer jenkins versions (after 2.7) as it changed how classloading works a bit for plugins -->
@@ -87,7 +91,7 @@
                 <dependency>
                     <groupId>io.jenkins.blueocean</groupId>
                     <artifactId>blueocean</artifactId>
-                    <version>1.14.0-SNAPSHOT</version>
+                    <version>[1.14.0-SNAPSHOT,)</version>
                 </dependency>
             </dependencies>
         </profile>
