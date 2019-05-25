@@ -1,17 +1,5 @@
+_extends: .github
 name-template: BlueOcean $NEXT_PATCH_VERSION
 tag-template: blueocean-parent-$NEXT_PATCH_VERSION
-
-replacers:
-  - search: '/JENKINS-(\d+)/g'
-    replace: '[JENKINS-$1](https://issues.jenkins-ci.org/browse/JENKINS-$1)'
-exclude-lables:
+exclude-labels:
   - internal
-categories:
-  - title: 🚀 Features
-    label: enhancement
-  - title: 🐛 Bug Fixes
-    label: bug
-template: |
-  ## What’s Changed
-
-  $CHANGES
