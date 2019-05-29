@@ -39,19 +39,17 @@ export default class PerforceCreationApi {
         this.organization = AppConfig.getOrganizationName();
         this.scmId = scmId;
         this.partialLoadedProjects = [];
-        console.log("PerforceCreationApi: constructor: scmId: " + this.scmId);
     }
 
-    listProjects(credentialId, pagedProjStart = 0, pageSize = 100) {
+    listProjects(credentialId) {
         const path = UrlConfig.getJenkinsRootURL();
         const credUrl = Utils.cleanSlashes(`${path}/swarm/projects/?credential=` + credentialId);
-        console.log("Project url: " + credUrl);
         return this._fetch(credUrl)
             .then(projects => capabilityAugmenter.augmentCapabilities(projects))
-            .then(projects => this._listProjectsSuccess(projects, credentialId, pagedProjStart), error => this._listProjectsFailure(error));
+            .then(projects => this._listProjectsSuccess(projects), error => this._listProjectsFailure(error));
     }
 
-    _listProjectsSuccess(projects, credentialId, pagedOrgsStart) {
+    _listProjectsSuccess(projects) {
         //TODO Later: Implement pagination
         this.partialLoadedProjects = this.partialLoadedProjects.concat(projects);
         return {
@@ -61,8 +59,6 @@ export default class PerforceCreationApi {
     }
 
     _listProjectsFailure(error) {
-        console.log("PerforceCreationApi._listProjectFailure().error: " + error);
-
         return {
             outcome: ListProjectsOutcome.ERROR,
             error: error,
@@ -72,16 +68,13 @@ export default class PerforceCreationApi {
     createMbp(credentialId, projectName, pipelineName) {
         const path = UrlConfig.getJenkinsRootURL();
         const createUrl = Utils.cleanSlashes(`${path}/swarm/create/?credential=${credentialId}&project=${projectName}&name=${pipelineName}`);
-        //const createUrl = Utils.cleanSlashes("www..perforce.com");
 
-        console.log("createUrl: " + createUrl);
         const fetchOptions = {
             method: 'POST',
         };
 
         return this._fetch(createUrl, {fetchOptions})
             .then(pipeline => this._createMbpSuccess(pipeline), error => this._createMbpFailure(error));
-        //, error => this._createMbpFailure(error)
     }
 
 
@@ -100,7 +93,6 @@ export default class PerforceCreationApi {
     }
 
     _createMbpSuccess(pipeline) {
-        console.log("PerforceCreationApi._createMbpSuccess.pipeline.pipelineName: " + pipeline.name);
         return {
             outcome: CreateMbpOutcome.SUCCESS,
             pipeline,
@@ -108,7 +100,6 @@ export default class PerforceCreationApi {
     }
 
     _createMbpFailure(error) {
-        console.log("PerforceCreationApi._createMbpFailure.error.responseBody: " + error.responseBody);
 
         const {code, errors} = error.responseBody;
 

@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import {observer} from 'mobx-react';
 
-import {AppConfig, UrlBuilder, UrlConfig, Utils} from '@jenkins-cd/blueocean-core-js';
+import {AppConfig, UrlBuilder} from '@jenkins-cd/blueocean-core-js';
 
 import FlowStep from '../../flow2/FlowStep';
 import FlowStepStatus from '../../flow2/FlowStepStatus';
@@ -22,11 +22,9 @@ export default class PerforceCompleteStep extends React.Component {
     navigatePipeline() {
         const { pipelineName } = this.props.flowManager;
 
-        console.log("PerforceCompleteStep: organization: fullName: " + pipelineName + " : " + pipelineName);
         const organization = AppConfig.getOrganizationName();
         const url = UrlBuilder.buildPipelineUrl(organization, pipelineName, 'activity');
 
-        console.log("PerforceCompleteStep: url: " + url);
         this.props.flowManager.completeFlow({ url });
     }
 

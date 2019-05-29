@@ -1,10 +1,5 @@
 import {action, observable} from 'mobx';
 
-import PromiseDelayUtils from '../../util/PromiseDelayUtils';
-
-const MIN_DELAY = 500;
-const {delayBoth} = PromiseDelayUtils;
-
 /**
  * Manages retrieving, validating and saving the Perforce credentials.
  * Also holds the state of the credential for use in PerforceCredentialStep.

@@ -17,7 +17,6 @@ export const SaveError = {
 // TODO: temporary until we get more structured errors
 const INVALID_TOKEN = 'Invalid accessToken';
 const INVALID_SCOPES = 'missing scopes';
-const INVALID_API_URL = 'Invalid apiUrl';
 
 /**
  * Handles lookup, validation and creation the Github access token credential.
@@ -29,7 +28,7 @@ class PerforceCredentialsApi {
         this.scmId = scmId || 'perforce';
     }
 
-    findExistingCredential(apiUrl) {
+    findExistingCredential() {
         const path = UrlConfig.getJenkinsRootURL(); // Value is /jenkins
         const credUrl = Utils.cleanSlashes(`${path}/credentials/store/system/domain/_/api/json?tree=credentials[id,typeName]`);
         const fetchOptions = {

@@ -11,7 +11,6 @@ const t = i18nTranslator('blueocean-dashboard');
 @observer
 export default class PerforceProjectListStep extends React.Component {
     selectProject(proj) {
-        console.log("PerforceProjectListStep.selectProject().proj: " + proj);
         this.props.flowManager.selectProject(proj);
     }
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import {action, computed, observable} from 'mobx';
 
-import {i18nTranslator, logging, sseService, pipelineService, ToastService} from '@jenkins-cd/blueocean-core-js';
+import {i18nTranslator, logging, sseService} from '@jenkins-cd/blueocean-core-js';
 
 const translate = i18nTranslator('blueocean-dashboard');
 
@@ -86,10 +86,6 @@ export default class PerforceFlowManager extends FlowManager {
     }
 
 
-    /*getApiUrl() {
-        return this.selectedCred ? this.selectedCred.apiUrl : null;
-    }*/
-
     _loadCredentialsList() {
         return this.credManager
             .findExistingCredential()
@@ -97,6 +93,7 @@ export default class PerforceFlowManager extends FlowManager {
             .then(success => this._loadCredentialsComplete(success));
     }
 
+    //TODO response is not used at the moment. Will be used when handling bad credentials later.
     _loadCredentialsComplete(response) {
         //this.credentials = response;
         this.renderStep({
@@ -165,25 +162,9 @@ export default class PerforceFlowManager extends FlowManager {
     selectProject(project) {
         this.selectedProject = project;
         this.pipelineName = project;
-        console.log("project and selectedProject: " + project + "::" + this.selectedProject);
     }
 
     saveRepo() {
-        /*
-        return this.credManager
-            .findExistingCredential()
-            .then(waitAtLeast(MIN_DELAY))
-            .then(success => this._loadCredentialsComplete(success));
-         */
-        /*console.log("Reached PerforceFlowManager.saveRepo(). Building project " + this.selectedProject);
-        const available = this._creationApi.checkPipelineNameAvailable(this.selectedProject);*/
-
-        /*
-        Check if the pipeline already exists
-         */
-
-
-        //console.log("PerforceCreationApi.saveRepo.available: " + available.outcome);
 
         this._saveRepo();
     }
@@ -214,7 +195,6 @@ export default class PerforceFlowManager extends FlowManager {
 
     @action
     _createPipelineComplete(result) {
-        console.log("PerforceFlowManager._createPipelineComplete.result.outcome: " + result.outcome);
         this.outcome = result.outcome;
         if (result.outcome === CreateMbpOutcome.SUCCESS) {
             //TODO Assumption here is Jenkinsfile is present. So not checking for it.
@@ -231,7 +211,6 @@ export default class PerforceFlowManager extends FlowManager {
                 this.redirectTimeout
             );
         } else if (result.outcome === CreateMbpOutcome.INVALID_NAME) {
-            console.log("PerforceFlowManager._createPipelineComplete, invalid name ");
             this.renderStep({
                 stateId: STATE.STEP_RENAME,
                 stepElement: <PerforceRenameStep pipelineName={this.pipelineName}/>,
