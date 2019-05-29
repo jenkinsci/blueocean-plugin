@@ -478,6 +478,13 @@
             <version>4.5.5-3.0</version>
         </dependency>
 
+        <!-- p4 scm plugin -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>p4</artifactId>
+            <version>1.10.0</version>
+        </dependency>
+
         <!-- Other -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
