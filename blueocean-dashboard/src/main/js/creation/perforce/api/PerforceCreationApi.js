@@ -71,6 +71,9 @@ export default class PerforceCreationApi {
 
         const fetchOptions = {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
         };
 
         return this._fetch(createUrl, {fetchOptions})
