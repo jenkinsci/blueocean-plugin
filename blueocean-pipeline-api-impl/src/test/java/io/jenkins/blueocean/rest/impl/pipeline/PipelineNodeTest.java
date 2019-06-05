@@ -39,6 +39,7 @@ import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.jenkinsci.plugins.workflow.steps.UnstableStep;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
+import org.jenkinsci.plugins.workflow.test.steps.SemaphoreStep;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -672,12 +673,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
                                                      "    }\n" +
                                                      "}", false));
 
-        WorkflowRun b1 = job1.scheduleBuild2(0).get();
-
-        Thread.sleep(1500);
-
+        j.buildAndAssertSuccess(job1);
         List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
-
         Assert.assertEquals(5, resp.size());
 
         job1.setDefinition(new CpsFlowDefinition("node {\n" +
@@ -689,15 +686,15 @@ public class PipelineNodeTest extends PipelineBaseTest {
                                                      "        parallel left : {\n" +
                                                      "            sh \"echo OMG BS\"\n" +
                                                      "            echo \"running\"\n" +
-                                                     "            def branchInput = input message: 'Please input branch to test against', parameters: [[$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'branch']]\n" +
-                                                     "            echo \"BRANCH NAME: ${branchInput}\"\n" +
+                                                     "            semaphore('left')\n" +
+                                                     "            echo \"BRANCH NAME left\"\n" +
                                                      "            sh \"echo yeah\"\n" +
                                                      "        }, \n" +
                                                      "        \n" +
                                                      "        right : {\n" +
                                                      "            sh \"echo wozzle\"\n" +
-                                                     "            def branchInput = input message: 'MF Please input branch to test against', parameters: [[$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'branch']]\n" +
-                                                     "            echo \"BRANCH NAME: ${branchInput}\"\n" +
+                                                     "            semaphore('right')\n" +
+                                                     "            echo \"BRANCH NAME right\"\n" +
                                                      "        }\n" +
                                                      "    }\n" +
                                                      "    stage (\"ho\") {\n" +
@@ -705,9 +702,9 @@ public class PipelineNodeTest extends PipelineBaseTest {
                                                      "    }\n" +
                                                      "}", false));
 
-        job1.scheduleBuild2(0);
-
-        Thread.sleep(1500);
+        WorkflowRun b2 = job1.scheduleBuild2(0).waitForStart();
+        SemaphoreStep.waitForStart("left/1", b2);
+        SemaphoreStep.waitForStart("right/1", b2);
 
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/2/nodes/", List.class);
 
