@@ -27,7 +27,7 @@
     <revision>1.17.0</revision>
     <changelist>-SNAPSHOT</changelist>
     <java.level>8</java.level>
-    <jenkins.version>2.121.1</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
+    <jenkins.version>2.138.4</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.7.5</frontend-version>
     <node.version>10.13.0</node.version>
@@ -45,6 +45,7 @@
     <git.version>3.8.0</git.version>
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
     <workflow-support.version>3.2</workflow-support.version>
+    <pipeline-model-definition.version>1.3.7</pipeline-model-definition.version>
   </properties>
 
   <scm>
@@ -330,7 +331,7 @@
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
-            <version>1.3.2</version>
+            <version>${pipeline-model-definition.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.jenkins-ci.plugins</groupId>
@@ -341,32 +342,37 @@
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-stage-tags-metadata</artifactId>
-            <version>1.3.2</version>
+            <version>${pipeline-model-definition.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-api</artifactId>
-            <version>1.3.2</version>
+            <version>${pipeline-model-definition.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-extensions</artifactId>
+            <version>${pipeline-model-definition.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-cps</artifactId>
-            <version>2.58</version>
+            <version>2.66</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-api</artifactId>
-            <version>2.32</version>
+            <version>2.34</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-job</artifactId>
-            <version>2.29</version>
+            <version>2.32</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-graph-analysis</artifactId>
-            <version>1.7</version>
+            <version>1.10</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -397,7 +403,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-basic-steps</artifactId>
-            <version>2.12</version>
+            <version>2.16</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -427,7 +433,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>script-security</artifactId>
-            <version>1.46</version>
+            <version>1.56</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
