@@ -61,7 +61,6 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
                 .key("version").value(getBlueOceanPluginVersion())
                 .key("jenkinsConfig")
                 .object()
-                    .key("analytics").value(Analytics.isAnalyticsEnabled())
                     .key("version").value(version)
                     .key("security")
                     .object()

@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import hudson.model.Action;
 import hudson.model.InvisibleAction;
 import hudson.model.UsageStatistics;
-import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.rest.model.BlueOceanUrlObject;
 
 import javax.annotation.Nonnull;
@@ -37,10 +36,6 @@ public final class BlueOceanUrlAction implements Action {
 
     BlueOceanUrlObject getBlueOceanUrlObject(){
         return blueOceanUrlObject;
-    }
-
-    public boolean isAnalyticsEnabled() {
-        return Analytics.isAnalyticsEnabled();
     }
 
     private Object readResolve() {
