@@ -10,7 +10,6 @@ import { DisableJobApi } from './rest/DisableJobApi';
 import { SseBus } from './sse/SseBus';
 
 import { ToastService } from './ToastService';
-import { AnalyticsService } from './analytics/AnalyticsService';
 
 // export i18n provider
 export { i18nTranslator, defaultLngDetector } from './i18n/i18n';
@@ -104,7 +103,6 @@ export const sseService = new SSEService(sseConnection);
 export const activityService = new ActivityService(pagerService);
 export const pipelineService = new PipelineService(pagerService, activityService);
 export const locationService = new LocationService();
-export const analyticsService = new AnalyticsService();
 
 const defaultSSEhandler = new DefaultSSEHandler(pipelineService, activityService, pagerService);
 sseService.registerHandler(defaultSSEhandler.handleEvents);
