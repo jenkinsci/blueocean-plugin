@@ -216,6 +216,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
     }
 
     @Test
+    @Issue("JENKINS-39203")
     public void sillyLongName() throws Exception {
         WorkflowRun run = createAndRunJob("SillyLongName",
                                           "earlyUnstableStatusShouldReportPunStateAsRunningAndResultAsUnknown.jenkinsfile",
@@ -223,8 +224,8 @@ public class GraphBuilderTest extends PipelineBaseTest {
         NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
-        assertStageAndEdges(nodes, "stage 1 marked as unstable", BlueRun.BlueRunState.NOT_BUILT, BlueRun.BlueRunResult.NOT_BUILT, "stage 2 wait");
-        assertStageAndEdges(nodes, "stage 2 wait", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.UNSTABLE);
+        assertStageAndEdges(nodes, "stage 1 marked as unstable", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.UNSTABLE, "stage 2 wait");
+        assertStageAndEdges(nodes, "stage 2 wait", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.SUCCESS);
 
         assertEquals("Unexpected stages in graph", 2, nodes.size());
     }
@@ -274,6 +275,39 @@ public class GraphBuilderTest extends PipelineBaseTest {
         assertStageAndEdges(nodes, "second");
 
         assertEquals("Unexpected stages in graph", 3, nodes.size());
+    }
+
+    @Test
+    @Issue("JENKINS-43292")
+    public void parallelFailFast() throws Exception {
+        WorkflowRun run = createAndRunJob("parallelFailFast", "parallelFailFast.jenkinsfile", Result.FAILURE);
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "Parallel", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.FAILURE, "aborts", "fails", "succeeds");
+        assertStageAndEdges(nodes, "aborts", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.ABORTED);
+        assertStageAndEdges(nodes, "fails", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.FAILURE);
+        assertStageAndEdges(nodes, "succeeds", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.SUCCESS);
+
+        assertEquals("Unexpected stages in graph", 4, nodes.size());
+    }
+
+    @Test
+    @Issue("JENKINS-43292")
+    public void parallelFailFastDeclarative() throws Exception {
+        WorkflowRun run = createAndRunJob("parallelFailFastDeclarative", "parallelFailFastDeclarative.jenkinsfile", Result.FAILURE);
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        // top should be BlueRunResult.FAILURE, but the status is currently computed from the beginning of top to the
+        // begining of aborts, which doesn't make sense, but we don't show a status for parents of sequential stages
+        // anyway so it doesn't really matter.
+        assertStageAndEdges(nodes, "top", "aborts", "fails", "succeeds");
+        assertStageAndEdges(nodes, "aborts", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.ABORTED);
+        assertStageAndEdges(nodes, "fails", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.FAILURE);
+        assertStageAndEdges(nodes, "succeeds", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.SUCCESS);
+
+        assertEquals("Unexpected stages in graph", 4, nodes.size());
     }
 
     @Test
@@ -357,6 +391,20 @@ public class GraphBuilderTest extends PipelineBaseTest {
         assertStageAndEdges(nodes, "parallel stage", "a_1");
         assertStageAndEdges(nodes, "a_1", "test2");
         assertStageAndEdges(nodes, "test2");
+
+        assertEquals("Unexpected stages in graph", 4, nodes.size());
+    }
+
+    @Test
+    public void unstableSmokes() throws Exception {
+        WorkflowRun run = createAndRunJob("unstableSmokes", "unstableSmokes.jenkinsfile", Result.FAILURE);
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
+
+        assertStageAndEdges(nodes, "unstable-one", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.UNSTABLE, "success");
+        assertStageAndEdges(nodes, "success", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.SUCCESS, "unstable-two");
+        assertStageAndEdges(nodes, "unstable-two", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.UNSTABLE, "failure");
+        assertStageAndEdges(nodes, "failure", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.FAILURE);
 
         assertEquals("Unexpected stages in graph", 4, nodes.size());
     }

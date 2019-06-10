@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import com.mashape.unirest.http.Unirest;
+import hudson.ExtensionList;
 import hudson.FilePath;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
@@ -35,8 +36,10 @@ import org.jenkinsci.plugins.workflow.graphanalysis.MemoryFlowChunk;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.jenkinsci.plugins.workflow.steps.UnstableStep;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
+import org.jenkinsci.plugins.workflow.test.steps.SemaphoreStep;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -162,8 +165,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
         }
     }
 
-    //JENKINS-39203
     @Test
+    @Issue("JENKINS-39203")
     public void stepStatusForUnstableBuild() throws Exception {
         String p = "node {\n" +
             "   echo 'Hello World'\n" +
@@ -171,7 +174,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
             "    echo 'Inside try'\n" +
             "   }finally{\n" +
             "    sh 'echo \"blah\"' \n" +
-            "    currentBuild.result = \"UNSTABLE\"\n" +
+            "    unstable('foobar')\n" +
             "   }\n" +
             "}";
 
@@ -183,12 +186,16 @@ public class PipelineNodeTest extends PipelineBaseTest {
         j.assertBuildStatus(Result.UNSTABLE, b1);
 
         List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
-        Assert.assertEquals(resp.size(), 3);
+        assertEquals(4, resp.size());
 
+        String unstableStepDisplayName = ExtensionList.lookupSingleton(UnstableStep.DescriptorImpl.class).getDisplayName();
         for (int i = 0; i < resp.size(); i++) {
             Map rn = resp.get(i);
-            Assert.assertEquals(rn.get("result"), "SUCCESS");
-            Assert.assertEquals(rn.get("state"), "FINISHED");
+            String expectedResult = unstableStepDisplayName.equals(rn.get("displayName"))
+                    ? "UNSTABLE"
+                    : "SUCCESS";
+            assertEquals(expectedResult, rn.get("result"));
+            assertEquals("FINISHED", rn.get("state"));
         }
 
     }
@@ -666,12 +673,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
                                                      "    }\n" +
                                                      "}", false));
 
-        WorkflowRun b1 = job1.scheduleBuild2(0).get();
-
-        Thread.sleep(1500);
-
+        j.buildAndAssertSuccess(job1);
         List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
-
         Assert.assertEquals(5, resp.size());
 
         job1.setDefinition(new CpsFlowDefinition("node {\n" +
@@ -683,15 +686,15 @@ public class PipelineNodeTest extends PipelineBaseTest {
                                                      "        parallel left : {\n" +
                                                      "            sh \"echo OMG BS\"\n" +
                                                      "            echo \"running\"\n" +
-                                                     "            def branchInput = input message: 'Please input branch to test against', parameters: [[$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'branch']]\n" +
-                                                     "            echo \"BRANCH NAME: ${branchInput}\"\n" +
+                                                     "            semaphore('left')\n" +
+                                                     "            echo \"BRANCH NAME left\"\n" +
                                                      "            sh \"echo yeah\"\n" +
                                                      "        }, \n" +
                                                      "        \n" +
                                                      "        right : {\n" +
                                                      "            sh \"echo wozzle\"\n" +
-                                                     "            def branchInput = input message: 'MF Please input branch to test against', parameters: [[$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'branch']]\n" +
-                                                     "            echo \"BRANCH NAME: ${branchInput}\"\n" +
+                                                     "            semaphore('right')\n" +
+                                                     "            echo \"BRANCH NAME right\"\n" +
                                                      "        }\n" +
                                                      "    }\n" +
                                                      "    stage (\"ho\") {\n" +
@@ -699,9 +702,9 @@ public class PipelineNodeTest extends PipelineBaseTest {
                                                      "    }\n" +
                                                      "}", false));
 
-        job1.scheduleBuild2(0);
-
-        Thread.sleep(1500);
+        WorkflowRun b2 = job1.scheduleBuild2(0).waitForStart();
+        SemaphoreStep.waitForStart("left/1", b2);
+        SemaphoreStep.waitForStart("right/1", b2);
 
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/2/nodes/", List.class);
 

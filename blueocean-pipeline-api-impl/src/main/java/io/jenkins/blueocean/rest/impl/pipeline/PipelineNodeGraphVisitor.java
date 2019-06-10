@@ -243,9 +243,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             if (parallelNestedStages && chunk.getFirstNode().isActive()) {
                 status = new NodeRunStatus(chunk.getFirstNode());
             } else {
-                FlowNode nodeBefore = chunk.getNodeBefore(), lastNode = chunk.getLastNode(), nodeAfter = chunk.getNodeAfter();
+                FlowNode nodeBefore = chunk.getNodeBefore(), firstNode = chunk.getFirstNode(), lastNode = chunk.getLastNode(), nodeAfter = chunk.getNodeAfter();
                 status = new NodeRunStatus(
-                    StatusAndTiming.computeChunkStatus2(run, nodeBefore, firstExecuted, lastNode, nodeAfter));
+                    StatusAndTiming.computeChunkStatus2(run, nodeBefore, firstNode, lastNode, nodeAfter));
             }
         } else {
             status = new NodeRunStatus(firstExecuted);
