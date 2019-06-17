@@ -7,7 +7,6 @@ import hudson.security.AuthorizationStrategy;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import hudson.security.SecurityRealm;
 import hudson.util.VersionNumber;
-import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.auth.jwt.JwtTokenServiceEndpoint;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import io.jenkins.blueocean.commons.PageStatePreloader;
