@@ -61,7 +61,7 @@ export default class PerforceCreationApi {
     _listProjectsFailure(error) {
         return {
             outcome: ListProjectsOutcome.ERROR,
-            error: "Are you using the right credentials?",
+            error: error.toString(),
         };
     }
 
