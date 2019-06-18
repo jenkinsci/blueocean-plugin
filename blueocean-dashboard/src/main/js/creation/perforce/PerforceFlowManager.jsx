@@ -136,11 +136,10 @@ export default class PerforceFlowManager extends FlowManager {
             this.projects = response.projects;
             this._renderChooseProject();
         } else if (response.outcome === ListProjectsOutcome.INVALID_CREDENTIAL_ID) {
-            this.projects = response.projects;
-
             this.renderStep({
                 stateId: STATE.STEP_CHOOSE_CREDENTIAL,
                 stepElement: <PerforceCredentialsStep/>,
+                afterStateId: null,
             });
         } else {
             this.renderStep({
@@ -165,7 +164,6 @@ export default class PerforceFlowManager extends FlowManager {
     }
 
     saveRepo() {
-
         this._saveRepo();
     }
 
