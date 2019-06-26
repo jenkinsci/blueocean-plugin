@@ -35,7 +35,7 @@
     <powermock.version>2.0.2</powermock.version>
     <mockito.version>2.23.4</mockito.version>
     <guava.version>11.0.1</guava.version>
-    <jacoco.version>0.8.2</jacoco.version>
+    <jacoco.version>0.8.4</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
