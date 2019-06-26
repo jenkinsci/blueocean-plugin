@@ -42,7 +42,7 @@
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
     <jenkins-test-harness.version>2.44</jenkins-test-harness.version>
     <scm-api.version>2.2.8</scm-api.version>
-    <git.version>3.8.0</git.version>
+    <git.version>3.10.0</git.version>
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
     <workflow-support.version>3.2</workflow-support.version>
     <pipeline-model-definition.version>1.3.7</pipeline-model-definition.version>
