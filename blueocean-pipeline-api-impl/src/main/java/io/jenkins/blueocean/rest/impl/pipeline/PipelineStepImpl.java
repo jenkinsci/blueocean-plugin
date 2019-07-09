@@ -200,10 +200,6 @@ public class PipelineStepImpl extends BluePipelineStep {
             throw new ServiceException.BadRequestException("id is required");
         }
 
-        if(body.get(PARAMETERS_ELEMENT) == null && body.get(ABORT_ELEMENT) == null){
-            throw new ServiceException.BadRequestException("parameters is required");
-        }
-
         WorkflowRun run = node.getRun();
         InputAction inputAction = run.getAction(InputAction.class);
         if (inputAction == null) {
@@ -231,7 +227,13 @@ public class PipelineStepImpl extends BluePipelineStep {
                 throw new ServiceException.BadRequestException(f.getMessage());
             }
 
-            Object o = parseValue(execution, JSONArray.fromObject(body.get(PARAMETERS_ELEMENT)), request);
+            Object o;
+            InputStep input = execution.getInput();
+            if (body.get(PARAMETERS_ELEMENT) != null) {
+                o = parseValue(input, JSONArray.fromObject(body.get(PARAMETERS_ELEMENT)), request);
+            } else {
+                o = getSpecifyParameter(input, new HashMap<String, Object>());
+            }
 
             HttpResponse response =  execution.proceed(o);
             for(PipelineInputStepListener listener: ExtensionList.lookup(PipelineInputStepListener.class)){
@@ -243,10 +245,9 @@ public class PipelineStepImpl extends BluePipelineStep {
         }
     }
 
-    private Object parseValue(InputStepExecution execution, JSONArray parameters, StaplerRequest request) throws IOException, InterruptedException {
+    private Object parseValue(InputStep input, JSONArray parameters, StaplerRequest request) throws IOException, InterruptedException {
         Map<String, Object> mapResult = new HashMap<String, Object>();
 
-        InputStep input = execution.getInput();
         for(Object o: parameters){
             JSONObject p = (JSONObject) o;
             String name = (String) p.get(NAME_ELEMENT);
@@ -269,20 +270,7 @@ public class PipelineStepImpl extends BluePipelineStep {
             }
             mapResult.put(name, convert(name, v));
         }
-        // If a destination value is specified, push the submitter to it.
-        String valueName = input.getSubmitterParameter();
-        if (valueName != null && !valueName.isEmpty()) {
-            Authentication a = Jenkins.getAuthentication();
-            mapResult.put(valueName, a.getName());
-        }
-        switch (mapResult.size()) {
-            case 0:
-                return null;    // no value if there's no parameter
-            case 1:
-                return mapResult.values().iterator().next();
-            default:
-                return mapResult;
-        }
+        return getSpecifyParameter(input, mapResult);
     }
 
 
@@ -300,5 +288,24 @@ public class PipelineStepImpl extends BluePipelineStep {
     @Override
     public Link getLink() {
         return self;
+    }
+
+    // If a destination value is specified, push the submitter to it.
+    private Object getSpecifyParameter(InputStep input,  Map mapResult) throws IOException, InterruptedException {
+        String valueName = input.getSubmitterParameter();
+
+        if (valueName != null && !valueName.isEmpty()) {
+            Authentication a = Jenkins.getAuthentication();
+            mapResult.put(valueName, a.getName());
+        }
+
+        switch (mapResult.size()) {
+            case 0:
+                return null;    // no value if there's no parameter
+            case 1:
+                return mapResult.values().iterator().next();
+            default:
+                return mapResult;
+        }
     }
 }
