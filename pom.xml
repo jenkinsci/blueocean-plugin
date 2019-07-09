@@ -33,7 +33,7 @@
     <node.version>10.13.0</node.version>
     <npm.version>6.8.0</npm.version>
     <powermock.version>2.0.2</powermock.version>
-    <mockito.version>2.23.4</mockito.version>
+    <mockito.version>3.0.0</mockito.version>
     <guava.version>11.0.1</guava.version>
     <jacoco.version>0.8.2</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
