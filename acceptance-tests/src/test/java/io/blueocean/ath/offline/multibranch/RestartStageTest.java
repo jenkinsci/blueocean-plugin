@@ -44,6 +44,7 @@ public class RestartStageTest extends BlueOceanAcceptanceTest {
      * This tests the restart stage functionality in the run details screen.
      */
     @Test
+    @Ignore("Super flakey test")
     public void restartStageTest() throws IOException, GitAPIException, InterruptedException {
         final String pipelineName = "RestartStageTest";
         final String branchName = "master";
