@@ -12,9 +12,10 @@ import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.junit.Ignore;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Test;
 import org.openqa.selenium.By;
 
 import javax.inject.Inject;
