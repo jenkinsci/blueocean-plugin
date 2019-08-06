@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.18.1</version>
+  <version>${revision}${changelist}</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -24,7 +24,7 @@
   </licenses>
 
   <properties>
-    <revision>1.18.1</revision>
+    <revision>1.18.2</revision>
     <changelist>-SNAPSHOT</changelist>
     <java.level>8</java.level>
     <jenkins.version>2.138.4</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
@@ -52,7 +52,7 @@
     <connection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</connection>
     <developerConnection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/blueocean-plugin</url>
-    <tag>blueocean-parent-1.18.1</tag>
+    <tag>${scmTag}</tag>
   </scm>
 
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
