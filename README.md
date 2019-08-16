@@ -70,6 +70,8 @@ Builds all maven modules (run this the first time you check things out, at least
 $ mvn clean install
 ```
 
+**NOTE:** If you are using macOS, you must install JDK 1.8 or the installation will fail. The most recent versions of macOS come preinstalled with JDK 10. Please follow [this link](https://stackoverflow.com/questions/46513639/how-to-downgrade-java-from-9-to-8-on-a-macos-eclipse-is-not-running-with-java-9/48422257#48422257) for instructions.
+
 For now, you'll need to skip the tests if __building on Windows__, so be sure to include the `-DskipTests` switch e.g.
 
 ```
