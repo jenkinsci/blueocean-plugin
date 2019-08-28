@@ -64,7 +64,7 @@ export default class RunMessageCell extends Component {
                 </span>
             );
         } else if (showCauses) {
-            const lastCause = (run && run.causes.length > 0 && run.causes[run.causes.length - 1]) || null;
+            const lastCause = (run && run.causes && run.causes.length > 0 && run.causes[run.causes.length - 1]) || null;
             const cause = (lastCause && lastCause.shortDescription) || null;
 
             if (lastCause && lastCause.upstreamProject) {
