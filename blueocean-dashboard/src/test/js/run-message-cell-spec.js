@@ -76,7 +76,7 @@ describe('RunMessageCell', () => {
         };
 
         const cell = render(<RunMessageCell run={run} t={t} />);
-        expect(cell.text()).to.equal('-');
+        expect(cell.text()).to.equal('–');
     });
 
 });
