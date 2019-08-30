@@ -67,4 +67,16 @@ describe('RunMessageCell', () => {
         const cell = render(<RunMessageCell run={null} t={t} />);
         expect(cell.text()).to.equal('–');
     });
+
+    // https://issues.jenkins-ci.org/browse/JENKINS-59131
+    it('displays nothing with null causes', () => {
+
+        const run = {
+            causes: null
+        };
+
+        const cell = render(<RunMessageCell run={run} t={t} />);
+        expect(cell.text()).to.equal('–');
+    });
+
 });
