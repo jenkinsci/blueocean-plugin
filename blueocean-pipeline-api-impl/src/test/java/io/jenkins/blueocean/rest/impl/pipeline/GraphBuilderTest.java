@@ -4,11 +4,13 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import hudson.model.Result;
 import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.test.steps.SemaphoreStep;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
@@ -16,6 +18,7 @@ import org.jvnet.hudson.test.Issue;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
@@ -409,6 +412,53 @@ public class GraphBuilderTest extends PipelineBaseTest {
         assertEquals("Unexpected stages in graph", 4, nodes.size());
     }
 
+    /**
+     * Builds a basic Pipeline where the overall graph structure (in terms of stages) is the same from one build
+     * to the next, but there are differences in the number of FlowNodes (and thus different node IDs for
+     * corresponding nodes like the starts of stages) in each build.
+     *
+     * If this test breaks, it probably means that something is mixing up node IDs across different builds when it
+     * should not be doing so.
+     */
+    @Test
+    public void unionDifferentNodeIdsSameStructure() throws Exception {
+        WorkflowJob p = createJob("unionDifferentNodeIdsSameStructure", "unionDifferentNodeIdsSameStructure.jenkinsfile");
+        // Run the first build, it should complete successfully. We don't care about its structure.   
+        WorkflowRun b1 = p.scheduleBuild2(0).waitForStart();
+        SemaphoreStep.waitForStart("second/1", b1);
+        SemaphoreStep.success("second/1", null);
+        SemaphoreStep.waitForStart("third/1", b1);
+        SemaphoreStep.success("third/1", null);
+        j.waitForCompletion(b1);
+        j.assertBuildStatus(Result.SUCCESS, b1);
+        // Run the second build. Its graph as computed by PipelineNodeGraphVisitor will be created by combining the current build with the previous build.
+        WorkflowRun b2 = p.scheduleBuild2(0).waitForStart();
+        SemaphoreStep.waitForStart("second/2", b2);
+        {
+            List<FlowNodeWrapper> nodes = unionPipelineNodes(b1, b2);
+            assertStageAndEdges(nodes, "first", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.SUCCESS, "second");
+            assertStageAndEdges(nodes, "second", BlueRun.BlueRunState.RUNNING, BlueRun.BlueRunResult.UNKNOWN, "third");
+            assertStageAndEdges(nodes, "third", null, (BlueRun.BlueRunResult) null);
+        }
+        SemaphoreStep.success("second/2", null);
+        SemaphoreStep.waitForStart("third/2", b2);
+        {
+            List<FlowNodeWrapper> nodes = unionPipelineNodes(b1, b2);
+            assertStageAndEdges(nodes, "first", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.SUCCESS, "second");
+            assertStageAndEdges(nodes, "second", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.SUCCESS, "third");
+            assertStageAndEdges(nodes, "third", BlueRun.BlueRunState.RUNNING, BlueRun.BlueRunResult.UNKNOWN);
+        }
+        SemaphoreStep.success("third/2", null);
+        j.waitForCompletion(b2);
+        j.assertBuildStatus(Result.SUCCESS, b2);
+        {
+            List<FlowNodeWrapper> nodes = unionPipelineNodes(b1, b2);
+            assertStageAndEdges(nodes, "first", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.SUCCESS, "second");
+            assertStageAndEdges(nodes, "second", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.SUCCESS, "third");
+            assertStageAndEdges(nodes, "third", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.SUCCESS);
+        }
+    }
+
     private FlowNodeWrapper assertStageAndEdges(Collection<FlowNodeWrapper> searchNodes, String stageName, String... edgeNames) {
         return assertStageAndEdges(searchNodes, stageName, BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.SUCCESS, edgeNames);
     }
@@ -499,5 +549,20 @@ public class GraphBuilderTest extends PipelineBaseTest {
         String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
         job.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
         return job;
+    }
+
+    /**
+     * Compute the union of the specified builds using {@link PipelineNodeGraphVisitor#union}.
+     * @param b1 the old build.
+     * @param b2 the current build.
+     * @return the union of the builds converted to {@code List<FlowNodeWrapper>} to be used with methods like {@link #assertStageAndEdges}.
+     */
+    private List<FlowNodeWrapper> unionPipelineNodes(WorkflowRun b1, WorkflowRun b2) {
+        List<FlowNodeWrapper> oldNodes = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1).getPipelineNodes();
+        return NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b2)
+                    .union(oldNodes, new Link("unused"))
+                    .stream()
+                    .map(bpn -> ((PipelineNodeImpl) bpn).getFlowNodeWrapper())
+                    .collect(Collectors.toList());
     }
 }

@@ -687,7 +687,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
         boolean graphsAreCompatible = true;
 
-        Map<String, FlowNodeWrapper> newNodes = new HashMap<>(previousNodes.size()); // indexed by id
+        // A map from the ID of a node from previousNodes to the corresponding node for the current build.
+        Map<String, FlowNodeWrapper> newNodes = new HashMap<>(previousNodes.size());
 
         // Start with the currently-executing nodes
         for (FlowNodeWrapper currentNodeWrapper : nodes) {
@@ -710,14 +711,14 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
                 // New wrapper object based on current execution
                 FlowNodeWrapper newNodeWrapper = new FlowNodeWrapper(
-                    oldNodeWrapper.getNode(), // Use old node because we want to show the final id not intermediary
+                    currentNodeWrapper.getNode(),
                     currentNodeWrapper.getStatus(),
                     currentNodeWrapper.getTiming(),
                     currentNodeWrapper.getInputStep(),
                     run
                 );
 
-                newNodes.put(nodeId, newNodeWrapper);
+                newNodes.put(oldNodeWrapper.getId(), newNodeWrapper);
 
             } else {
                 // Node does not exist in previous graph, user probably changed pipleine definition.
@@ -729,9 +730,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         // Walk the old graph, create new wrappers for any stages not yet started
         if (graphsAreCompatible) {
             for (FlowNodeWrapper oldNodeWrapper : previousNodes) {
-                final String nodeId = oldNodeWrapper.getId();
+                final String oldNodeId = oldNodeWrapper.getId();
 
-                if (!newNodes.containsKey(nodeId)) {
+                if (!newNodes.containsKey(oldNodeId)) {
                     FlowNodeWrapper newNodeWrapper = new FlowNodeWrapper(
                         oldNodeWrapper.getNode(),
                         new NodeRunStatus(null, null),
@@ -740,7 +741,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                         run
                     );
 
-                    newNodes.put(nodeId, newNodeWrapper);
+                    newNodes.put(oldNodeId, newNodeWrapper);
                 }
             }
         }
@@ -748,9 +749,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         // Re-create edges and parentage based on previous run
         if (graphsAreCompatible) {
             for (FlowNodeWrapper oldNodeWrapper : previousNodes) {
-                final String nodeId = oldNodeWrapper.getId();
+                final String oldNodeId = oldNodeWrapper.getId();
 
-                FlowNodeWrapper newNodeWrapper = newNodes.get(nodeId);
+                FlowNodeWrapper newNodeWrapper = newNodes.get(oldNodeId);
 
                 for (FlowNodeWrapper oldEdge : oldNodeWrapper.edges) {
                     FlowNodeWrapper newEdge = newNodes.get(oldEdge.getId());
@@ -773,8 +774,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             // code that makes too many assumptions
 
             for (FlowNodeWrapper oldNodeWrapper : previousNodes) {
-                final String nodeId = oldNodeWrapper.getId();
-                FlowNodeWrapper newNodeWrapper = newNodes.get(nodeId);
+                final String oldNodeId = oldNodeWrapper.getId();
+                FlowNodeWrapper newNodeWrapper = newNodes.get(oldNodeId);
                 newList.add(new PipelineNodeImpl(newNodeWrapper, () -> parent, run));
             }
 
