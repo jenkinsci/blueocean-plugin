@@ -259,7 +259,7 @@ Gitter is the day to day chat venue used, you can log in with your github identi
 * Post to the mailing list: https://groups.google.com/forum/#!forum/jenkinsci-ux
 
 
-The Acceptance test suite is located here: [accpetance-tests](./acceptance-tests)
+The Acceptance test suite is located here: [acceptance-tests](./acceptance-tests)
 
 
 ## Releasing
