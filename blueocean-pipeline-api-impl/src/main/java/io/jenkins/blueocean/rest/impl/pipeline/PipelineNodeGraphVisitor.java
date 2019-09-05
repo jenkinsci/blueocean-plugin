@@ -205,10 +205,6 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
         // it's nested stages inside parallel so let's collect them later
         if (!parallelEnds.isEmpty()) {
-            // nested stages not supported in scripted pipeline.
-            if (!isDeclarative()) {
-                return;
-            }
             parallelNestedStages = true;
         }
 
@@ -401,9 +397,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     dump(String.format("\t\t\"Complex\" stages detected (%d)", stack.size()));
                 }
 
-                FlowNodeWrapper firstNodeWrapper = stack.pop();
-
-                if (stack.isEmpty()) {
+                if (stack.size() == 1) {
+                    FlowNodeWrapper firstNodeWrapper = stack.pop();
                     // We've got a single non-nested stage for this branch. We're going to discard it from our graph,
                     // since we use the node for the branch itself, which has been created with the same name...
 
@@ -418,8 +413,10 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                         branch.addEdge(nextStage);
                     }
 
-                } else {
+                } else if (isDeclarative()) {
+                    // Declarative parallel pipeline scenario
                     // We've got nested stages for sequential stage branches and/or branch labelling purposes
+                    FlowNodeWrapper firstNodeWrapper = stack.pop();
 
                     // Usually ignore firstNodeWrapper, but if the first stage has a different name...
                     if (!StringUtils.equals(firstNodeWrapper.getDisplayName(), branch.getDisplayName())) {
@@ -446,6 +443,17 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
                     if (nextStage != null) {
                         previousNode.addEdge(nextStage);
+                    }
+                } else {
+                    // Scripted pipeline scenario
+                    FlowNodeWrapper previousNode = branch;
+                    while (!stack.isEmpty()) {
+                        // Grab next, link to prev, add to result
+                        FlowNodeWrapper currentStage = stack.pop();
+                        previousNode.addEdge(currentStage);
+                        currentStage.addParent(previousNode);
+                        nodes.add(currentStage);
+                        previousNode = currentStage;
                     }
                 }
             } else {
