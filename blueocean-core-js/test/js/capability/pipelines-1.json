@@ -1180,7 +1180,7 @@
                 "userName": "Cliff Meyers"
             }, {
                 "_class": "org.jenkinsci.plugins.workflow.cps.replay.ReplayCause",
-                "shortDescription": "Replayed #9"
+                "shortDescription": "Cliff Meyers replayed #9"
             }],
             "urlName": "cause"
         }, {
