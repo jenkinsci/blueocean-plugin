@@ -412,26 +412,26 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     if (nextStage != null) {
                         branch.addEdge(nextStage);
                     }
+                } else {
+                    if (isDeclarative()) {
+                        // Declarative parallel pipeline scenario
+                        // We've got nested stages for sequential stage branches and/or branch labelling purposes
+                        FlowNodeWrapper firstNodeWrapper = stack.pop();
 
-                } else if (isDeclarative()) {
-                    // Declarative parallel pipeline scenario
-                    // We've got nested stages for sequential stage branches and/or branch labelling purposes
-                    FlowNodeWrapper firstNodeWrapper = stack.pop();
-
-                    // Usually ignore firstNodeWrapper, but if the first stage has a different name...
-                    if (!StringUtils.equals(firstNodeWrapper.getDisplayName(), branch.getDisplayName())) {
-                        // we record this node so the UI can show the label for the branch...
-                        if (isNodeVisitorDumpEnabled) {
-                            dump("\t\tNested labelling stage detected");
+                        // Usually ignore firstNodeWrapper, but if the first stage has a different name...
+                        if (!StringUtils.equals(firstNodeWrapper.getDisplayName(), branch.getDisplayName())) {
+                            // we record this node so the UI can show the label for the branch...
+                            if (isNodeVisitorDumpEnabled) {
+                                dump("\t\tNested labelling stage detected");
+                            }
+                            branch.addEdge(firstNodeWrapper);
+                            firstNodeWrapper.addParent(branch);
+                            nodes.add(firstNodeWrapper);
+                            // Note that there's no edge from this labelling node to the rest of the branch stages
                         }
-                        branch.addEdge(firstNodeWrapper);
-                        firstNodeWrapper.addParent(branch);
-                        nodes.add(firstNodeWrapper);
-                        // Note that there's no edge from this labelling node to the rest of the branch stages
                     }
-
+                    // Declarative and scripted parallel pipeline scenario
                     FlowNodeWrapper previousNode = branch;
-
                     while (!stack.isEmpty()) {
                         // Grab next, link to prev, add to result
                         FlowNodeWrapper currentStage = stack.pop();
@@ -443,17 +443,6 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
                     if (nextStage != null) {
                         previousNode.addEdge(nextStage);
-                    }
-                } else {
-                    // Scripted pipeline scenario
-                    FlowNodeWrapper previousNode = branch;
-                    while (!stack.isEmpty()) {
-                        // Grab next, link to prev, add to result
-                        FlowNodeWrapper currentStage = stack.pop();
-                        previousNode.addEdge(currentStage);
-                        currentStage.addParent(previousNode);
-                        nodes.add(currentStage);
-                        previousNode = currentStage;
                     }
                 }
             } else {
