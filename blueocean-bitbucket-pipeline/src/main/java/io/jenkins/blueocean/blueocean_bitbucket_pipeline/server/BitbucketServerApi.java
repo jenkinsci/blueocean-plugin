@@ -101,7 +101,7 @@ public class BitbucketServerApi extends BitbucketApi {
     @Override
     public @Nonnull BbServerUser getUser(@Nonnull String userName){
         try {
-            InputStream inputStream = request.get(String.format("%s/%s",baseUrl+"users", userName)).getContent();
+            InputStream inputStream = request.get(String.format("%s/%s",baseUrl+"users", userName.replace('@','_')).getContent();
             return om.readValue(inputStream, BbServerUser.class);
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException(e.getMessage(), e);
