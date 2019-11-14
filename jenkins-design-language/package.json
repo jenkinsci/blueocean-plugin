@@ -74,7 +74,7 @@
     "chai": "3.5.0",
     "cli-spinner": "0.2.6",
     "enzyme": "2.5.1",
-    "eslint": "2.13.1",
+    "eslint": "4.18.2",
     "eslint-plugin-react": "4.3.0",
     "flow-bin": "0.33.0",
     "gulp": "3.9.1",
