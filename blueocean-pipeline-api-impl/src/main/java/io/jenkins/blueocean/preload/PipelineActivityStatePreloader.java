@@ -73,7 +73,7 @@ public class PipelineActivityStatePreloader extends RESTFetchPreloader {
                 try {
                     activities.add(JSONObject.fromObject(Export.toJson(blueActivity)));
                 } catch (IOException e) {
-                    LOGGER.log(Level.FINE, String.format("Unable to preload runs for Job '%s'. Activity serialization error.", pipeline.getFullName()), e);
+                    LOGGER.log(Level.INFO, String.format("Unable to preload runs for Job '%s'. Activity serialization error.", pipeline.getFullName()), e);
                     return null;
                 }
             }

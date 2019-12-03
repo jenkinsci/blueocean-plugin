@@ -95,7 +95,7 @@ public class PipelineBranchRunStatePreloader extends RESTFetchPreloader {
                         }
                     }
                 } else {
-                    LOGGER.log(Level.FINE, String.format("Unable to find branch named %s on pipeline named '%s'.", branchName, pipelineFullName));
+                    LOGGER.log(Level.FINEST, String.format("Unable to find branch named %s on pipeline named '%s'.", branchName, pipelineFullName));
                     return null;
                 }
             } catch (Exception e) {
@@ -103,7 +103,7 @@ public class PipelineBranchRunStatePreloader extends RESTFetchPreloader {
                 return null;
             }
         } else {
-            LOGGER.log(Level.FINE, String.format("Unable to find pipeline named '%s'.", pipelineFullName));
+            LOGGER.log(Level.FINEST, String.format("Unable to find pipeline named '%s'.", pipelineFullName));
             return null;
         }
 

@@ -183,7 +183,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         if (sshd != null) {
             String ssh = "ssh -p " + sshd.getPort() + " bob@127.0.0.1";
             String remote = "ssh://bob@127.0.0.1:" + sshd.getPort() + "" + repoForSSH.getRoot().getCanonicalPath();
-            logger.fine(ssh + " // remote: " + remote);
+            logger.finest(ssh + " // remote: " + remote);
             sshd.stop();
             sshd = null;
         }

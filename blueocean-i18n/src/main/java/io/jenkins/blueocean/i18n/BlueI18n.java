@@ -387,7 +387,7 @@ public class BlueI18n implements ApiRoutable {
                     // This should never really happen if things are installed properly
                     // and the UI is coded up properly, with proper access to the installed
                     // plugin version.
-                    LOGGER.log(Level.WARNING, String.format("Unexpected request for Blue Ocean i18n resource bundle '%s'. Installed plugin version '%s' does not match.",
+                    LOGGER.log(Level.SEVERE, String.format("Unexpected request for Blue Ocean i18n resource bundle '%s'. Installed plugin version '%s' does not match.",
                         bundleCacheEntry.bundleParams, pluginWrapper!= null ? pluginWrapper.getVersion() : "unknown"));
                 }
             }

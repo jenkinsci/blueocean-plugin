@@ -66,7 +66,7 @@ public abstract class AbstractAnalytics extends Analytics {
             }
         } catch (Throwable throwable) {
             String msg = eventHelper.toString();
-            LOGGER.log(Level.WARNING, "Failed to send event: " + msg);
+            LOGGER.log(Level.SEVERE, "Failed to send event: " + msg);
         }
     }
 
