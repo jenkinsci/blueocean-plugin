@@ -1,7 +1,5 @@
 # Changelogs
 
-# new test
-
 ## 1.13.2 (March 6st, 2019)
 
 * HOTFIX - [JENKINS-56383](https://issues.jenkins-ci.org/browse/JENKINS-56383) Reverted the fix for [JENKINS-38339](https://issues.jenkins-ci.org/browse/JENKINS-38339) which was causing double parallel steps to fail to render
