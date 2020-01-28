@@ -69,7 +69,7 @@ public class QueueItemImpl extends BlueQueueItem {
 
     @Exported(name=QUEUED_TIME)
     public String getQueuedTimeString(){
-        return AbstractRunImpl.DATE_FORMAT.print(getQueuedTime().getTime());
+        return AbstractRunImpl.DATE_FORMAT.format(getQueuedTime().toInstant());
     }
 
     @Override
