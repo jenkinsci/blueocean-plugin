@@ -894,6 +894,12 @@
             <artifactId>handy-uri-templates</artifactId>
             <version>2.1.6</version>
         </dependency>
+        <!-- enforcer RequireUpperBoundDeps -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.9.9</version>
+        </dependency>
     </dependencies>
   </dependencyManagement>
 
