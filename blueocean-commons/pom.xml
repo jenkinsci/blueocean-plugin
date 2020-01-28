@@ -13,7 +13,7 @@
 
   <name>Common API for Blue Ocean</name>
 
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+  <url>https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean/doc/BlueOcean.adoc</url>
   <dependencies>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>

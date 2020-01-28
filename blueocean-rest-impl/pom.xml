@@ -12,7 +12,7 @@
     <packaging>hpi</packaging>
 
     <name>REST Implementation for Blue Ocean</name>
-    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+    <url>https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean/doc/BlueOcean.adoc</url>
 
     <properties>
         <jacoco.haltOnFailure>true</jacoco.haltOnFailure>

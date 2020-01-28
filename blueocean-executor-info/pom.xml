@@ -10,7 +10,7 @@
     <artifactId>blueocean-executor-info</artifactId>
     <packaging>hpi</packaging>
     <description>Show what executors are doing what.</description>
-    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+    <url>https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean/doc/BlueOcean.adoc</url>
 
     <developers>
         <developer>
