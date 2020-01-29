@@ -303,7 +303,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
         // top should be BlueRunResult.FAILURE, but the status is currently computed from the beginning of top to the
-        // begining of aborts, which doesn't make sense, but we don't show a status for parents of sequential stages
+        // beginning of aborts, which doesn't make sense, but we don't show a status for parents of sequential stages
         // anyway so it doesn't really matter.
         assertStageAndEdges(nodes, "top", "aborts", "fails", "succeeds");
         assertStageAndEdges(nodes, "aborts", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.ABORTED);
