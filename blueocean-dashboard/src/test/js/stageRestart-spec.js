@@ -48,7 +48,7 @@ describe('Stage Restart', () => {
 
         const wrapper = shallow(<StageRestartLink t={t} title={'Stage Title'} run={run} pipeline={pipeline} onNavigation={switchRunDetails} />);
 
-        //make sure that the link is not redered
+        //make sure that the link is not rendered
         assert.equal(wrapper.find('a.restart-stage').length, 0);
     });
 });
