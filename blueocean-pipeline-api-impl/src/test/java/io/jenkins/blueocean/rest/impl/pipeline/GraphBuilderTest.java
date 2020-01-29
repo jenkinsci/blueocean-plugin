@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 
 /**
- * These tests are for regresions in the Graph Builder code, to make sure the same input produces the same output nodes
+ * These tests are for regressions in the Graph Builder code, to make sure the same input produces the same output nodes
  * and connections over time. We're not trying to excercise Pipeline edge cases, but edge cases for the code that
  * simplifies the complete Pipeline graph to the cut-down Blue Ocean graph. Jobs that run to completion or failure, and
  * produce a working Pipeline DAG. Not for testing HTTP infrastructure or Stapler's JSON code.
