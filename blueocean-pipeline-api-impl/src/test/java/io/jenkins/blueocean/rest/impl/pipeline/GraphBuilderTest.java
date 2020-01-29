@@ -536,9 +536,9 @@ public class GraphBuilderTest extends PipelineBaseTest {
         return createAndRunJob(jobName, jenkinsFileName, Result.SUCCESS);
     }
 
-    private WorkflowRun createAndRunJob(String jobName, String jenkinsFileName, Result expextedResult) throws Exception {
+    private WorkflowRun createAndRunJob(String jobName, String jenkinsFileName, Result expectedResult) throws Exception {
         WorkflowJob job = createJob(jobName, jenkinsFileName);
-        j.assertBuildStatus(expextedResult, job.scheduleBuild2(0));
+        j.assertBuildStatus(expectedResult, job.scheduleBuild2(0));
         return job.getLastBuild();
     }
 
