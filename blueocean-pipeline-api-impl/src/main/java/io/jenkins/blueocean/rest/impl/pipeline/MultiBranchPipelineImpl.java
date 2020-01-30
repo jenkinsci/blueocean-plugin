@@ -39,6 +39,9 @@ import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
 import io.jenkins.blueocean.service.embedded.util.Disabler;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowBranchProjectFactory;
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nonnull;
@@ -60,11 +63,24 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     private final Link self;
     private final BlueOrganization organization;
+    private String scriptPath = "Jenkinsfile";
 
     public MultiBranchPipelineImpl(BlueOrganization organization, MultiBranchProject mbp) {
         this.mbp = mbp;
         this.organization = organization;
         this.self = this.organization.getLink().rel("pipelines").rel(PipelineImpl.getRecursivePathFromFullName(this));
+    }
+
+
+    @Exported(
+        name = "scriptPath"
+    )
+    public String getScriptPath() {
+        return scriptPath;
+    }
+
+    private void setScriptPath(String scriptPath) {
+        this.scriptPath = scriptPath;
     }
 
     @Nonnull
@@ -255,7 +271,14 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         @Override
         public MultiBranchPipelineImpl getPipeline(Item item, Reachable parent, BlueOrganization organization) {
             if (item instanceof MultiBranchProject) {
-                return new MultiBranchPipelineImpl(organization, (MultiBranchProject) item);
+                MultiBranchPipelineImpl mbpi = new MultiBranchPipelineImpl(organization, (MultiBranchProject) item);
+                if (item instanceof WorkflowMultiBranchProject) {
+                    WorkflowMultiBranchProject wfmbp = (WorkflowMultiBranchProject)item;
+                    WorkflowBranchProjectFactory wbpf = (WorkflowBranchProjectFactory)wfmbp.getProjectFactory();
+                    String sp = wbpf.getScriptPath();
+                    mbpi.setScriptPath(sp);
+                }
+                return mbpi;
             }
             return null;
         }
