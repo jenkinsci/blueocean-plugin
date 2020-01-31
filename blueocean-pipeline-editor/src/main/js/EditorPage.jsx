@@ -177,6 +177,7 @@ class PipelineLoader extends React.Component {
         this.contentApi = new ScmContentApi();
 
         this.state = {
+            scriptPath: null,
             scmSource: null,
             credential: null,
             sha: null,
@@ -329,6 +330,7 @@ class PipelineLoader extends React.Component {
 
     _savePipelineMetadata(pipeline) {
         this.setState({
+            scriptPath: pipeline.scriptPath,
             scmSource: pipeline.scmSource,
         });
     }
@@ -346,9 +348,9 @@ class PipelineLoader extends React.Component {
     }
 
     loadContent(onComplete) {
-        const { organization, pipeline, branch } = this.props.params;
+        const { organization, pipeline, branch, path = this.state.scriptPath } = this.props.params;
         this.contentApi
-            .loadContent({ organization, pipeline, branch })
+            .loadContent({ organization, pipeline, branch, path})
             .then(({ content }) => {
                 if (!content.base64Data) {
                     throw { type: LoadError.JENKINSFILE_NOT_FOUND };
@@ -611,6 +613,7 @@ class PipelineLoader extends React.Component {
                     targetBranch: saveToBranch || this.defaultBranch,
                     sha: this.state.sha,
                     message: saveMessage,
+                    path: this.state.scriptPath,
                     content: pipelineScript,
                 };
 
