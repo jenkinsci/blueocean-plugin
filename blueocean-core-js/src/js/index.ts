@@ -120,8 +120,6 @@ export const DEBUG = {
 };
 
 export { ComponentLink } from './utils/ComponentLink';
-export { validateExtensionProps } from './utils/ExtensionValidator';
-
 export { TimeManager } from './utils/TimeManager';
 
 export { TimeHarmonizer, TimeHarmonizerUtil } from './components/TimeHarmonizer';
