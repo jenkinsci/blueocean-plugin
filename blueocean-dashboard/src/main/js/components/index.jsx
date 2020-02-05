@@ -6,9 +6,6 @@ import PipelineTrends from './PipelineTrends';
 import PipelinePage from './PipelinePage';
 import RunDetails from './RunDetails';
 import RunDetailsPipeline from './RunDetailsPipeline';
-import RunDetailsChanges from './RunDetailsChanges';
-import RunDetailsArtifacts from './RunDetailsArtifacts';
-import RunDetailsTests from './RunDetailsTests';
 
 export {
     Pipelines,
@@ -19,7 +16,4 @@ export {
     PipelinePage,
     RunDetails,
     RunDetailsPipeline,
-    RunDetailsChanges,
-    RunDetailsTests,
-    RunDetailsArtifacts,
 };

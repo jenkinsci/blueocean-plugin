@@ -4,10 +4,11 @@ import { CommitId, PlaceholderTable, ReadableDate, JTable, TableHeaderRow, Table
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
 import LinkifiedText from './LinkifiedText';
-import { ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { ShowMoreButton, i18nTranslator, ComponentLink } from '@jenkins-cd/blueocean-core-js';
+
+const t = i18nTranslator('blueocean-dashboard');
 
 function NoChangesPlaceholder(props) {
-    const { t } = props;
 
     const columns = [
         { width: 750, isFlexible: true, head: { text: 40 }, cell: { text: 150 } },
@@ -28,12 +29,8 @@ function NoChangesPlaceholder(props) {
     );
 }
 
-NoChangesPlaceholder.propTypes = {
-    t: PropTypes.func,
-};
-
 @observer
-export default class RunDetailsChanges extends Component {
+export class RunDetailsChanges extends Component {
     componentWillMount() {
         this._fetchChangeSet(this.props);
     }
@@ -49,7 +46,7 @@ export default class RunDetailsChanges extends Component {
     }
 
     render() {
-        const { t, locale } = this.props;
+        const { locale } = this.props;
 
         if (!this.pager) {
             return null;
@@ -121,7 +118,6 @@ export default class RunDetailsChanges extends Component {
 RunDetailsChanges.propTypes = {
     result: PropTypes.object,
     locale: PropTypes.string,
-    t: PropTypes.func,
     params: PropTypes.any,
     pipeline: PropTypes.object,
     results: PropTypes.object,
@@ -131,3 +127,9 @@ RunDetailsChanges.contextTypes = {
     params: PropTypes.object.isRequired,
     activityService: PropTypes.object.isRequired,
 };
+
+export default class RunDetailsChangesLink extends ComponentLink {
+    name = 'changes';
+    title = t('rundetail.header.tab.changes');
+    component = RunDetailsChanges;
+}
