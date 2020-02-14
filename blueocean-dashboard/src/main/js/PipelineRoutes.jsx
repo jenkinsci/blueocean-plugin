@@ -146,14 +146,6 @@ function getRunDetailsAction({ params }, callback) {
     getActions('jenkins.run.actions', params, callback);
 }
 
-function getPipelineAction({ params }, callback) {
-    getActions('jenkins.pipeline.actions', params, callback);
-}
-
-function getTopAction({ params }, callback) {
-    getActions('jenkins.top.actions', params, callback);
-}
-
 export default (
     <Route component={Dashboard} onEnter={onTopLevelRouteEnter} onChange={onRouteChange}>
         <Route path="organizations/:organization/pipelines" component={Pipelines} onEnter={analytics.trackDashboardVisited} />
@@ -177,7 +169,6 @@ export default (
         </Route>
         <Route path="/pipelines" component={Pipelines} onEnter={analytics.trackDashboardVisited} />
         <Route path="/create-pipeline" component={CreatePipeline} onEnter={analytics.trackPipelineCreationVisited} />
-        <Route path="/:action" getComponents={getTopAction} />
         <IndexRedirect to="pipelines" />
     </Route>
 );
