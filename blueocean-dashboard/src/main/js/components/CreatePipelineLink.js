@@ -6,7 +6,8 @@ import creationUtils from '../creation/creation-status-utils';
 
 const t = i18nTranslator('blueocean-dashboard');
 
-export default function CreatePipelineLink() {
+export default function CreatePipelineLink()
+{{
     if (creationUtils.isHidden()) {
         return null;
     }
@@ -18,4 +19,5 @@ export default function CreatePipelineLink() {
             {t('home.header.button.createpipeline')}
         </Link>
     );
+}
 }
