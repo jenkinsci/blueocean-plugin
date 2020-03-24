@@ -434,7 +434,6 @@
              on different versions of script-security plugin
         -->
         <dependency>
-
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>script-security</artifactId>
             <version>1.63</version>
