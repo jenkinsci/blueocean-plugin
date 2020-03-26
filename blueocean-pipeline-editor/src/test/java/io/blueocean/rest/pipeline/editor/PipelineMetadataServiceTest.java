@@ -4,7 +4,7 @@ import hudson.model.JDK;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.hamcrest.Matcher;
-import org.jenkinsci.plugins.pipeline.modeldefinition.agent.impl.DockerPipeline;
+import org.jenkinsci.plugins.docker.workflow.declarative.DockerPipeline;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -121,7 +121,7 @@ public class PipelineMetadataServiceTest {
         steps.addAll(Arrays.asList(svc.doPipelineStepMetadata()));
 
         assertFalse(steps.isEmpty());
-        
+
         // Verify we have a Symbol-provided Builder or Publisher
         assertThat(steps, hasItem(stepWithName("archiveArtifacts")));
 
