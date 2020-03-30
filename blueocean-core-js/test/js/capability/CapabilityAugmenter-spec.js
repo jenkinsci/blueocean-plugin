@@ -32,10 +32,17 @@ class MockCapabilityStore {
 describe('CapabilityAugmenter', () => {
     let mockCapabilityStore;
     let augmenter;
+    let originalTimeout;
 
     beforeEach(() => {
         mockCapabilityStore = new MockCapabilityStore();
         augmenter = new CapabilityAugmenter(mockCapabilityStore);
+        originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000000;
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
     });
 
     describe('augmentCapabilities', () => {
@@ -120,9 +127,9 @@ describe('CapabilityAugmenter', () => {
     });
 
     describe('_findClassesInTree', () => {
-        it('builds the correct map for pipelines list', () => {
+        it('builds the correct map for pipelines list', async () => {
             const pipelines = require('./pipelines-1.json');
-            const classMap = augmenter._findClassesInTree(pipelines);
+            const classMap = await augmenter._findClassesInTree(pipelines);
 
             assert.equal(Object.keys(classMap).length, 31);
 
@@ -146,9 +153,9 @@ describe('CapabilityAugmenter', () => {
             assert.equal(freestyleRun.length, 4);
         });
 
-        it('builds the correct map for favorites list', () => {
+        it('builds the correct map for favorites list', async () => {
             const favorites = require('./favorites-1.json');
-            const classMap = augmenter._findClassesInTree(favorites);
+            const classMap = await augmenter._findClassesInTree(favorites);
 
             assert.equal(Object.keys(classMap).length, 42);
 
@@ -175,9 +182,9 @@ describe('CapabilityAugmenter', () => {
             assert.equal(freestyleRun.length, 4);
         });
 
-        it('builds the correct map for a multibranch pipeline', () => {
+        it('builds the correct map for a multibranch pipeline', async () => {
             const multibranch = require('./multibranch-1.json');
-            const classMap = augmenter._findClassesInTree(multibranch);
+            const classMap = await augmenter._findClassesInTree(multibranch);
 
             assert.equal(Object.keys(classMap).length, 5);
 
@@ -201,11 +208,11 @@ describe('CapabilityAugmenter', () => {
             assert.equal(action4.length, 1);
         });
 
-        it('handles cycles in the data', () => {
+        it('handles cycles in the data', async () => {
             const root = { _class: 'foo.Bar' };
             root.cycle = root;
 
-            const classMap = augmenter._findClassesInTree(root);
+            const classMap = await augmenter._findClassesInTree(root);
 
             assert.equal(Object.keys(classMap).length, 1);
 

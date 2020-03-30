@@ -9,12 +9,12 @@ export class ExecutorInfoService {
     computers;
 
     constructor() {
-        this.fetchExecutorInfo();
+        const fetchExecutorInfo = throttle(this.fetchExecutorInfo.bind(this), FETCH_TIMEOUT_MS);
         sseConnection.subscribe('pipeline', event => {
             switch (event.jenkins_event) {
                 case 'pipeline_block_start':
                 case 'pipeline_block_end': {
-                    throttle(this.fetchExecutorInfo.bind(this), FETCH_TIMEOUT_MS)();
+                    fetchExecutorInfo();
                 }
             }
         });

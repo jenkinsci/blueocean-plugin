@@ -52,8 +52,8 @@ export class CapabilityAugmenter {
      * @param {object|Array} data
      * @returns {Promise}
      */
-    augmentCapabilities(data) {
-        const classMap = this._findClassesInTree(data);
+    async augmentCapabilities(data) {
+        const classMap = await this._findClassesInTree(data);
         return this._resolveCapabilities(data, classMap);
     }
 
@@ -72,11 +72,12 @@ export class CapabilityAugmenter {
      * @returns {object} key= "_class" name, value= array of all objects of that class.
      * @private
      */
-    _findClassesInTree(data) {
+    async _findClassesInTree(data) {
         const classMap = {};
         const nodesToWalk = [data];
         const nodesAlreadyWalked = [];
         const ignoredProps = DEFAULT_IGNORED_PROPS.slice();
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
         const started = new Date().getTime();
 
@@ -101,9 +102,11 @@ export class CapabilityAugmenter {
                 if (canWalk(value) && nodesAlreadyWalked.indexOf(value) === -1 && ignoredProps.indexOf(key) === -1) {
                     nodesToWalk.push(value);
                 }
+                await sleep(50);
             }
 
             node = nodesToWalk.shift();
+            await sleep(100);
         }
 
         if (this._perfLoggingEnabled) {
