@@ -34,7 +34,7 @@
     <npm.version>6.8.0</npm.version>
     <powermock.version>2.0.2</powermock.version>
     <mockito.version>2.23.4</mockito.version>
-    <guava.version>11.0.1</guava.version>
+    <guava.version>18.0</guava.version>
     <jacoco.version>0.8.2</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
@@ -484,7 +484,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>apache-httpcomponents-client-4-api</artifactId>
-            <version>4.5.5-3.0</version>
+            <version>4.5.10-1.0</version>
         </dependency>
 
         <!-- Other -->
@@ -550,7 +550,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jira</artifactId>
-            <version>3.0.5</version>
+            <version>3.0.14</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -577,7 +577,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>credentials</artifactId>
-            <version>2.1.16</version>
+            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -645,7 +645,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jackson2-api</artifactId>
-            <version>2.9.8</version>
+            <version>2.10.2</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
