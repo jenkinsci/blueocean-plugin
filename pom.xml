@@ -553,7 +553,7 @@
             <version>${guava.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
+            <groupId>org.jenkins-ci.plugins</groupId>AbstractAnalytics
             <artifactId>jira</artifactId>
             <version>3.0.14</version>
             <exclusions>
