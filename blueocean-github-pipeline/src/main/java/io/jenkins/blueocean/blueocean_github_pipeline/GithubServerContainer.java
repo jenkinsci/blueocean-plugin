@@ -97,8 +97,8 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
                             inputStream = HttpRequest.getErrorStream(connection);
                         }
 
-                        TypeReference<Map<String, String>> typeRef = new TypeReference<Map<String, String>>() {};
-                        Map<String, String> responseBody = GithubScm.om.readValue(inputStream, typeRef);
+                        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>(){};
+                        Map<String, String> responseBody = GithubScm.om.reader().forType(typeRef).readValue(inputStream);
 
                         isGithubCloud = code == 200 && responseBody.containsKey("current_user_url");
                         isGithubEnterprise = code == 401 && responseBody.containsKey("message");
