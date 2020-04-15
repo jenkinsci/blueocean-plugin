@@ -68,9 +68,9 @@ class HttpRequest {
         HttpURLConnection connection = connect();
         if (methodNeedsBody()) {
             if (body == null) {
-                GithubScm.om.writeValue(connection.getOutputStream(), Collections.emptyMap());
+                GithubScm.getMappingObjectWriter().writeValue(connection.getOutputStream(), Collections.emptyMap());
             } else {
-                GithubScm.om.writeValue(connection.getOutputStream(), body);
+                GithubScm.getMappingObjectWriter().writeValue(connection.getOutputStream(), body);
             }
         }
         InputStreamReader r=null;
@@ -96,7 +96,7 @@ class HttpRequest {
                 String data = IOUtils.toString(r);
                 if (type != null) {
                     try {
-                        return GithubScm.om.readValue(data, type);
+                        return GithubScm.getMappingObjectReader().forType(type).readValue(data);
                     } catch (JsonMappingException e) {
                         throw new IOException("Failed to deserialize: "+e.getMessage()+"\n" + data, e);
                     }

@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ import java.util.List;
  */
 public class GithubRepositories extends ScmRepositories {
 
-    private static final CollectionType GH_REPO_EX_LIST_TYPE = GithubScm.om.getTypeFactory().constructCollectionType(List.class, GHRepoEx.class);
+    private static final CollectionType GH_REPO_EX_LIST_TYPE = GithubScm.getMappingObjectReader().getTypeFactory().constructCollectionType(List.class, GHRepoEx.class);
 
     private final Link self;
     private final List<GHRepoEx> repositories;
@@ -64,7 +65,8 @@ public class GithubRepositories extends ScmRepositories {
                     parent.getRepoType(),
                     pageSize, pageNumber), accessToken);
 
-            this.repositories = GithubScm.om.readValue(HttpRequest.getInputStream(connection), GH_REPO_EX_LIST_TYPE);
+            this.repositories = GithubScm.getMappingObjectReader().forType(GH_REPO_EX_LIST_TYPE)
+                .readValue(HttpRequest.getInputStream(connection));
 
             String link = connection.getHeaderField("Link");
 

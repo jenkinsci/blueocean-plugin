@@ -4,9 +4,8 @@ import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import hudson.Extension;
@@ -54,9 +53,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
-
 /**
  * @author Vivek Pandey
  */
@@ -71,13 +67,18 @@ public class GithubScm extends AbstractScm {
     static final String DOMAIN_NAME="blueocean-github-domain";
     static final String CREDENTIAL_DESCRIPTION = "GitHub Access Token";
 
-    static final ObjectMapper om = new ObjectMapper();
-    static {
-        om.setVisibilityChecker(new VisibilityChecker.Std(NONE, NONE, NONE, NONE, ANY));
-        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
 
     protected final Reachable parent;
+
+    @Nonnull
+    static ObjectWriter getMappingObjectWriter() {
+        return GitHub.getMappingObjectWriter();
+    }
+
+    @Nonnull
+    static ObjectReader getMappingObjectReader() {
+        return GitHub.getMappingObjectReader();
+    }
 
     public GithubScm(Reachable parent) {
         this.parent = parent;
@@ -257,7 +258,7 @@ public class GithubScm extends AbstractScm {
             HttpURLConnection connection = connect(String.format("%s/%s", getUri(), "user"),accessToken);
             validateAccessTokenScopes(connection);
             String data = IOUtils.toString(HttpRequest.getInputStream(connection));
-            GHUser user = GithubScm.om.readValue(data, GHUser.class);
+            GHUser user = GithubScm.getMappingObjectReader().forType(GHUser.class).readValue(data);
 
             if(user.getEmail() != null){
                 Mailer.UserProperty p = authenticatedUser.getProperty(Mailer.UserProperty.class);
