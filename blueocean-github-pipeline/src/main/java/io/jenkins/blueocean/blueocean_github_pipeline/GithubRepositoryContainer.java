@@ -55,7 +55,8 @@ public class GithubRepositoryContainer extends ScmRepositoryContainer {
         try {
             HttpURLConnection connection = GithubScm.connect(String.format("%s/repos/%s/%s", rootUrl,
                     orgId,name),credentials.getPassword().getPlainText());
-            final GHRepoEx repository = GithubScm.om.readValue(HttpRequest.getInputStream(connection), GHRepoEx.class);
+            final GHRepoEx repository = GithubScm.getMappingObjectReader().forType(GHRepoEx.class)
+                .readValue(HttpRequest.getInputStream(connection));
             return new GithubRepository(repository, credentials, this);
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException(e.getMessage(),e);
