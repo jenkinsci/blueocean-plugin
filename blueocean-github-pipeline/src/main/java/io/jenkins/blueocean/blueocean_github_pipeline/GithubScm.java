@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GHOrganization;
+import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHUser;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.HttpException;
@@ -358,10 +359,10 @@ public class GithubScm extends AbstractScm {
     }
 
     static void validateUserHasPushPermission(@Nonnull String apiUrl, @Nullable String accessToken, @Nullable String owner, @Nullable String repoName) {
-        GHRepoEx repo;
+        GHRepository repo;
         try {
             repo = HttpRequest.get(String.format("%s/repos/%s/%s", apiUrl, owner, repoName))
-                .withAuthorizationToken(accessToken).to(GHRepoEx.class);
+                .withAuthorizationToken(accessToken).to(GHRepository.class);
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException(String.format("Could not load repository metadata for %s/%s", owner, repoName), e);
         }
