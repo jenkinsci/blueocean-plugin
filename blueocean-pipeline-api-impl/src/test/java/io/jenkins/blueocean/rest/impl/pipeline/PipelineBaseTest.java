@@ -72,7 +72,7 @@ public abstract class PipelineBaseTest{
     }
 
     @Rule
-    public JenkinsRule j = new JenkinsRule();
+    public static JenkinsRule j = new JenkinsRule();
 
     protected  String baseUrl;
 
