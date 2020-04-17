@@ -5,7 +5,8 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>3.43</version>
+    <version>3.57</version>
+    <relativePath />
   </parent>
 
   <groupId>io.jenkins.blueocean</groupId>
@@ -32,15 +33,16 @@
     <frontend-version>1.7.5</frontend-version>
     <node.version>10.13.0</node.version>
     <npm.version>6.8.0</npm.version>
-    <powermock.version>2.0.2</powermock.version>
-    <mockito.version>2.23.4</mockito.version>
+    <powermock.version>2.0.7</powermock.version>
+    <hamcrest.version>2.2</hamcrest.version>
+    <mockito.version>3.3.3</mockito.version>
     <guava.version>18.0</guava.version>
-    <jacoco.version>0.8.2</jacoco.version>
+    <jacoco.version>0.8.5</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
-    <jenkins-test-harness.version>2.44</jenkins-test-harness.version>
+    <jenkins-test-harness.version>2.60</jenkins-test-harness.version>
     <scm-api.version>2.4.1</scm-api.version>
     <git.version>3.8.0</git.version>
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
@@ -168,7 +170,27 @@
       </dependency>
       <dependency>
           <groupId>org.hamcrest</groupId>
-          <artifactId>hamcrest-all</artifactId>
+          <artifactId>hamcrest</artifactId>
+          <version>${hamcrest.version}</version>
+          <scope>test</scope>
+      </dependency>
+      <!-- This is needed in order to force junit4 and JTH tests to use newer hamcrest version -->
+      <dependency>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>hamcrest-core</artifactId>
+          <version>${hamcrest.version}</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>hamcrest-library</artifactId>
+          <version>${hamcrest.version}</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <version>4.13</version>
           <scope>test</scope>
       </dependency>
       <dependency>
@@ -670,7 +692,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.7</version>
+            <version>3.9</version>
         </dependency>
         <dependency>
             <groupId>oro</groupId>
@@ -854,7 +876,7 @@
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-standalone</artifactId>
-            <version>2.20.0</version>
+            <version>2.26.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
