@@ -92,12 +92,12 @@ public abstract class GithubMockBase extends PipelineBaseTest {
     public void setup() throws Exception {
         super.setup();
         //setup github api mock with WireMock
-        new File("src/test/resources/api/mappings").mkdirs();
-        new File("src/test/resources/api/__files").mkdirs();
-        githubApi.enableRecordMappings(new SingleRootFileSource("src/test/resources/api/mappings"),
-                new SingleRootFileSource("src/test/resources/api/__files"));
-        githubApi.stubFor(
-                WireMock.get(urlMatching(".*")).atPriority(10).willReturn(aResponse().proxiedFrom("https://api.github.com/")));
+//        new File("src/test/resources/api/mappings").mkdirs();
+//        new File("src/test/resources/api/__files").mkdirs();
+//        githubApi.enableRecordMappings(new SingleRootFileSource("src/test/resources/api/mappings"),
+//                new SingleRootFileSource("src/test/resources/api/__files"));
+//        githubApi.stubFor(
+//                WireMock.get(urlMatching(".*")).atPriority(10).willReturn(aResponse().proxiedFrom("https://api.github.com/")));
 
         this.user = login("vivek", "Vivek Pandey", "vivek.pandey@gmail.com");
         this.githubApiUrl = String.format("http://localhost:%s",githubApi.port());
