@@ -5,16 +5,15 @@
     "method" : "GET"
   },
   "response" : {
-    "status" : 401,
-    "bodyFileName" : "body-rate_limit-6MQ0B.json",
+    "status" : 404,
     "headers" : {
       "Date" : "Fri, 17 Apr 2020 19:49:52 GMT",
       "Content-Type" : "application/json; charset=utf-8",
       "Server" : "GitHub.com",
-      "Status" : "401 Unauthorized",
+      "Status" : "404 Not found",
       "X-GitHub-Media-Type" : "github.v3; format=json",
-      "X-RateLimit-Limit" : "60",
-      "X-RateLimit-Remaining" : "50",
+      "X-RateLimit-Limit" : "5000",
+      "X-RateLimit-Remaining" : "5000",
       "X-RateLimit-Reset" : "1587156463",
       "Access-Control-Expose-Headers" : "ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset",
       "Access-Control-Allow-Origin" : "*",
