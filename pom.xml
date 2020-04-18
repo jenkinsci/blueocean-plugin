@@ -42,8 +42,8 @@
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
     <jenkins-test-harness.version>2.44</jenkins-test-harness.version>
-    <scm-api.version>2.4.1</scm-api.version>
-    <git.version>3.8.0</git.version>
+    <scm-api.version>2.6.3</scm-api.version>
+    <git.version>3.9.3</git.version>
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
     <workflow-support.version>3.3</workflow-support.version>
     <pipeline-model-definition.version>1.6.0</pipeline-model-definition.version>
@@ -447,10 +447,10 @@
         <dependency>
             <groupId>com.coravy.hudson.plugins.github</groupId>
             <artifactId>github</artifactId>
-            <version>1.29.0</version>
+            <version>1.29.3</version>
             <exclusions>
 
-                <!-- Upper bound fix: Remove it once token-micro plugin is fixed to remove dependency on asm-tree
+                <!-- Upper bound fix: Remove it once token-macro plugin is fixed to remove dependency on asm-tree
                      PR: https://github.com/jenkinsci/token-macro-plugin/pull/31
                 -->
                 <exclusion>
@@ -497,7 +497,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-branch-source</artifactId>
-            <version>2.3.2</version>
+            <version>2.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
