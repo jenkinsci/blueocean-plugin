@@ -102,7 +102,7 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
 
                         isGithubCloud = code == 200 && responseBody.containsKey("current_user_url");
                         isGithubEnterprise = code == 401 && responseBody.containsKey("message");
-                    } catch (IOException ioe) {
+                    } catch (IllegalArgumentException | IOException ioe) {
                         LOGGER.log(Level.INFO, "Could not parse response body from Github");
                     }
 
