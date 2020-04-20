@@ -30,7 +30,7 @@ class GitHubFactory {
         ProxyConfiguration proxyConfig = Jenkins.getInstance().proxy;
         Proxy proxy = proxyConfig == null ? Proxy.NO_PROXY : proxyConfig.createProxy(apiUrl.getHost());
 
-        OkHttpClient client = (new OkHttpClient()).setProxy(proxy);
+        OkHttpClient client = new OkHttpClient().setProxy(proxy);
 
         return new GitHubBuilder().withOAuthToken(accessToken)
             .withConnector(new OkHttpConnector(new OkUrlFactory(client)))
