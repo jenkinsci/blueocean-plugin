@@ -12,9 +12,10 @@ import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.junit.Ignore;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Test;
 import org.openqa.selenium.By;
 
 import javax.inject.Inject;
@@ -44,6 +45,7 @@ public class RestartStageTest extends BlueOceanAcceptanceTest {
      * This tests the restart stage functionality in the run details screen.
      */
     @Test
+    @Ignore("Super flakey test")
     public void restartStageTest() throws IOException, GitAPIException, InterruptedException {
         final String pipelineName = "RestartStageTest";
         final String branchName = "master";

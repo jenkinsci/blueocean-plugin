@@ -10,6 +10,6 @@ npm run build-storybook
 npm run site-server
 ```
 
-> License is MIT. Other licenses in /licenses
+## License
 
-__[Docs Site](http://jenkinsci.github.io/jenkins-design-language/docs)__
+License is MIT. Other licenses in /licenses

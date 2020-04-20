@@ -11,7 +11,7 @@
     <artifactId>blueocean-dashboard</artifactId>
     <packaging>hpi</packaging>
 
-    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+    <url>https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean/doc/BlueOcean.adoc</url>
 
     <dependencies>
         <dependency>

@@ -204,7 +204,7 @@ public class MySecondATHTest{
 
        // This waits for any builds that have been queued to finish.
        sseClient.untilEvents(SSEEvents.activityComplete(pipelineName));
-       // Clear all events so far so that when wait is called again it doesnt see the old events.
+       // Clear all events so far so that when wait is called again it doesn't see the old events.
        sseClient.clear();
 
        // ... some more run stuff

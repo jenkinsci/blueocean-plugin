@@ -97,12 +97,12 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
                             inputStream = HttpRequest.getErrorStream(connection);
                         }
 
-                        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
-                        Map<String, String> responseBody = GithubScm.om.readValue(inputStream, typeRef);
+                        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>(){};
+                        Map<String, String> responseBody = GithubScm.om.reader().forType(typeRef).readValue(inputStream);
 
                         isGithubCloud = code == 200 && responseBody.containsKey("current_user_url");
                         isGithubEnterprise = code == 401 && responseBody.containsKey("message");
-                    } catch (IOException ioe) {
+                    } catch (IllegalArgumentException | IOException ioe) {
                         LOGGER.log(Level.INFO, "Could not parse response body from Github");
                     }
 
