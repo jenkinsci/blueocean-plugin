@@ -99,22 +99,17 @@ node() {
             }
           }
         }
-      } catch(err) {
-        echo(err)
-        currentBuild.result = "FAILURE"
-
-        if (err.toString().contains('exit code 143')) {
-          currentBuild.result = "ABORTED"
-        }
       } finally {
         stage('Cleanup') {
-          if (params.USE_SAUCELABS) {
-            sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-sc.sh"
-          } else {
-            sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
+          catchError(message: 'Suppressing error in Stage: Cleanup') {
+            if (params.USE_SAUCELABS) {
+              sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-sc.sh"
+            } else {
+              sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
+            }
+            sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-bitbucket-server.sh"
+            deleteDir()
           }
-          sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-bitbucket-server.sh"
-          deleteDir()
         }
       }
     }
