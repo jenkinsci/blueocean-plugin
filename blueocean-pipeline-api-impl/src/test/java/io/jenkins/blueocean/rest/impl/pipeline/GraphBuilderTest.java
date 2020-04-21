@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 
 /**
- * These tests are for regresions in the Graph Builder code, to make sure the same input produces the same output nodes
+ * These tests are for regressions in the Graph Builder code, to make sure the same input produces the same output nodes
  * and connections over time. We're not trying to excercise Pipeline edge cases, but edge cases for the code that
  * simplifies the complete Pipeline graph to the cut-down Blue Ocean graph. Jobs that run to completion or failure, and
  * produce a working Pipeline DAG. Not for testing HTTP infrastructure or Stapler's JSON code.
@@ -303,7 +303,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
         List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
         // top should be BlueRunResult.FAILURE, but the status is currently computed from the beginning of top to the
-        // begining of aborts, which doesn't make sense, but we don't show a status for parents of sequential stages
+        // beginning of aborts, which doesn't make sense, but we don't show a status for parents of sequential stages
         // anyway so it doesn't really matter.
         assertStageAndEdges(nodes, "top", "aborts", "fails", "succeeds");
         assertStageAndEdges(nodes, "aborts", BlueRun.BlueRunState.FINISHED, BlueRun.BlueRunResult.ABORTED);
@@ -536,9 +536,9 @@ public class GraphBuilderTest extends PipelineBaseTest {
         return createAndRunJob(jobName, jenkinsFileName, Result.SUCCESS);
     }
 
-    private WorkflowRun createAndRunJob(String jobName, String jenkinsFileName, Result expextedResult) throws Exception {
+    private WorkflowRun createAndRunJob(String jobName, String jenkinsFileName, Result expectedResult) throws Exception {
         WorkflowJob job = createJob(jobName, jenkinsFileName);
-        j.assertBuildStatus(expextedResult, job.scheduleBuild2(0));
+        j.assertBuildStatus(expectedResult, job.scheduleBuild2(0));
         return job.getLastBuild();
     }
 

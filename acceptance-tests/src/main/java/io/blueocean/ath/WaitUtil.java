@@ -211,7 +211,7 @@ public class WaitUtil {
     }
 
     /**
-     * Wait until the SSE is fully connected so events will propegate properly
+     * Wait until the SSE is fully connected so events will propagate properly
      */
     public void untilSSEReady() {
         // make sure the variable is defined

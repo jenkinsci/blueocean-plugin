@@ -195,7 +195,7 @@ describe('Activity', () => {
         assert.equal(wrapper.find('DisablePipelineButton').length, 1);
     });
 
-    it('doesn not render the disable job btn when not available', () => {
+    it('does not render the disable job btn when not available', () => {
         pipeline.disabled = null;
 
         const wrapper = shallow(<Activity pipeline={pipeline} t={ () => {} } capabilities={capabilities} />, { context: contextNoData });
