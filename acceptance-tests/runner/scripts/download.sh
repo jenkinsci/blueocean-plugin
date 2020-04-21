@@ -63,7 +63,7 @@ download-jenkins() {
     echo "Downloading Jenkins ${JENKINS_VERSION} WAR to ${DOWNTO} ..."
     echo ""
 
-    mvn -B dependency:copy -Dartifact="org.jenkins-ci.main:jenkins-war:${JENKINS_VERSION}:war" && cp "target/dependency/jenkins-war-${JENKINS_VERSION}.war" "${DOWNTO}"
+    mvn -B dependency:copy -Dartifact="org.jenkins-ci.main:jenkins-war:${JENKINS_VERSION}:war" ${MAVEN_SETTINGS} && cp "target/dependency/jenkins-war-${JENKINS_VERSION}.war" "${DOWNTO}"
 
     if [ $? != 0 ]
       then
