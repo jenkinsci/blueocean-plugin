@@ -73,5 +73,7 @@ download-jenkins() {
         popd
         exit 1
     fi
+    
+    popd
 }
 
