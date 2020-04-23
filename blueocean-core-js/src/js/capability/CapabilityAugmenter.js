@@ -102,11 +102,11 @@ export class CapabilityAugmenter {
                 if (canWalk(value) && nodesAlreadyWalked.indexOf(value) === -1 && ignoredProps.indexOf(key) === -1) {
                     nodesToWalk.push(value);
                 }
-                await sleep(50);
+                await sleep(1);
             }
 
             node = nodesToWalk.shift();
-            await sleep(100);
+            await sleep(5);
         }
 
         if (this._perfLoggingEnabled) {
