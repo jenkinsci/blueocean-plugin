@@ -122,7 +122,7 @@ public class BitbucketServerApi extends BitbucketApi {
             InputStream inputStream = request.get(String.format("%s?start=%s&limit=%s",baseUrl+"projects/",
                     toStart(pageNumber, pageSize), pageSize))
                     .getContent();
-            BbPage<BbOrg> page =  om.readValue(inputStream, new TypeReference<BbServerPage<BbServerProject>>(){});
+            BbPage<BbOrg> page =  om.reader().forType(new TypeReference<BbServerPage<BbServerProject>>(){}).readValue(inputStream);
             if(pageNumber == 1){ //add user org as the first org on first page
                 BbServerUser user = getUser(userName);
                 List<BbOrg> teams = new ArrayList<>();
@@ -155,7 +155,7 @@ public class BitbucketServerApi extends BitbucketApi {
         try {
             InputStream inputStream = request.get(String.format("%s?start=%s&limit=%s",baseUrl+"projects/"+projectKey+"/repos/", toStart(pageNumber, pageSize), pageSize))
                     .getContent();
-            return om.readValue(inputStream, new TypeReference<BbServerPage<BbServerRepo>>(){});
+            return om.reader().forType(new TypeReference<BbServerPage<BbServerRepo>>(){}).readValue(inputStream);
         } catch (IOException e) {
             throw handleException(e);
         }
