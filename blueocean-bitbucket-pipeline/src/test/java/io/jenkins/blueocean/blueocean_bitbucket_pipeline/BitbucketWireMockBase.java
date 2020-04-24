@@ -22,6 +22,12 @@ import static org.junit.Assert.assertNotNull;
  * @author Vivek Pandey
  */
 public abstract class BitbucketWireMockBase extends PipelineBaseTest{
+
+    // By default the wiremock tests will run without proxy
+    // The tests will use only the stubbed data and will fail if requests are made for missing data.
+    // You can use the proxy while writing and debugging tests.
+    private final static boolean useProxy = !System.getProperty("test.wiremock.useProxy", "false").equals("false");
+
     protected User authenticatedUser;
     protected String apiUrl;
 
@@ -50,9 +56,12 @@ public abstract class BitbucketWireMockBase extends PipelineBaseTest{
         new File(files).mkdirs();
         bitbucketApi.enableRecordMappings(new SingleRootFileSource(mappings),
                 new SingleRootFileSource(files));
-        bitbucketApi.stubFor(
+
+        if (useProxy) {
+            bitbucketApi.stubFor(
                 WireMock.get(urlMatching(".*")).atPriority(10).willReturn(aResponse()
-                        .proxiedFrom(proxyUrl)));
+                    .proxiedFrom(proxyUrl)));
+        }
 
         this.apiUrl = String.format("http://localhost:%s",bitbucketApi.port());
     }
