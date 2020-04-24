@@ -21,7 +21,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
  * @author Vivek Pandey
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 @PrepareForTest({OrganizationFactory.class, OrganizationFolder.class, SCMHead.HeadByItem.class,PullRequestSCMHead.class})
 public class PipelineJobFiltersTest {
 

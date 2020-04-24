@@ -50,7 +50,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Stapler.class, OrganizationFolder.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public abstract class GithubMockBase extends PipelineBaseTest {
     protected String githubApiUrl;
     protected User user;

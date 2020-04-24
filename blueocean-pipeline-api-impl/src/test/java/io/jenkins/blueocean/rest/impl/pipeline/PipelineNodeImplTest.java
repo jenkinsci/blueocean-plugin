@@ -17,7 +17,7 @@ import static org.junit.Assert.assertNull;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ WorkflowRun.class, WorkflowJob.class, QueueUtil.class })
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class PipelineNodeImplTest {
     @Mock
     WorkflowJob job;
