@@ -5,7 +5,7 @@ import { DownstreamRunsView } from './DownstreamRunsView';
 /**
  * DownstreamRuns component to be used in-container. Takes a list of urls and descriptions from
  * run actions, coordinates with activityService (from context) to fetch details if necessary,
- * and hands the details off to DownstreamRunsView for rencering.
+ * and hands the details off to DownstreamRunsView for rendering.
  */
 @observer
 export class DownstreamRuns extends Component {
