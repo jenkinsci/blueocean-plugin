@@ -28,7 +28,7 @@ assemble-plugins $AGGREGATOR_DIR
 
 if [ -z "$JENKINS_WAR" ]; then
     # Download the jenkins war
-    download "http://mirrors.jenkins-ci.org/war-stable/${JENKINS_VERSION}/jenkins.war" "bin/jenkins-${JENKINS_VERSION}.war"
+    download-jenkins "${JENKINS_VERSION}" "bin/jenkins-${JENKINS_VERSION}.war"
     export JENKINS_WAR=../bin/jenkins-${JENKINS_VERSION}.war
 fi
 
