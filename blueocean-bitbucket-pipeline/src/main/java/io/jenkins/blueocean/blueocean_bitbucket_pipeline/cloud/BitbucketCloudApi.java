@@ -104,7 +104,7 @@ public class BitbucketCloudApi extends BitbucketApi {
             }
             InputStream inputStream = request.get(String.format("%s&page=%s&pagelen=%s",baseUrl+"teams/?role=contributor",
                     pageNumber,pageSize)).getContent();
-            BbPage<BbOrg> page =  om.readValue(inputStream, new TypeReference<BbCloudPage<BbCloudTeam>>(){});
+            BbPage<BbOrg> page =  om.reader().forType(new TypeReference<BbCloudPage<BbCloudTeam>>(){}).readValue(inputStream);
             if(pageNumber == 1){ //add user org as the first org on first page
                 BbUser user = getUser();
                 if(page instanceof BbCloudPage) {
@@ -156,10 +156,10 @@ public class BitbucketCloudApi extends BitbucketApi {
     @Nonnull
     @Override
     public BbPage<BbRepo> getRepos(@Nonnull String orgId, int pageNumber, int pageSize) {
-        try {
-            InputStream inputStream = request.get(String.format("%s?page=%s&limit=%s",baseUrl+"repositories/"+encodePath(orgId),
-                    pageNumber, pageSize)).getContent();
-            return om.readValue(inputStream, new TypeReference<BbCloudPage<BbCloudRepo>>(){});
+        try (InputStream inputStream = request.get(String.format("%s?page=%s&limit=%s",
+                                                                 baseUrl+"repositories/"+encodePath(orgId),
+                                                                 pageNumber, pageSize)).getContent()){
+            return om.reader().forType(new TypeReference<BbCloudPage<BbCloudRepo>>(){}).readValue( inputStream );
         } catch (IOException e) {
             throw handleException(e);
         }

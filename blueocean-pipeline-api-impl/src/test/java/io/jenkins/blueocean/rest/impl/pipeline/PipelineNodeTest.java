@@ -42,22 +42,17 @@ import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable
 import org.jenkinsci.plugins.workflow.test.steps.SemaphoreStep;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -2737,6 +2732,223 @@ public class PipelineNodeTest extends PipelineBaseTest {
     }
 
     @Test
+    public void declarativeParallelPipeline() throws Exception {
+        String script = "pipeline {\n"
+            + "  agent none\n"
+            + "  stages {\n"
+            + "    stage('Pre build') {\n"
+            + "      agent {\n"
+            + "        label 'master'\n"
+            + "      }\n"
+            + "      steps {\n"
+            + "        echo 'Pre build steps'\n"
+            + "      }\n"
+            + "    }\n"
+            + "    stage('Run Tests') {\n"
+            + "      parallel {\n"
+            + "        stage('Internal') {\n"
+            + "          agent {\n"
+            + "            label 'master'\n"
+            + "          }\n"
+            + "          stages {\n"
+            + "            stage('Prep') {\n"
+            + "              steps {\n"
+            + "                echo 'Prep internal'\n"
+            + "              }\n"
+            + "            }\n"
+            + "            stage('Run') {\n"
+            + "              steps {\n"
+            + "                echo 'Run internal'\n"
+            + "              }\n"
+            + "            }\n"
+            + "          }\n"
+            + "        }\n"
+            + "        stage('Prod') {\n"
+            + "          agent {\n"
+            + "            label 'master'\n"
+            + "          }\n"
+            + "          stages {\n"
+            + "            stage('Prep') {\n"
+            + "              steps {\n"
+            + "                echo 'Prep prod'\n"
+            + "              }\n"
+            + "            }\n"
+            + "            stage('Run') {\n"
+            + "              steps {\n"
+            + "                echo 'Run prod'\n"
+            + "              }\n"
+            + "            }\n"
+            + "          }\n"
+            + "        }\n"
+            + "      }\n"
+            + "    }\n"
+            + "    stage('Post build') {\n"
+            + "      agent {\n"
+            + "        label 'master'\n"
+            + "      }\n"
+            + "      steps {\n"
+            + "        echo 'Post build steps'\n"
+            + "      }\n"
+            + "    }\n"
+            + "  }\n"
+            + "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script, false));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        WorkflowRun run = j.waitForCompletion(b1);
+        j.assertBuildStatus(Result.SUCCESS, run);
+
+        PipelineNodeGraphVisitor pipelineNodeGraphVisitor = new PipelineNodeGraphVisitor(run);
+        List<FlowNodeWrapper> wrappers = pipelineNodeGraphVisitor.getPipelineNodes();
+
+        assertEquals(9, wrappers.size());
+
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        for (int i = 0; i < nodes.size(); i++) {
+            Map n = nodes.get(i);
+            List<Map> edges = (List<Map>) n.get("edges");
+            if (i == 0) {
+                assertEquals("Pre build", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(i + 1).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 1) {
+                assertEquals("Run Tests", n.get("displayName"));
+                assertEquals(2, edges.size());
+                assertEquals(nodes.get(i + 1).get("id"), edges.get(0).get("id"));
+                assertEquals(nodes.get(i + 2).get("id"), edges.get(1).get("id"));
+            }
+            if (i == 2) {
+                assertEquals("Internal", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(5).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 3) {
+                assertEquals("Prod", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(7).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 4) {
+                assertEquals("Post build", n.get("displayName"));
+                assertEquals(0, edges.size());
+            }
+            if (i == 5) {
+                assertEquals("Prep", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(6).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 6) {
+                assertEquals("Run", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(4).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 7) {
+                assertEquals("Prep", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(8).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 8) {
+                assertEquals("Run", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(4).get("id"), edges.get(0).get("id"));
+            }
+        }
+    }
+
+    @Test
+    public void scriptedParallelPipeline() throws Exception {
+        String script = "node() {\n"
+            + "  stage('Pre build') {\n"
+            + "    echo 'Pre build steps'\n"
+            + "  }\n"
+            + "  parallel(\n"
+            + "    'Internal': {\n"
+            + "      stage('Prep') {\n"
+            + "        echo 'Prep internal'\n"
+            + "      }\n"
+            + "      stage('Run') {\n"
+            + "        echo 'Run internal'\n"
+            + "      }\n"
+            + "    },\n"
+            + "    'Prod': {\n"
+            + "      stage('Prep') {\n"
+            + "        echo 'Prep prod'\n"
+            + "      }\n"
+            + "      stage('Run') {\n"
+            + "        echo 'Run prod'\n"
+            + "      }\n"
+            + "    }\n"
+            + "  )\n"
+            + "  stage('Post build') {\n"
+            + "    echo 'Post build steps'\n"
+            + "  }\n"
+            + "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script, false));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        WorkflowRun run = j.waitForCompletion(b1);
+        j.assertBuildStatus(Result.SUCCESS, run);
+
+        PipelineNodeGraphVisitor pipelineNodeGraphVisitor = new PipelineNodeGraphVisitor(run);
+        List<FlowNodeWrapper> wrappers = pipelineNodeGraphVisitor.getPipelineNodes();
+
+        assertEquals(9, wrappers.size());
+
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        for (int i = 0; i < nodes.size(); i++) {
+            Map n = nodes.get(i);
+            List<Map> edges = (List<Map>) n.get("edges");
+            if (i == 0) {
+                assertEquals("Pre build", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(i + 1).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 1) {
+                assertEquals("Parallel", n.get("displayName"));
+                assertEquals(2, edges.size());
+                assertEquals(nodes.get(i + 1).get("id"), edges.get(0).get("id"));
+                assertEquals(nodes.get(i + 2).get("id"), edges.get(1).get("id"));
+            }
+            if (i == 2) {
+                assertEquals("Internal", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(5).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 3) {
+                assertEquals("Prod", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(7).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 4) {
+                assertEquals("Post build", n.get("displayName"));
+                assertEquals(0, edges.size());
+            }
+            if (i == 5) {
+                assertEquals("Prep", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(6).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 6) {
+                assertEquals("Run", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(4).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 7) {
+                assertEquals("Prep", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(8).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 8) {
+                assertEquals("Run", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(4).get("id"), edges.get(0).get("id"));
+            }
+        }
+    }
+
+    @Test
     public void orphanParallels1() throws Exception {
         String script = "parallel('branch1':{\n" +
             "        node {\n" +
@@ -2766,7 +2978,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         PipelineNodeGraphVisitor pipelineNodeGraphVisitor = new PipelineNodeGraphVisitor(run);
         List<FlowNodeWrapper> wrappers = pipelineNodeGraphVisitor.getPipelineNodes();
 
-        Assert.assertEquals(3, wrappers.size());
+        assertEquals(7, wrappers.size());
     }
 
     @Test
@@ -2812,7 +3024,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
 
-        Assert.assertEquals(6, nodes.size());
+        assertEquals(12, nodes.size());
 
         for (int i = 0; i < nodes.size(); i++) {
             Map n = nodes.get(i);
@@ -2825,7 +3037,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
             if (i == 1) {
                 assertEquals("Parallel", n.get("displayName"));
                 assertEquals(nodes.get(i + 1).get("id") + "-parallel-synthetic", n.get("id"));
-                Assert.assertEquals(3, edges.size());
+                assertEquals(3, edges.size());
                 assertEquals(nodes.get(i + 1).get("id"), edges.get(0).get("id"));
                 assertEquals(nodes.get(i + 2).get("id"), edges.get(1).get("id"));
                 assertEquals(nodes.get(i + 3).get("id"), edges.get(2).get("id"));
@@ -2833,21 +3045,51 @@ public class PipelineNodeTest extends PipelineBaseTest {
             if (i == 2) {
                 assertEquals("branch1", n.get("displayName"));
                 assertEquals(1, edges.size());
-                assertEquals(nodes.get(5).get("id"), edges.get(0).get("id"));
+                assertEquals(nodes.get(6).get("id"), edges.get(0).get("id"));
             }
             if (i == 3) {
                 assertEquals("branch2", n.get("displayName"));
                 assertEquals(1, edges.size());
-                assertEquals(nodes.get(5).get("id"), edges.get(0).get("id"));
+                assertEquals(nodes.get(10).get("id"), edges.get(0).get("id"));
             }
             if (i == 4) {
                 assertEquals("branch3", n.get("displayName"));
                 assertEquals(1, edges.size());
-                assertEquals(nodes.get(5).get("id"), edges.get(0).get("id"));
+                assertEquals(nodes.get(8).get("id"), edges.get(0).get("id"));
             }
             if (i == 5) {
                 assertEquals("stage2", n.get("displayName"));
                 assertEquals(0, edges.size());
+            }
+            if (i == 6) {
+                assertEquals("Setup", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(7).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 7) {
+                assertEquals("Unit and Integration Tests", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(5).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 8) {
+                assertEquals("Setup", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(9).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 9) {
+                assertEquals("Unit and Integration Tests", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(5).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 10) {
+                assertEquals("Setup", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(11).get("id"), edges.get(0).get("id"));
+            }
+            if (i == 11) {
+                assertEquals("Unit and Integration Tests", n.get("displayName"));
+                assertEquals(1, edges.size());
+                assertEquals(nodes.get(5).get("id"), edges.get(0).get("id"));
             }
         }
     }

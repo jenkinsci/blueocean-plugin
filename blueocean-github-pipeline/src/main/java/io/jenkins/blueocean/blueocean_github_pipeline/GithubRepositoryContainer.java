@@ -8,6 +8,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositories;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepository;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositoryContainer;
+import org.kohsuke.github.GHRepository;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -55,7 +56,8 @@ public class GithubRepositoryContainer extends ScmRepositoryContainer {
         try {
             HttpURLConnection connection = GithubScm.connect(String.format("%s/repos/%s/%s", rootUrl,
                     orgId,name),credentials.getPassword().getPlainText());
-            final GHRepoEx repository = GithubScm.om.readValue(HttpRequest.getInputStream(connection), GHRepoEx.class);
+            final GHRepository repository = GithubScm.getMappingObjectReader().forType(GHRepository.class)
+                .readValue(HttpRequest.getInputStream(connection));
             return new GithubRepository(repository, credentials, this);
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException(e.getMessage(),e);

@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Collection;
 
 /**
@@ -52,7 +53,7 @@ public class ChangeSetResource extends BlueChangeSetEntry {
     @Override
     public String getTimestamp(){
         if(changeSet.getTimestamp() > 0) {
-            return AbstractRunImpl.DATE_FORMAT.print(changeSet.getTimestamp());
+            return AbstractRunImpl.DATE_FORMAT.format(Instant.ofEpochMilli(changeSet.getTimestamp()));
         }else{
             return null;
         }

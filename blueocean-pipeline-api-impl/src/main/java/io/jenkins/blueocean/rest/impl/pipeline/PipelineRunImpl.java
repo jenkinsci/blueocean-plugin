@@ -4,8 +4,6 @@ import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Run;
 import hudson.model.queue.CauseOfBlockage;
-import hudson.scm.ChangeLogSet;
-import hudson.scm.ChangeLogSet.Entry;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
@@ -21,17 +19,12 @@ import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
-import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
-import io.jenkins.blueocean.service.embedded.rest.ChangeSetContainerImpl;
-import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMRevisionAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
-import org.jenkinsci.plugins.workflow.cps.replay.ReplayCause;
-import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
@@ -40,10 +33,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_RUN;
@@ -186,23 +176,9 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         String commitId = getCommitId();
         if (commitId != null) {
             Container<BlueChangeSetEntry> changeSets = getChangeSet();
-            int buildNumber = this.run.number;
-            WorkflowJob job = this.run.getParent();
-            while (buildNumber > 0) {
-                BlueChangeSetEntry entry = changeSets.get(commitId);
-                if (entry != null) {
-                    return entry.getUrl();
-                }
-                buildNumber--;
-                Run<?,?> run = job.getBuildByNumber(buildNumber);
-                if (run == null) {
-                    continue;
-                }
-                BlueRun blueRun = BlueRunFactory.getRun(run, parent);
-                if (blueRun == null) {
-                    continue;
-                }
-                changeSets = blueRun.getChangeSet();
+            BlueChangeSetEntry entry = changeSets.get(commitId);
+            if (entry != null) {
+                return entry.getUrl();
             }
         }
         return null;

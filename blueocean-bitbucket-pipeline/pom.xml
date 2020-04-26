@@ -11,7 +11,7 @@
   <name>Bitbucket Pipeline for Blue Ocean</name>
   <artifactId>blueocean-bitbucket-pipeline</artifactId>
   <packaging>hpi</packaging>
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+  <url>https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean/doc/BlueOcean.adoc</url>
 
   <properties>
     <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
@@ -66,7 +66,7 @@
 
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
-      <artifactId>wiremock-standalone</artifactId>
+      <artifactId>wiremock-jre8-standalone</artifactId>
       <scope>test</scope>
     </dependency>
 

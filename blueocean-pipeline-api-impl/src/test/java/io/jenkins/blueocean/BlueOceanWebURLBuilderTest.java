@@ -72,7 +72,7 @@ public class BlueOceanWebURLBuilderTest {
         String blueOceanURL;
 
         blueOceanURL = urlMapper.getUrl(mp);
-        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/branches", blueOceanURL);
+        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/branches/", blueOceanURL);
 
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false), new DefaultBranchPropertyStrategy(new BranchProperty[0])));
         for (SCMSource source : mp.getSCMSources()) {
@@ -86,19 +86,19 @@ public class BlueOceanWebURLBuilderTest {
         // page for the multibranch job in Blue Ocean.
         WorkflowJob masterJob = findBranchProject(mp, "master");
         blueOceanURL = urlMapper.getUrl(masterJob);
-        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/branches", blueOceanURL);
+        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/branches/", blueOceanURL);
         WorkflowJob featureUx1Job = findBranchProject(mp, "feature/ux-1");
         blueOceanURL = urlMapper.getUrl(featureUx1Job);
-        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/branches", blueOceanURL);
+        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/branches/", blueOceanURL);
         WorkflowJob feature2Job = findBranchProject(mp, "feature2");
         blueOceanURL = urlMapper.getUrl(feature2Job);
-        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/branches", blueOceanURL);
+        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/branches/", blueOceanURL);
 
         // Runs on the jobs
         blueOceanURL = urlMapper.getUrl(masterJob.getFirstBuild());
-        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/detail/master/1", blueOceanURL);
+        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/detail/master/1/", blueOceanURL);
         blueOceanURL = urlMapper.getUrl(featureUx1Job.getFirstBuild());
-        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/detail/feature%2Fux-1/1", blueOceanURL);
+        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/detail/feature%2Fux-1/1/", blueOceanURL);
     }
 
     private WorkflowJob findBranchProject(WorkflowMultiBranchProject mp, String name) throws Exception {

@@ -28,7 +28,7 @@ envs = [
   'GIT_AUTHOR_EMAIL=hates@cake.com'
 ]
 
-jenkinsVersions = ['2.138.4']
+jenkinsVersions = ['2.150.3']
 
 if (params.USE_SAUCELABS) {
   credentials.add(usernamePassword(credentialsId: 'saucelabs', passwordVariable: 'SAUCE_ACCESS_KEY', usernameVariable: 'SAUCE_USERNAME'))
@@ -37,10 +37,6 @@ if (params.USE_SAUCELABS) {
   }
   envs.add("saucelabs=true")
   envs.add("TUNNEL_IDENTIFIER=${env.BUILD_TAG}")
-}
-
-if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
-  jenkinsVersions.add('2.150.3')
 }
 
 node() {
@@ -103,22 +99,17 @@ node() {
             }
           }
         }
-      } catch(err) {
-        echo(err)
-        currentBuild.result = "FAILURE"
-
-        if (err.toString().contains('exit code 143')) {
-          currentBuild.result = "ABORTED"
-        }
       } finally {
         stage('Cleanup') {
-          if (params.USE_SAUCELABS) {
-            sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-sc.sh"
-          } else {
-            sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
+          catchError(message: 'Suppressing error in Stage: Cleanup') {
+            if (params.USE_SAUCELABS) {
+              sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-sc.sh"
+            } else {
+              sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
+            }
+            sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-bitbucket-server.sh"
+            deleteDir()
           }
-          sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-bitbucket-server.sh"
-          deleteDir()
         }
       }
     }

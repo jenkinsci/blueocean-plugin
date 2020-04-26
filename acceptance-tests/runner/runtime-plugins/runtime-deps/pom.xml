@@ -41,19 +41,19 @@
     <licenses>
         <license>
             <name>MIT License</name>
-            <url>http://opensource.org/licenses/MIT</url>
+            <url>https://opensource.org/licenses/MIT</url>
         </license>
     </licenses>
     <repositories>
         <repository>
             <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
+            <url>https://repo.jenkins-ci.org/public/</url>
         </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
             <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
+            <url>https://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
     </pluginRepositories>
     <properties>
@@ -69,14 +69,19 @@
         <dependency>
             <groupId>io.jenkins.blueocean</groupId>
             <artifactId>blueocean-executor-info</artifactId>
-            <version>[1.14.0-SNAPSHOT,)</version>
+            <version>[1.23.0-SNAPSHOT,)</version>
         </dependency>
 
         <!-- following are required to run on newer jenkins versions (after 2.7) as it changed how classloading works a bit for plugins -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>structs</artifactId>
-            <version>1.17</version>
+            <version>1.20</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>apache-httpcomponents-client-4-api</artifactId>
+            <version>4.5.5-3.0</version>
         </dependency>
     </dependencies>
     <profiles>
@@ -91,7 +96,7 @@
                 <dependency>
                     <groupId>io.jenkins.blueocean</groupId>
                     <artifactId>blueocean</artifactId>
-                    <version>[1.14.0-SNAPSHOT,)</version>
+                    <version>[1.23.0-SNAPSHOT,)</version>
                 </dependency>
             </dependencies>
         </profile>

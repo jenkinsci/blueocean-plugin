@@ -5,7 +5,8 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>3.43</version>
+    <version>3.57</version>
+    <relativePath />
   </parent>
 
   <groupId>io.jenkins.blueocean</groupId>
@@ -24,28 +25,29 @@
   </licenses>
 
   <properties>
-    <revision>1.20.0</revision>
+    <revision>1.23.0</revision>
     <changelist>-SNAPSHOT</changelist>
     <java.level>8</java.level>
-    <jenkins.version>2.138.4</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
+    <jenkins.version>2.150.3</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.7.5</frontend-version>
     <node.version>10.13.0</node.version>
-    <npm.version>6.8.0</npm.version>
-    <powermock.version>2.0.2</powermock.version>
-    <mockito.version>2.23.4</mockito.version>
-    <guava.version>11.0.1</guava.version>
-    <jacoco.version>0.8.2</jacoco.version>
+    <npm.version>6.14.4</npm.version>
+    <powermock.version>2.0.7</powermock.version>
+    <hamcrest.version>2.2</hamcrest.version>
+    <mockito.version>3.3.3</mockito.version>
+    <guava.version>18.0</guava.version>
+    <jacoco.version>0.8.5</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
-    <jenkins-test-harness.version>2.44</jenkins-test-harness.version>
-    <scm-api.version>2.2.8</scm-api.version>
-    <git.version>3.8.0</git.version>
+    <jenkins-test-harness.version>2.63</jenkins-test-harness.version>
+    <scm-api.version>2.6.3</scm-api.version>
+    <git.version>3.9.3</git.version>
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
-    <workflow-support.version>3.2</workflow-support.version>
-    <pipeline-model-definition.version>1.3.7</pipeline-model-definition.version>
+    <workflow-support.version>3.3</workflow-support.version>
+    <pipeline-model-definition.version>1.6.0</pipeline-model-definition.version>
   </properties>
 
   <scm>
@@ -55,7 +57,7 @@
     <tag>${scmTag}</tag>
   </scm>
 
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+  <url>https://github.com/jenkinsci/blueocean-plugin</url>
 
   <developers>
      <developer>
@@ -168,7 +170,27 @@
       </dependency>
       <dependency>
           <groupId>org.hamcrest</groupId>
-          <artifactId>hamcrest-all</artifactId>
+          <artifactId>hamcrest</artifactId>
+          <version>${hamcrest.version}</version>
+          <scope>test</scope>
+      </dependency>
+      <!-- This is needed in order to force junit4 and JTH tests to use newer hamcrest version -->
+      <dependency>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>hamcrest-core</artifactId>
+          <version>${hamcrest.version}</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>hamcrest-library</artifactId>
+          <version>${hamcrest.version}</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <version>4.13</version>
           <scope>test</scope>
       </dependency>
       <dependency>
@@ -360,17 +382,17 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-cps</artifactId>
-            <version>2.66</version>
+            <version>2.76</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-api</artifactId>
-            <version>2.34</version>
+            <version>2.36</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-job</artifactId>
-            <version>2.32</version>
+            <version>2.33</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -385,12 +407,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-step-api</artifactId>
-            <version>2.19</version>
+            <version>2.22</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-durable-task-step</artifactId>
-            <version>2.26</version>
+            <version>2.31</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -406,12 +428,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-basic-steps</artifactId>
-            <version>2.16</version>
+            <version>2.18</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-scm-step</artifactId>
-            <version>2.7</version>
+            <version>2.9</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -436,7 +458,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>script-security</artifactId>
-            <version>1.56</version>
+            <version>1.63</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -446,10 +468,10 @@
         <dependency>
             <groupId>com.coravy.hudson.plugins.github</groupId>
             <artifactId>github</artifactId>
-            <version>1.29.0</version>
+            <version>1.29.3</version>
             <exclusions>
 
-                <!-- Upper bound fix: Remove it once token-micro plugin is fixed to remove dependency on asm-tree
+                <!-- Upper bound fix: Remove it once token-macro plugin is fixed to remove dependency on asm-tree
                      PR: https://github.com/jenkinsci/token-macro-plugin/pull/31
                 -->
                 <exclusion>
@@ -484,14 +506,19 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>apache-httpcomponents-client-4-api</artifactId>
-            <version>4.5.5-3.0</version>
+            <version>4.5.10-1.0</version>
         </dependency>
 
         <!-- Other -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>docker-workflow</artifactId>
+            <version>1.23</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-branch-source</artifactId>
-            <version>2.3.2</version>
+            <version>2.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -543,9 +570,14 @@
             <version>2.2.0</version>
         </dependency>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jira</artifactId>
-            <version>3.0.5</version>
+            <version>3.0.14</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -572,7 +604,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>credentials</artifactId>
-            <version>2.1.16</version>
+            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -587,7 +619,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-folder</artifactId>
-            <version>6.3</version>
+            <version>6.9</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -609,7 +641,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>structs</artifactId>
-            <version>1.17</version>
+            <version>1.20</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -619,7 +651,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>sse-gateway</artifactId>
-            <version>1.20</version>
+            <version>1.21</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -635,12 +667,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.90</version>
+            <version>1.111</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jackson2-api</artifactId>
-            <version>2.9.8</version>
+            <version>2.10.2</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -660,7 +692,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.7</version>
+            <version>3.9</version>
         </dependency>
         <dependency>
             <groupId>oro</groupId>
@@ -732,12 +764,6 @@
                 <artifactId>commons-collections</artifactId>
               </exclusion>
             </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.9.9</version>
         </dependency>
 
         <!-- Needed for blueocean-display-url plugin -->
@@ -849,8 +875,8 @@
         </dependency>
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-standalone</artifactId>
-            <version>2.20.0</version>
+            <artifactId>wiremock-jre8-standalone</artifactId>
+            <version>2.26.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -899,6 +925,12 @@
             <groupId>com.damnhandy</groupId>
             <artifactId>handy-uri-templates</artifactId>
             <version>2.1.6</version>
+        </dependency>
+        <!-- enforcer RequireUpperBoundDeps -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.9.9</version>
         </dependency>
     </dependencies>
   </dependencyManagement>
