@@ -2296,10 +2296,11 @@ public class PipelineNodeTest extends PipelineBaseTest {
                                                                                         ImmutableList.of(ImmutableMap.of("name", "param1", "value", "abc"), ImmutableMap.of("name", "param2", "value", "def"))
         ), 200);
         Assert.assertEquals("pipeline1", resp.get("pipeline"));
-        Thread.sleep(1000);
+        Thread.sleep(5000);
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/2/");
-        Assert.assertEquals("SUCCESS", resp.get("result"));
-        Assert.assertEquals("FINISHED", resp.get("state"));
+
+        Assert.assertEquals("Response should be SUCCESS: " + resp.toString(), "SUCCESS", resp.get("result"));
+        Assert.assertEquals("Response should be FINISHED: " + resp.toString(), "FINISHED", resp.get("state"));
     }
 
     @Test
