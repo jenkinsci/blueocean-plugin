@@ -2,11 +2,7 @@
 
 if (JENKINS_URL == 'https://ci.jenkins.io/') {
   buildPlugin(
-//    configurations: buildPlugin.recommendedConfigurations().findAll { it.platform == 'linux' },
-    configurations: [
-//      [ platform: "linux", jdk: "8", jenkins: null ],
-      [ platform: "linux", jdk: "11", jenkins: "2.176.3", javaLevel: "8" ]
-    ],
+    configurations: buildPlugin.recommendedConfigurations().findAll { it.platform == 'linux' },
     // Tests were locking up and timing out on non-aci
     useAci: true,
     timeout: 90
@@ -87,10 +83,7 @@ node() {
 
             junit '**/target/surefire-reports/TEST-*.xml'
             junit '**/target/jest-reports/*.xml'
-            //jacoco execPattern: '**/target/jacoco.exec', classPattern : '**/target/classes', sourcePattern: '**/src/main/java', exclusionPattern: 'src/test*'
-            // archive '*/target/code-coverage/**/*'
             archive '*/target/*.hpi'
-            // archive '*/target/jest-coverage/**/*'
           }
 
           jenkinsVersions.each { version ->
