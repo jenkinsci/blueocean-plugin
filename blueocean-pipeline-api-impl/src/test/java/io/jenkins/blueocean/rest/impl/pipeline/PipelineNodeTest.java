@@ -2453,7 +2453,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         int loopCount = 0;
 
         do {
-            Thread.sleep(500);
+            Thread.sleep(1000);
 
             List<BluePipelineNode> runningNodes = new PipelineNodeContainerImpl(run2, new Link("foo")).getNodes();
             String runningNodeNames = runningNodes.stream()
@@ -2484,6 +2484,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
         List<String> watchedStages = Arrays.asList("first-sequential-stage", "second-sequential-stage", "third-sequential-stage");
 
         run = p.scheduleBuild2(0).waitForStart();
+
+        Thread.sleep(1000);
+
+        long loopCount = 0;
         while (run.isBuilding()) {
             PipelineNodeContainerImpl pipelineNodeContainer = new PipelineNodeContainerImpl(run, new Link("foo"));
 
@@ -2512,8 +2516,9 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
             LOGGER.debug("nodes size {}", nodes.size());
             if (nodes.size() != 9) {
+                LOGGER.info("loop: " + loopCount + ", nodes size {}", nodes.size());
                 LOGGER.info("nodes != 9 {}", nodes);
-                fail("nodes != 9:" + nodes);
+                fail("nodes != 9:  " + nodes);
             }
 
             Thread.sleep(100);
