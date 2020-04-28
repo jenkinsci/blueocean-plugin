@@ -1,14 +1,14 @@
 {
-  "id" : "95be5f1c-6099-3d8f-a28a-b63da5386da6",
+  "id" : "21f37681-abff-31fc-800a-38c1eb44d6a0",
   "request" : {
-    "url" : "/rest/api/1.0/projects/TESTP/repos/pipeline-demo-test",
+    "url" : "/rest/api/1.0/projects/TESTP/repos/pipeline-demo-test/branches?start=0&limit=200",
     "method" : "GET"
   },
   "response" : {
-    "status" : 200,
-    "bodyFileName" : "body-repos-pipeline-demo-test-PcCw8.json",
+    "status" : 404,
+    "body" : "{ \"message\": \"No branches found.\" }",
     "headers" : {
-      "X-AREQUESTID" : "@190KU8Bx703x608x0",
+      "X-AREQUESTID" : "@1M44HP4x856x1961x0",
       "X-ASEN" : "SEN-L9817337",
       "X-AUSERID" : "1",
       "X-AUSERNAME" : "vivek",
@@ -17,8 +17,8 @@
       "Transfer-Encoding" : "chunked",
       "X-Content-Type-Options" : "nosniff",
       "Content-Type" : "application/json;charset=UTF-8",
-      "Date" : "Wed, 21 Jun 2017 11:43:22 GMT"
+      "Date" : "Mon, 12 Jun 2017 14:16:57 GMT"
     }
   },
-  "uuid" : "95be5f1c-6099-3d8f-a28a-b63da5386da6"
+  "uuid" : "21f37681-abff-31fc-800a-38c1eb44d6a0"
 }

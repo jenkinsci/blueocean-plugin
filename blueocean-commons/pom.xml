@@ -22,19 +22,22 @@
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.version}</version>
+          <configuration>
+            <excludes>
+              <!-- Dont run code coverage for imported stapler classes -->
+              <exclude>io/jenkins/blueocean/commons/stapler/export/**/*</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>${jacoco.version}</version>
-        <configuration>
-          <excludes>
-            <!-- Dont run code coverage for imported stapler classes -->
-            <exclude>io/jenkins/blueocean/commons/stapler/export/**/*</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>

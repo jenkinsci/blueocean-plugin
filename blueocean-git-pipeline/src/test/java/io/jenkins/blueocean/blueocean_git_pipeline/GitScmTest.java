@@ -40,7 +40,7 @@ import static org.junit.Assert.*;
  * @author Vivek Pandey
  */
 @RunWith(Parameterized.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GitScmTest extends PipelineBaseTest {
     public static final String HTTPS_GITHUB_NO_JENKINSFILE = "https://github.com/vivek/test-no-jenkins-file.git";
     public static final String HTTPS_GITHUB_PUBLIC = "https://github.com/cloudbeers/multibranch-demo.git";

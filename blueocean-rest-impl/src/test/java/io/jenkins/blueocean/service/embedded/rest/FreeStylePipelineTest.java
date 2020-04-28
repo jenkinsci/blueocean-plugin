@@ -23,7 +23,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ Job.class, FreeStyleProject.class, FreeStyleBuild.class })
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class FreeStylePipelineTest {
 
     @Rule
