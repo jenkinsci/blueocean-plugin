@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.23.1</version>
+        <version>${revision}${changelist}</version>
     </parent>
     <name>Blue Ocean Executor Info</name>
     <artifactId>blueocean-executor-info</artifactId>
