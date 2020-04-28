@@ -80,7 +80,7 @@ import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 @PrepareForTest({ Jenkins.class, User.class })
 public class UserImplPermissionTest {
     private TestOrganization testOrganization;
@@ -105,7 +105,7 @@ public class UserImplPermissionTest {
             public boolean isAuthenticated() { return false; }
             public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {}
         };
-        
+
         jenkins = mock(Jenkins.class);
         when(jenkins.getACL()).thenReturn(new ACL() {
             public boolean hasPermission(Authentication a, Permission permission) {

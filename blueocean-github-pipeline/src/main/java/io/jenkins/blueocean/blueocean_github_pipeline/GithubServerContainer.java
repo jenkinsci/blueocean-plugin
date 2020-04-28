@@ -19,6 +19,7 @@ import net.sf.json.JSONObject;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.collections.ComparatorUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
 import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
@@ -28,7 +29,9 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.nio.charset.Charset;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -98,11 +101,11 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
                         }
 
                         TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>(){};
-                        Map<String, String> responseBody = GithubScm.om.reader().forType(typeRef).readValue(inputStream);
+                        Map<String, String> responseBody = GithubScm.getMappingObjectReader().forType(typeRef).readValue(inputStream);
 
                         isGithubCloud = code == 200 && responseBody.containsKey("current_user_url");
                         isGithubEnterprise = code == 401 && responseBody.containsKey("message");
-                    } catch (IOException ioe) {
+                    } catch (IllegalArgumentException | IOException ioe) {
                         LOGGER.log(Level.INFO, "Could not parse response body from Github");
                     }
 

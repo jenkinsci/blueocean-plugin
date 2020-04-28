@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.OkUrlFactory;
 import hudson.ProxyConfiguration;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
@@ -7,6 +9,7 @@ import org.kohsuke.github.AbuseLimitHandler;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.RateLimitHandler;
+import org.kohsuke.github.extras.OkHttpConnector;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -27,7 +30,10 @@ class GitHubFactory {
         ProxyConfiguration proxyConfig = Jenkins.getInstance().proxy;
         Proxy proxy = proxyConfig == null ? Proxy.NO_PROXY : proxyConfig.createProxy(apiUrl.getHost());
 
+        OkHttpClient client = new OkHttpClient().setProxy(proxy);
+
         return new GitHubBuilder().withOAuthToken(accessToken)
+            .withConnector(new OkHttpConnector(new OkUrlFactory(client)))
             .withRateLimitHandler(RateLimitHandlerImpl.INSTANCE)
             .withAbuseLimitHandler(AbuseLimitHandlerImpl.INSTANCE)
             .withProxy(proxy)

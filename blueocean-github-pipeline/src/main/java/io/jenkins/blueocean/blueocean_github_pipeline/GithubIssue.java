@@ -56,12 +56,11 @@ public class GithubIssue extends BlueIssue {
             MultiBranchProject mbp = (MultiBranchProject)job.getParent();
             List<SCMSource> scmSources = (List<SCMSource>) mbp.getSCMSources();
             SCMSource source = scmSources.isEmpty() ? null : scmSources.get(0);
-            if (source == null || !(source instanceof GitHubSCMSource)) {
+            if (!(source instanceof GitHubSCMSource)) {
                 return null;
             }
             GitHubSCMSource gitHubSource = (GitHubSCMSource)source;
-            String url = gitHubSource.getApiUri();
-            String apiUri = (url == null) ? GitHubServerConfig.GITHUB_URL : url;
+            String apiUri =  gitHubSource.getApiUri();
             final String repositoryUri = new HttpsRepositoryUriResolver().getRepositoryUri(apiUri, gitHubSource.getRepoOwner(), gitHubSource.getRepository());
             Collection<BlueIssue> results = new ArrayList<>();
             for (String input : findIssueKeys(changeSetEntry.getMsg())) {

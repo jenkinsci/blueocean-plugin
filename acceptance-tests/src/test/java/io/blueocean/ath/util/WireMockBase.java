@@ -24,6 +24,12 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
  * @author cliffmeyers
  */
 public class WireMockBase {
+
+    // By default the wiremock tests will run without proxy
+    // The tests will use only the stubbed data and will fail if requests are made for missing data.
+    // You can use the proxy while writing and debugging tests.
+    private final static boolean useProxy = !System.getProperty("test.wiremock.useProxy", "false").equals("false");
+
     private static Logger logger = Logger.getLogger(WireMockBase.class);
 
     protected static String getServerUrl(WireMockRule rule) {
@@ -55,10 +61,12 @@ public class WireMockBase {
             new SingleRootFileSource(filesPath)
         );
 
-        rule.stubFor(
-            WireMock.get(urlMatching(".*"))
-                .atPriority(10)
-                .willReturn(aResponse().proxiedFrom(baseUrl)));
+        if (useProxy) {
+            rule.stubFor(
+                WireMock.get(urlMatching(".*"))
+                    .atPriority(10)
+                    .willReturn(aResponse().proxiedFrom(baseUrl)));
+        }
 
         replaceUrlTransformer.configure(baseUrl, rule);
 

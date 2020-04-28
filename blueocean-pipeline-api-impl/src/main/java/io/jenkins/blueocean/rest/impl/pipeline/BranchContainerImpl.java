@@ -68,7 +68,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
             BlueRun latestRun1 = pipeline1.getLatestRun();
             BlueRun latestRun2 = pipeline2.getLatestRun();
 
-            // If a pipeline doesnt have a run yet, no need to go further.
+            // If a pipeline doesn't have a run yet, no need to go further.
             if(latestRun1 != null && latestRun2 == null) {
                 return -1;
             }
