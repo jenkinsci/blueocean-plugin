@@ -1,0 +1,28 @@
+{
+  "id" : "4e903afb-22db-3476-8bbb-6944e2d95817",
+  "request" : {
+    "url" : "/rest/api/1.0/projects/vivektestteam/repos/pipeline-demo-test",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 403,
+    "bodyFileName" : "body-rest-api-1.0-projects-vivektestteam-repos-pipeline-demo-test-WXEkI.txt",
+    "headers" : {
+      "Content-Security-Policy-Report-Only" : "script-src 'unsafe-eval' 'strict-dynamic' 'unsafe-inline' 'self' http: https: https://d301sr5gafysq2.cloudfront.net; style-src 'self' 'unsafe-inline' https://aui-cdn.atlassian.com https://d301sr5gafysq2.cloudfront.net; report-uri https://web-security-reports.services.atlassian.com/csp-report/bb-website; default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: *; connect-src bitbucket.org *.bitbucket.org bb-inf.net *.bb-inf.net analytics.atlassian.com as.atlassian.com api-private.stg.atlassian.com api-private.atlassian.com cofs.staging.public.atl-paas.net cofs.prod.public.atl-paas.net intake.opbeat.com api.media.atlassian.com api.segment.io xid.statuspage.io xid.atlassian.com xid.sourcetreeapp.com bam.nr-data.net sentry.io bqlf8qjztdtr.statuspage.io https://d301sr5gafysq2.cloudfront.net; object-src about:; base-uri 'self'",
+      "Server" : "nginx",
+      "Vary" : "Accept-Language, Cookie",
+      "Content-Type" : "text/plain",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubDomains; preload",
+      "Date" : "Fri, 24 Apr 2020 22:22:55 GMT",
+      "X-Served-By" : "app-1104",
+      "Content-Language" : "en",
+      "X-Static-Version" : "e0aa900cf99a",
+      "ETag" : "\"1f632c994b7bb89d4663d94ea462799f\"",
+      "X-Render-Time" : "0.129491090775",
+      "X-Version" : "e0aa900cf99a",
+      "X-Request-Count" : "3055",
+      "X-Frame-Options" : "SAMEORIGIN"
+    }
+  },
+  "uuid" : "4e903afb-22db-3476-8bbb-6944e2d95817"
+}

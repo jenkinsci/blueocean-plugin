@@ -1016,11 +1016,6 @@
       </pluginManagement>
     <plugins>
       <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>${jacoco.version}</version>
-      </plugin>
-      <plugin>
         <!-- TODO: java8 signature doesn't exist yet -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-maven-plugin</artifactId>
@@ -1051,7 +1046,7 @@
               <reuseForks>true</reuseForks>
               <forkCount>${concurrency}</forkCount>
               <!--
-              The following line is the one that's a must. Without it, with get jacoco complexity failures.
+              The following line is the one that's a must. Without it, will get jacoco complexity failures.
               -->
               <argLine>-Djava.awt.headless=true ${argLine}</argLine>
               <rerunFailingTestsCount>0</rerunFailingTestsCount>
