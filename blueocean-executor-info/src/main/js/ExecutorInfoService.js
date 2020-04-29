@@ -10,6 +10,7 @@ export class ExecutorInfoService {
 
     constructor() {
         const fetchExecutorInfo = throttle(this.fetchExecutorInfo.bind(this), FETCH_TIMEOUT_MS);
+        fetchExecutorInfo();
         sseConnection.subscribe('pipeline', event => {
             switch (event.jenkins_event) {
                 case 'pipeline_block_start':
