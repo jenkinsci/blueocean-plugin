@@ -38,7 +38,11 @@ import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
 import io.jenkins.blueocean.service.embedded.util.Disabler;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
+import jenkins.branch.BranchProjectFactory;
 import jenkins.branch.MultiBranchProject;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.multibranch.AbstractWorkflowBranchProjectFactory;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowBranchProjectFactory;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.kohsuke.stapler.export.Exported;
@@ -274,9 +278,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 MultiBranchPipelineImpl mbpi = new MultiBranchPipelineImpl(organization, (MultiBranchProject) item);
                 if (item instanceof WorkflowMultiBranchProject) {
                     WorkflowMultiBranchProject wfmbp = (WorkflowMultiBranchProject)item;
-                    WorkflowBranchProjectFactory wbpf = (WorkflowBranchProjectFactory)wfmbp.getProjectFactory();
-                    String sp = wbpf.getScriptPath();
-                    mbpi.setScriptPath(sp);
+                    BranchProjectFactory<WorkflowJob, WorkflowRun> bpf = wfmbp.getProjectFactory();
+                    if (bpf instanceof WorkflowBranchProjectFactory) {
+                        String sp = ((WorkflowBranchProjectFactory) bpf).getScriptPath();
+                        mbpi.setScriptPath(sp);
+                    }
                 }
                 return mbpi;
             }
