@@ -4,17 +4,16 @@ import hudson.Extension;
 import hudson.Plugin;
 import hudson.model.User;
 import hudson.tasks.Mailer;
-import io.jenkins.blueocean.auth.jwt.JwtAuthenticationService;
-import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStore;
-import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStoreFactory;
-import io.jenkins.blueocean.auth.jwt.JwtToken;
+import io.jenkins.blueocean.auth.jwt.*;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.annotation.Nullable;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -90,6 +89,19 @@ public class JwtAuthenticationServiceImpl extends JwtAuthenticationService {
         jwtToken.claim.put("context", context);
 
         return jwtToken;
+    }
+
+    @Override
+    public JSONObject getJwkSet() {
+        JSONObject jwks = new JSONObject();
+        JSONArray keys = new JSONArray();
+        String currentKeyId = SigningKeyProviderImpl.DATE_FORMAT.format(Instant.now());
+        SigningPublicKey publicKey = getJwks(currentKeyId);
+        if (publicKey != null) {
+            keys.add(publicKey.asJSON());
+        }
+        jwks.put("keys", keys);
+        return jwks;
     }
 
     @Override
