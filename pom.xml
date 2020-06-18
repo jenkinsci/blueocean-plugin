@@ -227,6 +227,14 @@
   <dependencyManagement>
     <dependencies>
 
+        <dependency>
+            <groupId>io.jenkins.tools.bom</groupId>
+            <artifactId>bom-2.176.x</artifactId>
+            <version>9</version>
+            <scope>import</scope>
+            <type>pom</type>
+        </dependency>
+
         <!-- Module versions -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -455,11 +463,10 @@
              Need dependency on script-console to fix UpperBoundDeps errors caused due to different plugins depending
              on different versions of script-security plugin
         -->
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>script-security</artifactId>
-            <version>1.63</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.jenkins-ci.plugins</groupId>-->
+<!--            <artifactId>script-security</artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-milestone-step</artifactId>
@@ -601,21 +608,18 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>credentials</artifactId>
-            <version>2.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>plain-credentials</artifactId>
-            <version>1.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>ssh-credentials</artifactId>
-            <version>1.13</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.jenkins-ci.plugins</groupId>-->
+<!--            <artifactId>credentials</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.jenkins-ci.plugins</groupId>-->
+<!--            <artifactId>plain-credentials</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.jenkins-ci.plugins</groupId>-->
+<!--            <artifactId>ssh-credentials</artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-folder</artifactId>

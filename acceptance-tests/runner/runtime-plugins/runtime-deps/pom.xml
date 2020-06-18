@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>3.57</version>
+        <version>4.2</version>
         <relativePath />
     </parent>
     <groupId>org.jenkins-ci.plugins.blueocean</groupId>
