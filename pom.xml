@@ -28,7 +28,7 @@
     <revision>1.23.3</revision>
     <changelist>-SNAPSHOT</changelist>
     <java.level>8</java.level>
-    <jenkins.version>2.150.3</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
+    <jenkins.version>2.164.3</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.7.5</frontend-version>
     <node.version>10.13.0</node.version>
@@ -667,7 +667,17 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.111</version>
+            <version>1.114.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jenkins.plugins</groupId>
+            <artifactId>okhttp-api</artifactId>
+            <version>3.12.12.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>3.12.12</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
