@@ -59,7 +59,24 @@
     <properties>
         <jenkins.version>2.176.4</jenkins.version>
         <java.level>8</java.level>
+        <spotbugs.failOnError>false</spotbugs.failOnError>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.9</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jenkins.tools.bom</groupId>
+                <artifactId>bom-2.176.x</artifactId>
+                <version>9</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -76,12 +93,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>structs</artifactId>
-            <version>1.20</version>
+<!--            <version>1.20</version>-->
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>apache-httpcomponents-client-4-api</artifactId>
-            <version>4.5.5-3.0</version>
+<!--            <version>4.5.5-3.0</version>-->
         </dependency>
     </dependencies>
     <profiles>

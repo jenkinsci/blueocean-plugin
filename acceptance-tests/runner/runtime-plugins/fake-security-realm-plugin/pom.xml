@@ -23,6 +23,7 @@
          ~ stapler-plugin.version: The Stapler Maven plugin version required by the plugin.
     -->
     <java.level>8</java.level>
+    <spotbugs.failOnError>false</spotbugs.failOnError>
   </properties>
 
   <name>Fake realm plugin</name>
@@ -70,7 +71,7 @@
      <dependency>
        <groupId>org.jenkins-ci.main</groupId>
        <artifactId>jenkins-test-harness</artifactId>
-       <version>2.30</version>
+       <version>2.63</version>
      </dependency>
    </dependencies>
 
