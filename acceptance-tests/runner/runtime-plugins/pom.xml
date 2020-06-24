@@ -10,6 +10,7 @@
   <name>Blue Ocean ATH Parent</name>
 
   <modules>
+    <module>fake-run-details-plugin</module>
     <module>fake-security-realm-plugin</module>
     <module>runtime-deps</module>
   </modules>

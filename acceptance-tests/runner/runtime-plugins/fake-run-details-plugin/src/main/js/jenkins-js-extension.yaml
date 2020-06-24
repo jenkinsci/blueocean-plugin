@@ -1,0 +1,4 @@
+# Extensions in this plugin
+extensions:
+  - extensionPoint: jenkins.run.actions
+    component: FakeRunDetails
