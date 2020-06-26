@@ -8,11 +8,13 @@ import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.factory.ActivityPageFactory;
 import io.blueocean.ath.factory.BranchPageFactory;
 import io.blueocean.ath.factory.RunDetailsArtifactsPageFactory;
+import io.blueocean.ath.factory.RunDetailsFakePageFactory;
 import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
 import io.blueocean.ath.factory.RunDetailsTestsPageFactory;
 import io.blueocean.ath.pages.blue.ActivityPage;
 import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
+import io.blueocean.ath.pages.blue.RunDetailsFakePage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import io.blueocean.ath.pages.blue.RunDetailsTestsPage;
 import io.blueocean.ath.sse.SSEEvents;
@@ -41,6 +43,9 @@ public abstract class AbstractPipeline {
 
     @Inject
     RunDetailsTestsPageFactory runDetailsTestsPageFactory;
+
+    @Inject
+    RunDetailsFakePageFactory runDetailsFakePageFactory;
 
     public AbstractPipeline(String name) {
         this(null, name);
@@ -113,6 +118,10 @@ public abstract class AbstractPipeline {
 
     public RunDetailsTestsPage getRunDetailsTestsPage() {
         return runDetailsTestsPageFactory.withPipeline(this);
+    }
+
+    public RunDetailsFakePage getRunDetailsFakePage() {
+        return runDetailsFakePageFactory.withPipeline(this);
     }
 
     public Predicate<List<JSONObject>> buildsFinished = list -> SSEEvents.activityComplete(getFolder().getPath(getName())).apply(list);

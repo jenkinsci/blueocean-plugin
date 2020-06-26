@@ -12,6 +12,7 @@ import io.blueocean.ath.factory.FreestyleJobFactory;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.factory.PullRequestsPageFactory;
 import io.blueocean.ath.factory.RunDetailsArtifactsPageFactory;
+import io.blueocean.ath.factory.RunDetailsFakePageFactory;
 import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
 import io.blueocean.ath.factory.RunDetailsTestsPageFactory;
 import io.blueocean.ath.model.ClassicPipeline;
@@ -21,6 +22,7 @@ import io.blueocean.ath.pages.blue.ActivityPage;
 import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.pages.blue.PullRequestsPage;
 import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
+import io.blueocean.ath.pages.blue.RunDetailsFakePage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import io.blueocean.ath.pages.blue.RunDetailsTestsPage;
 import org.apache.log4j.Logger;
@@ -155,6 +157,10 @@ public class AthModule extends AbstractModule {
         install(new FactoryModuleBuilder()
             .implement(RunDetailsArtifactsPage.class, RunDetailsArtifactsPage.class)
             .build(RunDetailsArtifactsPageFactory.class));
+
+        install(new FactoryModuleBuilder()
+            .implement(RunDetailsFakePage.class, RunDetailsFakePage.class)
+            .build(RunDetailsFakePageFactory.class));
 
         install(new FactoryModuleBuilder()
             .implement(RunDetailsTestsPage.class, RunDetailsTestsPage.class)
