@@ -32,6 +32,8 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git-client</artifactId>
+            <classifier>tests</classifier>
+            <scope>test</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.eclipse.jgit</groupId>
