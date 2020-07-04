@@ -31,6 +31,24 @@
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>git-client</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.jgit</groupId>
+                    <artifactId>org.eclipse.jgit.http.apache</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jgit</groupId>
+                    <artifactId>org.eclipse.jgit.http.server</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jgit</groupId>
+                    <artifactId>org.eclipse.jgit</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>async-http-client</artifactId>
             <scope>test</scope>
         </dependency>
@@ -114,6 +132,7 @@
                     <artifactId>org.eclipse.jgit</artifactId>
                 </exclusion>
             </exclusions>
+
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
