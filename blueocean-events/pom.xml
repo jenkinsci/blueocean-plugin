@@ -34,6 +34,7 @@
             <artifactId>git-client</artifactId>
             <classifier>tests</classifier>
             <scope>test</scope>
+            <version>2.7.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.eclipse.jgit</groupId>
