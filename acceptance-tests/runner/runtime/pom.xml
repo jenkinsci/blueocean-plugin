@@ -21,9 +21,10 @@
 
   <properties>
     <!-- https://github.com/jenkinsci/acceptance-test-harness -->
-    <jenkins.acceptance.testharness.version>1.30</jenkins.acceptance.testharness.version>
+    <jenkins.acceptance.testharness.version>1.74</jenkins.acceptance.testharness.version>
     <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
     <java.level>8</java.level>
+    <slf4j.version>1.7.25</slf4j.version>
   </properties>
 
   <repositories>
@@ -58,8 +59,18 @@
           </dependency>
           <dependency>
               <groupId>org.apache.httpcomponents</groupId>
+              <artifactId>httpcore</artifactId>
+              <version>4.4.13</version>
+          </dependency>
+          <dependency>
+              <groupId>org.apache.httpcomponents</groupId>
               <artifactId>httpclient</artifactId>
               <version>4.5.12</version>
+          </dependency>
+          <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
           </dependency>
           <dependency>
               <groupId>io.netty</groupId>
@@ -69,7 +80,27 @@
           <dependency>
               <groupId>com.google.guava</groupId>
               <artifactId>guava</artifactId>
-              <version>19.0</version>
+              <version>28.2-jre</version>
+          </dependency>
+          <dependency>
+              <groupId>org.slf4j</groupId>
+              <artifactId>slf4j-api</artifactId>
+              <version>${slf4j.version}</version>
+          </dependency>
+          <dependency>
+              <groupId>org.slf4j</groupId>
+              <artifactId>slf4j-log4j12</artifactId>
+              <version>${slf4j.version}</version>
+          </dependency>
+          <dependency>
+              <groupId>org.slf4j</groupId>
+              <artifactId>jcl-over-slf4j</artifactId>
+              <version>${slf4j.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
           </dependency>
       </dependencies>
   </dependencyManagement>
@@ -86,9 +117,14 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-remote-driver</artifactId>
+      <version>3.14.0</version>
+    </dependency>
+    <dependency>
       <groupId>com.codeborne</groupId>
       <artifactId>phantomjsdriver</artifactId>
-      <version>1.3.0</version>
+      <version>1.4.2</version>
     </dependency>
     <dependency>
       <groupId>com.github.eirslett</groupId>
