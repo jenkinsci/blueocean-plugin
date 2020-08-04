@@ -36,6 +36,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.ServerSocket;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
@@ -78,8 +79,17 @@ public class BlueOceanWinstoneController extends LocalController {
         if (httpPortEnv != null) {
             return Integer.parseInt(httpPortEnv);
         }
-        return randomLocalPort();
+
+        try {
+            try (ServerSocket serverSocket = new ServerSocket(0)){
+                return serverSocket.getLocalPort();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
+
+
 
     @Override
     public ProcessInputStream startProcess() throws IOException {

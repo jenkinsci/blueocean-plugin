@@ -103,7 +103,7 @@ public abstract class PipelineBaseTest{
                     T r =  JsonConverter.om.readValue(value, valueType);
                     LOGGER.debug("Response:\n"+JsonConverter.om.writeValueAsString(r));
                     return r;
-                } catch (IOException e) {
+                } catch (IOException | RuntimeException e) {
                     LOGGER.error("Failed to parse JSON: "+value+". "+e.getMessage());
                     throw new RuntimeException(e);
                 }
