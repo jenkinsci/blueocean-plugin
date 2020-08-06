@@ -14,6 +14,8 @@ import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.Item;
 import hudson.model.User;
+import hudson.security.ACL;
+import hudson.security.ACLContext;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
@@ -183,17 +185,18 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         // create credential for vivek
         createGithubCredential(user);
         // switch to bob
-        User user = login();
-
-        String orgFolderName = "cloudbeers";
-        Map resp = new RequestBuilder(baseUrl)
-                .status(400)
-                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .crumb( this.crumb )
-                .post("/organizations/"+getOrgName()+"/pipelines/")
-                .data(GithubTestUtils.buildRequestBody(GithubScm.ID,null, githubApiUrl, orgFolderName, "PR-demo"))
-                .build(Map.class);
-        assertNotNull(resp);
+        User user = user();
+        try (ACLContext ctx = ACL.as(user)) {
+            String orgFolderName = "cloudbeers";
+            Map resp = new RequestBuilder(baseUrl)
+                    .status(400)
+                    .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                    .crumb( this.crumb )
+                    .post("/organizations/"+getOrgName()+"/pipelines/")
+                    .data(GithubTestUtils.buildRequestBody(GithubScm.ID,null, githubApiUrl, orgFolderName, "PR-demo"))
+                    .build(Map.class);
+            assertNotNull(resp);
+        }
     }
 
     @Test
@@ -201,162 +204,175 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         // create credential for default vivek user
         String credentialId = createGithubCredential(user);
         // switch to bob
-        User user = login();
-
-        String orgFolderName = "cloudbeers";
-        Map resp = new RequestBuilder(baseUrl)
-                .status(400)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .crumb( this.crumb )
-                .post("/organizations/"+getOrgName()+"/pipelines/")
-                .data(GithubTestUtils.buildRequestBody(GithubScm.ID, credentialId, githubApiUrl, orgFolderName, "PR-demo"))
-                .build(Map.class);
-        assertNotNull(resp);
+        User user = user();
+        try (ACLContext ctx = ACL.as(user)) {
+            String orgFolderName = "cloudbeers";
+            Map resp = new RequestBuilder(baseUrl)
+                    .status(400)
+                    .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                    .crumb( this.crumb )
+                    .post("/organizations/"+getOrgName()+"/pipelines/")
+                    .data(GithubTestUtils.buildRequestBody(GithubScm.ID, credentialId, githubApiUrl, orgFolderName, "PR-demo"))
+                    .build(Map.class);
+            assertNotNull(resp);
+        }
     }
 
     @Test
     public void shouldSucceedForAuthedUserWithCredentialCreatedAndCredentialIdMissing() throws Exception {
         // switch to bob and create a credential
-        User user = login();
-        createGithubCredential(user);
+        User user = user();
+        try (ACLContext ctx = ACL.as(user)) {
+            createGithubCredential(user);
 
-        String orgFolderName = "cloudbeers";
-        Map resp = new RequestBuilder(baseUrl)
-                .status(201)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .crumb( this.crumb )
-                .post("/organizations/"+getOrgName()+"/pipelines/")
-                // since credentialId will default to 'github', it's okay to omit it in request
-                .data(GithubTestUtils.buildRequestBody(GithubScm.ID, null, githubApiUrl, orgFolderName, "PR-demo"))
-                .build(Map.class);
-        assertNotNull(resp);
+            String orgFolderName = "cloudbeers";
+            Map resp = new RequestBuilder(baseUrl)
+                    .status(201)
+                    .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                    .crumb( this.crumb )
+                    .post("/organizations/"+getOrgName()+"/pipelines/")
+                    // since credentialId will default to 'github', it's okay to omit it in request
+                    .data(GithubTestUtils.buildRequestBody(GithubScm.ID, null, githubApiUrl, orgFolderName, "PR-demo"))
+                    .build(Map.class);
+            assertNotNull(resp);
+        }
     }
 
     @Test
     public void shouldSucceedForAuthedUserWithCredentialCreatedAndCredentialIdSent() throws Exception {
         // switch to bob and create a credential
-        User user = login();
-        String credentialId = createGithubCredential(user);
+        User user = user();
+        try (ACLContext ctx = ACL.as(user)) {
+            String credentialId = createGithubCredential(user);
 
-        String orgFolderName = "cloudbeers";
-        Map resp = new RequestBuilder(baseUrl)
-                .status(201)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .crumb( this.crumb )
-                .post("/organizations/"+getOrgName()+"/pipelines/")
-                .data(GithubTestUtils.buildRequestBody(GithubScm.ID, credentialId, githubApiUrl, orgFolderName, "PR-demo"))
-                .build(Map.class);
-        assertNotNull(resp);
+            String orgFolderName = "cloudbeers";
+            Map resp = new RequestBuilder(baseUrl)
+                    .status(201)
+                    .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                    .crumb( this.crumb )
+                    .post("/organizations/"+getOrgName()+"/pipelines/")
+                    .data(GithubTestUtils.buildRequestBody(GithubScm.ID, credentialId, githubApiUrl, orgFolderName, "PR-demo"))
+                    .build(Map.class);
+            assertNotNull(resp);
+        }
     }
 
     @Test
     public void shouldFailForAuthedUserWithCredentialCreatedAndBogusCredentialIdSent() throws Exception {
         // switch to bob and create a credential
-        User user = login();
-        createGithubCredential(user);
+        User user = user();
+        try (ACLContext ctx = ACL.as(user)) {
+            createGithubCredential(user);
 
-        String orgFolderName = "cloudbeers";
-        Map resp = new RequestBuilder(baseUrl)
-                .status(400)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .crumb( this.crumb )
-                .post("/organizations/"+getOrgName()+"/pipelines/")
-                .data(GithubTestUtils.buildRequestBody(GithubScm.ID, "bogus-cred", githubApiUrl, orgFolderName, "PR-demo"))
-                .build(Map.class);
-        assertNotNull(resp);
+            String orgFolderName = "cloudbeers";
+            Map resp = new RequestBuilder(baseUrl)
+                    .status(400)
+                    .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                    .crumb( this.crumb )
+                    .post("/organizations/"+getOrgName()+"/pipelines/")
+                    .data(GithubTestUtils.buildRequestBody(GithubScm.ID, "bogus-cred", githubApiUrl, orgFolderName, "PR-demo"))
+                    .build(Map.class);
+            assertNotNull(resp);
+        }
     }
 
     @Test
     public void shouldSucceedForAuthedUserWithCredentialCreatedAndCredentialIdMissingEnterprise() throws Exception {
         // switch to bob and create a credential
-        User user = login();
-        createGithubEnterpriseCredential(user);
+        User user = user();
+        try (ACLContext ctx = ACL.as(user)) {
+            createGithubEnterpriseCredential(user);
 
-        String orgFolderName = "cloudbeers";
-        Map resp = new RequestBuilder(baseUrl)
-                .status(201)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .crumb( this.crumb )
-                .post("/organizations/"+getOrgName()+"/pipelines/")
-                // since credentialId will default to 'github', it's okay to omit it in request
-                .data(GithubTestUtils.buildRequestBody(GithubEnterpriseScm.ID, null, githubApiUrl, orgFolderName, "PR-demo"))
-                .build(Map.class);
-        assertNotNull(resp);
+            String orgFolderName = "cloudbeers";
+            Map resp = new RequestBuilder(baseUrl)
+                    .status(201)
+                    .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                    .crumb( this.crumb )
+                    .post("/organizations/"+getOrgName()+"/pipelines/")
+                    // since credentialId will default to 'github', it's okay to omit it in request
+                    .data(GithubTestUtils.buildRequestBody(GithubEnterpriseScm.ID, null, githubApiUrl, orgFolderName, "PR-demo"))
+                    .build(Map.class);
+            assertNotNull(resp);
+        }
     }
 
     @Test
     public void shouldFindUserStoreCredential() throws IOException {
         //add username password credential to user's credential store in user domain and in USER scope
-        User user = login();
-        CredentialsStore store=null;
-        for(CredentialsStore s: CredentialsProvider.lookupStores(user)){
-            if(s.hasPermission(CredentialsProvider.CREATE) && s.hasPermission(CredentialsProvider.UPDATE)){
-                store = s;
-                break;
+        User user = user();
+        try (ACLContext ctx = ACL.as(user)) {
+            CredentialsStore store=null;
+            for(CredentialsStore s: CredentialsProvider.lookupStores(user)){
+                if(s.hasPermission(CredentialsProvider.CREATE) && s.hasPermission(CredentialsProvider.UPDATE)){
+                    store = s;
+                    break;
+                }
             }
+
+            assertNotNull(store);
+            store.addDomain(new Domain("github-domain",
+                    "GitHub Domain to store personal access token",
+                    Collections.<DomainSpecification>singletonList(new BlueOceanDomainSpecification())));
+
+
+            Domain domain = store.getDomainByName("github-domain");
+            StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
+                    "github", "GitHub Access Token", user.getId(), "12345");
+            store.addCredentials(domain, credential);
+
+            //create another credentials with same id in system store with different description
+            for(CredentialsStore s: CredentialsProvider.lookupStores(Jenkins.getInstance())){
+                s.addCredentials(Domain.global(), new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
+                        "github", "System GitHub Access Token", user.getId(), "12345"));
+            }
+
+            WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "demo");
+            AbstractFolderProperty prop = new BlueOceanCredentialsProvider.FolderPropertyImpl(user.getId(), credential.getId(),
+                    BlueOceanCredentialsProvider.createDomain("https://api.github.com"));
+
+            mp.addProperty(prop);
+
+            // lookup for created credential id in system store, it should resolve to previously created user store credential
+            StandardCredentials c = Connector.lookupScanCredentials((Item)mp, "https://api.github.com", credential.getId());
+            assertEquals("GitHub Access Token", c.getDescription());
+
+            assertNotNull(c);
+            assertTrue(c instanceof StandardUsernamePasswordCredentials);
+            StandardUsernamePasswordCredentials usernamePasswordCredentials = (StandardUsernamePasswordCredentials) c;
+            assertEquals(credential.getId(), usernamePasswordCredentials.getId());
+            assertEquals(credential.getPassword().getPlainText(),usernamePasswordCredentials.getPassword().getPlainText());
+            assertEquals(credential.getUsername(),usernamePasswordCredentials.getUsername());
+
+            //check the domain
+            Domain d = CredentialsUtils.findDomain(credential.getId(), user);
+            assertNotNull(d);
+            assertTrue(d.test(new BlueOceanDomainRequirement()));
+
+            //now remove this property
+            mp.getProperties().remove(prop);
+
+            //it must resolve to system credential
+            c = Connector.lookupScanCredentials((Item)mp, null, credential.getId());
+            assertEquals("System GitHub Access Token", c.getDescription());
         }
-
-        assertNotNull(store);
-        store.addDomain(new Domain("github-domain",
-                "GitHub Domain to store personal access token",
-                Collections.<DomainSpecification>singletonList(new BlueOceanDomainSpecification())));
-
-
-        Domain domain = store.getDomainByName("github-domain");
-        StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
-                "github", "GitHub Access Token", user.getId(), "12345");
-        store.addCredentials(domain, credential);
-
-        //create another credentials with same id in system store with different description
-        for(CredentialsStore s: CredentialsProvider.lookupStores(Jenkins.getInstance())){
-            s.addCredentials(Domain.global(), new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
-                    "github", "System GitHub Access Token", user.getId(), "12345"));
-        }
-
-        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "demo");
-        AbstractFolderProperty prop = new BlueOceanCredentialsProvider.FolderPropertyImpl(user.getId(), credential.getId(),
-                BlueOceanCredentialsProvider.createDomain("https://api.github.com"));
-
-        mp.addProperty(prop);
-
-        // lookup for created credential id in system store, it should resolve to previously created user store credential
-        StandardCredentials c = Connector.lookupScanCredentials((Item)mp, "https://api.github.com", credential.getId());
-        assertEquals("GitHub Access Token", c.getDescription());
-
-        assertNotNull(c);
-        assertTrue(c instanceof StandardUsernamePasswordCredentials);
-        StandardUsernamePasswordCredentials usernamePasswordCredentials = (StandardUsernamePasswordCredentials) c;
-        assertEquals(credential.getId(), usernamePasswordCredentials.getId());
-        assertEquals(credential.getPassword().getPlainText(),usernamePasswordCredentials.getPassword().getPlainText());
-        assertEquals(credential.getUsername(),usernamePasswordCredentials.getUsername());
-
-        //check the domain
-        Domain d = CredentialsUtils.findDomain(credential.getId(), user);
-        assertNotNull(d);
-        assertTrue(d.test(new BlueOceanDomainRequirement()));
-
-        //now remove this property
-        mp.getProperties().remove(prop);
-
-        //it must resolve to system credential
-        c = Connector.lookupScanCredentials((Item)mp, null, credential.getId());
-        assertEquals("System GitHub Access Token", c.getDescription());
     }
 
     @Test
     public void testOrgFolderIndexing() throws IOException, UnirestException {
-        User user = login();
-        OrganizationFolder orgFolder = j.jenkins.createProject(OrganizationFolder.class, "p");
-        orgFolder.getSCMNavigators().add(new GitHubSCMNavigator("cloudbeers"));
-        Map map = new RequestBuilder(baseUrl)
-                .post("/organizations/jenkins/pipelines/p/runs/")
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .crumb( this.crumb )
-                .data(ImmutableMap.of())
-                .status(200)
-                .build(Map.class);
+        User user = user();
+        try (ACLContext ctx = ACL.as(user)) {
+            OrganizationFolder orgFolder = j.jenkins.createProject(OrganizationFolder.class, "p");
+            orgFolder.getSCMNavigators().add(new GitHubSCMNavigator("cloudbeers"));
+            Map map = new RequestBuilder(baseUrl)
+                    .post("/organizations/jenkins/pipelines/p/runs/")
+                    .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                    .crumb( this.crumb )
+                    .data(ImmutableMap.of())
+                    .status(200)
+                    .build(Map.class);
 
-        assertNotNull(map);
+            assertNotNull(map);
+        }
     }
 
     public static class TestOrganizationFolder extends OrganizationFolderPipelineImpl {

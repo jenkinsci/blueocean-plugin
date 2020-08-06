@@ -45,7 +45,7 @@ public abstract class BitbucketWireMockBase extends PipelineBaseTest{
     @Before
     public void setup() throws Exception {
         super.setup();
-        this.authenticatedUser = login();
+        this.authenticatedUser = user();
         WireMockRule bitbucketApi = getWireMockRule();
 
         String files = wireMockFileSystemPath()+"__files";
@@ -91,7 +91,7 @@ public abstract class BitbucketWireMockBase extends PipelineBaseTest{
     }
 
     protected String createCredential(String scmId) throws IOException, UnirestException {
-        User user = login();
+        User user = user();
         return createCredential(scmId, user);
     }
 }

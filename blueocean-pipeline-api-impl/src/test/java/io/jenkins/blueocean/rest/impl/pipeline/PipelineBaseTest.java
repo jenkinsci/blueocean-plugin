@@ -18,9 +18,6 @@ import hudson.security.csrf.CrumbIssuer;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
 import jenkins.model.Jenkins;
-import org.acegisecurity.adapters.PrincipalAcegiUserToken;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.userdetails.UserDetails;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -625,7 +622,7 @@ public abstract class PipelineBaseTest{
         return p;
     }
 
-    protected User login(String userId, String fullName, String email) throws IOException {
+    protected User user(String userId, String fullName, String email) throws IOException {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
 
         hudson.model.User bob = User.get(userId);
@@ -634,15 +631,10 @@ public abstract class PipelineBaseTest{
         if(email != null ) {
             bob.addProperty(new Mailer.UserProperty(email));
         }
-
-
-        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
-
-        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
         return bob;
     }
-    protected User login() throws IOException {
-        return login("bob", "Bob Smith", "bob@jenkins-ci.org");
+    protected User user() throws IOException {
+        return user("bob", "Bob Smith", "bob@jenkins-ci.org");
     }
 
     protected WorkflowJob createWorkflowJobWithJenkinsfile(Class<?> contextClass, String jenkinsFileName) throws java.io.IOException {

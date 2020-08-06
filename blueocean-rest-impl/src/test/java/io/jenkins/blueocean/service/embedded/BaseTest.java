@@ -13,14 +13,10 @@ import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.security.csrf.CrumbIssuer;
-import hudson.security.csrf.DefaultCrumbIssuer;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.acegisecurity.adapters.PrincipalAcegiUserToken;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.userdetails.UserDetails;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -518,22 +514,17 @@ public abstract class BaseTest {
         return token;
     }
 
-    protected User login(String userId, String fullName, String email) throws IOException {
+    protected User user(String userId, String fullName, String email) throws IOException {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
 
         hudson.model.User bob = User.get(userId);
 
         bob.setFullName(fullName);
         bob.addProperty(new Mailer.UserProperty(email));
-
-
-        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
-
-        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
         return bob;
     }
-    protected User login() throws IOException {
-        return login("bob", "Bob Smith", "bob@jenkins-ci.org");
+    protected User user() throws IOException {
+        return user("bob", "Bob Smith", "bob@jenkins-ci.org");
     }
 
 }
