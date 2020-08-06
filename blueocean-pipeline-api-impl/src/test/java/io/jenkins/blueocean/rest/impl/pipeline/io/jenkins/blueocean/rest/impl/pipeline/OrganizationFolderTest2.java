@@ -1,6 +1,8 @@
 package io.jenkins.blueocean.rest.impl.pipeline.io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.Extension;
+import hudson.security.ACL;
+import hudson.security.ACLContext;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.OrganizationFolderPipelineImpl;
@@ -44,10 +46,11 @@ public class OrganizationFolderTest2 extends PipelineBaseTest {
         expectedDisabledResponse.put("errors", Collections.emptyList());
 
         OrganizationFolder orgFolder = j.jenkins.createProject(OrganizationFolder.class, "orgFolder1");
-        login();
-        assertNull(get("/organizations/jenkins/pipelines/" + orgFolder.getFullName() + "/").get("disabled"));
+        try (ACLContext ctx = ACL.as(user())) {
+            assertNull(get("/organizations/jenkins/pipelines/" + orgFolder.getFullName() + "/").get("disabled"));
 
-        assertThat(expectedDisabledResponse, is(put("/organizations/jenkins/pipelines/" + orgFolder.getFullName() + "/disable", "{}", 405)));
-        assertThat(expectedDisabledResponse, is(put("/organizations/jenkins/pipelines/" + orgFolder.getFullName() + "/enable", "{}", 405)));
+            assertThat(expectedDisabledResponse, is(put("/organizations/jenkins/pipelines/" + orgFolder.getFullName() + "/disable", "{}", 405)));
+            assertThat(expectedDisabledResponse, is(put("/organizations/jenkins/pipelines/" + orgFolder.getFullName() + "/enable", "{}", 405)));
+        }
     }
 }

@@ -12,6 +12,8 @@ import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.ExtensionList;
 import hudson.model.User;
+import hudson.security.ACL;
+import hudson.security.ACLContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -130,84 +132,90 @@ public class CredentialApiTest extends PipelineBaseTest {
 
     @Test
     public void createUsingUsernamePasswordInUserStore() throws IOException, UnirestException {
-        User user = login();
-        Map resp = new RequestBuilder(baseUrl)
-                .status(201)
-                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .crumb( crumb )
-                .post("/organizations/jenkins/credentials/user/")
-                .data(                ImmutableMap.of("credentials",
-                        new ImmutableMap.Builder<String,Object>()
-                                .put("password", "abcd")
-                                .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
-                                .put("scope", "USER")
-                                .put("description", "joe desc")
-                                .put("$class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
-                                .put("username", "joe").build()
-                        )
-                )
-                .build(Map.class);
+        User user = user();
+        try (ACLContext ctx = ACL.as(user)) {
+            Map resp = new RequestBuilder(baseUrl)
+                    .status(201)
+                    .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                    .crumb( crumb )
+                    .post("/organizations/jenkins/credentials/user/")
+                    .data(                ImmutableMap.of("credentials",
+                            new ImmutableMap.Builder<String,Object>()
+                                    .put("password", "abcd")
+                                    .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
+                                    .put("scope", "USER")
+                                    .put("description", "joe desc")
+                                    .put("$class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
+                                    .put("username", "joe").build()
+                    )
+                    )
+                    .build(Map.class);
 
-        Assert.assertEquals("Username with password", resp.get("typeName"));
-        Assert.assertEquals("blueocean-domain", resp.get("domain"));
+            Assert.assertEquals("Username with password", resp.get("typeName"));
+            Assert.assertEquals("blueocean-domain", resp.get("domain"));
+        }
     }
 
     @Test
     public void createSshCredentialUsingDirectSshInUserStore() throws IOException, UnirestException {
-        User user = login();
+        User user = user();
+        try (ACLContext ctx = ACL.as(user)) {
 
-        Map resp = new RequestBuilder(baseUrl)
-                .status(201)
-                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .crumb( crumb )
-                .post("/organizations/jenkins/credentials/user/")
-                .data(                ImmutableMap.of("credentials",
-                        new ImmutableMap.Builder<String,Object>()
-                                .put("privateKeySource", ImmutableMap.of(
-                                        "privateKey", "abcabc1212",
-                                        "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
-                                .put("passphrase", "ssh2")
-                                .put("scope", "USER")
-                                .put("domain","blueocean-git-domain")
-                                .put("description", "ssh2 desc")
-                                .put("$class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey")
-                                .put("username", "ssh2").build()
-                        )
-                )
-                .build(Map.class);
+            Map resp = new RequestBuilder(baseUrl)
+                    .status(201)
+                    .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                    .crumb( crumb )
+                    .post("/organizations/jenkins/credentials/user/")
+                    .data(                ImmutableMap.of("credentials",
+                            new ImmutableMap.Builder<String,Object>()
+                                    .put("privateKeySource", ImmutableMap.of(
+                                            "privateKey", "abcabc1212",
+                                            "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
+                                    .put("passphrase", "ssh2")
+                                    .put("scope", "USER")
+                                    .put("domain","blueocean-git-domain")
+                                    .put("description", "ssh2 desc")
+                                    .put("$class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey")
+                                    .put("username", "ssh2").build()
+                    )
+                    )
+                    .build(Map.class);
 
-        Assert.assertEquals("SSH Username with private key", resp.get("typeName"));
-        Assert.assertEquals("blueocean-git-domain", resp.get("domain"));
+            Assert.assertEquals("SSH Username with private key", resp.get("typeName"));
+            Assert.assertEquals("blueocean-git-domain", resp.get("domain"));
 
-        String credId = (String) resp.get("id");
+            String credId = (String) resp.get("id");
 
-        assertNotNull(credId);
+            assertNotNull(credId);
 
-        String credUri = getUrlFromHref(getHrefFromLinks(resp, "self"));
-        resp = new RequestBuilder(baseUrl)
-                .status(200)
-                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .get(credUri)
-                .build(Map.class);
+            String credUri = getUrlFromHref(getHrefFromLinks(resp, "self"));
+            resp = new RequestBuilder(baseUrl)
+                    .status(200)
+                    .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                    .get(credUri)
+                    .build(Map.class);
 
-        Assert.assertEquals("SSH Username with private key", resp.get("typeName"));
-        Assert.assertEquals("blueocean-git-domain", resp.get("domain"));
+            Assert.assertEquals("SSH Username with private key", resp.get("typeName"));
+            Assert.assertEquals("blueocean-git-domain", resp.get("domain"));
+        }
     }
 
 
     @Test
     public void crumbRejected() throws IOException, UnirestException {
-        User user = login();
-        HttpClient httpClient = HttpClientBuilder.create().build();
+        User user = user();
+        try (ACLContext ctx = ACL.as(user)) {
+            HttpClient httpClient = HttpClientBuilder.create().build();
 
-        HttpPost post = new HttpPost( baseUrl + "/organizations/jenkins/credentials/user/" );
-        post.addHeader( "Authorization", "Bearer " + getJwtToken(j.jenkins,user.getId(), user.getId()));
+            HttpPost post = new HttpPost( baseUrl + "/organizations/jenkins/credentials/user/" );
+            post.addHeader( "Authorization", "Bearer " + getJwtToken(j.jenkins,user.getId(), user.getId()));
 
-        HttpResponse resp =  httpClient.execute( post );
-        Assert.assertEquals(403, resp.getStatusLine().getStatusCode());
-        //LOGGER.info( IOUtils.toString( resp.getEntity().getContent() ));
-        // assert content contains No valid crumb was included in the request
-        // olamy not sure as it can be i18n sensitive
+            HttpResponse resp =  httpClient.execute( post );
+            Assert.assertEquals(403, resp.getStatusLine().getStatusCode());
+            //LOGGER.info( IOUtils.toString( resp.getEntity().getContent() ));
+            // assert content contains No valid crumb was included in the request
+            // olamy not sure as it can be i18n sensitive
+        }
     }
 
 
