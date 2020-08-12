@@ -397,6 +397,18 @@ export default class Pipeline extends Component {
                             classicInputUrl={UrlBuilder.buildClassicInputUrl(pipeline, branch, run.id)}
                         />
                     )}
+                
+                {!isPipelineQueued && (
+                    <LogToolbar
+                        fileName={generalLogPager ? augmenter.generalLogFileName : logFileName}
+                        url={generalLogPager ? augmenter.generalLogUrl : logUrl}
+                        title={title}
+                        duration={!generalLogPager ? this.pager.currentNode.durationInMillis : ''}
+                        running={!generalLogPager ? this.pager.currentNode.isRunning : false}
+                        t={t}
+                        stageRestartLink={stageRestartLink()}
+                    />
+                )}
 
                 {!this.pager.pending &&
                     !isPipelineQueued &&
