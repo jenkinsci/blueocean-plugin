@@ -6,15 +6,17 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.hash.Hashing;
+import hudson.model.Item;
+import hudson.model.User;
 import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -32,6 +34,7 @@ import java.net.HttpURLConnection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -52,7 +55,13 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
 
     public @CheckForNull ScmServerEndpoint create(@JsonBody JSONObject request) {
 
-        List<ErrorMessage.Error> errors = Lists.newLinkedList();
+        try {
+            Jenkins.get().checkPermission(Item.CREATE);
+        } catch (Exception e) {
+            throw new ServiceException.ForbiddenException("User does not have permission to create repository.", e);
+        }
+
+        List<ErrorMessage.Error> errors = new LinkedList();
 
         // Validate name
         final String name = (String) request.get(GithubServer.NAME);
