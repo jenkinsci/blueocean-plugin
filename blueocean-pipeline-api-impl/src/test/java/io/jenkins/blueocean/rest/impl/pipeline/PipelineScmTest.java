@@ -36,7 +36,7 @@ public class PipelineScmTest extends PipelineBaseTest {
     @Override
     public void setup() throws Exception {
         super.setup();
-        this.bob = user();
+        this.bob = login();
         this.alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));

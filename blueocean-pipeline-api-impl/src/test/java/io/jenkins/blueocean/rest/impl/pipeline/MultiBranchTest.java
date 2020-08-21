@@ -9,8 +9,6 @@ import hudson.model.User;
 import hudson.plugins.favorite.Favorites;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
-import hudson.security.ACL;
-import hudson.security.ACLContext;
 import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.security.LegacyAuthorizationStrategy;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
@@ -320,25 +318,23 @@ public class MultiBranchTest extends PipelineBaseTest {
 
     @Test
     public void multiBranchPipelineIndex() throws Exception {
-        User user = user();
-        try (ACLContext ctx = ACL.as(user)) {
-            WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
-            mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
-                    new DefaultBranchPropertyStrategy(new BranchProperty[0])));
-            for (SCMSource source : mp.getSCMSources()) {
-                assertEquals(mp, source.getOwner());
-            }
-
-            Map map = new RequestBuilder(baseUrl)
-                    .post("/organizations/jenkins/pipelines/p/runs/")
-                    .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                    .crumb( getCrumb( j.jenkins ) )
-                    .data(ImmutableMap.of())
-                    .status(200)
-                    .build(Map.class);
-
-            assertNotNull(map);
+        User user = login();
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+                new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
         }
+
+        Map map = new RequestBuilder(baseUrl)
+                .post("/organizations/jenkins/pipelines/p/runs/")
+                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( getCrumb( j.jenkins ) )
+                .data(ImmutableMap.of())
+                .status(200)
+                .build(Map.class);
+
+        assertNotNull(map);
     }
 
 
