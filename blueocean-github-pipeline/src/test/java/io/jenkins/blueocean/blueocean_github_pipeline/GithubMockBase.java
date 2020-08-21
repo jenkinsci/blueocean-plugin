@@ -110,7 +110,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
                     .willReturn(aResponse().proxiedFrom("https://api.github.com/")));
         }
         
-        this.user = user("vivek", "Vivek Pandey", "vivek.pandey@gmail.com");
+        this.user = login("vivek", "Vivek Pandey", "vivek.pandey@gmail.com");
         this.githubApiUrl = String.format("http://localhost:%s",githubApi.port());
         this.crumb = getCrumb( j.jenkins );
     }

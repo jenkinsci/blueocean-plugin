@@ -3,8 +3,6 @@ package io.jenkins.blueocean.blueocean_git_pipeline;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
-import hudson.security.ACL;
-import hudson.security.ACLContext;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import jenkins.branch.MultiBranchProject;
 import jenkins.plugins.git.GitSCMSource;
@@ -43,29 +41,27 @@ public class GitPipelineCreateRequestTest extends PipelineBaseTest {
 
     @Test
     public void createPipeline() throws UnirestException, IOException {
-        User user = user("vivek", "Vivek Pandey", "vivek.pandey@gmail.com");
-        try (ACLContext ctx = ACL.as(user)) {
-            Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
-                    .status(201)
-                    .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                    .crumb( crumb )
-                    .post("/organizations/jenkins/pipelines/")
-                    .data(ImmutableMap.of("name", "pipeline1",
-                            "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                            "scmConfig", ImmutableMap.of("id", GitScm.ID, "uri", sampleRepo.toString())))
-                    .build(Map.class);
-            assertNotNull(r);
-            assertEquals("pipeline1", r.get("name"));
+        User user = login("vivek", "Vivek Pandey", "vivek.pandey@gmail.com");
+        Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
+            .status(201)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .crumb( crumb )
+            .post("/organizations/jenkins/pipelines/")
+            .data(ImmutableMap.of("name", "pipeline1",
+                "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                "scmConfig", ImmutableMap.of("id", GitScm.ID, "uri", sampleRepo.toString())))
+            .build(Map.class);
+        assertNotNull(r);
+        assertEquals("pipeline1", r.get("name"));
 
-            MultiBranchProject mbp = (MultiBranchProject) j.getInstance().getItem("pipeline1");
-            GitSCMSource source = (GitSCMSource) mbp.getSCMSources().get(0);
-            List<SCMSourceTrait> traits = source.getTraits();
+        MultiBranchProject mbp = (MultiBranchProject) j.getInstance().getItem("pipeline1");
+        GitSCMSource source = (GitSCMSource) mbp.getSCMSources().get(0);
+        List<SCMSourceTrait> traits = source.getTraits();
 
-            Assert.assertNotNull(SCMTrait.find(traits, BranchDiscoveryTrait.class));
-            Assert.assertNotNull(SCMTrait.find(traits, CleanAfterCheckoutTrait.class));
-            Assert.assertNotNull(SCMTrait.find(traits, CleanBeforeCheckoutTrait.class));
-            Assert.assertNotNull(SCMTrait.find(traits, LocalBranchTrait.class));
-        }
+        Assert.assertNotNull(SCMTrait.find(traits, BranchDiscoveryTrait.class));
+        Assert.assertNotNull(SCMTrait.find(traits, CleanAfterCheckoutTrait.class));
+        Assert.assertNotNull(SCMTrait.find(traits, CleanBeforeCheckoutTrait.class));
+        Assert.assertNotNull(SCMTrait.find(traits, LocalBranchTrait.class));
     }
 
 }

@@ -29,8 +29,6 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;
 import hudson.model.User;
 import hudson.remoting.Base64;
-import hudson.security.ACL;
-import hudson.security.ACLContext;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.ssh.UserSSHKeyManager;
 import io.jenkins.blueocean.test.ssh.SSHServer;
@@ -162,7 +160,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
             // Set up an SSH server with access to a git repo
             User user;
             if(u == null) {
-                user = user();
+                user = login();
             } else {
                 user = u;
             }
@@ -230,75 +228,71 @@ public class GitReadSaveTest extends PipelineBaseTest {
         String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
         String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath();
 
+        User bob = login();
+
+        // Validate bob via repositoryUrl
+        Map r = new RequestBuilder(baseUrl)
+            .status(200)
+            .crumb( crumb )
+            .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
+            .put("/organizations/" + getOrgName() + "/scm/git/validate/")
+            .data(ImmutableMap.of(
+                "repositoryUrl", remote,
+                "credentialId", UserSSHKeyManager.getOrCreate(bob).getId()
+            )).build(Map.class);
+
+        assertTrue(r.get("error") == null);
+
+        // Create a job
         String jobName = "test-token-validation";
-        User bob = user();
-        try (ACLContext ctx = ACL.as(bob)) {
+        r = new RequestBuilder(baseUrl)
+            .status(201)
+            .crumb( crumb )
+            .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
+            .post("/organizations/" + getOrgName() + "/pipelines/")
+            .data(ImmutableMap.of(
+                "name", jobName,
+                "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                "scmConfig", ImmutableMap.of(
+                    "uri", remote,
+                    "credentialId", UserSSHKeyManager.getOrCreate(bob).getId())
+            )).build(Map.class);
 
-            // Validate bob via repositoryUrl
-            Map r = new RequestBuilder(baseUrl)
-                    .status(200)
-                    .crumb( crumb )
-                    .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
-                    .put("/organizations/" + getOrgName() + "/scm/git/validate/")
-                    .data(ImmutableMap.of(
-                            "repositoryUrl", remote,
-                            "credentialId", UserSSHKeyManager.getOrCreate(bob).getId()
-                    )).build(Map.class);
+        assertEquals(jobName, r.get("name"));
 
-            assertTrue(r.get("error") == null);
+        // Test for existing pipeline/job
+        r = new RequestBuilder(baseUrl)
+            .status(200)
+            .crumb( crumb )
+            .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
+            .put("/organizations/" + getOrgName() + "/scm/git/validate/")
+            .data(ImmutableMap.of(
+                "pipeline", ImmutableMap.of("fullName", jobName),
+                "credentialId", UserSSHKeyManager.getOrCreate(bob).getId()
+            )).build(Map.class);
 
-            // Create a job
-            r = new RequestBuilder(baseUrl)
-                    .status(201)
-                    .crumb( crumb )
-                    .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
-                    .post("/organizations/" + getOrgName() + "/pipelines/")
-                    .data(ImmutableMap.of(
-                            "name", jobName,
-                            "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                            "scmConfig", ImmutableMap.of(
-                                    "uri", remote,
-                                    "credentialId", UserSSHKeyManager.getOrCreate(bob).getId())
-                    )).build(Map.class);
+        User alice = login("alice", "Alice Cooper", "alice@jenkins-ci.org");
 
-            assertEquals(jobName, r.get("name"));
+        // Test alice fails
+        r = new RequestBuilder(baseUrl)
+            .status(428)
+            .crumb( crumb )
+            .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
+            .put("/organizations/" + getOrgName() + "/scm/git/validate/")
+            .data(ImmutableMap.of(
+                "repositoryUrl", remote,
+                "credentialId", UserSSHKeyManager.getOrCreate(alice).getId()
+            )).build(Map.class);
 
-            // Test for existing pipeline/job
-            r = new RequestBuilder(baseUrl)
-                    .status(200)
-                    .crumb( crumb )
-                    .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
-                    .put("/organizations/" + getOrgName() + "/scm/git/validate/")
-                    .data(ImmutableMap.of(
-                            "pipeline", ImmutableMap.of("fullName", jobName),
-                            "credentialId", UserSSHKeyManager.getOrCreate(bob).getId()
-                    )).build(Map.class);
-        }
-
-        User alice = user("alice", "Alice Cooper", "alice@jenkins-ci.org");
-        try (ACLContext ctx = ACL.as(alice)) {
-
-            // Test alice fails
-            Map r = new RequestBuilder(baseUrl)
-                    .status(428)
-                    .crumb( crumb )
-                    .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
-                    .put("/organizations/" + getOrgName() + "/scm/git/validate/")
-                    .data(ImmutableMap.of(
-                            "repositoryUrl", remote,
-                            "credentialId", UserSSHKeyManager.getOrCreate(alice).getId()
-                    )).build(Map.class);
-
-            r = new RequestBuilder(baseUrl)
-                    .status(428)
-                    .crumb( crumb )
-                    .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
-                    .put("/organizations/" + getOrgName() + "/scm/git/validate/")
-                    .data(ImmutableMap.of(
-                            "pipeline", ImmutableMap.of("fullName", jobName),
-                            "credentialId", UserSSHKeyManager.getOrCreate(alice).getId()
-                    )).build(Map.class);
-        }
+        r = new RequestBuilder(baseUrl)
+            .status(428)
+            .crumb( crumb )
+            .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
+            .put("/organizations/" + getOrgName() + "/scm/git/validate/")
+            .data(ImmutableMap.of(
+                "pipeline", ImmutableMap.of("fullName", jobName),
+                "credentialId", UserSSHKeyManager.getOrCreate(alice).getId()
+            )).build(Map.class);
     }
 
     @Test
@@ -317,13 +311,12 @@ public class GitReadSaveTest extends PipelineBaseTest {
         if (!OsUtils.isUNIX()) {
             return; // can't really run this on windows
         }
-        User user = user("bob", "Bob Smith", null);
-        try (ACLContext ctx = ACL.as(user)) {
-            startSSH(user);
-            String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
-            String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath() + "/.git";
-            testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, remote, repoForSSH, masterPipelineScript, user);
-        }
+        User user = login("bob", "Bob Smith", null);
+
+        startSSH(user);
+        String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
+        String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath() + "/.git";
+        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, remote, repoForSSH, masterPipelineScript, user);
     }
 
     private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull GitSampleRepoRule repo, @Nullable String startPipelineScript) throws Exception {
@@ -332,10 +325,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
 
 
     private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull String remote, @Nonnull GitSampleRepoRule repo, @Nullable String startPipelineScript) throws Exception {
-        User user = user();
-        try (ACLContext ctx = ACL.as(user)) {
-            testGitReadWrite(type,remote,repo,startPipelineScript, user);
-        }
+        testGitReadWrite(type,remote,repo,startPipelineScript, login());
     }
 
     private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull String remote, @Nonnull GitSampleRepoRule repo, @Nullable String startPipelineScript, @Nullable User user) throws Exception {

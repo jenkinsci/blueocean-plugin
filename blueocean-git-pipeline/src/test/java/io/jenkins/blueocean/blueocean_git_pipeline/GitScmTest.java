@@ -5,8 +5,6 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.User;
-import hudson.security.ACL;
-import hudson.security.ACLContext;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
@@ -86,173 +84,166 @@ public class GitScmTest extends PipelineBaseTest {
     @Test
     public void shouldCreateWithRemoteGitRepo() throws IOException, UnirestException {
         String accessToken = needsGithubAccessToken();
-        User user = user();
-        try (ACLContext ctx = ACL.as(user)) {
-            this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
+        User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
-            Map resp = createCredentials(user, ImmutableMap.of("credentials", new ImmutableMap.Builder<String,Object>()
-                    .put("password", accessToken)
-                    .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
-                    .put("scope", "USER")
-                    .put("domain","blueocean-git-domain")
-                    .put("description", "joe desc")
-                    .put("$class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
-                    .put("username", "joe").build()
-            ));
+        Map resp = createCredentials(user, ImmutableMap.of("credentials", new ImmutableMap.Builder<String,Object>()
+                .put("password", accessToken)
+                .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
+                .put("scope", "USER")
+                .put("domain","blueocean-git-domain")
+                .put("description", "joe desc")
+                .put("$class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
+                .put("username", "joe").build()
+        ));
 
-            String credentialId = (String) resp.get("id");
-            Assert.assertNotNull(credentialId);
-
+        String credentialId = (String) resp.get("id");
+        Assert.assertNotNull(credentialId);
 
 
-            Map r = new RequestBuilder(baseUrl)
-                    .status(201)
-                    .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                    .crumb( crumb )
-                    .post("/organizations/" + getOrgName() + "/pipelines/")
-                    .data(ImmutableMap.of("name", "demo",
-                            "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                            "scmConfig", ImmutableMap.of("uri", HTTPS_GITHUB_NO_JENKINSFILE,
-                                    "credentialId", credentialId)
-                    )).build(Map.class);
 
-            assertEquals("demo", r.get("name"));
-        }
+        Map r = new RequestBuilder(baseUrl)
+                .status(201)
+                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( crumb )
+                .post("/organizations/" + getOrgName() + "/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("uri", HTTPS_GITHUB_NO_JENKINSFILE,
+                                                     "credentialId", credentialId)
+                )).build(Map.class);
+
+        assertEquals("demo", r.get("name"));
+
     }
 
     @Test
     public void shouldGetForbiddenForBadCredentialIdOnCreate1() throws IOException, UnirestException {
-        User user = user();
-        try (ACLContext ctx = ACL.as(user)) {
-            this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
+        User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
-            Map resp = createCredentials(user, ImmutableMap.of("credentials",
-                    new ImmutableMap.Builder<String,Object>()
-                            .put("privateKeySource", ImmutableMap.of(
-                                    "privateKey", "abcabc1212",
-                                    "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
-                            .put("passphrase", "ssh2")
-                            .put("scope", "USER")
-                            .put("domain","blueocean-git-domain")
-                            .put("description", "ssh2 desc")
-                            .put("$class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey")
-                            .put("username", "ssh2").build()
-            ));
+        Map resp = createCredentials(user, ImmutableMap.of("credentials",
+                new ImmutableMap.Builder<String,Object>()
+                        .put("privateKeySource", ImmutableMap.of(
+                                "privateKey", "abcabc1212",
+                                "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
+                        .put("passphrase", "ssh2")
+                        .put("scope", "USER")
+                        .put("domain","blueocean-git-domain")
+                        .put("description", "ssh2 desc")
+                        .put("$class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey")
+                        .put("username", "ssh2").build()
+        ));
 
-            String credentialId = (String) resp.get("id");
-            Assert.assertNotNull(credentialId);
+        String credentialId = (String) resp.get("id");
+        Assert.assertNotNull(credentialId);
 
-            post("/organizations/" + getOrgName() + "/pipelines/",
-                    ImmutableMap.of("name", "demo",
-                            "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                            "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
-                                    "credentialId", credentialId)
-                    ), 400);
-        }
+        post("/organizations/" + getOrgName() + "/pipelines/",
+                ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
+                                "credentialId", credentialId)
+                ), 400);
+
     }
 
 
     @Test
     public void shouldGetForbiddenForBadCredentialIdOnCreate2() throws IOException, UnirestException {
-        User user = user();
-        try (ACLContext ctx = ACL.as(user)) {
-            this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
+        User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
-            Map resp = createCredentials(user, ImmutableMap.of("credentials", new ImmutableMap.Builder<String,Object>()
-                    .put("password", "abcd")
-                    .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
-                    .put("scope", "USER")
-                    .put("domain","blueocean-git-domain")
-                    .put("description", "joe desc")
-                    .put("$class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
-                    .put("username", "joe").build()
-            ));
+        Map resp = createCredentials(user, ImmutableMap.of("credentials", new ImmutableMap.Builder<String,Object>()
+                .put("password", "abcd")
+                .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
+                .put("scope", "USER")
+                .put("domain","blueocean-git-domain")
+                .put("description", "joe desc")
+                .put("$class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
+                .put("username", "joe").build()
+        ));
 
-            String credentialId = (String) resp.get("id");
-            Assert.assertNotNull(credentialId);
+        String credentialId = (String) resp.get("id");
+        Assert.assertNotNull(credentialId);
 
-            post("/organizations/" + getOrgName() + "/pipelines/",
-                    ImmutableMap.of("name", "demo",
-                            "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                            "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
-                                    "credentialId", credentialId)
-                    ), 400);
-        }
+        post("/organizations/" + getOrgName() + "/pipelines/",
+                ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
+                                "credentialId", credentialId)
+                ), 400);
+
     }
 
     @Test
     public void shouldGetBadRequestForBadGitUriOnCreate() throws Exception {
 
-        User user = user();
-        try (ACLContext ctx = ACL.as(user)) {
-            this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
+        User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
-            post("/organizations/" + getOrgName() + "/pipelines/",
-                    ImmutableMap.of("name", "demo",
-                            "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                            "scmConfig", ImmutableMap.of("uri", "/sdsd/sdsd/sdsd")
-                    ), 400);
-        }
+        post("/organizations/" + getOrgName() + "/pipelines/",
+                ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("uri", "/sdsd/sdsd/sdsd")
+                ), 400);
+
     }
 
 
     @Test
     public void shouldFailForBadCredentialIdOnCreate() throws IOException, UnirestException {
-        User user = user();
-        try (ACLContext ctx = ACL.as(user)) {
-            Map resp = createCredentials(user, ImmutableMap.of("credentials",
-                    new ImmutableMap.Builder<String,Object>()
-                            .put("privateKeySource", ImmutableMap.of(
-                                    "privateKey", "abcabc1212",
-                                    "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
-                            .put("passphrase", "ssh2")
-                            .put("scope", "USER")
-                            .put("domain","blueocean-git-domain")
-                            .put("description", "ssh2 desc")
-                            .put("$class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey")
-                            .put("username", "ssh2").build()
-            )
-            );
+        User user = login();
+        Map resp = createCredentials(user, ImmutableMap.of("credentials",
+                new ImmutableMap.Builder<String,Object>()
+                        .put("privateKeySource", ImmutableMap.of(
+                                "privateKey", "abcabc1212",
+                                "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
+                        .put("passphrase", "ssh2")
+                        .put("scope", "USER")
+                        .put("domain","blueocean-git-domain")
+                        .put("description", "ssh2 desc")
+                        .put("$class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey")
+                        .put("username", "ssh2").build()
+                )
+        );
 
-            String credentialId = (String) resp.get("id");
-            Assert.assertNotNull(credentialId);
+        String credentialId = (String) resp.get("id");
+        Assert.assertNotNull(credentialId);
 
-            resp = new RequestBuilder(baseUrl)
-                    .status(400)
-                    .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                    .crumb( crumb )
-                    .post("/organizations/" + getOrgName() + "/pipelines/")
-                    .data(ImmutableMap.of("name", "demo",
-                            "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                            "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
-                                    "credentialId", credentialId))).build(Map.class);
+        resp = new RequestBuilder(baseUrl)
+                .status(400)
+                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .crumb( crumb )
+                .post("/organizations/" + getOrgName() + "/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
+                                "credentialId", credentialId))).build(Map.class);
 
-            assertEquals(resp.get("code"), 400);
+        assertEquals(resp.get("code"), 400);
 
-            List<Map> errors = (List<Map>) resp.get("errors");
+        List<Map> errors = (List<Map>) resp.get("errors");
 
-            assertEquals(1, errors.size());
-            assertEquals(errors.get(0).toString(), "scmConfig.credentialId", errors.get(0).get("field"));
-            assertEquals(errors.get(0).toString(), "INVALID", errors.get(0).get("code"));
-        }
+        assertEquals(1, errors.size());
+        assertEquals(errors.get(0).toString(), "scmConfig.credentialId", errors.get(0).get("field"));
+        assertEquals(errors.get(0).toString(), "INVALID", errors.get(0).get("code"));
     }
 
     @Test
     public void shouldCreateGitMbp() throws IOException, UnirestException {
-        try (ACLContext ctx = ACL.as(user())) {
-            Map resp = new RequestBuilder(baseUrl)
-                    .status(201)
-                    .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
-                    .crumb( crumb )
-                    .post("/organizations/" + getOrgName() + "/pipelines/")
-                    .data(ImmutableMap.of("name", "demo",
-                            "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                            "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
-                    ))
-                    .build(Map.class);
+        login();
+        Map resp = new RequestBuilder(baseUrl)
+                .status(201)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
+                .post("/organizations/" + getOrgName() + "/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
+                ))
+                .build(Map.class);
 
-            assertEquals("demo", resp.get("name"));
-        }
+        assertEquals("demo", resp.get("name"));
     }
 
     @Test
@@ -275,191 +266,180 @@ public class GitScmTest extends PipelineBaseTest {
     @Test
     public void shouldFailOnValidation2() throws Exception {
 
-        User user = user();
-        try (ACLContext ctx = ACL.as(user)) {
-            this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
+        User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
-            Map<String,Object> resp = post("/organizations/" + getOrgName() + "/pipelines/",
-                    ImmutableMap.of("name", "demo",
-                            "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest"
-                    ), 400);
+        Map<String,Object> resp = post("/organizations/" + getOrgName() + "/pipelines/",
+                ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest"
+                ), 400);
 
-            assertEquals(resp.get("code"), 400);
+        assertEquals(resp.get("code"), 400);
 
-            List<Map> errors = (List<Map>) resp.get("errors");
+        List<Map> errors = (List<Map>) resp.get("errors");
 
-            assertEquals("scmConfig", errors.get(0).get("field"));
-            assertEquals("MISSING", errors.get(0).get("code"));
-            assertNull(getOrgRoot().getItem("demo"));
-        }
+        assertEquals("scmConfig", errors.get(0).get("field"));
+        assertEquals("MISSING", errors.get(0).get("code"));
+        assertNull(getOrgRoot().getItem("demo"));
     }
 
     @Test
     public void shouldFailOnValidation3() throws IOException, UnirestException {
-        try (ACLContext ctx = ACL.as(user())) {
-            Map resp = new RequestBuilder(baseUrl)
-                    .status(400)
-                    .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
-                    .crumb( crumb )
-                    .post("/organizations/" + getOrgName() + "/pipelines/")
-                    .data(ImmutableMap.of("name", "demo",
-                            "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                            "scmConfig", ImmutableMap.of()))
-                    .build(Map.class);
+        login();
+        Map resp = new RequestBuilder(baseUrl)
+                .status(400)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
+                .post("/organizations/" + getOrgName() + "/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of()))
+                .build(Map.class);
 
-            assertEquals(resp.get("code"), 400);
+        assertEquals(resp.get("code"), 400);
 
-            List<Map> errors = (List<Map>) resp.get("errors");
+        List<Map> errors = (List<Map>) resp.get("errors");
 
-            assertEquals(errors.get(0).get("field"), "scmConfig.uri");
-            assertEquals(errors.get(0).get("code"), "MISSING");
-            assertNull(getOrgRoot().getItem("demo"));
-        }
+        assertEquals(errors.get(0).get("field"), "scmConfig.uri");
+        assertEquals(errors.get(0).get("code"), "MISSING");
+        assertNull(getOrgRoot().getItem("demo"));
+
     }
 
 
     @Test
     public void shouldFailOnValidation4() throws IOException, UnirestException {
-        try (ACLContext ctx = ACL.as(user())) {
+        login();
 
-            Map resp = new RequestBuilder(baseUrl)
-                    .status(201)
-                    .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
-                    .crumb( crumb )
-                    .post("/organizations/" + getOrgName() + "/pipelines/")
-                    .data(ImmutableMap.of("name", "demo",
-                            "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                            "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
-                    ))
-                    .build(Map.class);
+        Map resp = new RequestBuilder(baseUrl)
+                .status(201)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
+                .post("/organizations/" + getOrgName() + "/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
+                ))
+                .build(Map.class);
 
 
-            assertEquals("demo", resp.get("name"));
+        assertEquals("demo", resp.get("name"));
 
-            resp = new RequestBuilder(baseUrl)
-                    .status(400)
-                    .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
-                    .crumb( crumb )
-                    .post("/organizations/" + getOrgName() + "/pipelines/")
-                    .data(ImmutableMap.of("name", "demo",
-                            "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                            "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl(),
-                                    "credentialId", "sdsdsd"))).build(Map.class);
-            List<Map<String,String>> errors = (List<Map<String,String>>) resp.get("errors");
+        resp = new RequestBuilder(baseUrl)
+                .status(400)
+                .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
+                .post("/organizations/" + getOrgName() + "/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl(),
+                                "credentialId", "sdsdsd"))).build(Map.class);
+        List<Map<String,String>> errors = (List<Map<String,String>>) resp.get("errors");
 
-            boolean nameFound = false;
-            boolean credentialIdFound = false;
-            for(Map<String,String> error:errors){
-                if(error.get("field").equals("name")){
-                    nameFound = true;
-                    assertEquals("ALREADY_EXISTS", error.get("code"));
-                }else if(error.get("field").equals("scmConfig.credentialId")){
-                    credentialIdFound = true;
-                    assertEquals("NOT_FOUND", error.get("code"));
-                }
+        boolean nameFound = false;
+        boolean credentialIdFound = false;
+        for(Map<String,String> error:errors){
+            if(error.get("field").equals("name")){
+                nameFound = true;
+                assertEquals("ALREADY_EXISTS", error.get("code"));
+            }else if(error.get("field").equals("scmConfig.credentialId")){
+                credentialIdFound = true;
+                assertEquals("NOT_FOUND", error.get("code"));
             }
-            assertTrue(nameFound);
-            assertTrue(credentialIdFound);
         }
+        assertTrue(nameFound);
+        assertTrue(credentialIdFound);
     }
 
     @Test
     public void shouldFailOnValidation5() throws Exception {
 
-        User user = user();
-        try (ACLContext ctx = ACL.as(user)) {
-            this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
+        User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
-            Map<String,Object> resp = post("/organizations/" + getOrgName() + "/pipelines/",
-                    ImmutableMap.of("name", "demo",
-                            "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                            "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl(), "credentialId", "sdsdsd")
-                    ), 400);
-            List<Map<String,String>> errors = (List<Map<String,String>>) resp.get("errors");
+        Map<String,Object> resp = post("/organizations/" + getOrgName() + "/pipelines/",
+                ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl(), "credentialId", "sdsdsd")
+                ), 400);
+        List<Map<String,String>> errors = (List<Map<String,String>>) resp.get("errors");
 
-            assertEquals("scmConfig.credentialId", errors.get(0).get("field"));
-            assertEquals("NOT_FOUND", errors.get(0).get("code"));
-            assertNull(getOrgRoot().getItem("demo"));
-        }
+        assertEquals("scmConfig.credentialId", errors.get(0).get("field"));
+        assertEquals("NOT_FOUND", errors.get(0).get("code"));
+        assertNull(getOrgRoot().getItem("demo"));
     }
 
     @Test
     public void shouldNotProvideIdForMissingCredentials() throws Exception {
-        User user = user();
-        try (ACLContext ctx = ACL.as(user)) {
-            String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
-            String repoPath = scmPath + "?repositoryUrl=" + HTTPS_GITHUB_PUBLIC;
+        User user = login();
+        String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
+        String repoPath = scmPath + "?repositoryUrl=" + HTTPS_GITHUB_PUBLIC;
 
-            Map resp = new RequestBuilder(baseUrl)
-                    .status(200)
-                    .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                    .crumb( crumb )
-                    .get(repoPath)
-                    .build(Map.class);
+        Map resp = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
+            .get(repoPath)
+            .build(Map.class);
 
-            assertEquals(null, resp.get("credentialId"));
-        }
+        assertEquals(null, resp.get("credentialId"));
     }
 
     @Test
     public void shouldBePoliteAboutBadUrl() throws Exception {
-        User user = user();
-        try (ACLContext ctx = ACL.as(user)) {
-            String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
-            // Let's say the user has only started typing a url
-            String repoPath = scmPath + "?repositoryUrl=htt";
+        User user = login();
+        String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
+        // Let's say the user has only started typing a url
+        String repoPath = scmPath + "?repositoryUrl=htt";
 
-            Map resp = new RequestBuilder(baseUrl)
-                    .status(200)
-                    .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                    .crumb( crumb )
-                    .get(repoPath)
-                    .build(Map.class);
+        Map resp = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
+            .get(repoPath)
+            .build(Map.class);
 
-            assertEquals(null, resp.get("credentialId"));
-        }
+        assertEquals(null, resp.get("credentialId"));
     }
 
     @Test
     public void shouldCreateCredentialsWithDefaultId() throws Exception {
-        User user = user();
-        try (ACLContext ctx = ACL.as(user)) {
+        User user = login();
 
-            String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
+        String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
 
-            // First create a credential
-            String scmValidatePath = scmPath + "validate";
+        // First create a credential
+        String scmValidatePath = scmPath + "validate";
 
-            // We're relying on github letting you do a git-ls for repos with bad creds so long as they're public
-            Map params = ImmutableMap.of(
-                    "userName", "someguy",
-                    "password", "password",
-                    "repositoryUrl", HTTPS_GITHUB_PUBLIC
-            );
+        // We're relying on github letting you do a git-ls for repos with bad creds so long as they're public
+        Map params = ImmutableMap.of(
+            "userName", "someguy",
+            "password", "password",
+            "repositoryUrl", HTTPS_GITHUB_PUBLIC
+        );
 
-            Map resp = new RequestBuilder(baseUrl)
-                    .status(200)
-                    .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                    .crumb( crumb )
-                    .data(params)
-                    .put(scmValidatePath)
-                    .build(Map.class);
+        Map resp = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
+            .data(params)
+            .put(scmValidatePath)
+            .build(Map.class);
 
-            assertEquals("ok", resp.get("status"));
+        assertEquals("ok", resp.get("status"));
 
-            // Now get the default credentialId
+        // Now get the default credentialId
 
-            String repoPath = scmPath + "?repositoryUrl=" + HTTPS_GITHUB_PUBLIC;
+        String repoPath = scmPath + "?repositoryUrl=" + HTTPS_GITHUB_PUBLIC;
 
-            Map resp2 = new RequestBuilder(baseUrl)
-                    .status(200)
-                    .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                    .crumb( crumb )
-                    .get(repoPath)
-                    .build(Map.class);
+        Map resp2 = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
+            .get(repoPath)
+            .build(Map.class);
 
-            assertEquals("git:" + HTTPS_GITHUB_PUBLIC_HASH, resp2.get("credentialId"));
-        }
+        assertEquals("git:" + HTTPS_GITHUB_PUBLIC_HASH, resp2.get("credentialId"));
     }
 
     /**
@@ -468,31 +448,29 @@ public class GitScmTest extends PipelineBaseTest {
      */
     @Test
     public void shouldNotCreateCredentialsForBadUrl1() throws Exception {
-        User user = user();
-        try (ACLContext ctx = ACL.as(user)) {
+        User user = login();
 
-            String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
+        String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
 
-            // First create a credential
-            String scmValidatePath = scmPath + "validate";
+        // First create a credential
+        String scmValidatePath = scmPath + "validate";
 
-            // We're relying on github letting you do a git-ls for repos with bad creds so long as they're public
-            Map params = ImmutableMap.of(
-                    "userName", "someguy",
-                    "password", "password",
-                    "repositoryUrl", "htt"
-            );
+        // We're relying on github letting you do a git-ls for repos with bad creds so long as they're public
+        Map params = ImmutableMap.of(
+            "userName", "someguy",
+            "password", "password",
+            "repositoryUrl", "htt"
+        );
 
-            Map resp = new RequestBuilder(baseUrl)
-                    .status(400)
-                    .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                    .crumb( crumb )
-                    .data(params)
-                    .put(scmValidatePath)
-                    .build(Map.class);
+        Map resp = new RequestBuilder(baseUrl)
+            .status(400)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
+            .data(params)
+            .put(scmValidatePath)
+            .build(Map.class);
 
-            assertTrue(resp.get("message").toString().toLowerCase().contains("invalid url"));
-        }
+        assertTrue(resp.get("message").toString().toLowerCase().contains("invalid url"));
     }
 
     /**
@@ -501,31 +479,29 @@ public class GitScmTest extends PipelineBaseTest {
      */
     @Test
     public void shouldNotCreateCredentialsForBadUrl2() throws Exception {
-        User user = user();
-        try (ACLContext ctx = ACL.as(user)) {
+        User user = login();
 
-            String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
+        String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
 
-            // First create a credential
-            String scmValidatePath = scmPath + "validate";
+        // First create a credential
+        String scmValidatePath = scmPath + "validate";
 
-            // We're relying on github letting you do a git-ls for repos with bad creds so long as they're public
-            Map params = ImmutableMap.of(
-                    "userName", "someguy",
-                    "password", "password",
-                    "repositoryUrl", "http://example.org/has/no/repos.git"
-            );
+        // We're relying on github letting you do a git-ls for repos with bad creds so long as they're public
+        Map params = ImmutableMap.of(
+            "userName", "someguy",
+            "password", "password",
+            "repositoryUrl", "http://example.org/has/no/repos.git"
+        );
 
-            Map resp = new RequestBuilder(baseUrl)
-                    .status(428)
-                    .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                    .crumb( crumb )
-                    .data(params)
-                    .put(scmValidatePath)
-                    .build(Map.class);
+        Map resp = new RequestBuilder(baseUrl)
+            .status(428)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
+            .data(params)
+            .put(scmValidatePath)
+            .build(Map.class);
 
-            assertTrue(resp.get("message").toString().toLowerCase().contains("url unreachable"));
-        }
+        assertTrue(resp.get("message").toString().toLowerCase().contains("url unreachable"));
     }
 
     private String createMbp(User user) throws UnirestException {

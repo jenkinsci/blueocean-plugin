@@ -3,8 +3,6 @@ package io.jenkins.blueocean.blueocean_git_pipeline;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import hudson.model.User;
-import hudson.security.ACL;
-import hudson.security.ACLContext;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import jenkins.plugins.git.GitSampleRepoRule;
 import org.apache.commons.io.FileUtils;
@@ -103,24 +101,22 @@ public class GitUtilsTest extends PipelineBaseTest {
 
     @Test
     public void testValidatePushAccessFails() throws Exception {
-        User user = user();
-        try (ACLContext ctx = ACL.as(user)) {
-            this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
+        User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
-            Map resp = new RequestBuilder(baseUrl)
-                    .status(200)
-                    .get("/organizations/jenkins/user/publickey/").build(Map.class);
+        Map resp = new RequestBuilder(baseUrl)
+            .status(200)
+            .get("/organizations/jenkins/user/publickey/").build(Map.class);
 
-            String id = (String)resp.get("id");
-            Assert.assertTrue(id != null);
+        String id = (String)resp.get("id");
+        Assert.assertTrue(id != null);
 
-            final Map<String, Object> body = ImmutableMap.of(
-                    "repositoryUrl", "git@github.com:vivek/capability-annotation.git",
-                    "credentialId", id,
-                    "requirePush", true,
-                    "branch", "master");
+        final Map<String, Object> body = ImmutableMap.of(
+            "repositoryUrl", "git@github.com:vivek/capability-annotation.git",
+            "credentialId", id,
+            "requirePush", true,
+            "branch", "master");
 
-            put("/organizations/jenkins/scm/git/validate/", body, 428);
-        }
+        put("/organizations/jenkins/scm/git/validate/", body, 428);
     }
 }

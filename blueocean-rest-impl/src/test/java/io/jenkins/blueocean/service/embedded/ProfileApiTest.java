@@ -8,8 +8,6 @@ import hudson.model.FreeStyleProject;
 import hudson.model.Hudson;
 import hudson.model.Project;
 import hudson.model.User;
-import hudson.security.ACL;
-import hudson.security.ACLContext;
 import hudson.security.GlobalMatrixAuthorizationStrategy;
 import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.tasks.Mailer;
@@ -17,6 +15,9 @@ import hudson.tasks.UserAvatarResolver;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.service.embedded.rest.UserImpl;
 import jenkins.model.Jenkins;
+import org.acegisecurity.adapters.PrincipalAcegiUserToken;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.userdetails.UserDetails;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -388,9 +389,11 @@ public class ProfileApiTest extends BaseTest{
         bob.setFullName("Bob Cooper");
         bob.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
 
-        try (ACLContext ctx = ACL.as(bob)) {
-            Assert.assertNull(new UserImpl(Iterables.getFirst(OrganizationFactory.getInstance().list(), null), alice).getPermission());
-        }
+        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
+
+        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
+
+        Assert.assertNull(new UserImpl(Iterables.getFirst(OrganizationFactory.getInstance().list(), null), alice).getPermission());
     }
 
     @Test
@@ -437,17 +440,17 @@ public class ProfileApiTest extends BaseTest{
     public void userCurrentTest() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
 
-        try (ACLContext ctx = ACL.as(Jenkins.ANONYMOUS)) {
-            Assert.assertNull(User.current());
+        SecurityContextHolder.getContext().setAuthentication(j.jenkins.ANONYMOUS);
 
-            List<Map> l = new RequestBuilder(baseUrl)
-                .get("/organizations/jenkins/pipelines/")
-                .authAlice()
-                .build(List.class);
+        Assert.assertNull(User.current());
 
-            assertEquals(0, l.size());
-            Assert.assertNull(User.current());
-        }
+        List<Map> l = new RequestBuilder(baseUrl)
+            .get("/organizations/jenkins/pipelines/")
+            .authAlice()
+            .build(List.class);
+
+        assertEquals(0, l.size());
+        Assert.assertNull(User.current());
     }
 
 

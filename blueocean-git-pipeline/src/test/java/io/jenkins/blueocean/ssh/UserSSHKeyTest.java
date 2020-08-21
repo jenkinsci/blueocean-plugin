@@ -25,8 +25,6 @@ package io.jenkins.blueocean.ssh;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
-import hudson.security.ACL;
-import hudson.security.ACLContext;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,50 +39,48 @@ import java.util.Map;
 public class UserSSHKeyTest extends PipelineBaseTest {
     @Test
     public void createPersonalSSHKey() throws IOException, UnirestException {
-        User bob = user(); // bob
-        try (ACLContext ctx = ACL.as(bob)) {
+        User bob = login(); // bob
 
-            Map resp = new RequestBuilder(baseUrl)
-                    .status(200)
-                    .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
-                    .get("/organizations/jenkins/user/publickey/").build(Map.class);
+        Map resp = new RequestBuilder(baseUrl)
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
+                .get("/organizations/jenkins/user/publickey/").build(Map.class);
 
-            Object pubKey = resp.get("publickey");
-            Assert.assertTrue(pubKey != null);
+        Object pubKey = resp.get("publickey");
+        Assert.assertTrue(pubKey != null);
 
-            // make sure the key remains the same
-            resp = new RequestBuilder(baseUrl)
-                    .status(200)
-                    .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
-                    .get("/organizations/jenkins/user/publickey/").build(Map.class);
+        // make sure the key remains the same
+        resp = new RequestBuilder(baseUrl)
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
+                .get("/organizations/jenkins/user/publickey/").build(Map.class);
 
-            Object pubKey2 = resp.get("publickey");
-            Assert.assertEquals(pubKey, pubKey2);
+        Object pubKey2 = resp.get("publickey");
+        Assert.assertEquals(pubKey, pubKey2);
 
-            // test deleting it gives a new key
-            new RequestBuilder(baseUrl)
-                    .status(200)
-                    .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
-                    .delete("/organizations/jenkins/user/publickey/").build(String.class);
+        // test deleting it gives a new key
+        new RequestBuilder(baseUrl)
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
+                .delete("/organizations/jenkins/user/publickey/").build(String.class);
 
-            resp = new RequestBuilder(baseUrl)
-                    .status(200)
-                    .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
-                    .get("/organizations/jenkins/user/publickey/").build(Map.class);
+        resp = new RequestBuilder(baseUrl)
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
+                .get("/organizations/jenkins/user/publickey/").build(Map.class);
 
-            Object pubKey3 = resp.get("publickey");
-            Assert.assertNotEquals(pubKey2, pubKey3);
+        Object pubKey3 = resp.get("publickey");
+        Assert.assertNotEquals(pubKey2, pubKey3);
 
-            // ensure login is required
-            new RequestBuilder(baseUrl)
-                    .status(401)
-                    .get("/organizations/jenkins/users/bob/publickey/").build(Map.class);
+        // ensure login is required
+        new RequestBuilder(baseUrl)
+                .status(401)
+                .get("/organizations/jenkins/users/bob/publickey/").build(Map.class);
 
-            // make sure one user can't see another user's key
-            new RequestBuilder(baseUrl)
-                    .status(403)
-                    .jwtToken(getJwtToken(j.jenkins, "alice", "alice"))
-                    .get("/organizations/jenkins/users/bob/publickey/").build(Map.class);
-        }
+        // make sure one user can't see another user's key
+        new RequestBuilder(baseUrl)
+                .status(403)
+                .jwtToken(getJwtToken(j.jenkins, "alice", "alice"))
+                .get("/organizations/jenkins/users/bob/publickey/").build(Map.class);
     }
 }
