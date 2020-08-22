@@ -13,13 +13,12 @@ import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.security.csrf.CrumbIssuer;
-import hudson.security.csrf.DefaultCrumbIssuer;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.userdetails.UserDetails;
 import org.junit.Assert;
 import org.junit.Before;
@@ -529,7 +528,7 @@ public abstract class BaseTest {
 
         UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
 
-        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(bob.getId(), bob.getId(), d.getAuthorities()));
         return bob;
     }
     protected User login() throws IOException {

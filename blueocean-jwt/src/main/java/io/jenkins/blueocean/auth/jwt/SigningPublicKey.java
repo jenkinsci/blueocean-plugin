@@ -1,11 +1,11 @@
 package io.jenkins.blueocean.auth.jwt;
 
 import com.google.common.collect.ImmutableList;
-import hudson.remoting.Base64;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.WebMethod;
 
 import java.security.interfaces.RSAPublicKey;
+import java.util.Base64;
 
 /**
  * Public key counterpart of {@link SigningKey}
@@ -48,8 +48,8 @@ public class SigningPublicKey {
         jwk.put("kid",kid);
         jwk.put("use", "sig");
         jwk.put("key_ops", ImmutableList.of("verify"));
-        jwk.put("n", Base64.encode(key.getModulus().toByteArray()));
-        jwk.put("e", Base64.encode(key.getPublicExponent().toByteArray()));
+        jwk.put("n", Base64.getUrlEncoder().withoutPadding().encodeToString(key.getModulus().toByteArray()));
+        jwk.put("e", Base64.getUrlEncoder().withoutPadding().encodeToString(key.getPublicExponent().toByteArray()));
         return jwk;
     }
 }

@@ -2,12 +2,11 @@ package io.jenkins.blueocean.auth.jwt.impl;
 
 import hudson.Extension;
 import hudson.init.Initializer;
+import hudson.security.ACL;
+import hudson.security.ACLContext;
 import hudson.util.PluginServletFilter;
 import io.jenkins.blueocean.auth.jwt.JwtTokenVerifier;
 import org.acegisecurity.Authentication;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.context.SecurityContextImpl;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
 
@@ -75,19 +74,9 @@ public class JwtAuthenticationFilter implements Filter {
 
         // run the rest of the request with the new identity
         // create a new context and set it to holder to not clobber existing context
-        SecurityContext sc = new SecurityContextImpl();
-        sc.setAuthentication(token);
-        SecurityContext previous = SecurityContextHolder.getContext();
-        SecurityContextHolder.setContext(sc);
-        request.setAttribute(JWT_TOKEN_VALIDATED,true);
-        try {
+        try (ACLContext ctx = ACL.as(token)) {
+            request.setAttribute(JWT_TOKEN_VALIDATED, true);
             chain.doFilter(req,rsp);
-        } finally {
-            if(previous != null){
-                SecurityContextHolder.setContext(previous);
-            }else {
-                SecurityContextHolder.clearContext();
-            }
         }
     }
 
