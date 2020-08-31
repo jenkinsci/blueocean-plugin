@@ -2402,6 +2402,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         assertEquals(7, nodes.size());
     }
 
+    @Ignore("TODO flaky; e.g., org.junit.ComparisonFailure: running node names expected:<A, B, B-[A, B-B, B-B-1, B-B-2, B-C, B-C-1, B-C-2, C, D, D-A, D-B, D-B-1, D-B-2, D-C, D-C-1, D-C]-2> but was:<A, B, B-[B, B-B-1, B-B]-2>")
     @Test
     @Issue("JENKINS-53816")
     public void graphConsistentWhileExecuting() throws Exception {
