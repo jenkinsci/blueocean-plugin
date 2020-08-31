@@ -27,6 +27,7 @@
   <properties>
     <revision>1.23.3</revision>
     <changelist>-SNAPSHOT</changelist>
+    <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <java.level>8</java.level>
     <jenkins.version>2.176.4</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
@@ -50,9 +51,9 @@
   </properties>
 
   <scm>
-    <connection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</connection>
-    <developerConnection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/blueocean-plugin</url>
+    <connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
+    <developerConnection>scm:git:https://github.com/${gitHubRepo}.git</developerConnection>
+    <url>https://github.com/${gitHubRepo}</url>
     <tag>${scmTag}</tag>
   </scm>
 
