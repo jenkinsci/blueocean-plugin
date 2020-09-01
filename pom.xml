@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>3.57</version>
+    <version>4.3</version>
     <relativePath />
   </parent>
 
@@ -27,8 +27,9 @@
   <properties>
     <revision>1.23.3</revision>
     <changelist>-SNAPSHOT</changelist>
+    <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <java.level>8</java.level>
-    <jenkins.version>2.150.3</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
+    <jenkins.version>2.176.4</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.7.5</frontend-version>
     <node.version>10.13.0</node.version>
@@ -43,17 +44,16 @@
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
     <jenkins-test-harness.version>2.63</jenkins-test-harness.version>
-    <scm-api.version>2.6.3</scm-api.version>
-    <git.version>3.9.3</git.version>
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
     <workflow-support.version>3.3</workflow-support.version>
     <pipeline-model-definition.version>1.6.0</pipeline-model-definition.version>
+    <scm-api-plugin.version>2.6.3</scm-api-plugin.version>
   </properties>
 
   <scm>
-    <connection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</connection>
-    <developerConnection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/blueocean-plugin</url>
+    <connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
+    <developerConnection>scm:git:https://github.com/${gitHubRepo}.git</developerConnection>
+    <url>https://github.com/${gitHubRepo}</url>
     <tag>${scmTag}</tag>
   </scm>
 
@@ -227,6 +227,14 @@
   <dependencyManagement>
     <dependencies>
 
+        <dependency>
+            <groupId>io.jenkins.tools.bom</groupId>
+            <artifactId>bom-2.176.x</artifactId>
+            <version>11</version>
+            <scope>import</scope>
+            <type>pom</type>
+        </dependency>
+
         <!-- Module versions -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -352,6 +360,30 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>ssh-credentials</artifactId>
+            <version>1.17.3</version>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.jenkins-ci.plugins</groupId>-->
+<!--            <artifactId>trilead-api</artifactId>-->
+<!--            <version>1.0.5</version>-->
+<!--        </dependency>-->
+
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>git</artifactId>
+            <version>4.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>git</artifactId>
+            <version>4.2.2</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Pipeline plugins -->
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
@@ -378,16 +410,6 @@
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-extensions</artifactId>
             <version>${pipeline-model-definition.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-cps</artifactId>
-            <version>2.76</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-api</artifactId>
-            <version>2.36</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -433,7 +455,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-scm-step</artifactId>
-            <version>2.9</version>
+            <version>2.11</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -451,45 +473,17 @@
             <version>2.7</version>
         </dependency>
 
-        <!--
-             Need dependency on script-console to fix UpperBoundDeps errors caused due to different plugins depending
-             on different versions of script-security plugin
-        -->
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>script-security</artifactId>
-            <version>1.63</version>
-        </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-milestone-step</artifactId>
             <version>1.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.coravy.hudson.plugins.github</groupId>
-            <artifactId>github</artifactId>
-            <version>1.29.3</version>
-            <exclusions>
-
-                <!-- Upper bound fix: Remove it once token-macro plugin is fixed to remove dependency on asm-tree
-                     PR: https://github.com/jenkinsci/token-macro-plugin/pull/31
-                -->
-                <exclusion>
-                    <groupId>org.ow2.asm</groupId>
-                    <artifactId>asm-tree</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.ow2.asm</groupId>
-                    <artifactId>asm</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- scm plugins -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>scm-api</artifactId>
-            <version>${scm-api.version}</version>
+            <version>${scm-api-plugin.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -502,11 +496,6 @@
                     <artifactId>annotation-indexer</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>apache-httpcomponents-client-4-api</artifactId>
-            <version>4.5.10-1.0</version>
         </dependency>
 
         <!-- Other -->
@@ -529,28 +518,6 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
             <version>3.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>git</artifactId>
-            <version>${git.version}</version>
-            <exclusions>
-                <!-- Upper dependency fix: annotation-indexer comes from core, exclude from git -->
-                <exclusion>
-                    <groupId>org.jenkins-ci</groupId>
-                    <artifactId>annotation-indexer</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpasyncclient</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- Upper bound dependency fix as git plugin brings new version of it than others -->
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>git-client</artifactId>
-            <version>2.7.0</version>
         </dependency>
 
         <!-- Other -->
@@ -603,28 +570,8 @@
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>credentials</artifactId>
-            <version>2.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>plain-credentials</artifactId>
-            <version>1.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>ssh-credentials</artifactId>
-            <version>1.13</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-folder</artifactId>
             <version>6.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>matrix-project</artifactId>
-            <version>1.12</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
@@ -667,7 +614,17 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.111</version>
+            <version>1.114.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jenkins.plugins</groupId>
+            <artifactId>okhttp-api</artifactId>
+            <version>3.12.12.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>3.12.12</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -682,7 +639,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.10</version>
+            <version>1.13</version>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
@@ -701,13 +658,8 @@
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>mailer</artifactId>
-            <version>1.20</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>display-url-api</artifactId>
-            <version>2.3.0</version>
+            <version>2.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.bitbucket.b_c</groupId>
@@ -766,13 +718,6 @@
             </exclusions>
         </dependency>
 
-        <!-- Needed for blueocean-display-url plugin -->
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>junit</artifactId>
-            <version>1.23</version>
-        </dependency>
-
         <!-- used in blueocean-rest-impl test -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -794,7 +739,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>sonar</artifactId>
-            <version>2.9</version>
+            <version>2.11</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -886,12 +831,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- github pulls token-macro 1.11 that doesn't get resolved -->
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>token-macro</artifactId>
-            <version>2.1</version>
-        </dependency>
         <dependency>
             <!--
             jsoup HTML parser library @ http://jsoup.org/
@@ -909,16 +848,9 @@
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>git</artifactId>
-            <classifier>tests</classifier>
-            <version>${git.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>scm-api</artifactId>
-            <version>${scm-api.version}</version>
             <classifier>tests</classifier>
+            <version>${scm-api-plugin.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -1035,7 +967,6 @@
 
       <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.0</version>
           <configuration>
               <systemProperties>
                   <property>

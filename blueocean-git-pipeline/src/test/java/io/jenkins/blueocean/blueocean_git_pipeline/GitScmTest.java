@@ -225,8 +225,8 @@ public class GitScmTest extends PipelineBaseTest {
         List<Map> errors = (List<Map>) resp.get("errors");
 
         assertEquals(1, errors.size());
-        assertEquals("scmConfig.credentialId", errors.get(0).get("field"));
-        assertEquals("INVALID", errors.get(0).get("code"));
+        assertEquals(errors.get(0).toString(), "scmConfig.credentialId", errors.get(0).get("field"));
+        assertEquals(errors.get(0).toString(), "INVALID", errors.get(0).get("code"));
     }
 
     @Test
