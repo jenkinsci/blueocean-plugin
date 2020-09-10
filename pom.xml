@@ -11,7 +11,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.23.2</version>
+  <version>1.23.3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
