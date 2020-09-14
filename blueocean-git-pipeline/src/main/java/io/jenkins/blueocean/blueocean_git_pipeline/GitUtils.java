@@ -18,6 +18,7 @@ import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.MergeCommand;
@@ -28,6 +29,7 @@ import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheBuilder;
 import org.eclipse.jgit.dircache.DirCacheEditor;
@@ -109,10 +111,12 @@ class GitUtils {
                 //      Where org.eclipse.jgit.transport.SshTransport.connect() throws IllegalStateException in case of unauthorized,
                 //      org.eclipse.jgit.transport.HttpTransport.connect() throws TransportException with error code 'not authorized'
                 //      appended to the message.
-                if(e instanceof IllegalStateException || e.getMessage().endsWith("not authorized")){
-                    errors.add(new ErrorMessage.Error("scmConfig.credentialId",
-                                    ErrorMessage.Error.ErrorCodes.INVALID.toString(),
-                                    "Invalid credentialId: " + credentials.getId()));
+                // this turn very hackhish with upgrade of git plugin as there is more and more and more cause/layers before having the real cause...
+                if(e instanceof IllegalStateException || e.getMessage().endsWith("not authorized") ||
+                    e.getMessage().endsWith("not authenticated") || (e instanceof GitException && checkCauseNotAuthenticated( (GitException)e)))
+                {
+                    errors.add( new ErrorMessage.Error( "scmConfig.credentialId", ErrorMessage.Error.ErrorCodes.INVALID.toString(),
+                                                        "Invalid credentialId: " + credentials.getId() ) );
                 } else {
                     errors.add(new ErrorMessage.Error("scmConfig.uri",
                         ErrorMessage.Error.ErrorCodes.INVALID.toString(),
@@ -127,6 +131,27 @@ class GitUtils {
             }
         }
         return errors;
+    }
+
+    /**
+     * very hackhish with upgrade of git plugin as there is more and more and more cause/layers before having the real cause...
+     */
+    private static boolean checkCauseNotAuthenticated( GitException e) {
+       if(e.getCause() instanceof TransportException){
+           TransportException te = (TransportException)e.getCause();
+           IllegalStateException stateException = getIllegalStateException(te.getCause());
+           if(stateException!=null){
+               return StringUtils.contains(stateException.getMessage(), "not authenticated.");
+           }
+       }
+       return false;
+    }
+
+    private static IllegalStateException getIllegalStateException(Throwable e){
+        if(e instanceof IllegalStateException){
+            return (IllegalStateException)e;
+        }
+        return e.getCause() == null ? null : getIllegalStateException(e.getCause());
     }
 
     /**

@@ -6,6 +6,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.security.ACL;
+import hudson.security.ACLContext;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.Messages;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -14,8 +15,6 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import net.sf.json.JSONObject;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -80,16 +79,9 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
             throw new ServiceException.BadRequestException(new ErrorMessage(400, "Failed to create Bitbucket server endpoint").addAll(errors));
         }
         final com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint endpoint = new com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint(name, url, false, null);
-        SecurityContext old=null;
-        try {
+        try (ACLContext ctx = ACL.as(ACL.SYSTEM)) {
             // We need to escalate privilege to add user defined endpoint to
-            old = ACL.impersonate(ACL.SYSTEM);
             endpointConfiguration.addEndpoint(endpoint);
-        }finally {
-            //reset back to original privilege level
-            if(old != null){
-                SecurityContextHolder.setContext(old);
-            }
         }
         return new BitbucketServerEndpoint(endpoint, this);
     }
