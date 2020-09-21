@@ -66,6 +66,7 @@ public class BlueOceanCredentialsProviderTest {
         PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
         PowerMockito.when(Jenkins.getActiveInstance()).thenReturn(jenkins);
         when(jenkins.getSecurityRealm()).thenReturn(SecurityRealm.NO_AUTHENTICATION);
+        when(jenkins.getSecretKey()).thenReturn("xxx");
 
         PowerMockito.mockStatic(User.class);
         // Make sure we return a user, cause it did once exist
