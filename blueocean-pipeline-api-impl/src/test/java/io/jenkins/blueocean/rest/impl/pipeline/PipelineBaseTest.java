@@ -92,7 +92,7 @@ public abstract class PipelineBaseTest{
         }
         this.baseUrl = j.jenkins.getRootUrl() + getContextPath();
         this.jwtToken = getJwtToken(j.jenkins);
-        this.crumb = getCrumb( j.jenkins );
+        this.crumb = getCrumb(j.jenkins );
 
         Unirest.setObjectMapper(new ObjectMapper() {
             public <T> T readValue(String value, Class<T> valueType) {

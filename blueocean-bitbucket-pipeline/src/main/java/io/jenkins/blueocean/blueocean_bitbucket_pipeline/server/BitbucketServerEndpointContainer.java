@@ -4,7 +4,8 @@ import com.cloudbees.jenkins.plugins.bitbucket.endpoints.AbstractBitbucketEndpoi
 import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
+import hudson.model.Item;
+import hudson.model.User;
 import hudson.security.ACL;
 import hudson.security.ACLContext;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.Messages;
@@ -14,6 +15,7 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -41,7 +44,14 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
 
     @Override
     public ScmServerEndpoint create(JSONObject request) {
-        List<ErrorMessage.Error> errors = Lists.newLinkedList();
+
+        try {
+            Jenkins.get().checkPermission(Item.CREATE);
+        } catch (Exception e) {
+            throw new ServiceException.ForbiddenException("User does not have permission to create repository", e);
+        }
+
+        List<ErrorMessage.Error> errors = new LinkedList<>();
 
         // Validate name
         final String name = (String) request.get(ScmServerEndpoint.NAME);
