@@ -216,7 +216,7 @@ export default class Pipeline extends Component {
                 case 'pipeline_block_end':
                 case 'pipeline_stage': {
                     logger.debug('sse event block starts refetchNodes', jenkinsEvent);
-                    this.debounceFetchNodes(karaokeOut)
+                    this.debounceFetchNodes(karaokeOut);
                     // prevent flashing of stages and nodes
                     this.showPending = false;
                     break;
