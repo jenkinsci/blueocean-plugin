@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 SCRIPT_DIR=$(dirname $0)
 $SCRIPT_DIR/stop-selenium.sh
 
