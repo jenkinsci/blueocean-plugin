@@ -143,6 +143,18 @@ public class GithubScm extends AbstractScm {
         return super.getState();
     }
 
+    private StandardUsernamePasswordCredentials getCredential(){
+        StaplerRequest request = Stapler.getCurrentRequest();
+        String credentialId = GithubCredentialUtils.computeCredentialId(getCredentialIdFromRequest(request), getId(), getUri());
+        User authenticatedUser = getAuthenticatedUser();
+        final StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+
+        if(credential == null){
+            throw new ServiceException.BadRequestException(String.format("Credential id: %s not found for user %s", credentialId, authenticatedUser.getId()));
+        }
+        return credential;
+    }
+
     /**
      *
      * @param jobName the job name
@@ -158,20 +170,16 @@ public class GithubScm extends AbstractScm {
             throw new ServiceException.NotFoundException(String.format("Job %s not found", jobName));
         }
         GitHubSCMSource gitHubSCMSource = ((GitHubSCMSource)((WorkflowMultiBranchProject)item).getSCMSource( "blueocean"));
+        if(gitHubSCMSource==null){
+            throw new ServiceException.NotFoundException(String.format("GitHubSCMSource for Job %s not found", jobName));
+        }
         String repoOwner = gitHubSCMSource.getRepoOwner();
         String repoName = gitHubSCMSource.getRepository();
 
-        StaplerRequest request = Stapler.getCurrentRequest();
-        String credentialId = GithubCredentialUtils.computeCredentialId(getCredentialIdFromRequest(request), getId(), getUri());
+        StandardUsernamePasswordCredentials credential = getCredential();
+        String accessToken = credential.getPassword().getPlainText();
 
-        User authenticatedUser = getAuthenticatedUser();
-        final StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
-
-        if(credential == null){
-            throw new ServiceException.BadRequestException(String.format("Credential id: %s not found for user %s", credentialId, authenticatedUser.getId()));
-        }
         try {
-            String accessToken = credential.getPassword().getPlainText();
             String url = String.format("%s/repos/%s/%s", apiUrl, repoOwner, repoName);
             GHRepository ghRepository = HttpRequest.get(url).withAuthorizationToken(accessToken).to(GHRepository.class);
             return new GithubRepository(ghRepository, credential, this);
@@ -182,16 +190,7 @@ public class GithubScm extends AbstractScm {
 
     @Override
     public Container<ScmOrganization> getOrganizations() {
-        StaplerRequest request = Stapler.getCurrentRequest();
-        String credentialId = GithubCredentialUtils.computeCredentialId(getCredentialIdFromRequest(request), getId(), getUri());
-
-        User authenticatedUser = getAuthenticatedUser();
-        final StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
-
-        if(credential == null){
-            throw new ServiceException.BadRequestException(String.format("Credential id: %s not found for user %s", credentialId, authenticatedUser.getId()));
-        }
-
+        StandardUsernamePasswordCredentials credential = getCredential();
         String accessToken = credential.getPassword().getPlainText();
 
         try {

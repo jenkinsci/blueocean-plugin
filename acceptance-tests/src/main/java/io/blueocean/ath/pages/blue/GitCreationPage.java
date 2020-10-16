@@ -10,6 +10,7 @@ import io.blueocean.ath.sse.SSEEvents;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -79,6 +80,7 @@ public class GitCreationPage {
 
         wait.until(By.xpath("//*[contains(text(), 'Jenkins needs a user credential')]"));
 
+        new Actions(driver).moveToElement(wait.until(By.cssSelector("div.text-username input"))).click().perform();
         wait.until(By.cssSelector("div.text-username input")).sendKeys(user);
         wait.until(By.cssSelector("div.text-password input")).sendKeys(pass);
         wait.until(By.cssSelector(".button-create-credential")).click();
