@@ -331,12 +331,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-executor-info</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <!-- TODO: should be moved out of blueocean repo as separate plugin -->
         <dependency>
             <groupId>${project.groupId}</groupId>
