@@ -255,7 +255,7 @@ export class GitCredentialsPickerPassword extends React.Component<Props, State> 
                     <RadioButtonGroup
                         options={radioOptions}
                         labelFunction={this._radioLabel}
-                        defaultOption={RadioOption.CREATE_NEW}
+                        defaultOption={RadioOption.USE_EXISTING}
                         onChange={this._radioChanged}
                     />
                 )}
