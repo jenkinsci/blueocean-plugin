@@ -1,6 +1,5 @@
 package io.blueocean.ath.pages.blue;
 
-import com.google.common.base.Strings;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
