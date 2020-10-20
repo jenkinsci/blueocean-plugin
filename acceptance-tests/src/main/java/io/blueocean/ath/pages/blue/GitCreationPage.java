@@ -106,15 +106,23 @@ public class GitCreationPage {
         MultiBranchPipeline pipeline=null;
         try {
             pipeline = multiBranchPipelineFactory.pipeline(pipelineName);
-            wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 30000);
+            String urlPart = pipeline.getUrl() + "/activity";
+            logger.info("waiting for urlPart: " + urlPart);
+            wait.until(ExpectedConditions.urlContains(urlPart), 30000);
             sseCLient.untilEvents(SSEEvents.activityComplete(pipeline.getName()));
             driver.navigate().refresh();
             pipeline.getActivityPage().checkUrl();
             return pipeline;
         } finally {
-            if(pipeline!=null){
-                pipeline.deleteThisPipeline(pipelineName);
-            }
+            deleteQuietly(pipeline, pipelineName);
+        }
+    }
+
+    private void deleteQuietly(MultiBranchPipeline pipeline, String pipelineName){
+        try{
+            pipeline.deleteThisPipeline(pipelineName);
+        } catch (Throwable e){
+            //
         }
     }
 }
