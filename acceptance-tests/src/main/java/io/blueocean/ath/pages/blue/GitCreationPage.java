@@ -79,7 +79,7 @@ public class GitCreationPage {
 
         wait.until(By.xpath("//*[contains(text(), 'Jenkins needs a user credential')]"));
 
-        new Actions(driver).moveToElement(wait.until(By.cssSelector("div.text-username input"))).click().perform();
+        driver.findElement(By.xpath( "//*[contains(text(),'Create new credential')]" )).click();
         wait.until(By.cssSelector("div.text-username input")).sendKeys(user);
         wait.until(By.cssSelector("div.text-password input")).sendKeys(pass);
         wait.until(By.cssSelector(".button-create-credential")).click();
