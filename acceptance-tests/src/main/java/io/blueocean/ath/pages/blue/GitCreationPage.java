@@ -78,6 +78,7 @@ public class GitCreationPage {
         wait.until(By.cssSelector("div.text-repository-url input")).sendKeys(url);
 
         wait.until(By.xpath("//*[contains(text(), 'Jenkins needs a user credential')]"));
+        wait.until(By.xpath("//*[contains(text(), 'Create new credential')]"));
 
         driver.findElement(By.xpath( "//*[contains(text(),'Create new credential')]" )).click();
         wait.until(By.cssSelector("div.text-username input")).sendKeys(user);
@@ -90,11 +91,18 @@ public class GitCreationPage {
         wait.until(By.cssSelector(".button-create-pipeline")).click();
         logger.info("Click create pipeline button");
 
-        MultiBranchPipeline pipeline = multiBranchPipelineFactory.pipeline(pipelineName);
-        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 30000);
-        sseCLient.untilEvents(SSEEvents.activityComplete(pipeline.getName()));
-        driver.navigate().refresh();
-        pipeline.getActivityPage().checkUrl();
-        return pipeline;
+        MultiBranchPipeline pipeline=null;
+        try {
+            pipeline = multiBranchPipelineFactory.pipeline(pipelineName);
+            wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 30000);
+            sseCLient.untilEvents(SSEEvents.activityComplete(pipeline.getName()));
+            driver.navigate().refresh();
+            pipeline.getActivityPage().checkUrl();
+            return pipeline;
+        } finally {
+            if(pipeline!=null){
+                pipeline.deleteThisPipeline(pipelineName);
+            }
+        }
     }
 }
