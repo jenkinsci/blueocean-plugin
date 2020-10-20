@@ -1,5 +1,6 @@
 package io.blueocean.ath.pages.blue;
 
+import io.blueocean.ath.AcceptanceTestException;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
@@ -8,6 +9,8 @@ import io.blueocean.ath.sse.SSEClientRule;
 import io.blueocean.ath.sse.SSEEvents;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
@@ -78,9 +81,18 @@ public class GitCreationPage {
         wait.until(By.cssSelector("div.text-repository-url input")).sendKeys(url);
 
         wait.until(By.xpath("//*[contains(text(), 'Jenkins needs a user credential')]"));
-        wait.until(By.xpath("//*[contains(text(), 'Create new credential')]"));
 
-        driver.findElement(By.xpath( "//*[contains(text(),'Create new credential')]" )).click();
+        boolean createCredentialFound = false;
+        try{
+            wait.until(By.xpath("//*[contains(text(), 'Create new credential')]"));
+            createCredentialFound = true;
+        } catch ( NoSuchElementException|TimeoutException|AcceptanceTestException e ){
+            // ignore it
+        }
+        if(createCredentialFound){
+            driver.findElement(By.xpath( "//*[contains(text(),'Create new credential')]")).click();
+        }
+
         wait.until(By.cssSelector("div.text-username input")).sendKeys(user);
         wait.until(By.cssSelector("div.text-password input")).sendKeys(pass);
         wait.until(By.cssSelector(".button-create-credential")).click();
