@@ -81,7 +81,7 @@ public class GithubCreationTest {
     @Retry(3)
     public void testCreatePipelineFull() throws IOException {
         byte[] content = "stage('build') { echo 'yes' }".getBytes("UTF-8");
-        GHContentUpdateResponse updateResponse = helper.getGithubRepository().createContent(content, "Jenkinsfile", "Jenkinsfile", "master");
+        GHContentUpdateResponse updateResponse = helper.getGithubRepository().createContent(content, "Jenkinsfile", "Jenkinsfile", "main");
         helper.getGithubRepository().createRef("refs/heads/branch1", updateResponse.getCommit().getSHA1());
         logger.info("Created master and branch1 branches in " + helper.getGithubRepository().getFullName());
         helper.getGithubRepository().createContent("hi there","newfile", "newfile", "branch1");
@@ -107,7 +107,7 @@ public class GithubCreationTest {
         String commitMessage = "Add new-file to our repo";
         MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
         byte[] firstJenkinsfile = "stage('first-build') { echo 'first-build' }".getBytes("UTF-8");
-        GHContentUpdateResponse initialUpdateResponse = helper.getGithubRepository().createContent(firstJenkinsfile, "firstJenkinsfile", "Jenkinsfile", "master");
+        GHContentUpdateResponse initialUpdateResponse = helper.getGithubRepository().createContent(firstJenkinsfile, "firstJenkinsfile", "Jenkinsfile", "main");
         helper.getGithubRepository().createRef(("refs/heads/" + branchToCreate), initialUpdateResponse.getCommit().getSHA1());
         logger.info("Created master and " + branchToCreate + " branches in " + helper.getActualRepositoryName());
 
@@ -117,7 +117,7 @@ public class GithubCreationTest {
         helper.getGithubRepository().createPullRequest(
             commitMessage,
             branchToCreate,
-            "master",
+            "main",
             "My first pull request is very exciting.");
         // Fire the rescan.
         pipeline.rescanThisPipeline();
