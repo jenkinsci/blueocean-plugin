@@ -13,6 +13,7 @@
         <phantomjs.binary.path>./target/phantomjs-maven-plugin/phantomjs-2.1.1-linux-x86_64/bin/phantomjs</phantomjs.binary.path>
         <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
         <slf4j.version>1.7.25</slf4j.version>
+        <selenium.version>3.141.59</selenium.version> <!-- 3.141.59 4.0.0-alpha-6 -->
     </properties>
 
 
@@ -41,17 +42,17 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13</version>
+            <version>4.13.1</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>3.141.59</version>
+            <version>${selenium.version}</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-firefox-driver</artifactId>
-            <version>3.141.59</version>
+            <version>${selenium.version}</version>
         </dependency>
         <!-- begin HttpRequest helper -->
         <dependency>
@@ -151,7 +152,10 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.20</version>
+                    <version>3.0.0-M5</version>
+                    <configuration>
+                        <trimStackTrace>false</trimStackTrace>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -175,6 +179,19 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>java11</id>
+            <activation>
+                <jdk>11</jdk>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                    <version>2.3.1</version>
+                </dependency>
+            </dependencies>
+        </profile>
         <profile>
             <id>offline</id>
             <activation>
