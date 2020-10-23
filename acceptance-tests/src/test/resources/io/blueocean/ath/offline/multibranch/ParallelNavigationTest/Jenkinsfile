@@ -3,11 +3,11 @@ node {
     stage("parallel") {
       parallel firstBranch: {
           echo 'first branch visible'
-          sh 'ping -c 30 localhost'
+          sleep(30)
 
       }, secondBranch: {
           echo 'second branch visible'
-          sh 'ping -c 30 localhost'
+          sleep(30)
       }
 
     }

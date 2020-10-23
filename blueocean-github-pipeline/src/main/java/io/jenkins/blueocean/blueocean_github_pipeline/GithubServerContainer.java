@@ -6,20 +6,20 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.hash.Hashing;
+import hudson.model.Item;
+import hudson.model.User;
 import hudson.security.ACL;
+import hudson.security.ACLContext;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.collections.ComparatorUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
 import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
@@ -29,12 +29,11 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.nio.charset.Charset;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -55,7 +54,13 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
 
     public @CheckForNull ScmServerEndpoint create(@JsonBody JSONObject request) {
 
-        List<ErrorMessage.Error> errors = Lists.newLinkedList();
+        try {
+            Jenkins.get().checkPermission(Item.CREATE);
+        } catch (Exception e) {
+            throw new ServiceException.ForbiddenException("User does not have permission to create repository.", e);
+        }
+
+        List<ErrorMessage.Error> errors = new LinkedList();
 
         // Validate name
         final String name = (String) request.get(GithubServer.NAME);
@@ -120,10 +125,8 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
         }
 
         if (errors.isEmpty()) {
-            SecurityContext old = null;
-            try {
+            try (ACLContext ctx = ACL.as(ACL.SYSTEM)) {
                 // We need to escalate privilege to add user defined endpoint to
-                old = ACL.impersonate(ACL.SYSTEM);
                 GitHubConfiguration config = GitHubConfiguration.get();
                 String sanitizedUrl = discardQueryString(url);
                 Endpoint endpoint = new Endpoint(sanitizedUrl, name);
@@ -131,11 +134,6 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
                     errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + endpoint.getName() + "'"));
                 } else {
                     return new GithubServer(endpoint, getLink());
-                }
-            }finally {
-                //reset back to original privilege level
-                if(old != null){
-                    SecurityContextHolder.setContext(old);
                 }
             }
         }

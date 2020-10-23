@@ -33,7 +33,6 @@
     "gulp": "3.9.1",
     "gulp-typescript": "4.0.1",
     "jest": "19.0.2",
-    "jquery-detached": "2.1.4-v4",
     "ncp": "2.0.0",
     "reactify": "1.1.1",
     "ts-jest": "19.0.2",

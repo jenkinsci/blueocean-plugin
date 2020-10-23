@@ -6,12 +6,10 @@
         <artifactId>blueocean-parent</artifactId>
         <version>${revision}${changelist}</version>
     </parent>
-    <name>Blue Ocean Executor Info</name>
+    <name>DEPRECATED Blue Ocean Executor Info</name>
     <artifactId>blueocean-executor-info</artifactId>
     <packaging>hpi</packaging>
-    <description>Show what executors are doing what.</description>
-    <url>https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean/doc/BlueOcean.adoc</url>
-
+    <description>DEPRECATED plugin.</description>
     <developers>
         <developer>
             <id>kzantow</id>
@@ -20,58 +18,4 @@
         </developer>
     </developers>
 
-    <dependencies>
-
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>script-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-step-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-scm-step</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.jenkins.blueocean</groupId>
-            <artifactId>blueocean-pipeline-api-impl</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.jenkins.blueocean</groupId>
-            <artifactId>blueocean-rest</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.jenkins.blueocean</groupId>
-            <artifactId>blueocean-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>structs</artifactId>
-        </dependency>
-    </dependencies>
-
-    <repositories>
-        <repository>
-            <id>repo.jenkins-ci.org</id>
-            <url>https://repo.jenkins-ci.org/public/</url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>repo.jenkins-ci.org</id>
-            <url>https://repo.jenkins-ci.org/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
 </project>

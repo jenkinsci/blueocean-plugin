@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({BitbucketServerApi.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class BitbucketServerEndpointTest extends BbServerWireMock {
     private static final String URL = "/organizations/jenkins/scm/bitbucket-server/servers/";
 

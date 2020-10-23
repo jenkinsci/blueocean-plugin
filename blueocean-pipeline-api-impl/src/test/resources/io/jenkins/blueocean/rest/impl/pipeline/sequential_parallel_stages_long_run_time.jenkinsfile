@@ -3,16 +3,16 @@ pipeline {
   stages {
     stage('first-solo') {
       steps {
-        sh 'echo \'first-solo\''
-        sh 'ping -c 5 localhost'
+        echo('first-solo')
+        sleep(5)
       }
     }
     stage('parent') {
         parallel {
             stage('single-stage') {
               steps {
-                sh 'echo \'single-stage\''
-                sh 'ping -c 5 localhost'
+                echo ('single-stage')
+                sleep(5)
               }
             }
 
@@ -20,20 +20,20 @@ pipeline {
                 stages {
                     stage('first-sequential-stage') {
                       steps {
-                        sh 'echo \'first-sequential-stage\''
-                        sh 'ping -c 5 localhost'
+                        echo('first-sequential-stage')
+                        sleep(5)
                       }
                     }
                     stage('second-sequential-stage') {
                       steps {
-                        sh 'echo \'second-sequential-stage\''
-                        sh 'ping -c 5 localhost'
+                        echo('second-sequential-stage')
+                        sleep(5)
                       }
                     }
                     stage('third-sequential-stage') {
                       steps {
-                        sh 'echo \'third-sequential-stage\''
-                        sh 'ping -c 5 localhost'
+                        echo('third-sequential-stage')
+                        sleep(5)
                       }
                     }
                 }
@@ -41,16 +41,16 @@ pipeline {
 
             stage('other-single-stage') {
               steps {
-                sh 'echo \'other-single-stage\''
-                sh 'ping -c 5 localhost'
+                echo('other-single-stage')
+                sleep(5)
               }
             }
         }
     }
     stage('second-solo') {
       steps {
-        sh 'echo \'second-solo\''
-        sh 'ping -c 5 localhost'
+        echo('second-solo')
+        sleep(5)
       }
     }
   }
