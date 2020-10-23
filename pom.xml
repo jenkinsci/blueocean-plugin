@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.3</version>
+    <version>4.9</version>
     <relativePath />
   </parent>
 
@@ -25,8 +25,9 @@
   </licenses>
 
   <properties>
-    <revision>1.23.3</revision>
+    <revision>1.24.2</revision>
     <changelist>-SNAPSHOT</changelist>
+    <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <java.level>8</java.level>
     <jenkins.version>2.176.4</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
@@ -42,7 +43,6 @@
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
-    <jenkins-test-harness.version>2.63</jenkins-test-harness.version>
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
     <workflow-support.version>3.3</workflow-support.version>
     <pipeline-model-definition.version>1.6.0</pipeline-model-definition.version>
@@ -50,9 +50,9 @@
   </properties>
 
   <scm>
-    <connection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</connection>
-    <developerConnection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/blueocean-plugin</url>
+    <connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
+    <developerConnection>scm:git:https://github.com/${gitHubRepo}.git</developerConnection>
+    <url>https://github.com/${gitHubRepo}</url>
     <tag>${scmTag}</tag>
   </scm>
 
@@ -189,7 +189,7 @@
       <dependency>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
-          <version>4.13</version>
+          <version>4.13.1</version>
           <scope>test</scope>
       </dependency>
       <dependency>

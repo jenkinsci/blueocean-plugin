@@ -28,7 +28,7 @@ public class SigningKeyProviderImpl extends JwtSigningKeyProvider {
     private static final Logger LOGGER = Logger.getLogger(SigningKeyProviderImpl.class.getName());
     private static final Pattern YYYYMM = Pattern.compile("[0-9]{6}");
 
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMM")
+    public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMM")
         .withZone(ZoneId.systemDefault());
 
     private final AtomicReference<JwtRsaDigitalSignatureKey> key = new AtomicReference<>();
