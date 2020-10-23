@@ -39,10 +39,9 @@ public abstract class BbRepo {
     public abstract BbOrg getOrg();
 
     /**
-     * Bitbucket supports Git and mercurial. This tells if this repo is a git repo.
-     *
-     * @return true if it's git repo.
+     * @deprecated Now always true.
      */
+    @Deprecated
     @JsonIgnore
     public abstract boolean isGit();
 
