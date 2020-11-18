@@ -14,6 +14,7 @@ git.ssh.keyfile=
 git.ssh.pipelineName=
 
 # https://github.com/myorg/private-repo.git
+# this repository needs to have master as default branch and an existing Jenkinsfile
 git.https.repository=
 # org/user
 git.https.user=

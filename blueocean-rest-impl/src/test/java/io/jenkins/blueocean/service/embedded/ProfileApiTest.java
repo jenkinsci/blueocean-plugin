@@ -15,8 +15,8 @@ import hudson.tasks.UserAvatarResolver;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.service.embedded.rest.UserImpl;
 import jenkins.model.Jenkins;
-import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.userdetails.UserDetails;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -391,7 +391,7 @@ public class ProfileApiTest extends BaseTest{
 
         UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
 
-        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(bob.getId(), bob.getId(), d.getAuthorities()));
 
         Assert.assertNull(new UserImpl(Iterables.getFirst(OrganizationFactory.getInstance().list(), null), alice).getPermission());
     }

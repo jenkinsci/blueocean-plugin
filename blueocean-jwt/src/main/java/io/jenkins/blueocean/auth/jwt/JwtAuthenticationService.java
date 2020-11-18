@@ -2,6 +2,7 @@ package io.jenkins.blueocean.auth.jwt;
 
 import hudson.ExtensionPoint;
 import hudson.model.UnprotectedRootAction;
+import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
@@ -48,4 +49,14 @@ public abstract class JwtAuthenticationService implements UnprotectedRootAction,
     public SigningPublicKey getJwks(String keyId) {
         return JwtSigningKeyProvider.toPublicKey(keyId);
     }
+
+    /**
+     * Binds Json web keys to the URL space.
+     *
+     * @return a JWKS
+     * @see <a href="https://tools.ietf.org/html/rfc7517#page-10">the JWK Set Format spec</a>
+     */
+    @GET
+    @WebMethod(name = "jwk-set") // we could not name this endpoint /jwks as it would be shadowing the pre-existing one
+    public abstract JSONObject getJwkSet();
 }

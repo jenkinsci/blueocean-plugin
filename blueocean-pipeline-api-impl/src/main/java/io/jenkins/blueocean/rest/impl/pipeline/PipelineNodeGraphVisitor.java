@@ -205,10 +205,6 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
         // it's nested stages inside parallel so let's collect them later
         if (!parallelEnds.isEmpty()) {
-            // nested stages not supported in scripted pipeline.
-            if (!isDeclarative()) {
-                return;
-            }
             parallelNestedStages = true;
         }
 
@@ -401,9 +397,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     dump(String.format("\t\t\"Complex\" stages detected (%d)", stack.size()));
                 }
 
-                FlowNodeWrapper firstNodeWrapper = stack.pop();
-
-                if (stack.isEmpty()) {
+                if (stack.size() == 1) {
+                    FlowNodeWrapper firstNodeWrapper = stack.pop();
                     // We've got a single non-nested stage for this branch. We're going to discard it from our graph,
                     // since we use the node for the branch itself, which has been created with the same name...
 
@@ -417,24 +412,26 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     if (nextStage != null) {
                         branch.addEdge(nextStage);
                     }
-
                 } else {
-                    // We've got nested stages for sequential stage branches and/or branch labelling purposes
+                    if (isDeclarative()) {
+                        // Declarative parallel pipeline scenario
+                        // We've got nested stages for sequential stage branches and/or branch labelling purposes
+                        FlowNodeWrapper firstNodeWrapper = stack.pop();
 
-                    // Usually ignore firstNodeWrapper, but if the first stage has a different name...
-                    if (!StringUtils.equals(firstNodeWrapper.getDisplayName(), branch.getDisplayName())) {
-                        // we record this node so the UI can show the label for the branch...
-                        if (isNodeVisitorDumpEnabled) {
-                            dump("\t\tNested labelling stage detected");
+                        // Usually ignore firstNodeWrapper, but if the first stage has a different name...
+                        if (!StringUtils.equals(firstNodeWrapper.getDisplayName(), branch.getDisplayName())) {
+                            // we record this node so the UI can show the label for the branch...
+                            if (isNodeVisitorDumpEnabled) {
+                                dump("\t\tNested labelling stage detected");
+                            }
+                            branch.addEdge(firstNodeWrapper);
+                            firstNodeWrapper.addParent(branch);
+                            nodes.add(firstNodeWrapper);
+                            // Note that there's no edge from this labelling node to the rest of the branch stages
                         }
-                        branch.addEdge(firstNodeWrapper);
-                        firstNodeWrapper.addParent(branch);
-                        nodes.add(firstNodeWrapper);
-                        // Note that there's no edge from this labelling node to the rest of the branch stages
                     }
-
+                    // Declarative and scripted parallel pipeline scenario
                     FlowNodeWrapper previousNode = branch;
-
                     while (!stack.isEmpty()) {
                         // Grab next, link to prev, add to result
                         FlowNodeWrapper currentStage = stack.pop();
@@ -687,7 +684,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
         boolean graphsAreCompatible = true;
 
-        Map<String, FlowNodeWrapper> newNodes = new HashMap<>(previousNodes.size()); // indexed by id
+        // A map from the ID of a node from previousNodes to the corresponding node for the current build.
+        Map<String, FlowNodeWrapper> newNodes = new HashMap<>(previousNodes.size());
 
         // Start with the currently-executing nodes
         for (FlowNodeWrapper currentNodeWrapper : nodes) {
@@ -710,14 +708,14 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
                 // New wrapper object based on current execution
                 FlowNodeWrapper newNodeWrapper = new FlowNodeWrapper(
-                    oldNodeWrapper.getNode(), // Use old node because we want to show the final id not intermediary
+                    currentNodeWrapper.getNode(),
                     currentNodeWrapper.getStatus(),
                     currentNodeWrapper.getTiming(),
                     currentNodeWrapper.getInputStep(),
                     run
                 );
 
-                newNodes.put(nodeId, newNodeWrapper);
+                newNodes.put(oldNodeWrapper.getId(), newNodeWrapper);
 
             } else {
                 // Node does not exist in previous graph, user probably changed pipleine definition.
@@ -729,9 +727,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         // Walk the old graph, create new wrappers for any stages not yet started
         if (graphsAreCompatible) {
             for (FlowNodeWrapper oldNodeWrapper : previousNodes) {
-                final String nodeId = oldNodeWrapper.getId();
+                final String oldNodeId = oldNodeWrapper.getId();
 
-                if (!newNodes.containsKey(nodeId)) {
+                if (!newNodes.containsKey(oldNodeId)) {
                     FlowNodeWrapper newNodeWrapper = new FlowNodeWrapper(
                         oldNodeWrapper.getNode(),
                         new NodeRunStatus(null, null),
@@ -740,7 +738,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                         run
                     );
 
-                    newNodes.put(nodeId, newNodeWrapper);
+                    newNodes.put(oldNodeId, newNodeWrapper);
                 }
             }
         }
@@ -748,9 +746,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         // Re-create edges and parentage based on previous run
         if (graphsAreCompatible) {
             for (FlowNodeWrapper oldNodeWrapper : previousNodes) {
-                final String nodeId = oldNodeWrapper.getId();
+                final String oldNodeId = oldNodeWrapper.getId();
 
-                FlowNodeWrapper newNodeWrapper = newNodes.get(nodeId);
+                FlowNodeWrapper newNodeWrapper = newNodes.get(oldNodeId);
 
                 for (FlowNodeWrapper oldEdge : oldNodeWrapper.edges) {
                     FlowNodeWrapper newEdge = newNodes.get(oldEdge.getId());
@@ -773,8 +771,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             // code that makes too many assumptions
 
             for (FlowNodeWrapper oldNodeWrapper : previousNodes) {
-                final String nodeId = oldNodeWrapper.getId();
-                FlowNodeWrapper newNodeWrapper = newNodes.get(nodeId);
+                final String oldNodeId = oldNodeWrapper.getId();
+                FlowNodeWrapper newNodeWrapper = newNodes.get(oldNodeId);
                 newList.add(new PipelineNodeImpl(newNodeWrapper, () -> parent, run));
             }
 

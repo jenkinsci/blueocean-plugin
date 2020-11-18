@@ -32,7 +32,7 @@ All commits should be squashed before being merged to `master` to preserve a san
 
 For Jenkins-ish code on the server side (which Blue Ocean is built on) - follow the same as: https://wiki.jenkins-ci.org/display/JENKINS/Beginners+Guide+to+Contributing#BeginnersGuidetoContributing-HowaboutJavacode%3F - you can make this a bit easier by importing the .editorconfig file into your favourite editor so it autoformats for you. 
 
-## Javascript and web
+## JavaScript and web
 
 (this is a bit vague while sorted out. Any help/automation appreciated)
 

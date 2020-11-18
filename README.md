@@ -1,5 +1,5 @@
 # Blue Ocean 
-Blue Ocean is the next generation user experience for Jenkins. You can learn more about its features and roadmap on the [Blue Ocean project website](https://jenkins.io/projects/blueocean/).
+Blue Ocean is the next generation user experience for Jenkins. You can learn more about its features on the [Blue Ocean project website](https://jenkins.io/projects/blueocean/).
 
 Join the community and [![Gitter](https://badges.gitter.im/jenkinsci/blueocean-plugin.svg)](https://gitter.im/jenkinsci/blueocean-plugin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
@@ -70,6 +70,8 @@ Builds all maven modules (run this the first time you check things out, at least
 $ mvn clean install
 ```
 
+**NOTE:** If you are using macOS, you must install JDK 1.8 or the installation will fail (The most recent versions of macOS come preinstalled with JDK 10). Please follow [this link](https://stackoverflow.com/questions/46513639/how-to-downgrade-java-from-9-to-8-on-a-macos-eclipse-is-not-running-with-java-9/48422257#48422257) for instructions.
+
 For now, you'll need to skip the tests if __building on Windows__, so be sure to include the `-DskipTests` switch e.g.
 
 ```
@@ -86,7 +88,7 @@ Then open http://localhost:8080/jenkins/blue to start using Blue Ocean.
 
 The Jenkins Classic UI exists side-by-side at its usual place at http://localhost:8080/jenkins.
 
-NOTE: while running in this mode, Jenkins will automatically re-compile your Javascript files
+NOTE: while running in this mode, Jenkins will automatically re-compile your JavaScript files
 and LESS files for all local plugins (including those linked with `hpi:hpl`) where a `package.json` is found
 that contains a `mvnbuild` script. If you would like to disable this behavior, you may set
 the system property: `-Dblueocean.features.BUNDLE_WATCH_SKIP=true`
@@ -114,7 +116,7 @@ Look in following README's for:
 
 ### Building plugins for Blue Ocean
 
-Blue Ocean plugins use the same plugin mechanism as Jenkins for distribution and installation, but involve a lot more Javascript if they have GUI elements. 
+Blue Ocean plugins use the same plugin mechanism as Jenkins for distribution and installation, but involve a lot more JavaScript if they have GUI elements. 
 
 The best way to get started is to look at the tutorial and Yeoman starter project here: 
 https://www.npmjs.com/package/generator-blueocean-usain
@@ -133,7 +135,7 @@ Blue Ocean has javascript extension points that currently work with react compon
 
 As npm packages are used node-gyp may be involved and this can require some tools installed to build native dependencies (native components are not used at runtime) - see https://www.npmjs.com/package/node-gyp for instructions for your platform
 
-If you are working on the Javascript, you will need node installed, look at the version in the pom.xml for the minimum version required.
+If you are working on the JavaScript, you will need node installed, look at the version in the pom.xml for the minimum version required.
 
 __NOTE__: look in the README.md of the respective modules for more detailed dev docs. 
 
@@ -257,7 +259,7 @@ Gitter is the day to day chat venue used, you can log in with your github identi
 * Post to the mailing list: https://groups.google.com/forum/#!forum/jenkinsci-ux
 
 
-The Acceptance test suite is located here: [accpetance-tests](./acceptance-tests)
+The Acceptance test suite is located here: [acceptance-tests](./acceptance-tests)
 
 
 ## Releasing
