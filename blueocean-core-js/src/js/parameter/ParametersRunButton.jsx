@@ -132,13 +132,14 @@ export class ParametersRunButton extends Component {
             pipe.fullName += `/${pipe.branch}`;
         }
         const classicBuildUrl = UrlBuilder.buildClassicBuildUrl(pipe);
-        const sanity = parameters.filter(parameter => supportedInputTypesMapping[parameter.type] !== undefined);
-        logger.debug('sane?', sanity.length === parameters.length, 'classicBuildUrl: ', classicBuildUrl);
+        const unsupported = parameters.filter(parameter => supportedInputTypesMapping[parameter.type] === undefined);
+        logger.debug('sane?', unsupported.length === 0, 'classicBuildUrl: ', classicBuildUrl);
         let dialog;
-        if (sanity.length !== parameters.length) {
+        if (unsupported.length > 0) {
             logger.debug('sanity check failed. Returning Alert instead of the form.');
             const alertCaption = [
-                <p>{t('inputParameter.error.message')}</p>,
+                <p>{t('inputParameter.error.unsupported',
+                      [...new Set(unsupported.map(parameter => parameter.type))].join(t('inputParameter.unsupported.list_separator')))}</p>,
                 <a href={classicBuildUrl} target="_blank">
                     {t('inputParameter.error.linktext')}
                 </a>,
