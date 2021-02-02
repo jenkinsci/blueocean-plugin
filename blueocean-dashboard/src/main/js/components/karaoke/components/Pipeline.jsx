@@ -46,6 +46,15 @@ export default class Pipeline extends Component {
         this.updateOnFinish = KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value;
         this.stopOnClick = KaraokeConfig.getPreference('runDetails.pipeline.stopKaraokeOnAnyNodeClick').value === 'always';
         this.state = { tailLogs: false };
+
+        this.debounceFetchNodes = debounce((karaokeOut) => {
+            logger.debug('sse fetch it', this.karaoke);
+            if (karaokeOut) {
+                this.pager.fetchNodesOnly({});
+            } else {
+                this.pager.fetchNodes({});
+            }
+        }, 200);
     }
 
     // These are normally on the context, but have to be sent into this component as props because context
@@ -207,14 +216,7 @@ export default class Pipeline extends Component {
                 case 'pipeline_block_end':
                 case 'pipeline_stage': {
                     logger.debug('sse event block starts refetchNodes', jenkinsEvent);
-                    debounce(() => {
-                        logger.debug('sse fetch it', this.karaoke);
-                        if (karaokeOut) {
-                            this.pager.fetchNodesOnly({});
-                        } else {
-                            this.pager.fetchNodes({});
-                        }
-                    }, 200)();
+                    this.debounceFetchNodes(karaokeOut);
                     // prevent flashing of stages and nodes
                     this.showPending = false;
                     break;
