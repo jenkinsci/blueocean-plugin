@@ -45,7 +45,7 @@ public @interface TreeResponse {
                 return new HttpResponse() {
                     @Override
                     public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-                        Export.doJson(req, rsp, resp);;
+                        Export.doJson(req, rsp, resp);
                     }
                 };
             }else{

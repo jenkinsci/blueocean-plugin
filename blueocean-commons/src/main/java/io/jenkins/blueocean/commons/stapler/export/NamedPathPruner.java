@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 public final class NamedPathPruner extends TreePruner {
 
     static class Tree {
-        final Map<String,Tree> children = new TreeMap<String,Tree>();
+        final Map<String,Tree> children = new TreeMap<>();
         Range range = Range.ALL;
         public @Override String toString() {return children.toString();}
     }
