@@ -5,7 +5,7 @@ In general, you shouldn't need to modify stuff in for plugins or features as it 
 
 Look for blueocean.js for excitement.
 
-## how this works with Javascript
+## how this works with JavaScript
 
 All runtime JavaScript artifacts are generated during the build and added to the plugin HPI.
 

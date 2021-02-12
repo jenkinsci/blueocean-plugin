@@ -8,6 +8,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositories;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepository;
+import org.kohsuke.github.GHRepository;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
@@ -23,10 +24,10 @@ import java.util.List;
  */
 public class GithubRepositories extends ScmRepositories {
 
-    private static final CollectionType GH_REPO_EX_LIST_TYPE = GithubScm.om.getTypeFactory().constructCollectionType(List.class, GHRepoEx.class);
+    private static final CollectionType GH_REPO_EX_LIST_TYPE = GithubScm.getMappingObjectReader().getTypeFactory().constructCollectionType(List.class, GHRepository.class);
 
     private final Link self;
-    private final List<GHRepoEx> repositories;
+    private final List<GHRepository> repositories;
     private final String accessToken;
     private final Integer nextPage;
     private final Integer lastPage;
@@ -64,7 +65,8 @@ public class GithubRepositories extends ScmRepositories {
                     parent.getRepoType(),
                     pageSize, pageNumber), accessToken);
 
-            this.repositories = GithubScm.om.readValue(HttpRequest.getInputStream(connection), GH_REPO_EX_LIST_TYPE);
+            this.repositories = GithubScm.getMappingObjectReader().forType(GH_REPO_EX_LIST_TYPE)
+                .readValue(HttpRequest.getInputStream(connection));
 
             String link = connection.getHeaderField("Link");
 
@@ -111,9 +113,9 @@ public class GithubRepositories extends ScmRepositories {
 
     @Override
     public Iterable<ScmRepository> getItems() {
-        return Iterables.transform(repositories, new Function<GHRepoEx, ScmRepository>() {
+        return Iterables.transform(repositories, new Function<GHRepository, ScmRepository>() {
             @Override
-            public ScmRepository apply(@Nullable GHRepoEx input) {
+            public ScmRepository apply(@Nullable GHRepository input) {
                 if(input == null){
                     return null;
                 }

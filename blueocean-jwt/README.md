@@ -85,4 +85,22 @@ must be used to verify the JWT token.
        "kid" : "bab71d7b184548a6b93480721d352ba1"
     }
 
- 
+An endpoint returning all the keys is also available, following the RFC 7517 format spec:
+
+    GET /jwt-auth/jwk-set
+     
+    HTTP/1.1 200 OK
+    Content-type: application/json
+    {
+        "keys": {
+           "alg" : "RS256",
+           "e" : "AQAB",
+           "kty" : "RSA",
+           "n" : "AMmWNNrmWzJXik7K7gmDkPumxqPzxc/JnxWsZ3CrhJGSO8hIgfsN6M5UHWSwkAoBHyNIaaPXhubWpcWCRewiI0U2Aw4jO3vzxNndRB9YaDPrrWDjvKBaqMC08IePPxmxXCj3ZS0QoEpf6rczdm2f9Of6Fro0TufXf2EYjLndBH7ep6iDQ4/TG7FkD7o39/GXuHAin0sz7atrPun3tlkuxllu5XNV+yW6WusrNIz3txyvKKEyQX950eW/6mMD0hS6yT7TbAwfrxkTnq4SiagCTllV+ct4wfnONDrao3WYgZnNgohsX/nEnYMHYq592n2WZW/i2+PNaFZlL2+3QgWO4qc=",
+           "use" : "sig",
+           "key_ops" : [
+              "verify"
+           ],
+           "kid" : "bab71d7b184548a6b93480721d352ba1"
+        }]
+    }

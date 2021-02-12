@@ -12,7 +12,7 @@
     <packaging>hpi</packaging>
 
     <name>REST Implementation for Blue Ocean</name>
-    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+    <url>https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean/doc/BlueOcean.adoc</url>
 
     <properties>
         <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
@@ -92,13 +92,8 @@
         </dependency>
 
         <dependency>
-            <groupId>ua_parser</groupId>
-            <artifactId>ua-parser</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
+            <groupId>com.github.ua-parser</groupId>
+            <artifactId>uap-java</artifactId>
         </dependency>
 
         <dependency>
@@ -135,7 +130,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-standalone</artifactId>
+            <artifactId>wiremock-jre8-standalone</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

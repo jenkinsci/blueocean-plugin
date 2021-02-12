@@ -1,0 +1,44 @@
+== What is Blue Ocean?
+
+Blue Ocean rethinks the Jenkins user experience.
+Designed from the ground up for Jenkins Pipeline and compatible with Freestyle jobs, Blue Ocean reduces clutter and increases clarity for every member of your team through the following key features:
+
+* *Sophisticated visualizations of CD pipelines* for fast and intuitive comprehension of software pipeline status.
+* *Pipeline editor* that makes automating CD pipelines approachable by guiding the user through an intuitive and visual process to create a pipeline.
+* *Personalization* of the Jenkins UI to suit the role-based needs of each member of the DevOps team.
+* *Pinpoint precision* when intervention is needed and/or issues arise.
+The Blue Ocean UI shows where in the pipeline attention is needed, facilitating exception handling and increasing productivity.
+* *Native integration for branch and pull requests* enables maximum developer productivity when collaborating on code with others in GitHub and Bitbucket.
+
+Note that the **__Blue Ocean__** plugin is the only one that you need to install from the Jenkins Update Center.
+
+https://jenkins.io/projects/blueocean/[Learn more]
+
+== Running behind a proxy? Read this
+
+In some cases proxies can rewrite URIs that have encoding in them and break web apps.
+
+* *For apache* - please follow https://wiki.jenkins-ci.org/display/JENKINS/Running+Jenkins+behind+Apache[this guide] very carefully, especially the bit about nocanon
+* *For nginx* - please see https://wiki.jenkins-ci.org/display/JENKINS/Running+Jenkins+behind+Nginx[this].
+Generally if you use proxy_pass directly to the Jenkins port, you are ok, otherwise
+http://stackoverflow.com/questions/28684300/nginx-pass-proxy-subdirectory-without-url-decoding/37584637#37584637[see this].
+** If you still have problems with some blue ocean URIs, you can use a proxy_pass directive like this:
++
+  if ($request_uri ~* "/blue(/.*)") \{ proxy_pass
+  http://YOUR_SERVER_IP:YOUR_JENKINS_PORT/blue$1; break; }
+
+== Running Jenkins with BlueOcean on Apache Tomcat? Read this
+
+In case you are using Apache Tomcat to serve Jenkins, you will need to make sure that you have configured Tomcat to use the following parameters:
+
+  -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true
+  -Dorg.apache.catalina.connector.CoyoteAdapter.ALLOW_BACKSLASH=true
+
+== NOTE: Upgrading to a new version
+
+The best way is update the main "Blue Ocean" plugin - it will then upgrade all the dependent plugins and libraries for you.
+Do not upgrade just one blue ocean plugin at a time, it works best if they are all kept up to date.
+
+== Change log
+
+Release notes are published to https://github.com/jenkinsci/blueocean-plugin/releases[GitHub releases]

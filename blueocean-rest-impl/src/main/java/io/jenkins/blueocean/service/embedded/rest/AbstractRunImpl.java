@@ -1,15 +1,28 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.Date;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang.BooleanUtils;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.export.Exported;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Collections2;
+
 import hudson.model.Action;
 import hudson.model.CauseAction;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -25,23 +38,7 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
-import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.GenericResource;
-import jenkins.util.SystemProperties;
-import org.apache.commons.lang.BooleanUtils;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.export.Exported;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.Date;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * Basic {@link BlueRun} implementation.
@@ -52,7 +49,9 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     public static final String BLUEOCEAN_FEATURE_RUN_DESCRIPTION_ENABLED = "blueocean.feature.run.description.enabled";
 
-    public static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+        .withZone(ZoneId.systemDefault());
+
     private static final Logger LOGGER = LoggerFactory.getLogger( AbstractRunImpl.class.getName());
 
     private static final long TEST_SUMMARY_CACHE_MAX_SIZE = Long.getLong("TEST_SUMMARY_CACHE_MAX_SIZE", 10000);
@@ -117,12 +116,12 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public String getEnQueueTimeString() {
-        return DATE_FORMAT.print(getEnQueueTime().getTime());
+        return DATE_FORMAT.format(getEnQueueTime().toInstant());
     }
 
     @Override
     public String getStartTimeString(){
-        return DATE_FORMAT.print(getStartTime().getTime());
+        return DATE_FORMAT.format(getStartTime().toInstant());
     }
 
     @Override
@@ -131,7 +130,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
         if(endTime == null) {
             return null;
         } else {
-            return DATE_FORMAT.print(endTime.getTime());
+            return DATE_FORMAT.format(endTime.toInstant());
         }
     }
 

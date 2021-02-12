@@ -191,7 +191,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
     @Test
     public void testRepositoryCallbackToFSFunctionAdapter() throws IOException, InterruptedException {
         final boolean[] called = { false };
-        new GitCacheCloneReadSaveRequest.RepositoryCallbackToFSFunctionAdapter<>(new GitSCMFileSystem.FSFunction<Object>() {
+        new GitBareRepoReadSaveRequest.RepositoryCallbackToFSFunctionAdapter<>(new GitSCMFileSystem.FSFunction<Object>() {
             @Override
             public Object invoke(Repository repository) throws IOException, InterruptedException {
                 called[0] = true;
@@ -199,18 +199,6 @@ public class GitReadSaveTest extends PipelineBaseTest {
             }
         }).invoke(null, null);
         Assert.assertTrue(called[0]);
-    }
-
-    @Test
-    public void testGitCloneReadWrite() throws Exception {
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CLONE, repoWithJenkinsfiles, masterPipelineScript);
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CLONE, repoNoJenkinsfile, null);
-    }
-
-    @Test
-    public void testGitCacheCloneReadWrite() throws Exception {
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_CLONE, repoWithJenkinsfiles, masterPipelineScript);
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_CLONE, repoNoJenkinsfile, null);
     }
 
     @Test

@@ -19,20 +19,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 @Extension
 public class BrowserAndOperatingSystemAnalyticsProperties extends AdditionalAnalyticsProperties {
 
-    private static final Logger LOGGER = Logger.getLogger(BrowserAndOperatingSystemAnalyticsProperties.class.getName());
-
-    private static final Parser PARSER;
-
-    static {
-        Parser parser;
-        try {
-            parser = new Parser();
-        } catch (IOException e) {
-            parser = null;
-            LOGGER.log(Level.SEVERE, "There was a problem loading the UAParser. Browser detection is unavailable.", e);
-        }
-        PARSER = parser;
-    }
+    private static final Parser PARSER = new Parser();
 
     @Override
     public Map<String, Object> properties(TrackRequest req) {

@@ -4,19 +4,21 @@ import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import hudson.Extension;
+import hudson.model.Item;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.impl.pipeline.PipelineImpl;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecification;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.AbstractScm;
@@ -24,20 +26,28 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
+import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Container;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GHOrganization;
+import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHUser;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.HttpException;
 import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
+import org.kohsuke.stapler.verb.GET;
+import org.kohsuke.stapler.verb.PUT;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -54,9 +64,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
-
 /**
  * @author Vivek Pandey
  */
@@ -71,13 +78,18 @@ public class GithubScm extends AbstractScm {
     static final String DOMAIN_NAME="blueocean-github-domain";
     static final String CREDENTIAL_DESCRIPTION = "GitHub Access Token";
 
-    static final ObjectMapper om = new ObjectMapper();
-    static {
-        om.setVisibilityChecker(new VisibilityChecker.Std(NONE, NONE, NONE, NONE, ANY));
-        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
 
     protected final Reachable parent;
+
+    @Nonnull
+    static ObjectWriter getMappingObjectWriter() {
+        return GitHub.getMappingObjectWriter();
+    }
+
+    @Nonnull
+    static ObjectReader getMappingObjectReader() {
+        return GitHub.getMappingObjectReader();
+    }
 
     public GithubScm(Reachable parent) {
         this.parent = parent;
@@ -131,18 +143,54 @@ public class GithubScm extends AbstractScm {
         return super.getState();
     }
 
-    @Override
-    public Container<ScmOrganization> getOrganizations() {
+    private StandardUsernamePasswordCredentials getCredential(){
         StaplerRequest request = Stapler.getCurrentRequest();
         String credentialId = GithubCredentialUtils.computeCredentialId(getCredentialIdFromRequest(request), getId(), getUri());
-
         User authenticatedUser = getAuthenticatedUser();
         final StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
 
         if(credential == null){
             throw new ServiceException.BadRequestException(String.format("Credential id: %s not found for user %s", credentialId, authenticatedUser.getId()));
         }
+        return credential;
+    }
 
+    /**
+     *
+     * @param jobName the job name
+     * @param apiUrl github api url
+     * @return GHRepository used by the job
+     */
+    @GET
+    @WebMethod(name = "repository")
+    @TreeResponse
+    public GithubRepository getRepository(@QueryParameter String jobName, @QueryParameter String apiUrl) {
+        Item item = Jenkins.get().getItem( jobName);
+        if (item == null){
+            throw new ServiceException.NotFoundException(String.format("Job %s not found", jobName));
+        }
+        GitHubSCMSource gitHubSCMSource = ((GitHubSCMSource)((WorkflowMultiBranchProject)item).getSCMSource( "blueocean"));
+        if(gitHubSCMSource==null){
+            throw new ServiceException.NotFoundException(String.format("GitHubSCMSource for Job %s not found", jobName));
+        }
+        String repoOwner = gitHubSCMSource.getRepoOwner();
+        String repoName = gitHubSCMSource.getRepository();
+
+        StandardUsernamePasswordCredentials credential = getCredential();
+        String accessToken = credential.getPassword().getPlainText();
+
+        try {
+            String url = String.format("%s/repos/%s/%s", apiUrl, repoOwner, repoName);
+            GHRepository ghRepository = HttpRequest.get(url).withAuthorizationToken(accessToken).to(GHRepository.class);
+            return new GithubRepository(ghRepository, credential, this);
+        } catch (IOException e) {
+            throw new ServiceException.UnexpectedErrorException(e.getMessage(),e);
+        }
+    }
+
+    @Override
+    public Container<ScmOrganization> getOrganizations() {
+        StandardUsernamePasswordCredentials credential = getCredential();
         String accessToken = credential.getPassword().getPlainText();
 
         try {
@@ -257,7 +305,7 @@ public class GithubScm extends AbstractScm {
             HttpURLConnection connection = connect(String.format("%s/%s", getUri(), "user"),accessToken);
             validateAccessTokenScopes(connection);
             String data = IOUtils.toString(HttpRequest.getInputStream(connection));
-            GHUser user = GithubScm.om.readValue(data, GHUser.class);
+            GHUser user = GithubScm.getMappingObjectReader().forType(GHUser.class).readValue(data);
 
             if(user.getEmail() != null){
                 Mailer.UserProperty p = authenticatedUser.getProperty(Mailer.UserProperty.class);
@@ -357,10 +405,10 @@ public class GithubScm extends AbstractScm {
     }
 
     static void validateUserHasPushPermission(@Nonnull String apiUrl, @Nullable String accessToken, @Nullable String owner, @Nullable String repoName) {
-        GHRepoEx repo;
+        GHRepository repo;
         try {
             repo = HttpRequest.get(String.format("%s/repos/%s/%s", apiUrl, owner, repoName))
-                .withAuthorizationToken(accessToken).to(GHRepoEx.class);
+                .withAuthorizationToken(accessToken).to(GHRepository.class);
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException(String.format("Could not load repository metadata for %s/%s", owner, repoName), e);
         }

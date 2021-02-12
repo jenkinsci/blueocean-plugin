@@ -16,6 +16,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Stapler;
 
 import javax.annotation.CheckForNull;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -86,6 +87,6 @@ public abstract class AbstractAnalytics extends Analytics {
     protected final String identity(String server) {
         User user = User.current();
         String username = user == null ? "ANONYMOUS" : user.getId();
-        return Hashing.sha256().hashString(username + server).toString();
+        return Hashing.sha256().hashString( username + server, Charset.defaultCharset()).toString();
     }
 }

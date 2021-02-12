@@ -113,7 +113,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
         if (getStartTime() == null) {
             return null;
         }
-        return AbstractRunImpl.DATE_FORMAT.print(getStartTime().getTime());
+        return AbstractRunImpl.DATE_FORMAT.format(getStartTime().toInstant());
     }
 
     @Override

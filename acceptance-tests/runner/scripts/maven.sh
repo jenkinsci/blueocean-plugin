@@ -24,7 +24,7 @@ assemble-plugins() {
     pushd runner/runtime-plugins
     mvn clean install -B -DskipTests -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     pushd runtime-deps
-    mvn hpi:assemble-dependencies -B -DjenkinsCoreVersionOverride=$JENKINS_VERSION -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+    mvn hpi:assemble-dependencies -DuseJpiExtension=true -B -DjenkinsCoreVersionOverride=$JENKINS_VERSION -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     popd
     popd
 

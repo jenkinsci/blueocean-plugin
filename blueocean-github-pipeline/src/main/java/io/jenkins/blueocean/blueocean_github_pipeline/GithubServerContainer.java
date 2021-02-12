@@ -6,18 +6,19 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.hash.Hashing;
+import hudson.model.Item;
+import hudson.model.User;
 import hudson.security.ACL;
+import hudson.security.ACLContext;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
@@ -32,6 +33,7 @@ import java.net.HttpURLConnection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -52,7 +54,13 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
 
     public @CheckForNull ScmServerEndpoint create(@JsonBody JSONObject request) {
 
-        List<ErrorMessage.Error> errors = Lists.newLinkedList();
+        try {
+            Jenkins.get().checkPermission(Item.CREATE);
+        } catch (Exception e) {
+            throw new ServiceException.ForbiddenException("User does not have permission to create repository.", e);
+        }
+
+        List<ErrorMessage.Error> errors = new LinkedList();
 
         // Validate name
         final String name = (String) request.get(GithubServer.NAME);
@@ -97,12 +105,12 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
                             inputStream = HttpRequest.getErrorStream(connection);
                         }
 
-                        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
-                        Map<String, String> responseBody = GithubScm.om.readValue(inputStream, typeRef);
+                        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>(){};
+                        Map<String, String> responseBody = GithubScm.getMappingObjectReader().forType(typeRef).readValue(inputStream);
 
                         isGithubCloud = code == 200 && responseBody.containsKey("current_user_url");
                         isGithubEnterprise = code == 401 && responseBody.containsKey("message");
-                    } catch (IOException ioe) {
+                    } catch (IllegalArgumentException | IOException ioe) {
                         LOGGER.log(Level.INFO, "Could not parse response body from Github");
                     }
 
@@ -117,10 +125,8 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
         }
 
         if (errors.isEmpty()) {
-            SecurityContext old = null;
-            try {
+            try (ACLContext ctx = ACL.as(ACL.SYSTEM)) {
                 // We need to escalate privilege to add user defined endpoint to
-                old = ACL.impersonate(ACL.SYSTEM);
                 GitHubConfiguration config = GitHubConfiguration.get();
                 String sanitizedUrl = discardQueryString(url);
                 Endpoint endpoint = new Endpoint(sanitizedUrl, name);
@@ -128,11 +134,6 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
                     errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + endpoint.getName() + "'"));
                 } else {
                     return new GithubServer(endpoint, getLink());
-                }
-            }finally {
-                //reset back to original privilege level
-                if(old != null){
-                    SecurityContextHolder.setContext(old);
                 }
             }
         }
