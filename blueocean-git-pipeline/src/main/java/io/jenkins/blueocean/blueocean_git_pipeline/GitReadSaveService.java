@@ -35,6 +35,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequire
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 
 import java.io.IOException;
+import java.util.Locale;
 import javax.annotation.Nonnull;
 
 import jenkins.branch.MultiBranchProject;
@@ -45,12 +46,16 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.kohsuke.stapler.StaplerRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Content provider for load/save with git repositories
  */
 @Extension
 public class GitReadSaveService extends ScmContentProvider {
+
+    private static final Logger logger = LoggerFactory.getLogger(GitReadSaveService.class);
     @Nonnull
     private static ReadSaveType TYPE = ReadSaveType.DEFAULT;
 
@@ -66,9 +71,12 @@ public class GitReadSaveService extends ScmContentProvider {
 
         static ReadSaveType get(String type) {
             if (type != null) {
-                return ReadSaveType.valueOf(type.toUpperCase());
+                ReadSaveType readSaveType = ReadSaveType.valueOf(type.toUpperCase(Locale.ENGLISH));
+                if(readSaveType != CACHE_BARE){
+                    logger.warn( "CLONE/CACHE_CLONE options are not supported anymore. Using default option CACHE_BARE instead." );
+                }
             }
-            return DEFAULT == null ? ReadSaveType.CACHE_BARE : DEFAULT;
+            return DEFAULT == null ? CACHE_BARE : DEFAULT;
         }
     }
 
@@ -109,35 +117,15 @@ public class GitReadSaveService extends ScmContentProvider {
             }
         }
 
-        switch (TYPE) {
-            case CLONE:
-                return new GitCloneReadSaveRequest(
-                    gitSource,
-                    StringUtils.defaultIfEmpty(branch, defaultBranch),
-                    commitMessage,
-                    StringUtils.defaultIfEmpty(sourceBranch, defaultBranch),
-                    filePath,
-                    contents
-                );
-            case CACHE_CLONE:
-                return new GitCacheCloneReadSaveRequest(
-                    gitSource,
-                    StringUtils.defaultIfEmpty(branch, defaultBranch),
-                    commitMessage,
-                    StringUtils.defaultIfEmpty(sourceBranch, defaultBranch),
-                    filePath,
-                    contents
-                );
-            default:
-                return new GitBareRepoReadSaveRequest(
-                    gitSource,
-                    StringUtils.defaultIfEmpty(branch, defaultBranch),
-                    commitMessage,
-                    StringUtils.defaultIfEmpty(sourceBranch, defaultBranch),
-                    filePath,
-                    contents
-                );
-        }
+        return new GitBareRepoReadSaveRequest(
+            gitSource,
+            StringUtils.defaultIfEmpty(branch, defaultBranch),
+            commitMessage,
+            StringUtils.defaultIfEmpty(sourceBranch, defaultBranch),
+            filePath,
+            contents
+        );
+
     }
 
     private GitReadSaveRequest makeSaveRequest(Item item, StaplerRequest req) {

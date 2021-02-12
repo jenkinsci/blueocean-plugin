@@ -92,8 +92,8 @@
         </dependency>
 
         <dependency>
-            <groupId>ua_parser</groupId>
-            <artifactId>ua-parser</artifactId>
+            <groupId>com.github.ua-parser</groupId>
+            <artifactId>uap-java</artifactId>
         </dependency>
 
         <dependency>
