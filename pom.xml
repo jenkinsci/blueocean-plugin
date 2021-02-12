@@ -25,7 +25,7 @@
   </licenses>
 
   <properties>
-    <revision>1.24.2</revision>
+    <revision>1.24.5</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <java.level>8</java.level>
@@ -38,6 +38,7 @@
     <hamcrest.version>2.2</hamcrest.version>
     <mockito.version>3.3.3</mockito.version>
     <guava.version>18.0</guava.version>
+    <slf4j.version>1.7.30</slf4j.version>
     <jacoco.version>0.8.5</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
@@ -597,7 +598,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>sse-gateway</artifactId>
-            <version>1.21</version>
+            <version>1.24</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -631,6 +632,26 @@
             <version>2.10.2</version>
         </dependency>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
@@ -638,7 +659,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.10</version>
+            <version>1.15</version>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
@@ -705,9 +726,9 @@
         </dependency>
 
         <dependency>
-            <groupId>ua_parser</groupId>
-            <artifactId>ua-parser</artifactId>
-            <version>1.3.0</version>
+            <groupId>com.github.ua-parser</groupId>
+            <artifactId>uap-java</artifactId>
+            <version>1.5.0</version>
             <exclusions>
               <!-- commons-collections comes from jenkins core -->
               <exclusion>

@@ -106,12 +106,14 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-jira</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <!-- TODO remove with next release -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-executor-info</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <!-- Bundled plugins for improved out of the box experience -->
