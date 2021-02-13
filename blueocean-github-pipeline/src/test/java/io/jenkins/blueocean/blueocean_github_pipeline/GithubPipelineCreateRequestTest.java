@@ -44,7 +44,6 @@ import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.TestExtension;
@@ -70,7 +69,7 @@ import static org.junit.Assert.*;
 public class GithubPipelineCreateRequestTest extends GithubMockBase {
 
     @Test
-    public void createPipeline() throws UnirestException, IOException {
+    public void createPipeline() throws UnirestException {
         PowerMockito.mockStatic(GitHubWebHook.class);
         GitHubWebHook gitHubWebHookMock = Mockito.spy(GitHubWebHook.class);
         PowerMockito.when(GitHubWebHook.get()).thenReturn(gitHubWebHookMock);
@@ -308,7 +307,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         store.addCredentials(domain, credential);
 
         //create another credentials with same id in system store with different description
-        for(CredentialsStore s: CredentialsProvider.lookupStores(Jenkins.getInstance())){
+        for(CredentialsStore s: CredentialsProvider.lookupStores(Jenkins.get())){
             s.addCredentials(Domain.global(), new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
                     "github", "System GitHub Access Token", user.getId(), "12345"));
         }

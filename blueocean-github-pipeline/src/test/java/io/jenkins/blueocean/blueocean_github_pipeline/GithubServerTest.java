@@ -10,7 +10,6 @@ import hudson.model.Item;
 import hudson.model.User;
 import hudson.security.GlobalMatrixAuthorizationStrategy;
 import hudson.security.HudsonPrivateSecurityRealm;
-import hudson.security.Permission;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import jenkins.model.Jenkins;
 import org.junit.Assert;

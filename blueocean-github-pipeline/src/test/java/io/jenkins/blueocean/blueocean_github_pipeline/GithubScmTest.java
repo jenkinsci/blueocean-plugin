@@ -29,7 +29,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.verification.VerificationMode;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -38,6 +37,7 @@ import java.io.ByteArrayInputStream;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.scm.Scm.CREDENTIAL_ID;
 import static org.powermock.api.mockito.PowerMockito.*;
@@ -65,7 +65,7 @@ public class GithubScmTest {
     public void setup() throws Exception {
         mockStatic(Jenkins.class);
 
-        when(Jenkins.getInstance()).thenReturn(jenkins);
+        when(Jenkins.get()).thenReturn(jenkins);
         when(Jenkins.getInstanceOrNull()).thenReturn(jenkins);
         when(Jenkins.getAuthentication()).thenReturn(authentication);
         GrantedAuthority[] grantedAuthorities = Lists.newArrayList(SecurityRealm.AUTHENTICATED_AUTHORITY).toArray(new GrantedAuthority[1]);
@@ -143,7 +143,7 @@ public class GithubScmTest {
         StaplerRequest request = mock(StaplerRequest.class);
         when(Stapler.getCurrentRequest()).thenReturn(request);
 
-        when(HttpRequest.getInputStream(httpURLConnectionMock)).thenReturn(new ByteArrayInputStream(guser.getBytes("UTF-8")));
+        when(HttpRequest.getInputStream(httpURLConnectionMock)).thenReturn(new ByteArrayInputStream(guser.getBytes(StandardCharsets.UTF_8)));
 
         githubScm.validateAndCreate(req);
 
