@@ -360,8 +360,8 @@ public class TypeUtil {
                 Type thatRawType = that.getRawType();
 
                 if (false) { // Debugging
-                    boolean ownerEquality = (Objects.equals(ownerType, thatOwner));
-                    boolean rawEquality = (Objects.equals(rawType, thatRawType));
+                    boolean ownerEquality = Objects.equals(ownerType, thatOwner);
+                    boolean rawEquality = Objects.equals(rawType, thatRawType);
 
                     boolean typeArgEquality = Arrays.equals(actualTypeArguments, // avoid clone
                             that.getActualTypeArguments());
@@ -376,8 +376,8 @@ public class TypeUtil {
 
 
                 return
-                        (Objects.equals(ownerType, thatOwner)) &&
-                        (Objects.equals(rawType, thatRawType)) &&
+                        Objects.equals(ownerType, thatOwner) &&
+                        Objects.equals(rawType, thatRawType) &&
                         Arrays.equals(actualTypeArguments, // avoid clone
                                 that.getActualTypeArguments());
             } else
