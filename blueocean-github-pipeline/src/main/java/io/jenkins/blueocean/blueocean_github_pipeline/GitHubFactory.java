@@ -29,7 +29,7 @@ class GitHubFactory {
      */
     public static GitHub connect(String accessToken, String endpointUri) throws IOException {
         URL apiUrl = new URL(endpointUri);
-        ProxyConfiguration proxyConfig = Jenkins.getInstance().proxy;
+        ProxyConfiguration proxyConfig = Jenkins.get().proxy;
         Proxy proxy = proxyConfig == null ? Proxy.NO_PROXY : proxyConfig.createProxy(apiUrl.getHost());
 
         OkHttpClient.Builder builder = baseClient.newBuilder().proxy(proxy);

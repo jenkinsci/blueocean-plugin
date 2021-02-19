@@ -111,7 +111,7 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
             .get("/organizations/jenkins/scm/github-enterprise/?apiUrl="+githubApiUrl)
             .build(Map.class);
 
-        assertTrue(r.get("message").toString().equals("Invalid accessToken"));
+        assertEquals("Invalid accessToken", r.get("message").toString());
     }
 
     @Test
