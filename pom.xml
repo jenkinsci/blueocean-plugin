@@ -577,10 +577,6 @@
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
               </exclusion>
-              <exclusion> <!-- from io.jenkins.plugins:snakeyaml-api -->
-                <groupId>org.yaml</groupId>
-                <artifactId>snake-yaml</artifactId>
-              </exclusion>
             </exclusions>
         </dependency>
 
