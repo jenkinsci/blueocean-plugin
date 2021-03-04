@@ -9,7 +9,6 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Ordering;
 import com.google.common.hash.Hashing;
 import hudson.model.Item;
-import hudson.model.User;
 import hudson.security.ACL;
 import hudson.security.ACLContext;
 import io.jenkins.blueocean.commons.ErrorMessage;
@@ -60,7 +59,7 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
             throw new ServiceException.ForbiddenException("User does not have permission to create repository.", e);
         }
 
-        List<ErrorMessage.Error> errors = new LinkedList();
+        List<ErrorMessage.Error> errors = new LinkedList<>();
 
         // Validate name
         final String name = (String) request.get(GithubServer.NAME);

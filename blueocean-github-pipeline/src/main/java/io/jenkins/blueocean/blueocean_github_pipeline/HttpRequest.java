@@ -13,6 +13,7 @@ import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
@@ -92,7 +93,7 @@ class HttpRequest {
                 throw new ServiceException.BadRequestException(String.format("%s %s returned error: %s. Error message: %s.", method, url ,status, getErrorResponse(connection)));
             }
             if(!method.equals("HEAD")) {
-                r = new InputStreamReader(wrapStream(connection.getInputStream(), connection.getContentEncoding()), "UTF-8");
+                r = new InputStreamReader(wrapStream(connection.getInputStream(), connection.getContentEncoding()), StandardCharsets.UTF_8);
                 String data = IOUtils.toString(r);
                 if (type != null) {
                     try {
@@ -121,7 +122,7 @@ class HttpRequest {
 
     HttpURLConnection connect() throws IOException {
         URL apiUrl = new URL(url);
-        ProxyConfiguration proxyConfig = Jenkins.getInstance().proxy;
+        ProxyConfiguration proxyConfig = Jenkins.get().proxy;
         Proxy proxy = proxyConfig == null ? Proxy.NO_PROXY : proxyConfig.createProxy(apiUrl.getHost());
 
         HttpURLConnection connect=(HttpURLConnection) apiUrl.openConnection(proxy);

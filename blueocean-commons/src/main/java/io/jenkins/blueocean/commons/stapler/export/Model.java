@@ -70,7 +70,7 @@ public class Model<T> {
      */
     private volatile Properties javadoc;
 
-    private final Set<String> propertyNames = new HashSet<String>();
+    private final Set<String> propertyNames = new HashSet<>();
 
     /*package*/ Model(ModelBuilder parent, Class<T> type, @CheckForNull Class<?> propertyOwner, @Nullable String property) throws NotExportableException {
         this.parent = parent;
@@ -87,7 +87,7 @@ public class Model<T> {
         else
             superModel = null;
 
-        List<Property> properties = new ArrayList<Property>();
+        List<Property> properties = new ArrayList<>();
 
         // Use reflection to find out what properties are exposed.
         for( Field f : type.getFields() ) {

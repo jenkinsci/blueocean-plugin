@@ -8,7 +8,6 @@ import io.jenkins.blueocean.rest.factory.BlueIssueFactory;
 import io.jenkins.blueocean.rest.model.BlueIssue;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMSource;
-import org.jenkinsci.plugins.github.config.GitHubServerConfig;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.jenkinsci.plugins.github_branch_source.HttpsRepositoryUriResolver;
 
