@@ -51,7 +51,7 @@ public class ClassicJobApi {
 
     public void deletePipeline(FolderJob folder, String pipeline) throws IOException {
         try {
-            jenkins.deleteJob(folder, pipeline);
+            jenkins.deleteJob(folder, pipeline, true);
             logger.info("Deleted pipeline " + pipeline);
         } catch(HttpResponseException e) {
             if(e.getStatusCode() != 404) {
@@ -62,7 +62,7 @@ public class ClassicJobApi {
 
     public void deleteFolder(Folder folder) throws IOException {
         if (folder.getFolders().size() == 1) {
-            jenkins.deleteJob(folder.getPath());
+            jenkins.deleteJob(folder.getPath(), true);
         } else {
             throw new UnsupportedOperationException("deleting a nested folder is not supported");
         }
@@ -70,7 +70,7 @@ public class ClassicJobApi {
 
     public void deleteFolder(String folder) throws IOException {
         try {
-            jenkins.deleteJob(folder);
+            jenkins.deleteJob(folder, true);
             logger.info("Deleted folder " + folder);
         } catch(HttpResponseException e) {
             if(e.getStatusCode() != 404) {
@@ -84,27 +84,27 @@ public class ClassicJobApi {
     public void createFreeStyleJob(FolderJob folder, String jobName, String command) throws IOException {
         deletePipeline(folder, jobName);
         URL url = Resources.getResource(this.getClass(), "freestyle.xml");
-        jenkins.createJob(folder, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{command}}", command));
+        jenkins.createJob(folder, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{command}}", command), true);
         logger.info("Created freestyle job "+ jobName);
     }
 
     public void createFreeStyleJob(String jobName, String command) throws IOException {
         deletePipeline(jobName);
         URL url = Resources.getResource(this.getClass(), "freestyle.xml");
-        jenkins.createJob(null, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{command}}", command));
+        jenkins.createJob(null, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{command}}", command), true);
         logger.info("Created freestyle job "+ jobName);
     }
 
     public void createPipeline(FolderJob folder, String jobName, String script) throws IOException {
         deletePipeline(folder, jobName);
         URL url = Resources.getResource(this.getClass(), "pipeline.xml");
-        jenkins.createJob(folder, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{script}}", script));
+        jenkins.createJob(folder, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{script}}", script), true);
         logger.info("Created pipeline job "+ jobName);
     }
     public void createMultiBranchPipeline(FolderJob folder, String pipelineName, String repositoryPath) throws IOException {
         deletePipeline(folder, pipelineName);
         URL url = Resources.getResource(this.getClass(), "multibranch.xml");
-        jenkins.createJob(folder, pipelineName, Resources.toString(url, Charsets.UTF_8).replace("{{repo}}", repositoryPath));
+        jenkins.createJob(folder, pipelineName, Resources.toString(url, Charsets.UTF_8).replace("{{repo}}", repositoryPath), true);
         logger.info("Created multibranch pipeline: "+ pipelineName);
         jenkins.getJob(folder, pipelineName).build();
     }
@@ -182,7 +182,7 @@ public class ClassicJobApi {
     }
 
     public <T> T until(Function<JenkinsServer, T> function, long timeoutInMS) {
-        return new FluentWait<JenkinsServer>(jenkins)
+        return new FluentWait<>(jenkins)
             .pollingEvery(500, TimeUnit.MILLISECONDS)
             .withTimeout(timeoutInMS, TimeUnit.MILLISECONDS)
             .ignoring(NotFoundException.class)
