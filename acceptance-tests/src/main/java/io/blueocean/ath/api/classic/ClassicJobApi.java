@@ -1,5 +1,7 @@
 package io.blueocean.ath.api.classic;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
@@ -9,6 +11,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.BuildResult;
+import com.offbytwo.jenkins.model.Crumb;
 import com.offbytwo.jenkins.model.FolderJob;
 import com.offbytwo.jenkins.model.Job;
 import com.offbytwo.jenkins.model.JobWithDetails;
@@ -19,10 +22,11 @@ import io.blueocean.ath.model.AbstractPipeline;
 import io.blueocean.ath.model.Folder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpResponseException;
-import org.apache.log4j.Logger;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -31,10 +35,12 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+
 @Singleton
 public class ClassicJobApi {
 
-    private Logger logger = Logger.getLogger(ClassicJobApi.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger( ClassicJobApi.class);
 
     @Inject @BaseUrl
     String base;
@@ -52,7 +58,7 @@ public class ClassicJobApi {
     public void deletePipeline(FolderJob folder, String pipeline) throws IOException {
         try {
             jenkins.deleteJob(folder, pipeline, true);
-            logger.info("Deleted pipeline " + pipeline);
+            LOGGER.info( "Deleted pipeline " + pipeline);
         } catch(HttpResponseException e) {
             if(e.getStatusCode() != 404) {
                 throw e;
@@ -71,7 +77,7 @@ public class ClassicJobApi {
     public void deleteFolder(String folder) throws IOException {
         try {
             jenkins.deleteJob(folder, true);
-            logger.info("Deleted folder " + folder);
+            LOGGER.info( "Deleted folder " + folder);
         } catch(HttpResponseException e) {
             if(e.getStatusCode() != 404) {
                 throw e;
@@ -85,27 +91,27 @@ public class ClassicJobApi {
         deletePipeline(folder, jobName);
         URL url = Resources.getResource(this.getClass(), "freestyle.xml");
         jenkins.createJob(folder, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{command}}", command), true);
-        logger.info("Created freestyle job "+ jobName);
+        LOGGER.info( "Created freestyle job "+ jobName);
     }
 
     public void createFreeStyleJob(String jobName, String command) throws IOException {
         deletePipeline(jobName);
         URL url = Resources.getResource(this.getClass(), "freestyle.xml");
         jenkins.createJob(null, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{command}}", command), true);
-        logger.info("Created freestyle job "+ jobName);
+        LOGGER.info( "Created freestyle job "+ jobName);
     }
 
     public void createPipeline(FolderJob folder, String jobName, String script) throws IOException {
         deletePipeline(folder, jobName);
         URL url = Resources.getResource(this.getClass(), "pipeline.xml");
         jenkins.createJob(folder, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{script}}", script), true);
-        logger.info("Created pipeline job "+ jobName);
+        LOGGER.info( "Created pipeline job "+ jobName);
     }
     public void createMultiBranchPipeline(FolderJob folder, String pipelineName, String repositoryPath) throws IOException {
         deletePipeline(folder, pipelineName);
         URL url = Resources.getResource(this.getClass(), "multibranch.xml");
         jenkins.createJob(folder, pipelineName, Resources.toString(url, Charsets.UTF_8).replace("{{repo}}", repositoryPath), true);
-        logger.info("Created multibranch pipeline: "+ pipelineName);
+        LOGGER.info( "Created multibranch pipeline: "+ pipelineName);
         jenkins.getJob(folder, pipelineName).build();
     }
 
@@ -117,7 +123,7 @@ public class ClassicJobApi {
         Unirest.post(jobUrl+"createItem?name="+name).header("Content-Type", "text/xml")
                 .basicAuth(admin.username, admin.password)
                 .body(Resources.toByteArray(url)).asString();
-        logger.info("Created folder: "+ name);
+        LOGGER.info( "Created folder: "+ name);
         return new FolderJob(name, jobUrl+"job/"+name+"/");
     }
 
@@ -134,12 +140,69 @@ public class ClassicJobApi {
         ImmutableMap<String, Object> params = ImmutableMap.of("mode", "com.cloudbees.hudson.plugins.folder.Folder",
             "name",   folderName, "from", "", "Submit", "OK");
         try {
-            Unirest.post(path).basicAuth(admin.username, admin.password).fields(params).asString();
+            Crumb crumb = getCrumb();
+            Unirest.post(path).basicAuth(admin.username, admin.password).
+                header(crumb.getCrumbRequestField(), crumb.getCrumb()).
+                fields(params).asString();
         } catch (UnirestException e) {
             throw new IOException(e);
         }
 
+
+
     }
+
+    private static ObjectMapper getDefaultMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(FAIL_ON_UNKNOWN_PROPERTIES);
+        return mapper;
+    }
+
+    private static final ObjectMapper OM = getDefaultMapper();
+
+    private static final UnirestObjectMapper UOM = new UnirestObjectMapper();
+
+    private static class UnirestObjectMapper implements com.mashape.unirest.http.ObjectMapper {
+        @Override
+        public <T> T readValue( String s, Class<T> aClass ) {
+            try {
+                return OM.readValue(s, aClass);
+            } catch (IOException e) {
+                LOGGER.info("Failed to parse JSON: {}. {}", s, e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public String writeValue( Object o ) {
+            try {
+                return OM.writeValueAsString(o);
+            } catch ( JsonProcessingException e ) {
+                LOGGER.info("Failed to write Object: {}. {}",o,e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    static {
+        Unirest.setObjectMapper(UOM);
+    }
+
+    protected Crumb getCrumb() throws IOException {
+        String path = base + "/crumbIssuer/api/json";
+        try
+        {
+            Crumb crumb = Unirest.get(path).
+                basicAuth(admin.username, admin.password).
+                asObject(Crumb.class).
+                getBody();
+            return crumb;
+        } catch (UnirestException e) {
+            throw new IOException(e.getMessage(), e);
+        }
+
+    }
+
     public FolderJob getFolder(Folder folder, boolean createMissing) throws IOException {
         if(folder == null || folder.getFolders().size() == 0) {
             return null;
@@ -194,7 +257,7 @@ public class ClassicJobApi {
     }
 
     public void build(Folder folder, String pipeline) throws IOException {
-        jenkins.getJob(getFolder(folder, false), pipeline).build();
+        jenkins.getJob(getFolder(folder, false), pipeline).build(true);
     }
     public void abortAllBuilds(Folder folder, String pipeline) throws IOException {
         JobWithDetails job = jenkins.getJob(getFolder(folder, false), pipeline);
@@ -202,7 +265,7 @@ public class ClassicJobApi {
         for(Build build: job.getBuilds()){
             if(build.details().getResult() == null) {
                 build.details().Stop();
-                logger.info("Stopped build " + folder.getPath(pipeline) + " - #" + build.getNumber());
+                LOGGER.info( "Stopped build " + folder.getPath( pipeline) + " - #" + build.getNumber());
             }
         }
 

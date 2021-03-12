@@ -37,7 +37,7 @@ public class CustomJenkinsServer extends JenkinsServer {
         String path = "/user/" + userName + "/credentials/store/user/domain/" + domainName + "/credential/" + credentialId;
 
         try {
-            client.post(path + "/doDelete", false);
+            client.post(path + "/doDelete", true);
             logger.info("deleted credential at " + path);
         } catch (HttpResponseException e) {
             if (e.getStatusCode() == 404) {
