@@ -11,13 +11,14 @@ import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
 import io.blueocean.ath.sse.SSEClientRule;
 import io.blueocean.ath.util.GithubHelper;
-import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -25,7 +26,7 @@ import java.io.IOException;
 @Login
 @RunWith(ATHJUnitRunner.class)
 public class GithubEditorTest {
-    private Logger logger = Logger.getLogger(GithubEditorTest.class);
+    private Logger logger = LoggerFactory.getLogger(GithubEditorTest.class);
 
     @Inject
     GithubCreationPage creationPage;

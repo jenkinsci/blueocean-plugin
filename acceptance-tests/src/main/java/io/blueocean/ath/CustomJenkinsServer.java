@@ -3,7 +3,8 @@ package io.blueocean.ath;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.client.JenkinsHttpClient;
 import org.apache.http.client.HttpResponseException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -14,7 +15,7 @@ import java.net.URI;
  */
 public class CustomJenkinsServer extends JenkinsServer {
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected final JenkinsHttpClient client;
 
@@ -38,13 +39,13 @@ public class CustomJenkinsServer extends JenkinsServer {
 
         try {
             client.post(path + "/doDelete", true);
-            logger.info("deleted credential at " + path);
+            logger.info("deleted credential at {}", path);
         } catch (HttpResponseException e) {
             if (e.getStatusCode() == 404) {
-                logger.debug("received 404 while trying to delete credential at " + path);
+                logger.debug("received 404 while trying to delete credential at {}", path);
             } else {
-                logger.error("error deleting credential at " + path);
-                logger.error("message = " + e.getMessage());
+                logger.error("error deleting credential at {}", path);
+                logger.error("message = {}", e.getMessage());
                 throw e;
             }
         }

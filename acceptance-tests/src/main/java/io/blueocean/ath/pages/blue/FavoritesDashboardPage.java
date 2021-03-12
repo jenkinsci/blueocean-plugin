@@ -57,7 +57,7 @@ public class FavoritesDashboardPage extends DashboardPage {
 
     public void checkFavoriteCardCount(int quantity) {
         logger.info("checking favorite count = " + quantity);
-        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".favorites-card-stack .pipeline-card"), quantity));
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".favorites-card-stack .pipeline-card"), quantity), 30000);
     }
 
     public void clickFavoriteCardActivityLink(String fullName) {

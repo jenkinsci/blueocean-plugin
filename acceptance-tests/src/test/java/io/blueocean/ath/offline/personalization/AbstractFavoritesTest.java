@@ -12,12 +12,12 @@ import io.blueocean.ath.factory.FreestyleJobFactory;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.Folder;
 import io.blueocean.ath.pages.blue.FavoritesDashboardPage;
-import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
@@ -63,7 +63,7 @@ abstract public class AbstractFavoritesTest implements WebDriverMixin {
         resources = new ResourceResolver(getClass());
 
         String user = "alice";
-        getLogger().info(String.format("deleting any existing favorites for %s", user));
+        getLogger().info(String.format("deleting any existing favorites for {}", user));
 
         Client restClient = ClientBuilder.newClient().register(HttpAuthenticationFeature.basic(user, user));
         restClient.target(base + "/users/" + user + "/favorites/").request().delete();

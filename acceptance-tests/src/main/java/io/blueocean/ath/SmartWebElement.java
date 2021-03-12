@@ -1,7 +1,6 @@
 package io.blueocean.ath;
 
 import com.google.common.base.Preconditions;
-import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -15,6 +14,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +28,7 @@ import java.util.function.Function;
  * Accepts expressions for css and xpath, if the provided lookup starts with a /, XPath is used
  */
 public class SmartWebElement implements WebElement {
-    private static Logger logger = Logger.getLogger(SmartWebElement.class);
+    private static Logger logger = LoggerFactory.getLogger(SmartWebElement.class);
     public static final int DEFAULT_TIMEOUT = Integer.getInteger("webDriverDefaultTimeout", 3000);
     public static final int RETRY_COUNT = 3;
 

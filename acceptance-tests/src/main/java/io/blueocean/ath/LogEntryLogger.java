@@ -2,8 +2,9 @@ package io.blueocean.ath;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.log4j.Logger;
 import org.openqa.selenium.logging.LogEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,11 +13,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Writes a Selenium LogEntry to log4j
+ * Writes a Selenium LogEntry to slf4j
  * @author cliffmeyers
  */
 class LogEntryLogger {
-    private static final Logger logger = Logger.getLogger(LogEntryLogger.class);
+    private static final Logger logger = LoggerFactory.getLogger(LogEntryLogger.class);
     private static final ObjectMapper jsonMapper = new ObjectMapper();
     private static final TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
 
@@ -36,9 +37,7 @@ class LogEntryLogger {
 
         if (usefulEntries.iterator().hasNext()) {
             logger.info("browser console output below:");
-            for (LogEntry entry : usefulEntries) {
-                LogEntryLogger.recordLogEntry(entry);
-            }
+            usefulEntries.stream().forEach(LogEntryLogger::recordLogEntry);
         } else {
             logger.info(String.format("nothing useful written to browser console; %s entries were hidden", entries.size()));
         }
