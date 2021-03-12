@@ -10,12 +10,13 @@ import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.sse.SSEClientRule;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -25,7 +26,7 @@ import java.net.URL;
 @RunWith(ATHJUnitRunner.class)
 public class ParallelNavigationTest {
 
-    private Logger logger = Logger.getLogger(CommitMessagesTest.class);
+    private Logger logger = LoggerFactory.getLogger(CommitMessagesTest.class);
 
     @Rule
     @Inject

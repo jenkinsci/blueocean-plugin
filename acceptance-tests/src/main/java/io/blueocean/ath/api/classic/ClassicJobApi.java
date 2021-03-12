@@ -112,7 +112,8 @@ public class ClassicJobApi {
         URL url = Resources.getResource(this.getClass(), "multibranch.xml");
         jenkins.createJob(folder, pipelineName, Resources.toString(url, Charsets.UTF_8).replace("{{repo}}", repositoryPath), true);
         LOGGER.info( "Created multibranch pipeline: "+ pipelineName);
-        jenkins.getJob(folder, pipelineName).build();
+        JobWithDetails job = jenkins.getJob(folder, pipelineName);
+        job.build(true);
     }
 
     public FolderJob createJobFolder(String name, String jobUrl) throws IOException, UnirestException {
@@ -120,9 +121,13 @@ public class ClassicJobApi {
             jobUrl = base+"/";
         }
         URL url = Resources.getResource(this.getClass(), "folder.xml");
-        Unirest.post(jobUrl+"createItem?name="+name).header("Content-Type", "text/xml")
-                .basicAuth(admin.username, admin.password)
-                .body(Resources.toByteArray(url)).asString();
+
+        Crumb crumb = getCrumb();
+        Unirest.post(jobUrl+"createItem?name="+name).
+                        header("Content-Type", "text/xml").
+                        basicAuth(admin.username, admin.password).
+                        header(crumb.getCrumbRequestField(), crumb.getCrumb()).
+                        body(Resources.toByteArray(url)).asString();
         LOGGER.info( "Created folder: "+ name);
         return new FolderJob(name, jobUrl+"job/"+name+"/");
     }
@@ -253,7 +258,7 @@ public class ClassicJobApi {
     }
 
     public void buildBranch(Folder folder, String pipeline, String branch) throws IOException {
-        jenkins.getJob(getFolder(folder.append(pipeline), false), branch).build();
+        jenkins.getJob(getFolder(folder.append(pipeline), false), branch).build(true);
     }
 
     public void build(Folder folder, String pipeline) throws IOException {
