@@ -29,6 +29,7 @@
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <java.level>8</java.level>
+    <!-- when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions -->
     <jenkins.version>2.222.4</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.7.5</frontend-version>
@@ -267,7 +268,7 @@
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
             <artifactId>bom-2.222.x</artifactId>
-            <version>25</version>
+            <version>26</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>

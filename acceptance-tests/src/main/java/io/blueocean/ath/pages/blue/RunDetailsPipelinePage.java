@@ -83,7 +83,7 @@ public class RunDetailsPipelinePage implements WebDriverMixin {
         wait.until(ExpectedConditions.or(
             ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .log-wrapper")),
             ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .Steps .logConsole"))
-        ));
+        ), 30000);
         return this;
     }
 

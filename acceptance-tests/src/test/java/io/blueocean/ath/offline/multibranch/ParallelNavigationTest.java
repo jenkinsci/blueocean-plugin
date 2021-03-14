@@ -67,14 +67,14 @@ public class ParallelNavigationTest {
     @Retry(3)
     public void parallelNavigationTest() throws IOException, GitAPIException, InterruptedException {
         // Create navTest
-        logger.info("Creating pipeline " + navTest);
+        logger.info("Creating pipeline {}", navTest);
         URL navTestJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile");
         Files.copy(new File(navTestJenkinsfile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
         git.addAll();
         git.commit("Initial commit for " + navTest);
-        logger.info("Committed Jenkinsfile for " + navTest);
+        logger.info("Committed Jenkinsfile for {}", navTest);
         navTestPipeline = mbpFactory.pipeline(navTest).createPipeline(git);
-        logger.info("Finished creating " + navTest);
+        logger.info("Finished creating {}", navTest);
 
         logger.info("Beginning parallelNavigationTest()");
         navTestPipeline.getRunDetailsPipelinePage().open(1);
@@ -96,14 +96,14 @@ public class ParallelNavigationTest {
     @Test
     public void parallelNavigationTestInput() throws IOException, GitAPIException, InterruptedException {
         // Create navTestWithInput
-        logger.info("Creating pipeline " + navTestWithInput);
+        logger.info("Creating pipeline {}", navTestWithInput);
         URL navTestInputJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.input");
         Files.copy(new File(navTestInputJenkinsfile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
         git.addAll();
         git.commit("Initial commit for " + navTestWithInput);
         logger.info("Committed Jenkinsfile for " + navTestWithInput);
         navTestWithInputPipeline = mbpFactory.pipeline(navTestWithInput).createPipeline(git);
-        logger.info("Finished creating " + navTestWithInput);
+        logger.info("Finished creating {}", navTestWithInput);
 
         logger.info("Beginning parallelNavigationTestInput()");
         navTestWithInputPipeline.getRunDetailsPipelinePage().open(1);
@@ -126,12 +126,12 @@ public class ParallelNavigationTest {
     @Test
     public void failedInputStep() throws IOException, GitAPIException, InterruptedException {
         // Create navTestWithFailedInputStep
-        logger.info("Creating pipeline " + navTestWithFailedInputStep);
+        logger.info("Creating pipeline {}", navTestWithFailedInputStep);
         URL navTestWithFailedInputStepJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.failed.input");
         Files.copy(new File(navTestWithFailedInputStepJenkinsfile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
         git.addAll();
         git.commit("Initial commit for " + navTestWithFailedInputStep);
-        logger.info("Committed Jenkinsfile for " + navTestWithFailedInputStep);
+        logger.info("Committed Jenkinsfile for {}", navTestWithFailedInputStep);
         navTestWithFailedInputStepPipeline = mbpFactory.pipeline(navTestWithFailedInputStep).createPipeline(git);
         logger.info("Finished creating " + navTestWithFailedInputStep);
 

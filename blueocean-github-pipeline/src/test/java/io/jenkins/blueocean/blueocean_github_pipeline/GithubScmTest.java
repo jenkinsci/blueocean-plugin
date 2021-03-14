@@ -7,12 +7,10 @@ import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
-import com.google.common.collect.Lists;
 import hudson.model.User;
 import hudson.security.SecurityRealm;
 import hudson.tasks.Mailer;
 import hudson.util.Secret;
-import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import jenkins.model.Jenkins;
@@ -38,6 +36,7 @@ import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.scm.Scm.CREDENTIAL_ID;
 import static org.powermock.api.mockito.PowerMockito.*;
@@ -68,7 +67,7 @@ public class GithubScmTest {
         when(Jenkins.get()).thenReturn(jenkins);
         when(Jenkins.getInstanceOrNull()).thenReturn(jenkins);
         when(Jenkins.getAuthentication()).thenReturn(authentication);
-        GrantedAuthority[] grantedAuthorities = Lists.newArrayList(SecurityRealm.AUTHENTICATED_AUTHORITY).toArray(new GrantedAuthority[1]);
+        GrantedAuthority[] grantedAuthorities = new GrantedAuthority[]{SecurityRealm.AUTHENTICATED_AUTHORITY};
 
         Mockito.when(authentication.getAuthorities()).thenReturn(grantedAuthorities);
         Mockito.when(authentication.getPrincipal()).thenReturn("joe");
@@ -112,12 +111,7 @@ public class GithubScmTest {
         Mailer.UserProperty userProperty = mock(Mailer.UserProperty.class);
         when(userProperty.getAddress()).thenReturn("joe@example.com");
         JSONObject req = new JSONObject().element("accessToken", accessToken);
-        GithubScm githubScm = new GithubScm(new Reachable() {
-            @Override
-            public Link getLink() {
-                return new Link("/blue/organizations/jenkins/scm/");
-            }
-        });
+        GithubScm githubScm = new GithubScm(() -> new Link( "/blue/organizations/jenkins/scm/"));
 
         mockCredentials("joe", accessToken, githubScm.getId(), GithubScm.DOMAIN_NAME);
 
@@ -185,9 +179,9 @@ public class GithubScmTest {
 
         when(CredentialsProvider.class, "lookupCredentials",
              StandardUsernamePasswordCredentials.class, jenkins, authentication, blueOceanDomainRequirement)
-            .thenReturn(Lists.newArrayList(credentials));
+            .thenReturn(Arrays.asList(credentials));
 
-        when(CredentialsMatchers.class, "firstOrNull", Lists.newArrayList(credentials), credentialsMatcher).thenReturn(credentials);
+        when(CredentialsMatchers.class, "firstOrNull", Arrays.asList(credentials), credentialsMatcher).thenReturn(credentials);
 
         when(CredentialsMatchers.allOf(credentialsMatcher)).thenReturn(credentialsMatcher);
 
@@ -201,8 +195,9 @@ public class GithubScmTest {
         when(credentialsStore.hasPermission(CredentialsProvider.UPDATE)).thenReturn(true);
         when(credentialsStore.getDomainByName(domainName)).thenReturn(domain);
 
-        when(CredentialsProvider.class, "lookupStores", user).thenReturn(Lists.newArrayList(credentialsStore));
+        when(CredentialsProvider.class, "lookupStores", user).thenReturn(Arrays.asList(credentialsStore));
 
+        when(credentialsStore.addCredentials(domain, credentials)).thenReturn(true);
         when(credentialsStore.updateCredentials(domain, credentials, credentials)).thenReturn(true);
     }
 }
