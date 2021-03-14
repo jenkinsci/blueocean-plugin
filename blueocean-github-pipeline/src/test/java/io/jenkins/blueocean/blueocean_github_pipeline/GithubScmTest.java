@@ -37,6 +37,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.scm.Scm.CREDENTIAL_ID;
 import static org.powermock.api.mockito.PowerMockito.*;
@@ -179,9 +180,10 @@ public class GithubScmTest {
 
         when(CredentialsProvider.class, "lookupCredentials",
              StandardUsernamePasswordCredentials.class, jenkins, authentication, blueOceanDomainRequirement)
-            .thenReturn(Arrays.asList(credentials));
+            .thenReturn(Collections.singletonList(credentials));
 
-        when(CredentialsMatchers.class, "firstOrNull", Arrays.asList(credentials), credentialsMatcher).thenReturn(credentials);
+        when(CredentialsMatchers.class, "firstOrNull",
+             Collections.singletonList(credentials), credentialsMatcher).thenReturn(credentials);
 
         when(CredentialsMatchers.allOf(credentialsMatcher)).thenReturn(credentialsMatcher);
 
@@ -195,7 +197,8 @@ public class GithubScmTest {
         when(credentialsStore.hasPermission(CredentialsProvider.UPDATE)).thenReturn(true);
         when(credentialsStore.getDomainByName(domainName)).thenReturn(domain);
 
-        when(CredentialsProvider.class, "lookupStores", user).thenReturn(Arrays.asList(credentialsStore));
+        when(CredentialsProvider.class, "lookupStores", user).
+            thenReturn(Collections.singletonList(credentialsStore));
 
         when(credentialsStore.addCredentials(domain, credentials)).thenReturn(true);
         when(credentialsStore.updateCredentials(domain, credentials, credentials)).thenReturn(true);
