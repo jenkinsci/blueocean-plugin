@@ -138,9 +138,10 @@ public class ParallelNavigationTest {
         navTestWithFailedInputStepPipeline.getRunDetailsPipelinePage().open(1);
 
         logger.info("Beginning failedInputStep()");
+        wait.until(By.xpath("//*[text()=\"This step will fail because the user is not authorised to click OK\"]"));
         wait.until(By.cssSelector(".btn.inputStepSubmit")).click();
         logger.info("Clicked the inputStepSubmit button");
-        wait.until(By.xpath("//*[text()=\"You need to be B, C to submit this.\"]"));
+        wait.until(By.xpath("//*[text()=\"This step will fail because the user is not authorised to click OK\"]"));
         logger.info("Found failed input step error message");
     }
 
