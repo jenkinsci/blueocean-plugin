@@ -125,24 +125,33 @@ public class ParallelNavigationTest {
      */
     @Test
     public void failedInputStep() throws IOException, GitAPIException, InterruptedException {
-        // Create navTestWithFailedInputStep
-        logger.info("Creating pipeline {}", navTestWithFailedInputStep);
-        URL navTestWithFailedInputStepJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.failed.input");
-        Files.copy(new File(navTestWithFailedInputStepJenkinsfile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
-        git.addAll();
-        git.commit("Initial commit for " + navTestWithFailedInputStep);
-        logger.info("Committed Jenkinsfile for {}", navTestWithFailedInputStep);
-        navTestWithFailedInputStepPipeline = mbpFactory.pipeline(navTestWithFailedInputStep).createPipeline(git);
-        logger.info("Finished creating " + navTestWithFailedInputStep);
+        try
+        {
+            // Create navTestWithFailedInputStep
+            logger.info("Creating pipeline {}", navTestWithFailedInputStep);
+            URL navTestWithFailedInputStepJenkinsfile = Resources.getResource(ParallelNavigationTest.class,
+                                                                               "ParallelNavigationTest/Jenkinsfile.failed.input");
+            Files.copy(new File( navTestWithFailedInputStepJenkinsfile.getFile()),
+                        new File(git.gitDirectory, "Jenkinsfile"));
+            git.addAll();
+            git.commit("Initial commit for " + navTestWithFailedInputStep);
+            logger.info("Committed Jenkinsfile for {}", navTestWithFailedInputStep);
+            navTestWithFailedInputStepPipeline = mbpFactory.pipeline(navTestWithFailedInputStep).createPipeline(git);
+            logger.info("Finished creating " + navTestWithFailedInputStep);
 
-        navTestWithFailedInputStepPipeline.getRunDetailsPipelinePage().open(1);
+            navTestWithFailedInputStepPipeline.getRunDetailsPipelinePage().open(1);
 
-        logger.info("Beginning failedInputStep()");
-        wait.until(By.xpath("//*[text()=\"This step will fail because the user is not authorised to click OK\"]"));
-        wait.until(By.cssSelector(".btn.inputStepSubmit")).click();
-        logger.info("Clicked the inputStepSubmit button");
-        wait.until(By.xpath("//*[text()=\"This step will fail because the user is not authorised to click OK\"]"));
-        logger.info("Found failed input step error message");
+            logger.info("Beginning failedInputStep()");
+            wait.until(
+                By.xpath("//*[text()=\"This step will fail because the user is not authorised to click OK\"]"));
+            logger.info("Found failed input step error message");
+            //wait.until(By.cssSelector( ".btn.inputStepSubmit" ) ).click();
+            wait.until(By.xpath("//button[@class='btn inputStepSubmit']")).click();
+            logger.info("Clicked the inputStepSubmit button");
+        } finally {
+            mbpFactory.pipeline(navTestWithFailedInputStep).deleteThisPipeline(navTestWithFailedInputStep);
+        }
+
     }
 
     /**
