@@ -26,7 +26,7 @@ public class FavoritesDashboardPage extends DashboardPage {
 
     public WebElement getFavoriteCard(String fullName) {
         WebElement stack = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".favorites-card-stack")));
-        stack.click();
+        //stack.click();
         String pipelineName = fullName.replace("/", "\\/");
         List<WebElement> list = wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(
             stack, By.cssSelector(".pipeline-card[data-full-name=" + pipelineName + "]")
