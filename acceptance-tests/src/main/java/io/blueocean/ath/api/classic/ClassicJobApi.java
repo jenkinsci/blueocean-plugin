@@ -58,7 +58,7 @@ public class ClassicJobApi {
     public void deletePipeline(FolderJob folder, String pipeline) throws IOException {
         try {
             jenkins.deleteJob(folder, pipeline, true);
-            LOGGER.info( "Deleted pipeline " + pipeline);
+            LOGGER.info("Deleted pipeline " + pipeline);
         } catch(HttpResponseException e) {
             if(e.getStatusCode() != 404) {
                 throw e;

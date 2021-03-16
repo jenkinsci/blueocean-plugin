@@ -26,8 +26,10 @@ public class FavoritesDashboardPage extends DashboardPage {
 
     public WebElement getFavoriteCard(String fullName) {
         WebElement stack = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".favorites-card-stack")));
+        stack.click();
+        String pipelineName = fullName.replace("/", "\\/");
         List<WebElement> list = wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(
-            stack, By.cssSelector(".pipeline-card[data-full-name=" + fullName.replace("/", "\\/") + "]")
+            stack, By.cssSelector(".pipeline-card[data-full-name=" + pipelineName + "]")
         ));
         return list.get(0);
     }
@@ -78,7 +80,9 @@ public class FavoritesDashboardPage extends DashboardPage {
         String statusi = Arrays.stream(statuses).map(Object::toString).collect(Collectors.joining(","));
         logger.info("waiting for status = {} for favorite card = {}", statusi, fullName);
         WebElement favorite = getFavoriteCard(fullName);
-        Arrays.stream(statuses).forEach(status -> wait.until(ExpectedConditions.attributeContains(favorite, "class", status.toString().toLowerCase()), 15*1000));
+        Arrays.stream(statuses)
+            .forEach(status -> wait.until(ExpectedConditions.attributeContains(favorite, "class", status.toString().toLowerCase()),
+                                          15*1000));
         return favorite;
     }
 

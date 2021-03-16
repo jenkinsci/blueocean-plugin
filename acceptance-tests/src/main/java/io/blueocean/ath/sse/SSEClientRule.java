@@ -3,10 +3,8 @@ package io.blueocean.ath.sse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.JenkinsUser;
-import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.media.sse.EventListener;
 import org.glassfish.jersey.media.sse.EventSource;
@@ -15,6 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.rules.ExternalResource;
 import org.openqa.selenium.support.ui.FluentWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
@@ -32,16 +32,17 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 
 public class SSEClientRule extends ExternalResource {
-    private Logger logger = Logger.getLogger(SSEClientRule.class);
+    private Logger logger = LoggerFactory.getLogger(SSEClientRule.class);
 
     @Override
     protected void before() throws Throwable {
-        events = Lists.newCopyOnWriteArrayList();
+        events = new CopyOnWriteArrayList<>();
         connect();
     }
 
@@ -90,12 +91,12 @@ public class SSEClientRule extends ExternalResource {
                 jenkinsEvent.getString("jenkins_object_type").equals("org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject")) {
             } else if (jenkinsEvent.has("blueocean_job_pipeline_name")) {
                 String pipelineName = jenkinsEvent.getString("blueocean_job_pipeline_name");
-                logger.info("Build for " + pipelineName + " entered queue");
+                logger.info("Build for {} entered queue", pipelineName);
             }
         }
         events.add(jenkinsEvent);
         if (logEvents) {
-            logger.info("SSE - " + jenkinsEvent.toString());
+            logger.info("SSE - {}", jenkinsEvent.toString());
         }
     };
 
@@ -163,11 +164,7 @@ public class SSEClientRule extends ExternalResource {
             .pollingEvery(1000, TimeUnit.MILLISECONDS)
             .withTimeout(120, TimeUnit.SECONDS)
             .ignoring(NoSuchElementException.class)
-            .until(new Function<List<JSONObject>, Boolean>() {
-                public Boolean apply(List<JSONObject> events) {
-                    return isEvents.apply(events);
-                }
-            });
+            .until( events -> isEvents.apply( events) );
     }
 }
 
