@@ -74,38 +74,40 @@ class HttpRequest {
                 GithubScm.getMappingObjectWriter().writeValue(connection.getOutputStream(), body);
             }
         }
-        InputStreamReader r=null;
-        try {
-            int status = connection.getResponseCode();
-            if (status == 304) {
-                return null;
-            }
-            if (status == 204 && type != null && type.isArray()) {
-                return type.cast(Array.newInstance(type.getComponentType(), 0));
-            }
-            if(status == 401 || status == 403){
-                throw new ServiceException.ForbiddenException("Invalid accessToken");
-            }
-            if(status == 404){
-                throw new ServiceException.NotFoundException("Not Found. Remote server sent code " + getErrorResponse(connection));
-            }
-            if(status > 399) {
-                throw new ServiceException.BadRequestException(String.format("%s %s returned error: %s. Error message: %s.", method, url ,status, getErrorResponse(connection)));
-            }
-            if(!method.equals("HEAD")) {
-                r = new InputStreamReader(wrapStream(connection.getInputStream(), connection.getContentEncoding()), StandardCharsets.UTF_8);
+
+
+        int status = connection.getResponseCode();
+        if (status == 304) {
+            return null;
+        }
+        if (status == 204 && type != null && type.isArray()) {
+            return type.cast(Array.newInstance(type.getComponentType(), 0));
+        }
+        if(status == 401 || status == 403){
+            throw new ServiceException.ForbiddenException("Invalid accessToken");
+        }
+        if(status == 404){
+            throw new ServiceException.NotFoundException("Not Found. Remote server sent code " + getErrorResponse(connection));
+        }
+        if(status > 399) {
+            throw new ServiceException.BadRequestException(String.format("%s %s returned error: %s. Error message: %s.", method, url ,status, getErrorResponse(connection)));
+        }
+        if(!method.equals("HEAD")) {
+            try(InputStreamReader r = new InputStreamReader(
+                    wrapStream( connection.getInputStream(), connection.getContentEncoding()),
+                    StandardCharsets.UTF_8 )){
+
                 String data = IOUtils.toString(r);
-                if (type != null) {
+                if (type != null ){
                     try {
                         return GithubScm.getMappingObjectReader().forType(type).readValue(data);
                     } catch (JsonMappingException e) {
-                        throw new IOException("Failed to deserialize: "+e.getMessage()+"\n" + data, e);
+                        throw new IOException("Failed to deserialize: " + e.getMessage() + "\n" + data, e);
                     }
                 }
             }
-        }finally {
-            IOUtils.closeQuietly(r);
         }
+
         return null;
     }
 
@@ -113,7 +115,7 @@ class HttpRequest {
         if(connection.getErrorStream() == null){
             return "";
         }
-        return IOUtils.toString(wrapStream(connection.getErrorStream(), connection.getContentEncoding()));
+        return IOUtils.toString(wrapStream( connection.getErrorStream(), connection.getContentEncoding()));
     }
 
     private boolean methodNeedsBody(){

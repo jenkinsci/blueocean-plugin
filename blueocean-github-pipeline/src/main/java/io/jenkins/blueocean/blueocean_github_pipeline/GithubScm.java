@@ -2,12 +2,10 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.User;
@@ -54,7 +52,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -301,7 +301,7 @@ public class GithubScm extends AbstractScm {
 
             HttpURLConnection connection = connect(String.format("%s/%s", getUri(), "user"),accessToken);
             validateAccessTokenScopes(connection);
-            String data = IOUtils.toString(HttpRequest.getInputStream(connection));
+            String data = IOUtils.toString(HttpRequest.getInputStream(connection), Charset.defaultCharset());
             GHUser user = GithubScm.getMappingObjectReader().forType(GHUser.class).readValue(data);
 
             if(user.getEmail() != null){
@@ -320,12 +320,12 @@ public class GithubScm extends AbstractScm {
 
             if(githubCredential == null) {
                 CredentialsUtils.createCredentialsInUserStore(
-                        credential, authenticatedUser, getCredentialDomainName(),
-                        ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
+                    credential, authenticatedUser, getCredentialDomainName(),
+                    Collections.singletonList(new BlueOceanDomainSpecification()));
             }else{
                 CredentialsUtils.updateCredentialsInUserStore(
                         githubCredential, credential, authenticatedUser, getCredentialDomainName(),
-                        ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
+                        Collections.singletonList(new BlueOceanDomainSpecification()));
             }
 
             return createResponse(credential.getId());
