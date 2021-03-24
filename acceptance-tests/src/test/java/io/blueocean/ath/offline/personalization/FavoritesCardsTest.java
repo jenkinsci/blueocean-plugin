@@ -1,30 +1,24 @@
 package io.blueocean.ath.offline.personalization;
 
-import com.google.common.collect.ImmutableList;
+
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.factory.ActivityPageFactory;
 import io.blueocean.ath.model.ClassicPipeline;
 import io.blueocean.ath.model.Folder;
 import io.blueocean.ath.model.FreestyleJob;
-import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.sse.SSEClientRule;
-import org.apache.log4j.Logger;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 
 import static io.blueocean.ath.model.BlueJobStatus.RUNNING;
@@ -34,7 +28,7 @@ import static io.blueocean.ath.model.BlueJobStatus.SUCCESS;
  * @author cliffmeyers
  */
 public class FavoritesCardsTest extends AbstractFavoritesTest {
-    private static final Logger logger = Logger.getLogger(FavoritesAddRemoveTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(FavoritesAddRemoveTest.class);
     private static final Folder FOLDER = new Folder("personalization-folder");
 
     @Override

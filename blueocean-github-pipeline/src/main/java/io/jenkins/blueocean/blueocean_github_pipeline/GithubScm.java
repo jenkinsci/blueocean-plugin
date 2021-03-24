@@ -2,12 +2,10 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.User;
@@ -18,7 +16,6 @@ import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.impl.pipeline.PipelineImpl;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecification;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.AbstractScm;
@@ -26,7 +23,6 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
-import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Container;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -47,7 +43,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.GET;
-import org.kohsuke.stapler.verb.PUT;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -57,7 +52,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -304,7 +301,7 @@ public class GithubScm extends AbstractScm {
 
             HttpURLConnection connection = connect(String.format("%s/%s", getUri(), "user"),accessToken);
             validateAccessTokenScopes(connection);
-            String data = IOUtils.toString(HttpRequest.getInputStream(connection));
+            String data = IOUtils.toString(HttpRequest.getInputStream(connection), Charset.defaultCharset());
             GHUser user = GithubScm.getMappingObjectReader().forType(GHUser.class).readValue(data);
 
             if(user.getEmail() != null){
@@ -323,12 +320,12 @@ public class GithubScm extends AbstractScm {
 
             if(githubCredential == null) {
                 CredentialsUtils.createCredentialsInUserStore(
-                        credential, authenticatedUser, getCredentialDomainName(),
-                        ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
+                    credential, authenticatedUser, getCredentialDomainName(),
+                    Collections.singletonList(new BlueOceanDomainSpecification()));
             }else{
                 CredentialsUtils.updateCredentialsInUserStore(
                         githubCredential, credential, authenticatedUser, getCredentialDomainName(),
-                        ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
+                        Collections.singletonList(new BlueOceanDomainSpecification()));
             }
 
             return createResponse(credential.getId());

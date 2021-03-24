@@ -24,7 +24,7 @@
     <jenkins.acceptance.testharness.version>1.74</jenkins.acceptance.testharness.version>
     <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
     <java.level>8</java.level>
-    <slf4j.version>1.7.25</slf4j.version>
+    <slf4j.version>1.7.30</slf4j.version>
   </properties>
 
   <repositories>
