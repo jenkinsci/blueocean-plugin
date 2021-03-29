@@ -109,7 +109,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
                     .atPriority(10)
                     .willReturn(aResponse().proxiedFrom("https://api.github.com/")));
         }
-        
+
         this.user = login("vivek", "Vivek Pandey", "vivek.pandey@gmail.com");
         this.githubApiUrl = String.format("http://localhost:%s",githubApi.port());
         this.crumb = getCrumb( j.jenkins );
@@ -185,7 +185,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
         when(scmSource.getRepository()).thenReturn("PR-demo");
         when(mbp.getSCMSources()).thenReturn(Lists.<SCMSource>newArrayList(scmSource));
         BlueOceanCredentialsProvider.FolderPropertyImpl folderProperty = mock(BlueOceanCredentialsProvider.FolderPropertyImpl.class);
-        DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> mbpProperties = new DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor>(mbp);
+        DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> mbpProperties = new DescribableList<>(mbp);
         mbpProperties.add(new BlueOceanCredentialsProvider.FolderPropertyImpl(
                 user.getId(), credentialId,
                 BlueOceanCredentialsProvider.createDomain(githubApiUrl)

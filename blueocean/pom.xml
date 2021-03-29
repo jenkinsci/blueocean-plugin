@@ -106,6 +106,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-jira</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <!-- TODO remove with next release -->
@@ -148,6 +149,12 @@
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
             <scope>test</scope>
+            <exclusions>
+              <exclusion>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>

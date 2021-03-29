@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.offbytwo.jenkins.model.FolderJob;
+import com.offbytwo.jenkins.model.Job;
 import io.blueocean.ath.GitRepositoryRule;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.sse.SSEEvents;

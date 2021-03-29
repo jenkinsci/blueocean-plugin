@@ -41,12 +41,12 @@ import java.beans.Introspector;
 final class XMLDataWriter implements DataWriter {
 
     private String name;
-    private final Stack<String> objectNames = new Stack<String>();
+    private final Stack<String> objectNames = new Stack<>();
     /**
      * Stack that keeps track of whether we are inside an array.
      * The top element represents the current state.
      */
-    private final Stack<Boolean> isArray = new Stack<Boolean>();
+    private final Stack<Boolean> isArray = new Stack<>();
     private final Writer out;
     private ExportConfig config;
     private String classAttr;

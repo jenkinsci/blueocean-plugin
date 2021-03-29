@@ -327,7 +327,7 @@ public abstract class Property implements Comparable<Property> {
                 this.args = args;
             }
         }
-        final List<Step> steps = new ArrayList<Step>();
+        final List<Step> steps = new ArrayList<>();
         boolean finished = false;
         @Override
         public void name(String name) throws IOException {
@@ -424,12 +424,12 @@ public abstract class Property implements Comparable<Property> {
      */
     public abstract Object getValue(Object bean) throws IllegalAccessException, InvocationTargetException;
 
-    /*package*/ static final Set<Class> STRING_TYPES = new HashSet<Class>(Arrays.asList(
+    /*package*/ static final Set<Class> STRING_TYPES = new HashSet<>(Arrays.asList(
         String.class,
         URL.class
     ));
 
-    /*package*/ static final Set<Class> PRIMITIVE_TYPES = new HashSet<Class>(Arrays.asList(
+    /*package*/ static final Set<Class> PRIMITIVE_TYPES = new HashSet<>(Arrays.asList(
         Integer.class,
         Long.class,
         Boolean.class,

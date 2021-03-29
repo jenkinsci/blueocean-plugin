@@ -1082,6 +1082,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
     @Test
     public void testMultiBranchPipelineQueueContainer() throws Exception {
+        j.jenkins.setQuietPeriod(0);
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         sampleRepo1.init();
         sampleRepo1.write("Jenkinsfile", "stage 'build'\n " + "node {echo 'Building'}\n" +

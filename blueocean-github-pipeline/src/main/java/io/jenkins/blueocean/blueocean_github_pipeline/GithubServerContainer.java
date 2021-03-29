@@ -9,7 +9,6 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Ordering;
 import com.google.common.hash.Hashing;
 import hudson.model.Item;
-import hudson.model.User;
 import hudson.security.ACL;
 import hudson.security.ACLContext;
 import io.jenkins.blueocean.commons.ErrorMessage;
@@ -60,7 +59,7 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
             throw new ServiceException.ForbiddenException("User does not have permission to create repository.", e);
         }
 
-        List<ErrorMessage.Error> errors = new LinkedList();
+        List<ErrorMessage.Error> errors = new LinkedList<>();
 
         // Validate name
         final String name = (String) request.get(GithubServer.NAME);
@@ -149,12 +148,8 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
 
     @Override
     public GithubServer get(final String encodedApiUrl) {
-        Endpoint endpoint = Iterables.find(GitHubConfiguration.get().getEndpoints(), new Predicate<Endpoint>() {
-            @Override
-            public boolean apply(@Nullable Endpoint input) {
-                return input != null && encodedApiUrl.equals(Hashing.sha256().hashString(input.getApiUri(), Charsets.UTF_8).toString());
-            }
-        }, null);
+        Endpoint endpoint = Iterables.find(GitHubConfiguration.get().getEndpoints(), input ->
+            input != null && encodedApiUrl.equals( Hashing.sha256().hashString( input.getApiUri(), Charsets.UTF_8).toString()), null);
         if (endpoint == null) {
             throw new ServiceException.NotFoundException("not found");
         }
@@ -163,18 +158,10 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
 
     @Override
     public Iterator<ScmServerEndpoint> iterator() {
-        List<Endpoint> endpoints = Ordering.from(new Comparator<Endpoint>() {
-            @Override
-            public int compare(Endpoint o1, Endpoint o2) {
-                return ComparatorUtils.NATURAL_COMPARATOR.compare(o1.getName(), o2.getName());
-            }
-        }).sortedCopy(GitHubConfiguration.get().getEndpoints());
-        return Iterators.transform(endpoints.iterator(), new Function<Endpoint, ScmServerEndpoint>() {
-            @Override
-            public ScmServerEndpoint apply(Endpoint input) {
-                return new GithubServer(input, getLink());
-            }
-        });
+        List<Endpoint> endpoints = Ordering.from((Comparator<Endpoint>) (o1, o2) ->
+             ComparatorUtils.NATURAL_COMPARATOR.compare(o1.getName(), o2.getName()))
+            .sortedCopy( GitHubConfiguration.get().getEndpoints());
+        return Iterators.transform( endpoints.iterator(), input -> new GithubServer(input, getLink()));
     }
 
     private String discardQueryString(String apiUrl) {
@@ -185,11 +172,6 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
     }
 
     private GithubServer findByName(final String name) {
-        return (GithubServer) Iterators.find(iterator(), new Predicate<ScmServerEndpoint>() {
-            @Override
-            public boolean apply(ScmServerEndpoint input) {
-                return input.getName().equals(name);
-            }
-        }, null);
+        return (GithubServer) Iterators.find( iterator(), input -> input.getName().equals( name), null);
     }
 }
