@@ -251,7 +251,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
 
         // Validate that name matches rules
         try {
-            Jenkins.getInstance().getProjectNamingStrategy().checkName(getName());
+            Jenkins.get().getProjectNamingStrategy().checkName(getName());
             Jenkins.checkGoodName(name);
         }catch (Failure f){
             errors.add(new Error(ERROR_FIELD_SCM_CONFIG_NAME, Error.ErrorCodes.INVALID.toString(),  getName() + " in not a valid name"));

@@ -498,7 +498,7 @@ public class SseEventTest {
 
     @TestExtension(value = "multiBranchJobEventsWithCustomOrg")
     public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
-        private OrganizationImpl instance = new OrganizationImpl("TestOrg", Jenkins.getInstance().getItem("/TestOrgFolderName", Jenkins.getInstance(), MockFolder.class));
+        private OrganizationImpl instance = new OrganizationImpl("TestOrg", Jenkins.get().getItem("/TestOrgFolderName", Jenkins.get(), MockFolder.class));
 
         @Override
         public OrganizationImpl get(String name) {
@@ -519,7 +519,7 @@ public class SseEventTest {
 
         @Override
         public OrganizationImpl of(ItemGroup group) {
-            if (group == instance.getGroup() || group == Jenkins.getInstance()) {
+            if (group == instance.getGroup() || group == Jenkins.get()) {
                 return instance;
             }
             return null;

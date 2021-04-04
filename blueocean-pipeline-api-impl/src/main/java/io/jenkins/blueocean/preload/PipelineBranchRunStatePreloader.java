@@ -66,7 +66,7 @@ public class PipelineBranchRunStatePreloader extends RESTFetchPreloader {
             return null;
         }
 
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         String pipelineFullName = blueUrl.getPart(BlueUrlTokenizer.UrlPart.PIPELINE);
         String branchName = blueUrl.getPart(BlueUrlTokenizer.UrlPart.BRANCH);
         String runId = blueUrl.getPart(BlueUrlTokenizer.UrlPart.PIPELINE_RUN_DETAIL_ID);

@@ -2,7 +2,7 @@
 import jenkins.model.*
 import hudson.security.*
 
-def instance = Jenkins.getInstance()
+def instance = Jenkins.get()
 
 def adminUserName = System.getenv("ADMIN_USERNAME")
 def adminPassword = System.getenv("ADMIN_PASSWORD")

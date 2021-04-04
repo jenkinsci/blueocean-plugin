@@ -86,7 +86,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
         if(job != null){
             pipelines = ImmutableList.of(job);
         }else{
-            pipelines = Jenkins.getInstance().getItems(Job.class);
+            pipelines = Jenkins.get().getItems(Job.class);
         }
         for (Job p : pipelines) {
             RunList<? extends Run> runList = p.getBuilds();
@@ -109,7 +109,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
         if(job != null){
             pipelines = ImmutableList.of(job);
         }else{
-            pipelines = Jenkins.getInstance().getItems(Job.class);
+            pipelines = Jenkins.get().getItems(Job.class);
         }
 
         for (Job p : pipelines) {

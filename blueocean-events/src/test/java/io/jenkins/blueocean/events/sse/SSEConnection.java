@@ -130,7 +130,7 @@ public class SSEConnection implements Closeable {
         JSONObject o = new JSONObject();
         o.put("jenkins_channel", channel);
         EventFilter f = (EventFilter) o.toBean(EventFilter.class);
-        configure(Collections.singletonList(f),Collections.<EventFilter>emptyList());
+        configure(Collections.singletonList(f),Collections.emptyList());
     }
 
     /**

@@ -1124,7 +1124,7 @@ public class MultiBranchTest extends PipelineBaseTest {
             job.scheduleBuild2(0);
             job.scheduleBuild2(0);
         }
-        Queue.Item[] queueItems = Jenkins.getInstance().getQueue().getItems();
+        Queue.Item[] queueItems = Jenkins.get().getQueue().getItems();
         MultiBranchPipelineQueueContainer mbpQueueContainer =
                 new MultiBranchPipelineQueueContainer((MultiBranchPipelineImpl) r);
         Iterator<BlueQueueItem> blueQueueItems = mbpQueueContainer.iterator(0,100);

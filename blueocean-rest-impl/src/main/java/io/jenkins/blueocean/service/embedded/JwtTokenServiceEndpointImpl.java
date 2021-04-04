@@ -15,6 +15,6 @@ public class JwtTokenServiceEndpointImpl extends JwtTokenServiceEndpoint{
     @Nonnull @Override
     @SuppressWarnings("ConstantConditions")
     public String getHostUrl() {
-        return Jenkins.getInstance().getRootUrl();
+        return Jenkins.get().getRootUrl();
     }
 }

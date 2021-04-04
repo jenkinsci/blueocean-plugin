@@ -116,8 +116,8 @@ public class AthModule extends AbstractModule {
 
             if(server.getComputerSet().getTotalExecutors() < 10) {
                 server.runScript(
-                    "jenkins.model.Jenkins.getInstance().setNumExecutors(10);\n" +
-                        "jenkins.model.Jenkins.getInstance().save();\n", true);
+                    "jenkins.model.Jenkins.get().setNumExecutors(10);\n" +
+                        "jenkins.model.Jenkins.get().save();\n", true);
             }
 
             Properties properties = new Properties();

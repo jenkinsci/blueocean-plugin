@@ -17,7 +17,6 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -118,12 +117,12 @@ public class RunContainerImpl extends BlueRunContainer {
             List<ParameterValue> parameterValues = getParameterValue(request);
             int expectedBuildNumber = job.getNextBuildNumber();
             if(parameterValues.size() > 0) {
-                scheduleResult = Jenkins.getInstance()
+                scheduleResult = Jenkins.get()
                         .getQueue()
                         .schedule2((Queue.Task) job, 0, new ParametersAction(parameterValues),
                                 new CauseAction(new Cause.UserIdCause()));
             }else {
-                scheduleResult = Jenkins.getInstance()
+                scheduleResult = Jenkins.get()
                         .getQueue()
                         .schedule2((Queue.Task) job, 0, new CauseAction(new Cause.UserIdCause()));
             }

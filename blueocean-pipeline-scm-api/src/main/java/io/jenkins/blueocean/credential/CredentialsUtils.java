@@ -101,7 +101,7 @@ public class CredentialsUtils {
         for(final CredentialsStore store: findUserStores(user)) {
             domains.addAll(store.getDomains());
         }
-        for(final CredentialsStore store: CredentialsProvider.lookupStores(Jenkins.getInstance())){
+        for(final CredentialsStore store: CredentialsProvider.lookupStores(Jenkins.get())){
             domains.addAll(store.getDomains());
         }
         return domains;
@@ -136,7 +136,7 @@ public class CredentialsUtils {
         }
 
         //then system store
-        for (CredentialsStore store : CredentialsProvider.lookupStores(Jenkins.getInstance())) {
+        for (CredentialsStore store : CredentialsProvider.lookupStores(Jenkins.get())) {
             stores.add(store);
         }
         return stores;

@@ -40,7 +40,6 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.ArtifactContainerImpl;
-import io.jenkins.blueocean.service.embedded.rest.ArtifactImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import jenkins.model.Jenkins;
@@ -524,8 +523,8 @@ public class PipelineApiTest extends BaseTest {
 
         p1.scheduleBuild2(0).waitForStart();
         p1.scheduleBuild2(0).waitForStart();
-        Jenkins.getInstance().getQueue().schedule(p1, 0, new ParametersAction(new StringParameterValue("test","test1")), new CauseAction(new Cause.UserIdCause()));
-        Jenkins.getInstance().getQueue().schedule(p1, 0, new ParametersAction(new StringParameterValue("test","test2")), new CauseAction(new Cause.UserIdCause()));
+        Jenkins.get().getQueue().schedule(p1, 0, new ParametersAction(new StringParameterValue("test","test1")), new CauseAction(new Cause.UserIdCause()));
+        Jenkins.get().getQueue().schedule(p1, 0, new ParametersAction(new StringParameterValue("test","test2")), new CauseAction(new Cause.UserIdCause()));
 
         List queue = request().get("/organizations/jenkins/pipelines/pipeline1/queue").build(List.class);
         Assert.assertEquals(2, queue.size());
@@ -881,7 +880,7 @@ public class PipelineApiTest extends BaseTest {
 
     @TestExtension(value = "testOrganizationFolder")
     public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
-        private OrganizationImpl instance = new OrganizationImpl("TestOrg", Jenkins.getInstance().getItem("/TestOrgFolderName", Jenkins.getInstance(), MockFolder.class));
+        private OrganizationImpl instance = new OrganizationImpl("TestOrg", Jenkins.get().getItem("/TestOrgFolderName", Jenkins.get(), MockFolder.class));
 
         @Override
         public OrganizationImpl get(String name) {

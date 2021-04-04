@@ -64,7 +64,7 @@ public class JwtAuthenticationServiceImpl extends JwtAuthenticationService {
             if(p!=null)
                 email = p.getAddress();
         }
-        Plugin plugin = Jenkins.getInstance().getPlugin("blueocean-jwt");
+        Plugin plugin = Jenkins.get().getPlugin("blueocean-jwt");
         String issuer = "blueocean-jwt:"+ ((plugin!=null) ? plugin.getWrapper().getVersion() : "");
 
         JwtToken jwtToken = new JwtToken();

@@ -51,7 +51,7 @@ public class AnalyticsTest {
             "prop1", "value1",
             "prop2", 2,
             "jenkinsVersion", j.jenkins.getVersion().toString(),
-            "blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-commons").getWrapper().getVersion()
+            "blueoceanVersion", Jenkins.get().getPlugin("blueocean-commons").getWrapper().getVersion()
         );
         analytics.track(new TrackRequest("test", props));
 
@@ -72,7 +72,7 @@ public class AnalyticsTest {
         Map<String, Object> expectedProps = Maps.newHashMap();
         expectedProps.put("jenkins", analytics.getServer());
         expectedProps.put("jenkinsVersion", j.jenkins.getVersion().toString());
-        expectedProps.put("blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-commons").getWrapper().getVersion());
+        expectedProps.put("blueoceanVersion", Jenkins.get().getPlugin("blueocean-commons").getWrapper().getVersion());
 
         Assert.assertEquals("test", analytics.lastName);
         Assert.assertEquals( expectedProps, analytics.lastProps);

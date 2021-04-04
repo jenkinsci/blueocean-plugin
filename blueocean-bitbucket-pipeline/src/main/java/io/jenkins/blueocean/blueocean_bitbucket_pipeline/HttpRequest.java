@@ -27,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Vivek Pandey
@@ -38,16 +39,12 @@ public class HttpRequest {
 
     private HttpRequest(@Nonnull String apiUrl, @Nullable StandardUsernamePasswordCredentials credentials, @Nullable String authHeader) {
         this.client = getHttpClient(apiUrl);
-        try {
-            if(StringUtils.isBlank(authHeader) && credentials != null) {
-                this.authorizationHeader = String.format("Basic %s",
-                        Base64.encodeBase64String(String.format("%s:%s", credentials.getUsername(),
-                                Secret.toString(credentials.getPassword())).getBytes("UTF-8")));
-            }else{
-                this.authorizationHeader = authHeader;
-            }
-        } catch (UnsupportedEncodingException e) {
-            throw new ServiceException.UnexpectedErrorException("Failed to create basic auth header: "+e.getMessage(), e);
+        if(StringUtils.isBlank(authHeader) && credentials != null) {
+            this.authorizationHeader = String.format("Basic %s",
+                    Base64.encodeBase64String(String.format("%s:%s", credentials.getUsername(),
+                            Secret.toString(credentials.getPassword())).getBytes(StandardCharsets.UTF_8)));
+        }else{
+            this.authorizationHeader = authHeader;
         }
     }
 
@@ -111,7 +108,7 @@ public class HttpRequest {
     private void setClientProxyParams(String apiUrl, HttpClientBuilder clientBuilder) {
         try {
             URL url = new URL(apiUrl);
-            ProxyConfiguration proxyConfig = Jenkins.getInstance().proxy;
+            ProxyConfiguration proxyConfig = Jenkins.get().proxy;
             Proxy proxy = proxyConfig != null ? proxyConfig.createProxy(url.getHost()) : Proxy.NO_PROXY;
             if (!proxy.equals(Proxy.NO_PROXY) && proxyConfig != null) {
                 clientBuilder.setProxy(new HttpHost(proxyConfig.name, proxyConfig.port));

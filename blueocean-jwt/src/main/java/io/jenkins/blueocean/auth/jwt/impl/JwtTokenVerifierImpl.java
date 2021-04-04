@@ -163,7 +163,7 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
                 throw new ServiceException.UnauthorizedException("Invalid JWT token: subject " + subject + " not found");
             }
             //TODO: UserDetails call is expensive, encode it in token and create UserDetails from it
-            UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(user.getId());
+            UserDetails d = Jenkins.get().getSecurityRealm().loadUserByUsername(user.getId());
             this.grantedAuthorities = d.getAuthorities();
             this.name = subject;
             super.setAuthenticated(true);

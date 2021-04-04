@@ -186,7 +186,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
     @Override
     public String getCauseOfBlockage() {
-        for(Queue.Item i: Jenkins.getInstance().getQueue().getItems()) {
+        for(Queue.Item i: Jenkins.get().getQueue().getItems()) {
             if (i.task instanceof ExecutorStepExecution.PlaceholderTask) {
                 ExecutorStepExecution.PlaceholderTask task = (ExecutorStepExecution.PlaceholderTask) i.task;
                 Run r = task.runForDisplay();

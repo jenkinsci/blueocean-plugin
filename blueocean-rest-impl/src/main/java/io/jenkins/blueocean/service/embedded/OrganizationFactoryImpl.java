@@ -32,7 +32,7 @@ public class OrganizationFactoryImpl extends OrganizationFactory {
     }
 
     public OrganizationFactoryImpl(String name) {
-        this.instance = new OrganizationImpl(name, Jenkins.getInstance());
+        this.instance = new OrganizationImpl(name, Jenkins.get());
     }
 
     @Override

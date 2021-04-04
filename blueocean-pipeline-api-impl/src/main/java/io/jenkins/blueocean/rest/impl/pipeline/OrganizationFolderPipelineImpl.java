@@ -206,7 +206,7 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
         return new BlueQueueContainer() {
             @Override
             public BlueQueueItem get(String name) {
-                for(Queue.Item item: Jenkins.getInstance().getQueue().getItems(folder)){
+                for(Queue.Item item: Jenkins.get().getQueue().getItems(folder)){
                     if(item.getId() == Long.parseLong(name)){
                         return new QueueItemImpl(organization, item, OrganizationFolderPipelineImpl.this, 1);
                     }
@@ -222,7 +222,7 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
             @Override
             public Iterator<BlueQueueItem> iterator() {
                 return new Iterator<BlueQueueItem>(){
-                    Iterator<Queue.Item> it = Jenkins.getInstance().getQueue().getItems(folder).iterator();
+                    Iterator<Queue.Item> it = Jenkins.get().getQueue().getItems(folder).iterator();
                     @Override
                     public boolean hasNext() {
                         return it.hasNext();

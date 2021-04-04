@@ -154,12 +154,12 @@ public class UserSSHKeyManager {
      * @return an identifier
      */
     private static String getKeyComment(String userId) {
-        String host = Jenkins.getInstance().getRootUrl();
+        String host = Jenkins.get().getRootUrl();
         if (host == null) {
-            host = Jenkins.getInstance().getRootUrlFromRequest();
+            host = Jenkins.get().getRootUrlFromRequest();
         }
         host = host.replaceAll(".*//([^/]+).*", "$1");
-        return ((userId == null ? Jenkins.getInstance().getDisplayName() : userId) + "@" + host)
+        return ((userId == null ? Jenkins.get().getDisplayName() : userId) + "@" + host)
                 .replaceAll("[^:@._a-zA-Z0-9]", "");
     }
 

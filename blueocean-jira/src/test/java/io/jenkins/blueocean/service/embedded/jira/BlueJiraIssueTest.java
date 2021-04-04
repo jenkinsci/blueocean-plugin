@@ -179,9 +179,9 @@ public class BlueJiraIssueTest {
         BlueJiraIssue issue1 = new BlueJiraIssue("TEST-123", "http://jira.example.com/browse/TEST-123");
         BlueJiraIssue issue2 = new BlueJiraIssue("TEST-124", "http://jira.example.com/browse/TEST-124");
 
-        Assert.assertTrue(issue1.equals(issue1));
-        Assert.assertFalse(issue1.equals(issue2));
-        Assert.assertFalse(issue1.equals(new Object()));
+        Assert.assertEquals(issue1, issue1);
+        Assert.assertNotEquals(issue1, issue2);
+        Assert.assertNotEquals(issue1, new Object());
 
         Assert.assertNotEquals(issue1.hashCode(), issue2.hashCode());
     }

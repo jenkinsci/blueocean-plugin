@@ -53,7 +53,7 @@ public class PipelineStatePreloader extends RESTFetchPreloader {
             return null;
         }
 
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         String pipelineFullName = blueUrl.getPart(BlueUrlTokenizer.UrlPart.PIPELINE);
 
         try {

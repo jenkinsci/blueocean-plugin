@@ -636,7 +636,7 @@ public abstract class PipelineBaseTest{
         }
 
 
-        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
+        UserDetails d = Jenkins.get().getSecurityRealm().loadUserByUsername(bob.getId());
 
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(bob.getId(), bob.getId(), d.getAuthorities()));
         return bob;

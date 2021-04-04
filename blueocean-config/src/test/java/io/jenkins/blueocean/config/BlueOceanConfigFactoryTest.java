@@ -8,8 +8,8 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 
 public class BlueOceanConfigFactoryTest {
     @Rule
@@ -54,7 +54,7 @@ public class BlueOceanConfigFactoryTest {
                 public Iterable<String> keys() {
                     return ImmutableSet.of(BlueOceanConfig.ORGANIZATION_ENABLED);
                 }
-                
+
                 @Override
                 public <T> T get(String key, Class<T> type) {
                     if (key.equals(BlueOceanConfig.ORGANIZATION_ENABLED)) {

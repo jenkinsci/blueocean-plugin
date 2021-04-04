@@ -52,7 +52,7 @@ public class GitPipelineCreateRequest extends AbstractMultiBranchCreateRequest {
             StandardCredentials credentials = null;
             String credentialId = computeCredentialId(scmConfig);
             if(credentialId != null){
-                credentials = GitUtils.getCredentials(Jenkins.getInstance(), scmConfig.getUri(), credentialId);
+                credentials = GitUtils.getCredentials(Jenkins.get(), scmConfig.getUri(), credentialId);
                 if (credentials == null) {
                     errors.add(new ErrorMessage.Error("scmConfig.credentialId",
                         ErrorMessage.Error.ErrorCodes.NOT_FOUND.toString(),

@@ -462,7 +462,7 @@ public abstract class BaseTest {
                 throw new RuntimeException(e);
             }
         }
-            
+
         public <T> T build(Class<T> clzzz) {
             HttpResponse<T> response = execute(clzzz);
             Assert.assertEquals(expectedStatus, response.getStatus());
@@ -526,7 +526,7 @@ public abstract class BaseTest {
         bob.addProperty(new Mailer.UserProperty(email));
 
 
-        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
+        UserDetails d = Jenkins.get().getSecurityRealm().loadUserByUsername(bob.getId());
 
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(bob.getId(), bob.getId(), d.getAuthorities()));
         return bob;

@@ -39,7 +39,7 @@ public class ExtensionClassContainerImpl extends BlueExtensionClassContainer {
 
     private static Class getClazz(String name){
         try {
-            return Jenkins.getInstance().getPluginManager().uberClassLoader.loadClass(name);
+            return Jenkins.get().getPluginManager().uberClassLoader.loadClass(name);
         } catch (ClassNotFoundException e) {
             return null;
         }

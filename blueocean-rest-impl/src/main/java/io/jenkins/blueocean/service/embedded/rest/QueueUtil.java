@@ -60,7 +60,7 @@ public class QueueUtil {
         BluePipeline pipeline = (BluePipeline) BluePipelineFactory.resolve(job);
         if(job instanceof BuildableItem && pipeline != null) {
             BuildableItem task = (BuildableItem)job;
-            List<hudson.model.Queue.Item> items = Jenkins.getInstance().getQueue().getItems(task);
+            List<hudson.model.Queue.Item> items = Jenkins.get().getQueue().getItems(task);
             List<BlueQueueItem> items2 = Lists.newArrayList();
             for (int i = 0; i < items.size(); i++) {
                 Link self = pipeline.getLink().rel("queue").rel(Long.toString(items.get(i).getId()));

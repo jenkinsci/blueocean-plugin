@@ -26,7 +26,6 @@ import org.junit.runners.Parameterized.Parameters;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestExtension;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -382,7 +381,7 @@ public class GitScmTest extends PipelineBaseTest {
             .get(repoPath)
             .build(Map.class);
 
-        assertEquals(null, resp.get("credentialId"));
+        assertNull(resp.get("credentialId"));
     }
 
     @Test
@@ -399,7 +398,7 @@ public class GitScmTest extends PipelineBaseTest {
             .get(repoPath)
             .build(Map.class);
 
-        assertEquals(null, resp.get("credentialId"));
+        assertNull(resp.get("credentialId"));
     }
 
     @Test
@@ -571,7 +570,7 @@ public class GitScmTest extends PipelineBaseTest {
         private void setOrgRoot(String root) {
             if (root != null) {
                 try {
-                    MockFolder itemGroup = Jenkins.getInstance().createProject(MockFolder.class, root);
+                    MockFolder itemGroup = Jenkins.get().createProject(MockFolder.class, root);
                     instance = new OrganizationImpl(root, itemGroup);
                 } catch (IOException e) {
                     throw new RuntimeException("Test setup failed!", e);
@@ -579,7 +578,7 @@ public class GitScmTest extends PipelineBaseTest {
 
             }
             else {
-                instance = new OrganizationImpl("jenkins", Jenkins.getInstance());
+                instance = new OrganizationImpl("jenkins", Jenkins.get());
             }
         }
 

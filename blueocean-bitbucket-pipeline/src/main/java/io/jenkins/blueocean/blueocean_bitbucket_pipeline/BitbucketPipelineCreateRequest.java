@@ -79,7 +79,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
         if(jenkinsLocationConfiguration != null) {
             String url = jenkinsLocationConfiguration.getUrl();
             if (url == null) {
-                url = Jenkins.getInstance().getRootUrl();
+                url = Jenkins.get().getRootUrl();
                 if (url != null) {
                     jenkinsLocationConfiguration.setUrl(url);
                 }
@@ -111,7 +111,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
         try {
             scmSource.fetch(criteria, new SCMHeadObserver() {
                 @Override
-                public void observe(@Nonnull SCMHead head, @Nonnull SCMRevision revision) throws IOException, InterruptedException {
+                public void observe(@Nonnull SCMHead head, @Nonnull SCMRevision revision) {
                     //do nothing
                 }
 

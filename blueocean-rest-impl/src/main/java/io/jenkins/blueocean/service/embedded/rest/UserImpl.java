@@ -19,12 +19,10 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserPermission;
-import io.jenkins.blueocean.rest.model.GenericResource;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
-import org.kohsuke.stapler.export.ExportedBean;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -174,7 +172,7 @@ public class UserImpl extends BlueUser {
     }
 
     private boolean isAdmin(){
-        return Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER);
+        return Jenkins.get().hasPermission(Jenkins.ADMINISTER);
     }
 
     private Map<String, Boolean> getPipelinePermissions(){
@@ -202,7 +200,7 @@ public class UserImpl extends BlueUser {
     }
 
     private AccessControlled getAccessControllerOrganization() {
-        AccessControlled orgBase = Jenkins.getInstance();
+        AccessControlled orgBase = Jenkins.get();
 
         if (organization instanceof AbstractOrganization) {
             ModifiableTopLevelItemGroup group = ((AbstractOrganization) organization).getGroup();
