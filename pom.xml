@@ -39,7 +39,7 @@
     <hamcrest.version>2.2</hamcrest.version>
     <mockito.version>3.3.3</mockito.version>
     <guava.version>18.0</guava.version>
-    <jacoco.version>0.8.5</jacoco.version>
+    <jacoco.version>0.8.6</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
