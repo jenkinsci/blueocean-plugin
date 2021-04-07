@@ -694,13 +694,13 @@
         <dependency>
             <groupId>com.damnhandy</groupId>
             <artifactId>handy-uri-templates</artifactId>
-            <version>2.1.6</version>
+            <version>2.1.8</version>
         </dependency>
         <!-- enforcer RequireUpperBoundDeps -->
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.9.9</version>
+            <version>2.10.2</version>
         </dependency>
     </dependencies>
   </dependencyManagement>
