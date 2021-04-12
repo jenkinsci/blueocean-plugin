@@ -1,9 +1,5 @@
 package io.jenkins.blueocean.service.embedded.jira;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Predicates;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Run;
@@ -22,11 +18,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Restricted(NoExternalUse.class)
 public class BlueJiraIssue extends BlueIssue {
@@ -56,13 +55,13 @@ public class BlueJiraIssue extends BlueIssue {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BlueJiraIssue that = (BlueJiraIssue) o;
-        return Objects.equal(issueKey, that.issueKey) &&
-            Objects.equal(issueURL, that.issueURL);
+        return Objects.equals(issueKey, that.issueKey) &&
+            Objects.equals(issueURL, that.issueURL);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(issueKey, issueURL);
+        return Objects.hash(issueKey, issueURL);
     }
 
     @Extension
@@ -82,7 +81,8 @@ public class BlueJiraIssue extends BlueIssue {
             if (issue == null) {
                 return null;
             }
-            return ImmutableList.of(issue);
+
+            return Collections.singletonList(issue);
         }
 
         @Override
@@ -97,9 +97,10 @@ public class BlueJiraIssue extends BlueIssue {
                 return null;
             }
             Collection<String> issueKeys = findIssueKeys(changeSetEntry.getMsg(), site.getIssuePattern());
-            Iterable<BlueIssue> transformed = Iterables.transform(issueKeys,
-                                                                  s -> BlueJiraIssue.create(site, action.getIssue(s)));
-            return ImmutableList.copyOf(Iterables.filter(transformed, Predicates.notNull()));
+            Collection<BlueIssue> blueIssues = issueKeys.stream().map(s -> BlueJiraIssue.create(site, action.getIssue(s)))
+                                                        .filter(Objects::nonNull)
+                                                        .collect(Collectors.toList());
+            return Collections.unmodifiableCollection(blueIssues);
         }
     }
 
