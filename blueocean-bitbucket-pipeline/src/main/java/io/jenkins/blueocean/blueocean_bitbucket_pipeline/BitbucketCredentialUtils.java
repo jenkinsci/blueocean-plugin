@@ -2,7 +2,7 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.BitbucketCloudScm;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.BitbucketServerScm;
-import org.apache.commons.codec.digest.DigestUtils;
+import io.jenkins.blueocean.commons.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -28,6 +28,6 @@ public class BitbucketCredentialUtils {
             return scmId;
         }
 
-        return String.format("%s:%s", BitbucketServerScm.ID, DigestUtils.sha256Hex(apiUrl));
+        return String.format( "%s:%s", BitbucketServerScm.ID, DigestUtils.sha256Hex(apiUrl));
     }
 }
