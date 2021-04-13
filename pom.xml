@@ -683,7 +683,7 @@
             -->
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.10.3</version>
+            <version>1.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency> <!-- TODO pending https://github.com/jenkinsci/jenkins-test-harness/pull/2 -->
