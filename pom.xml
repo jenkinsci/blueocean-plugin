@@ -11,7 +11,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>${revision}${changelist}</version>
+  <version>1.24.6</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -51,7 +51,7 @@
     <connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
     <developerConnection>scm:git:https://github.com/${gitHubRepo}.git</developerConnection>
     <url>https://github.com/${gitHubRepo}</url>
-    <tag>${scmTag}</tag>
+    <tag>blueocean-parent-1.24.6</tag>
   </scm>
 
   <url>https://github.com/jenkinsci/blueocean-plugin</url>
