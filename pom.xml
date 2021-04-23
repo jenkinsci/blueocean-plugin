@@ -269,7 +269,7 @@
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
             <artifactId>bom-2.222.x</artifactId>
-            <version>26</version>
+            <version>28</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>
@@ -549,7 +549,7 @@
         <dependency>
             <groupId>io.keen</groupId>
             <artifactId>keen-client-api-java</artifactId>
-            <version>5.2.0</version>
+            <version>5.6.0</version>
             <exclusions>
                 <!-- upper bound fix, git plugin pulls in later versions -->
                 <exclusion>
@@ -570,7 +570,7 @@
         <dependency>
             <groupId>com.github.ua-parser</groupId>
             <artifactId>uap-java</artifactId>
-            <version>1.5.0</version>
+            <version>1.5.2</version>
             <exclusions>
               <!-- commons-collections comes from jenkins core -->
               <exclusion>
