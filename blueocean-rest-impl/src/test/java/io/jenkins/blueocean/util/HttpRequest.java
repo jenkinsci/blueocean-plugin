@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.util;
 
 import com.damnhandy.uri.template.UriTemplate;
-import com.google.common.base.Preconditions;
 import io.jenkins.blueocean.commons.JsonConverter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
@@ -61,7 +60,7 @@ public class HttpRequest {
     private static final Logger logger = Logger.getLogger(HttpRequest.class);
     private static final String JSON = "application/json";
 
-    enum Method { GET, POST, PUT, PATCH, DELETE };
+    enum Method { GET, POST, PUT, PATCH, DELETE }
 
     final private Map<String, String> headers = new HashMap<>();
     final private Map<String, Object> urlParts = new HashMap<>();
@@ -82,7 +81,9 @@ public class HttpRequest {
      * @param baseUrl
      */
     public HttpRequest(@Nonnull String baseUrl) {
-        Preconditions.checkState(StringUtils.isNotBlank(baseUrl), "baseUrl is required");
+        if(StringUtils.isBlank(baseUrl)){
+            throw new IllegalStateException("baseUrl is required");
+        }
         this.baseUrl = baseUrl;
     }
 

@@ -1,8 +1,5 @@
 package io.blueocean.ath;
 
-
-import com.google.common.io.Resources;
-
 import java.io.IOException;
 import java.net.URL;
 

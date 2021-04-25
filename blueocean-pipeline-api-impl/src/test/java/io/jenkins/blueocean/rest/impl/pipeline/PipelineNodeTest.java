@@ -1,9 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Resources;
 import com.mashape.unirest.http.Unirest;
 import hudson.ExtensionList;
 import hudson.FilePath;
@@ -14,6 +10,7 @@ import hudson.model.Run;
 import hudson.model.Slave;
 import hudson.model.queue.QueueTaskFuture;
 import hudson.util.RunList;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
@@ -25,6 +22,7 @@ import jenkins.plugins.git.GitSCMSource;
 import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.api.SCMSource;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -50,6 +48,7 @@ import org.jvnet.hudson.test.Issue;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -81,8 +80,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
     public void successfulStepWithBlockFailureAfterward() throws Exception {
         WorkflowJob p = j.createProject(WorkflowJob.class, "project");
 
-        URL resource = Resources.getResource(getClass(), "successfulStepWithBlockFailureAfterward.jenkinsfile");
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        URL resource = getClass().getResource("successfulStepWithBlockFailureAfterward.jenkinsfile");
+        String jenkinsFile = IOUtils.toString(resource, StandardCharsets.UTF_8);
         p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
         p.save();
 
@@ -144,8 +143,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
         Assert.assertEquals(resp.size(), 5);
 
-        for (int i = 0; i < resp.size(); i++) {
-            Map rn = resp.get(i);
+        for (Map rn : resp) {
             if (rn.get("displayName").equals("Failing Task")) {
                 Assert.assertEquals(rn.get("state"), "FINISHED");
                 Assert.assertEquals(rn.get("result"), "FAILURE");
@@ -186,8 +184,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         assertEquals(4, resp.size());
 
         String unstableStepDisplayName = ExtensionList.lookupSingleton(UnstableStep.DescriptorImpl.class).getDisplayName();
-        for (int i = 0; i < resp.size(); i++) {
-            Map rn = resp.get(i);
+        for (Map rn : resp) {
             String expectedResult = unstableStepDisplayName.equals(rn.get("displayName"))
                     ? "UNSTABLE"
                     : "SUCCESS";
@@ -287,7 +284,6 @@ public class PipelineNodeTest extends PipelineBaseTest {
         NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
         List<FlowNode> stages = getStages(builder);
         List<FlowNode> parallels = getParallelNodes(builder);
-        ;
 
         Assert.assertEquals(4, stages.size());
         Assert.assertEquals(2, parallels.size());
@@ -1431,21 +1427,26 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
             List<Map> edges = (List<Map>) rn.get("edges");
 
-            if (n.getDisplayName().equals("test")) {
-                Assert.assertEquals(parallelNodes.size(), edges.size());
-                Assert.assertEquals(edges.get(i).get("id"), parallelNodes.get(i).getId());
-                Assert.assertEquals("FAILURE", rn.get("result"));
-            } else if (n.getDisplayName().equals("build")) {
-                Assert.assertEquals(1, edges.size());
-                Assert.assertEquals(edges.get(i).get("id"), nodes.get(i + 1).getId());
-                Assert.assertEquals("SUCCESS", rn.get("result"));
-            } else if (n.getDisplayName().equals("Branch: unit")) {
-                unitNodeId = n.getId();
-                Assert.assertEquals(0, edges.size());
-                Assert.assertEquals("FAILURE", rn.get("result"));
-            } else {
-                Assert.assertEquals(0, edges.size());
-                Assert.assertEquals("SUCCESS", rn.get("result"));
+            switch (n.getDisplayName()) {
+                case "test":
+                    Assert.assertEquals( parallelNodes.size(), edges.size() );
+                    Assert.assertEquals( edges.get( i ).get( "id" ), parallelNodes.get( i ).getId() );
+                    Assert.assertEquals( "FAILURE", rn.get( "result" ) );
+                    break;
+                case "build":
+                    Assert.assertEquals( 1, edges.size() );
+                    Assert.assertEquals( edges.get( i ).get( "id" ), nodes.get( i + 1 ).getId() );
+                    Assert.assertEquals( "SUCCESS", rn.get( "result" ) );
+                    break;
+                case "Branch: unit":
+                    unitNodeId = n.getId();
+                    Assert.assertEquals( 0, edges.size() );
+                    Assert.assertEquals( "FAILURE", rn.get( "result" ) );
+                    break;
+                default:
+                    Assert.assertEquals( 0, edges.size() );
+                    Assert.assertEquals( "SUCCESS", rn.get( "result" ) );
+                    break;
             }
         }
         assertNotNull(unitNodeId);
@@ -2184,10 +2185,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         List<Map<String, Object>> params = (List<Map<String, Object>>) input.get("parameters");
 
-        post("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/7/",
-             ImmutableMap.of("id", id,
+        post( "/organizations/jenkins/pipelines/pipeline1/runs/1/steps/7/",
+              MapsHelper.of("id", id,
                              PARAMETERS_ELEMENT,
-                             ImmutableList.of(ImmutableMap.of("name", params.get(0).get("name"), "value", "master"))
+                             MapsHelper.of(MapsHelper.of("name", params.get(0).get("name"), "value", "master"))
              )
             , 200);
 
@@ -2294,8 +2295,9 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("string param", parameters.get(1).get("description"));
         Assert.assertNull(Util.fixEmpty((String) ((Map) parameters.get(1).get("defaultParameterValue")).get("value")));
 
-        resp = post("/organizations/jenkins/pipelines/pipeline1/runs/", ImmutableMap.of("parameters",
-                                                                                        ImmutableList.of(ImmutableMap.of("name", "param1", "value", "abc"), ImmutableMap.of("name", "param2", "value", "def"))
+        resp = post("/organizations/jenkins/pipelines/pipeline1/runs/", MapsHelper.of("parameters",
+                                                                                        Arrays.asList(MapsHelper.of("name", "param1", "value", "abc"),
+                                                                                                      MapsHelper.of("name", "param2", "value", "def"))
         ), 200);
         Assert.assertEquals("pipeline1", resp.get("pipeline"));
         Thread.sleep(5000);
@@ -2309,8 +2311,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @Issue("JENKINS-49297")
     public void submitInputPostBlock() throws Exception {
         WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
-        URL resource = Resources.getResource(getClass(), "stepsFromPost.jenkinsfile");
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        URL resource = getClass().getResource("stepsFromPost.jenkinsfile");
+        String jenkinsFile = IOUtils.toString(resource, StandardCharsets.UTF_8);
         job.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
         QueueTaskFuture<WorkflowRun> buildTask = job.scheduleBuild2(0);
         WorkflowRun run = buildTask.getStartCondition().get();
@@ -2340,8 +2342,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @Issue("JENKINS-48884")
     public void submitInputPostBlockWithParallelStages() throws Exception {
         WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
-        URL resource = Resources.getResource(getClass(), "parallelStepsFromPost.jenkinsfile");
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        URL resource = getClass().getResource("parallelStepsFromPost.jenkinsfile");
+        String jenkinsFile = IOUtils.toString(resource, StandardCharsets.UTF_8);
         job.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
         QueueTaskFuture<WorkflowRun> buildTask = job.scheduleBuild2(0);
         WorkflowRun run = buildTask.getStartCondition().get();
@@ -3179,8 +3181,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @Test
     public void testDynamicInnerStage() throws Exception {
         WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, "p");
-        URL resource = Resources.getResource(getClass(), "testDynamicInnerStage.jenkinsfile");
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        URL resource = getClass().getResource("testDynamicInnerStage.jenkinsfile");
+        String jenkinsFile = IOUtils.toString(resource, StandardCharsets.UTF_8);
         job.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
 
         WorkflowRun build = job.scheduleBuild2(0).get();
@@ -3198,8 +3200,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @Test
     public void nodeWrongFinishedStatus() throws Exception {
         WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, "p");
-        URL resource = Resources.getResource(getClass(), "JENKINS-53311.jenkinsfile");
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        URL resource = getClass().getResource("JENKINS-53311.jenkinsfile");
+        String jenkinsFile = IOUtils.toString(resource, StandardCharsets.UTF_8);
         job.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
 
         WorkflowRun build = job.scheduleBuild2(0).waitForStart();
@@ -3307,8 +3309,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         WorkflowJob upstream = j.createProject(WorkflowJob.class, "upstream");
 
-        URL resource = Resources.getResource(getClass(), "downstreamBuildLinks.jenkinsfile");
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        URL resource = getClass().getResource("downstreamBuildLinks.jenkinsfile");
+        String jenkinsFile = IOUtils.toString(resource, StandardCharsets.UTF_8);
         upstream.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
 
         j.assertBuildStatus(Result.SUCCESS, upstream.scheduleBuild2(0));
@@ -3341,8 +3343,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         WorkflowJob upstream = j.createProject(WorkflowJob.class, "upstream");
 
-        URL resource = Resources.getResource(getClass(), "downstreamBuildLinksDecl.jenkinsfile");
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        URL resource = getClass().getResource("downstreamBuildLinksDecl.jenkinsfile");
+        String jenkinsFile = IOUtils.toString(resource, StandardCharsets.UTF_8);
         upstream.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
 
         j.assertBuildStatus(Result.SUCCESS, upstream.scheduleBuild2(0));
@@ -3377,8 +3379,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         WorkflowJob upstream = j.createProject(WorkflowJob.class, "upstream");
 
-        URL resource = Resources.getResource(getClass(), "downstreamBuildLinksSeq.jenkinsfile");
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        URL resource = getClass().getResource("downstreamBuildLinksSeq.jenkinsfile");
+        String jenkinsFile = IOUtils.toString(resource, StandardCharsets.UTF_8);
         upstream.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
 
         j.assertBuildStatus(Result.SUCCESS, upstream.scheduleBuild2(0));

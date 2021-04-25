@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.service.embedded.analytics;
 
-import com.google.common.collect.ImmutableMap;
-
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,9 +22,9 @@ public final class Tally {
     }
 
     /**
-     * @return current state of the tally
+     * @return current unmodifiable state of the tally
      */
     public Map<String, Object> get() {
-        return ImmutableMap.copyOf(tally);
+        return Collections.unmodifiableMap(new HashMap<>(tally));
     }
 }

@@ -35,7 +35,7 @@ public class BranchMetadataTest {
         jenkins = mock(Jenkins.class);
 
         PowerMockito.mockStatic(Jenkins.class);
-        when(Jenkins.getInstance()).thenReturn(jenkins);
+        when(Jenkins.get()).thenReturn(jenkins);
 
         when(jenkins.getFullName()).thenReturn("");
 

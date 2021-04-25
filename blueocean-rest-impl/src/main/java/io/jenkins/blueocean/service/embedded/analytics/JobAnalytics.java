@@ -1,9 +1,7 @@
 package io.jenkins.blueocean.service.embedded.analytics;
 
-import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.ExtensionList;
-import hudson.model.AbstractProject;
 import hudson.model.AsyncPeriodicWork;
 import hudson.model.TaskListener;
 import io.jenkins.blueocean.analytics.Analytics;
@@ -13,7 +11,6 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Extension
 @Restricted(NoExternalUse.class)
@@ -36,7 +33,7 @@ public final class JobAnalytics extends AsyncPeriodicWork {
         if (analytics == null) {
             return;
         }
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         ExtensionList<JobAnalyticsCheck> checks = ExtensionList.lookup(JobAnalyticsCheck.class);
         ExtensionList<JobAnalyticsExclude> excludes = ExtensionList.lookup(JobAnalyticsExclude.class);
 
@@ -61,8 +58,7 @@ public final class JobAnalytics extends AsyncPeriodicWork {
             }
         });
         analytics.track(new TrackRequest(
-            JOB_STATS_EVENT_NAME,
-            ImmutableMap.copyOf(tally.get())
+            JOB_STATS_EVENT_NAME, tally.get()
         ));
     }
 

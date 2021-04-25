@@ -1,11 +1,10 @@
 package io.jenkins.blueocean.commons.stapler.export;
 
-import com.google.common.collect.Iterators;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 /**
  * Specifies the range in a collection.
@@ -39,14 +38,16 @@ public class Range {
         if (s instanceof List) {
             return apply((List<T>) s);
         } else {
-            return new Iterable<T>() {
-                public Iterator<T> iterator() {
-                    Iterator<T> itr = s.iterator();
-                    itr = Iterators.limit(itr,max);
-                    if (min>0)
-                        advance(itr,min);
-                    return itr;
+            return () -> {
+                if(min>0){
+                    return StreamSupport.stream(s.spliterator(), false)
+                        .skip(min)
+                        .limit(max-min)
+                        .iterator();
                 }
+                return StreamSupport.stream(s.spliterator(), false)
+                    .limit(max)
+                    .iterator();
             };
         }
     }

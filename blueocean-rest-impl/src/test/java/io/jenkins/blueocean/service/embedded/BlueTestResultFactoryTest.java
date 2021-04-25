@@ -1,7 +1,5 @@
 package io.jenkins.blueocean.service.embedded;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
@@ -12,6 +10,11 @@ import io.jenkins.blueocean.rest.model.BlueTestResult.State;
 import io.jenkins.blueocean.rest.model.BlueTestResult.Status;
 import org.junit.Test;
 import org.jvnet.hudson.test.TestExtension;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
@@ -60,7 +63,7 @@ public class BlueTestResultFactoryTest extends BaseTest {
     public static class FactoryImpl extends BlueTestResultFactory {
         @Override
         public Result getBlueTestResults(Run<?, ?> run, Reachable parent) {
-            ImmutableSet<BlueTestResult> results = ImmutableSet.of(
+            Set<BlueTestResult> results = new HashSet<>(Arrays.asList(
                 createTestResult(Status.PASSED, State.FIXED),
                 createTestResult(Status.PASSED, State.FIXED),
                 createTestResult(Status.PASSED, State.UNKNOWN),
@@ -73,8 +76,8 @@ public class BlueTestResultFactoryTest extends BaseTest {
                 createTestResult(Status.FAILED, State.REGRESSION),
                 createTestResult(Status.FAILED, State.UNKNOWN),
                 createTestResult(Status.FAILED, State.UNKNOWN)
-            );
-            return Result.of(Iterables.limit(results, testsToReturn));
+            ));
+            return Result.of(results.stream().limit(testsToReturn).collect(Collectors.toList()));
         }
 
         private BlueTestResult createTestResult(Status status, State state) {

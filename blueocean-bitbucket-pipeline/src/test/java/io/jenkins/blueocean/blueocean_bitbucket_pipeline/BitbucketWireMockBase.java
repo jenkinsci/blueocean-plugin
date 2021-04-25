@@ -3,10 +3,10 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.BitbucketCloudScm;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import org.junit.Before;
 
@@ -72,7 +72,9 @@ public abstract class BitbucketWireMockBase extends PipelineBaseTest{
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .put("/organizations/jenkins/scm/"+ scmId+"/validate/")
-                .data(ImmutableMap.of("apiUrl",apiUrl, "userName", getUserName(), "password",getPassword()));
+                .data( MapsHelper.of( "apiUrl", apiUrl,
+                                      "userName", getUserName(),
+                                      "password", getPassword()));
 
         Map r = builder.build(Map.class);
 

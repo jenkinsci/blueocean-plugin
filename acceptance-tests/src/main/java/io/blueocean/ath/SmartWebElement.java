@@ -1,6 +1,5 @@
 package io.blueocean.ath;
 
-import com.google.common.base.Preconditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -19,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 /**
  * Wrapper around an underlying WebDriver that automatically handles waits and common gotchas
@@ -122,10 +120,7 @@ public class SmartWebElement implements WebElement {
      */
     public boolean isPresent() {
         try {
-            if (getDriver().findElement(by) == null) {
-                return false;
-            }
-            return true;
+            return getDriver().findElement(by) != null;
         } catch(NoSuchElementException e) {
             return false;
         }
@@ -193,11 +188,9 @@ public class SmartWebElement implements WebElement {
      */
     private static void validateTextElement(WebElement element) {
         String tagName = element.getTagName().toLowerCase();
-        Preconditions.checkArgument(
-            "input".equals(tagName) || "textarea".equals(tagName),
-            "element must should be input or textarea but was %s",
-            tagName
-        );
+        if(!"input".equals(tagName) || "textarea".equals(tagName)){
+            throw new IllegalArgumentException(String.format("element must should be input or textarea but was %s", tagName));
+        }
     }
 
     /**

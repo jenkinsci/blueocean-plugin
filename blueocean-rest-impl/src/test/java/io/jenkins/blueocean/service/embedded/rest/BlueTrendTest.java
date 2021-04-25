@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.FreeStyleProject;
@@ -17,6 +16,7 @@ import io.jenkins.blueocean.service.embedded.BaseTest;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -43,7 +43,7 @@ public class BlueTrendTest extends BaseTest {
 
                 @Override
                 public Map<String, String> getColumns() {
-                    return ImmutableMap.of();
+                    return Collections.emptyMap();
                 }
 
                 @Override

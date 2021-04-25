@@ -11,10 +11,11 @@ import com.github.tomakehurst.wiremock.http.HttpHeaders;
 import com.github.tomakehurst.wiremock.http.Request;
 import com.github.tomakehurst.wiremock.http.Response;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.common.collect.Iterables;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
@@ -30,7 +31,7 @@ public class WireMockBase {
     // You can use the proxy while writing and debugging tests.
     private final static boolean useProxy = !System.getProperty("test.wiremock.useProxy", "false").equals("false");
 
-    private static Logger logger = Logger.getLogger(WireMockBase.class);
+    private static Logger logger = LoggerFactory.getLogger(WireMockBase.class);
 
     protected static String getServerUrl(WireMockRule rule) {
         return String.format("http://localhost:%s/", rule.port());
@@ -83,10 +84,10 @@ public class WireMockBase {
         public Response transform(Request request, Response response, FileSource files, Parameters parameters) {
             // if gzipped, ungzip they body and discard the Content-Encoding header
             if (response.getHeaders().getHeader("Content-Encoding").containsValue("gzip")) {
-                Iterable<HttpHeader> headers = Iterables.filter(
-                    response.getHeaders().all(),
+                Iterable<HttpHeader> headers =
+                    response.getHeaders().all().stream().filter(
                     (HttpHeader header) -> header != null && !header.keyEquals("Content-Encoding") && !header.containsValue("gzip")
-                );
+                ).collect(Collectors.toList());
                 return Response.Builder.like(response)
                     .but()
                     .body(Gzip.unGzip(response.getBody()))

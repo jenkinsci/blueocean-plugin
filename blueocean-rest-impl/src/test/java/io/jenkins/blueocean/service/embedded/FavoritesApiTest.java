@@ -1,12 +1,12 @@
 package io.jenkins.blueocean.service.embedded;
 
-import com.google.common.collect.ImmutableMap;
 import hudson.model.Project;
 import hudson.model.User;
 import hudson.plugins.favorite.Favorites;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +23,7 @@ public class FavoritesApiTest extends BaseTest {
         new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/"+jobName+"/favorite/")
             .auth(username, password)
-            .data(ImmutableMap.of("favorite", true))
+            .data( Collections.singletonMap("favorite", true))
             .build(Map.class);
 
         return project;

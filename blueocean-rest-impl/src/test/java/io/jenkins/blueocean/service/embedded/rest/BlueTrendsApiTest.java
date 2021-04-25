@@ -1,13 +1,12 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
 import hudson.model.FreeStyleProject;
 import hudson.model.Project;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.model.BlueTableRow;
 import io.jenkins.blueocean.service.embedded.BaseTest;
 import io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTrend;
+import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.Assert;
@@ -15,6 +14,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -37,8 +37,8 @@ public class BlueTrendsApiTest extends BaseTest {
 
     @Test
     public void getJUnitTrends() throws Exception {
-        URL resource = Resources.getResource(getClass(), "BlueJUnitTestResultTest.jenkinsfile");
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        URL resource = getClass().getResource( "BlueJUnitTestResultTest.jenkinsfile");
+        String jenkinsFile = IOUtils.toString(resource, StandardCharsets.UTF_8);
         WorkflowJob p = j.createProject(WorkflowJob.class, "project");
         p.setDefinition(new CpsFlowDefinition(jenkinsFile, false));
         p.save();

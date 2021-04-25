@@ -12,9 +12,6 @@ import com.cloudbees.plugins.credentials.domains.HostnamePortSpecification;
 import com.cloudbees.plugins.credentials.domains.HostnameSpecification;
 import com.cloudbees.plugins.credentials.domains.PathSpecification;
 import com.cloudbees.plugins.credentials.domains.SchemeSpecification;
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
@@ -29,6 +26,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Credentials utility
@@ -74,18 +72,12 @@ public class CredentialsUtils {
 
     public static @CheckForNull Domain findDomain(@Nonnull final String credentialId, @Nonnull User user){
         for(final CredentialsStore store: findUserStores(user)) {
-            Optional<Domain> d = Iterables.tryFind(store.getDomains(), new Predicate<Domain>() {
-                @Override
-                public boolean apply(@Nullable Domain input) {
-                    return input != null && Iterables.tryFind(store.getCredentials(input), new Predicate<Credentials>() {
-                        @Override
-                        public boolean apply(@Nullable Credentials input) {
-                            return (input != null && input instanceof IdCredentials) && ((IdCredentials) input).getId().equals(credentialId);
-                        }
-                    }).isPresent();
-
-                }
-            });
+            Optional<Domain> d = store.getDomains().stream()
+                .filter(domain -> domain != null && store.getCredentials( domain)
+                                .stream()
+                                .anyMatch(input -> (input instanceof IdCredentials) &&
+                                    ((IdCredentials) input).getId().equals(credentialId)))
+                .findFirst();
             if (d.isPresent()) {
                 return d.get();
             }
@@ -101,7 +93,7 @@ public class CredentialsUtils {
         for(final CredentialsStore store: findUserStores(user)) {
             domains.addAll(store.getDomains());
         }
-        for(final CredentialsStore store: CredentialsProvider.lookupStores(Jenkins.getInstance())){
+        for(final CredentialsStore store: CredentialsProvider.lookupStores(Jenkins.get())){
             domains.addAll(store.getDomains());
         }
         return domains;
@@ -136,7 +128,7 @@ public class CredentialsUtils {
         }
 
         //then system store
-        for (CredentialsStore store : CredentialsProvider.lookupStores(Jenkins.getInstance())) {
+        for (CredentialsStore store : CredentialsProvider.lookupStores(Jenkins.get())) {
             stores.add(store);
         }
         return stores;

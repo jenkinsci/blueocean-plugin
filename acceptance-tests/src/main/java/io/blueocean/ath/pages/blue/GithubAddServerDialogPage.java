@@ -3,9 +3,10 @@ package io.blueocean.ath.pages.blue;
 import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.CustomExpectedConditions;
 import io.blueocean.ath.WaitUtil;
-import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -13,7 +14,7 @@ import java.util.regex.Pattern;
 
 @Singleton
 public class GithubAddServerDialogPage implements WebDriverMixin {
-    private Logger logger = Logger.getLogger(GithubAddServerDialogPage.class);
+    private Logger logger = LoggerFactory.getLogger( GithubAddServerDialogPage.class);
 
     @Inject
     WaitUtil wait;

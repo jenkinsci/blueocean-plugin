@@ -2,9 +2,9 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.ProxyConfiguration;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class GithubApiTest extends GithubMockBase {
 
         //now try validating again, it should return the same credentialId
         r = new RequestBuilder(baseUrl)
-                .data(ImmutableMap.of("accessToken", accessToken))
+                .data( MapsHelper.of("accessToken", accessToken))
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .put("/organizations/jenkins/scm/github/validate/?apiUrl="+githubApiUrl)

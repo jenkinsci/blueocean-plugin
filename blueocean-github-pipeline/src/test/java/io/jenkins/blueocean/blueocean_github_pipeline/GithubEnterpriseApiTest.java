@@ -2,8 +2,8 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,7 +12,6 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +43,7 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
     @Test
     public void validateGithubTokenApiUrlRequired() throws UnirestException {
         Map r = new RequestBuilder(baseUrl)
-            .data(ImmutableMap.of("accessToken", accessToken))
+            .data( MapsHelper.of("accessToken", accessToken))
             .status(400)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
             .put("/organizations/jenkins/scm/github-enterprise/validate")
@@ -144,10 +143,8 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
 
         Assert.assertTrue(l.size() > 0);
 
-        Iterator<Map<String,String>> it = l.iterator();
-        while(it.hasNext()) {
-            Map<String, String> org = it.next();
-            assertNull(org.get("avatar"));
+        for (Map<String, String> org : (Iterable<Map<String, String>>) l ) {
+            assertNull( org.get( "avatar" ) );
         }
 
         Map resp = new RequestBuilder(baseUrl)

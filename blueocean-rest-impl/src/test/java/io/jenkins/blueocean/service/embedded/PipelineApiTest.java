@@ -1,7 +1,5 @@
 package io.jenkins.blueocean.service.embedded;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -30,6 +28,7 @@ import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
 import hudson.tasks.junit.JUnitResultArchiver;
 import hudson.tasks.junit.TestResultAction;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
@@ -40,7 +39,6 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.ArtifactContainerImpl;
-import io.jenkins.blueocean.service.embedded.rest.ArtifactImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import jenkins.model.Jenkins;
@@ -54,6 +52,7 @@ import org.jvnet.hudson.test.TestExtension;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -163,7 +162,7 @@ public class PipelineApiTest extends BaseTest {
         assertNotNull(response);
         assertEquals(0, ((List)response.get("classes")).size());
 
-        response = post("/classes/", ImmutableMap.of("q", ImmutableList.of("blah12345",TestPipelineImpl.class.getName())));
+        response = post( "/classes/", MapsHelper.of("q", Arrays.asList("blah12345", TestPipelineImpl.class.getName())));
         assertNotNull(response);
         Map cap = (Map) response.get("map");
         assertEquals(2, cap.size());
@@ -455,15 +454,15 @@ public class PipelineApiTest extends BaseTest {
         FreeStyleProject p2 = j.createFreeStyleProject("pipeline22");
         p1.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
         p2.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
-        Stack<FreeStyleBuild> p1builds = new Stack<FreeStyleBuild>();
+        Stack<FreeStyleBuild> p1builds = new Stack<>();
         p1builds.push(p1.scheduleBuild2(0).get());
         p1builds.push(p1.scheduleBuild2(0).get());
 
-        Stack<FreeStyleBuild> p2builds = new Stack<FreeStyleBuild>();
+        Stack<FreeStyleBuild> p2builds = new Stack<>();
         p2builds.push(p2.scheduleBuild2(0).get());
         p2builds.push(p2.scheduleBuild2(0).get());
 
-        Map<String, Stack<FreeStyleBuild>> buildMap = ImmutableMap.of(p1.getName(), p1builds, p2.getName(), p2builds);
+        Map<String, Stack<FreeStyleBuild>> buildMap = MapsHelper.of(p1.getName(), p1builds, p2.getName(), p2builds);
 
         List<Map> resp = get("/search?q=type:run;organization:jenkins", List.class);
 
@@ -504,12 +503,8 @@ public class PipelineApiTest extends BaseTest {
         assertEquals("fizz", ((Map) artifacts.get(0)).get("name"));
 
         String artifactId = (String) ((Map) artifacts.get(0)).get("id");
-        ArtifactContainerImpl container = new ArtifactContainerImpl(b, new Reachable() {
-            @Override
-            public Link getLink() {
-                return new Link("/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/artifacts/");
-            }
-        });
+        ArtifactContainerImpl container = new ArtifactContainerImpl( b,
+                                                                     () -> new Link( "/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/artifacts/") );
         BlueArtifact blueArtifact = container.get(artifactId);
         assertNotNull(blueArtifact);
     }
@@ -524,8 +519,8 @@ public class PipelineApiTest extends BaseTest {
 
         p1.scheduleBuild2(0).waitForStart();
         p1.scheduleBuild2(0).waitForStart();
-        Jenkins.getInstance().getQueue().schedule(p1, 0, new ParametersAction(new StringParameterValue("test","test1")), new CauseAction(new Cause.UserIdCause()));
-        Jenkins.getInstance().getQueue().schedule(p1, 0, new ParametersAction(new StringParameterValue("test","test2")), new CauseAction(new Cause.UserIdCause()));
+        Jenkins.get().getQueue().schedule(p1, 0, new ParametersAction(new StringParameterValue("test","test1")), new CauseAction(new Cause.UserIdCause()));
+        Jenkins.get().getQueue().schedule(p1, 0, new ParametersAction(new StringParameterValue("test","test2")), new CauseAction(new Cause.UserIdCause()));
 
         List queue = request().get("/organizations/jenkins/pipelines/pipeline1/queue").build(List.class);
         Assert.assertEquals(2, queue.size());
@@ -648,7 +643,7 @@ public class PipelineApiTest extends BaseTest {
         Map m = (Map) resp.get("map");
         assertTrue(m.isEmpty());
 
-        resp = post("/classes/", ImmutableMap.of("q", ImmutableList.of("io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl",TestPipelineImpl.class.getName())));
+        resp = post("/classes/", MapsHelper.of("q", Arrays.asList("io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl",TestPipelineImpl.class.getName())));
         assertNotNull(resp);
         m = (Map) resp.get("map");
         assertNotNull(m);
@@ -756,8 +751,8 @@ public class PipelineApiTest extends BaseTest {
         validatePipeline(p, resp);
 
         resp = post("/organizations/jenkins/pipelines/pp/runs/",
-                ImmutableMap.of("parameters",
-                        ImmutableList.of(ImmutableMap.of("name", "version", "value", "2.0"))
+                    MapsHelper.of("parameters",
+                        Collections.singletonList(MapsHelper.of("name", "version", "value", "2.0"))
                 ), 200);
         assertEquals("pp", resp.get("pipeline"));
         Thread.sleep(1000);
@@ -795,8 +790,7 @@ public class PipelineApiTest extends BaseTest {
         validatePipeline(p, resp);
 
         resp = post("/organizations/jenkins/pipelines/pp/runs/",
-                ImmutableMap.of("parameters",
-                        ImmutableList.of()
+                    MapsHelper.of("parameters",Collections.emptyList()
                 ), 400);
     }
 
@@ -881,7 +875,7 @@ public class PipelineApiTest extends BaseTest {
 
     @TestExtension(value = "testOrganizationFolder")
     public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
-        private OrganizationImpl instance = new OrganizationImpl("TestOrg", Jenkins.getInstance().getItem("/TestOrgFolderName", Jenkins.getInstance(), MockFolder.class));
+        private OrganizationImpl instance = new OrganizationImpl("TestOrg", Jenkins.get().getItem("/TestOrgFolderName", Jenkins.get(), MockFolder.class));
 
         @Override
         public OrganizationImpl get(String name) {
@@ -897,7 +891,7 @@ public class PipelineApiTest extends BaseTest {
 
         @Override
         public Collection<BlueOrganization> list() {
-            return Collections.singleton((BlueOrganization) instance);
+            return Collections.singleton(instance);
         }
 
         @Override

@@ -1,8 +1,8 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import com.google.common.collect.ImmutableMap;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.jenkins.blueocean.commons.ErrorMessage;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import org.apache.commons.lang3.StringUtils;
@@ -59,10 +59,6 @@ public class GithubScmSaveFileRequest{
         }
         if(errors.size() > 0) {
             throw new ServiceException.BadRequestException(new ErrorMessage(400, "Failed to save content").addAll(errors));
-        }
-
-        if(!errors.isEmpty()){
-            throw new ServiceException.BadRequestException(new ErrorMessage(400, "Failed to save file to scm").addAll(errors));
         }
 
         try {
@@ -172,8 +168,8 @@ public class GithubScmSaveFileRequest{
                     owner,
                     repoName))
                     .withAuthorizationToken(accessToken)
-                    .withBody(ImmutableMap.of("ref", "refs/heads/" + content.getBranch(),
-                            "sha", branch.commit.sha))
+                    .withBody( MapsHelper.of("ref", "refs/heads/" + content.getBranch(),
+                                             "sha", branch.commit.sha))
                     .to(Map.class);
 
             //5. If request doesn't have sha get one from github

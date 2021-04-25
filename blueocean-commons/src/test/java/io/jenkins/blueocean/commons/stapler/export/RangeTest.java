@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.commons.stapler.export;
 
-import com.google.common.collect.Iterables;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -8,7 +7,6 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
 
 public class RangeTest extends Assert {
     String[] array = new String[]{"a", "b", "c", "d", "e", "f"};
@@ -39,7 +37,7 @@ public class RangeTest extends Assert {
         assertEquals("[e, f]", toS(r.apply(set)));
     }
 
-    private String toS(Iterable i) {
-        return Iterables.toString(i);
+    private String toS(Iterable<String> i) {
+        return "[" + String.join( ", ", i) + "]";
     }
 }

@@ -67,6 +67,7 @@ public class GithubScmTest {
 
         when(Jenkins.get()).thenReturn(jenkins);
         when(Jenkins.getInstanceOrNull()).thenReturn(jenkins);
+        when(Jenkins.getInstance()).thenReturn(jenkins);
         when(Jenkins.getAuthentication()).thenReturn(authentication);
         GrantedAuthority[] grantedAuthorities = new GrantedAuthority[]{SecurityRealm.AUTHENTICATED_AUTHORITY};
 

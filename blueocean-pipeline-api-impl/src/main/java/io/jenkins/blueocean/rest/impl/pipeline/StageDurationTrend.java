@@ -1,12 +1,11 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterators;
 import hudson.Extension;
 import io.jenkins.blueocean.rest.factory.BlueTrendFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
+import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.BlueTableRow;
@@ -15,8 +14,11 @@ import io.jenkins.blueocean.rest.model.Container;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Trend for Stage durations
@@ -43,7 +45,7 @@ public class StageDurationTrend extends BlueTrend {
 
     @Override
     public Map<String, String> getColumns() {
-        return ImmutableMap.of();
+        return Collections.emptyMap();
     }
 
     @Override
@@ -67,9 +69,12 @@ public class StageDurationTrend extends BlueTrend {
             }
 
             @Override
-            public Iterator<BlueTableRow> iterator() {
-                return blueRunContainer == null ? null :
-                    Iterators.transform(blueRunContainer.iterator(), run -> new StageDurationTrendRow(run));
+            public Iterator<BlueTableRow> iterator()
+            {
+                return blueRunContainer == null
+                    ? null
+                    : StreamSupport.stream( blueRunContainer.spliterator(), false ).
+                        map(blueRun -> (BlueTableRow)new StageDurationTrendRow(blueRun)).iterator();
             }
         };
     }
@@ -94,11 +99,8 @@ public class StageDurationTrend extends BlueTrend {
         // @Exported(merge = true)
         @Exported(name = NODES)
         public Map getNodes() {
-            ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
-            for (BluePipelineNode node : run.getNodes()) {
-                builder.put(node.getDisplayName(), node.getDurationInMillis());
-            }
-            return builder.build();
+            return StreamSupport.stream(run.getNodes().spliterator(), false)
+                .collect(Collectors.toMap(BluePipelineNode::getDisplayName, BluePipelineStep::getDurationInMillis));
         }
 
         /*

@@ -1,25 +1,24 @@
 package io.jenkins.blueocean.service.embedded.analytics;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Maps;
-import com.google.common.hash.Hashing;
 import hudson.ExtensionList;
 import hudson.model.UsageStatistics;
 import hudson.model.User;
 import io.jenkins.blueocean.analytics.AdditionalAnalyticsProperties;
 import io.jenkins.blueocean.analytics.Analytics;
+import io.jenkins.blueocean.commons.DigestUtils;
 import io.jenkins.blueocean.commons.ServiceException;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.main.modules.instance_identity.InstanceIdentity;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Stapler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.annotation.CheckForNull;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 /**
  * Implements {@link Analytics} to guarantee common properties are tracked with any events sent
@@ -27,7 +26,7 @@ import java.util.logging.Logger;
 @Restricted(NoExternalUse.class)
 public abstract class AbstractAnalytics extends Analytics {
 
-    private static final Logger LOGGER = Logger.getLogger(AbstractAnalytics.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger( AbstractAnalytics.class.getName());
 
     public boolean isEnabled() {
         return !UsageStatistics.DISABLED;
@@ -43,7 +42,7 @@ public abstract class AbstractAnalytics extends Analytics {
         if (StringUtils.isEmpty(req.name)) {
             throw new ServiceException.BadRequestException("missing name");
         }
-        Map<String, Object> allProps = req.properties == null ? Maps.newHashMap() : Maps.newHashMap(req.properties);
+        Map<String, Object> allProps = req.properties == null ? new HashMap<>() : new HashMap<>(req.properties);
         // Enhance with additional properties
         for (AdditionalAnalyticsProperties enhancer : ExtensionList.lookup(AdditionalAnalyticsProperties.class)) {
             Map<String, Object> additionalProperties = enhancer.properties(req);
@@ -58,16 +57,15 @@ public abstract class AbstractAnalytics extends Analytics {
             String identity = identity(server);
             allProps.put("userId", identity);
         }
-        Objects.ToStringHelper eventHelper = Objects.toStringHelper(this).add("name", req.name).add("props", allProps);
+
         try {
             doTrack(req.name, allProps);
-            if (LOGGER.isLoggable(Level.FINE)) {
-                String msg = eventHelper.toString();
-                LOGGER.log(Level.FINE, msg);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("{}, name: {}, props: {}", getClass().getSimpleName(), req.name, allProps);
             }
         } catch (Throwable throwable) {
-            String msg = eventHelper.toString();
-            LOGGER.log(Level.WARNING, "Failed to send event: " + msg);
+            LOGGER.warn("Failed to send event: {}, name: {}, props: {}", getClass().getSimpleName(), req.name, allProps);
+            LOGGER.warn("Failed to send event", throwable);
         }
     }
 
@@ -78,15 +76,15 @@ public abstract class AbstractAnalytics extends Analytics {
         try {
             identityBytes = InstanceIdentity.get().getPublic().getEncoded();
         } catch (AssertionError e) {
-            LOGGER.log(Level.SEVERE, "There was a problem identifying this server", e);
+            LOGGER.error("There was a problem identifying this server", e);
             throw new IllegalStateException("There was a problem identifying this server", e);
         }
-        return Hashing.sha256().hashBytes(identityBytes).toString();
+        return DigestUtils.sha256(identityBytes);
     }
 
     protected final String identity(String server) {
         User user = User.current();
         String username = user == null ? "ANONYMOUS" : user.getId();
-        return Hashing.sha256().hashString( username + server, Charset.defaultCharset()).toString();
+        return DigestUtils.sha256(username + server, Charset.defaultCharset());
     }
 }

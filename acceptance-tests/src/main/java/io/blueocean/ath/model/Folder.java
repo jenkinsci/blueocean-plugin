@@ -1,7 +1,6 @@
 package io.blueocean.ath.model;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,11 +10,11 @@ public class Folder {
     private List<String> folders;
 
     public Folder(String ... folders) {
-        this.folders = ImmutableList.copyOf(folders);
+        this.folders = Arrays.asList(folders);
     }
 
     public Folder(List folders) {
-        this.folders = ImmutableList.copyOf(folders);
+        this.folders = new ArrayList<>(folders);
     }
 
     public static Folder folders(String ...folders){
@@ -23,11 +22,11 @@ public class Folder {
     }
 
     public String getPath() {
-        return Joiner.on("/").join(folders);
+        return String.join("/", folders);
     }
 
     public String getClassJobPath(){
-        return Joiner.on("/job/").join(folders);
+        return String.join("/job/", folders);
     }
 
     public String get(int i) {
@@ -40,7 +39,7 @@ public class Folder {
 
     public Folder append(String ...folders) {
         List<String> newFolders = Stream.concat(this.folders.stream(), Arrays.stream(folders)).collect(Collectors.toList());
-        return new Folder(ImmutableList.copyOf(newFolders));
+        return new Folder(new ArrayList<>(newFolders));
     }
 
     public String getPath(String pipeline) {

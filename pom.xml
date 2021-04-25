@@ -450,6 +450,11 @@
             <version>${guava.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.jenkins.plugins</groupId>
+            <artifactId>caffeine-api</artifactId>
+            <version>2.9.0-17.v79e9099a51e3</version>
+        </dependency>
+        <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jira</artifactId>
             <version>3.0.14</version>
@@ -557,6 +562,11 @@
                     <artifactId>jackson-databind</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.1</version>
         </dependency>
 
         <!-- Included in core -->
@@ -701,6 +711,11 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>2.10.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_annotations</artifactId>
+            <version>2.5.1</version>
         </dependency>
     </dependencies>
   </dependencyManagement>
@@ -922,6 +937,12 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>ath-build</id>
+            <modules>
+                <module>acceptance-tests</module>
+            </modules>
         </profile>
     </profiles>
 </project>

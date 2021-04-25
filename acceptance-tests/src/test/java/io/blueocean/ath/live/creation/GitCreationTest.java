@@ -10,14 +10,14 @@ import io.blueocean.ath.pages.blue.DashboardPage;
 import io.blueocean.ath.pages.blue.GitCreationPage;
 import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.FileInputStream;
@@ -28,7 +28,7 @@ import java.util.Properties;
 @Login
 @RunWith(ATHJUnitRunner.class)
 public class GitCreationTest extends BlueOceanAcceptanceTest {
-    private Logger logger = Logger.getLogger(GitCreationTest.class);
+    private Logger logger = LoggerFactory.getLogger(GitCreationTest.class);
 
     @Inject
     @Named("live")

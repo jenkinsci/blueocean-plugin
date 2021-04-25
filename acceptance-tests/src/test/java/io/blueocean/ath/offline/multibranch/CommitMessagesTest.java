@@ -1,7 +1,5 @@
 package io.blueocean.ath.offline.multibranch;
 
-
-import com.google.common.io.Files;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.BlueOceanAcceptanceTest;
 import io.blueocean.ath.GitRepositoryRule;
@@ -25,6 +23,8 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -63,7 +63,7 @@ public class CommitMessagesTest extends BlueOceanAcceptanceTest {
         final String branchName = "master";
 
         URL jenkinsFile = getResourceURL("Jenkinsfile");
-        Files.copy(new File(jenkinsFile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
+        Files.copy( Paths.get(jenkinsFile.getFile()), new File(git.gitDirectory, "Jenkinsfile").toPath());
         git.addAll();
         git.commit("initial commit");
         logger.info("Committed Jenkinsfile");

@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
-import com.google.common.collect.Lists;
 import hudson.ExtensionList;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
@@ -34,7 +33,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -103,19 +102,19 @@ public class CachesTest {
 
             WorkflowMultiBranchProject project = r.jenkins.createProject(WorkflowMultiBranchProject.class, "Repo");
             GitSCMSource source = new GitSCMSource(sampleRepo1.toString());
-            source.setTraits(new ArrayList<>(Arrays.asList(new BranchDiscoveryTrait())));
+            source.setTraits(new ArrayList<>(Collections.singletonList(new BranchDiscoveryTrait())));
 
             BranchSource branchSource = new BranchSource(source);
             branchSource.setStrategy(new DefaultBranchPropertyStrategy(null));
 
             TaskListener listener = StreamTaskListener.fromStderr();
             assertEquals("[SCMHead{'master'}]", source.fetch(listener).toString());
-            project.setSourcesList(new ArrayList<>(Arrays.asList(branchSource)));
+            project.setSourcesList(new ArrayList<>(Collections.singletonList(branchSource)));
 
             project.scheduleBuild2(0).getFuture().get();
 
             Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(r.jenkins);
-            BranchImpl.Branch branch = loader.load(project.getFullName() + "/master").orNull();
+            BranchImpl.Branch branch = loader.load(project.getFullName() + "/master");
 
             // if branch is defined, it'll be sorted by branch
             assertNotNull(branch);
@@ -133,7 +132,7 @@ public class CachesTest {
         when(job.getAction(PrimaryInstanceMetadataAction.class)).thenReturn(instanceMetadataAction);
 
         Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(jenkins);
-        BranchImpl.Branch branch = loader.load(job.getFullName()).orNull();
+        BranchImpl.Branch branch = loader.load(job.getFullName());
 
         assertNotNull(branch);
         assertTrue(branch.isPrimary());
@@ -147,7 +146,7 @@ public class CachesTest {
         when(job.getFullName()).thenReturn("cool-branch");
 
         Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(jenkins);
-        BranchImpl.Branch branch = loader.load(job.getFullName()).orNull();
+        BranchImpl.Branch branch = loader.load(job.getFullName());
 
         assertNotNull(branch);
         assertTrue(branch.isPrimary());
@@ -161,7 +160,7 @@ public class CachesTest {
         when(job.getFullName()).thenReturn("cool-branch");
 
         Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(jenkins);
-        BranchImpl.Branch branch = loader.load(job.getFullName()).orNull();
+        BranchImpl.Branch branch = loader.load(job.getFullName());
 
         assertNotNull(branch);
         assertFalse(branch.isPrimary());
@@ -179,11 +178,11 @@ public class CachesTest {
         PowerMockito.mockStatic(ExtensionList.class);
 
         ExtensionList<SCMHead.HeadByItem> extensionList = mock(ExtensionList.class);
-        when(extensionList.iterator()).thenReturn(Lists.<SCMHead.HeadByItem>newArrayList(new HeadByItemForTest()).iterator());
+        when(extensionList.iterator()).thenReturn(Collections.<SCMHead.HeadByItem>singletonList(new HeadByItemForTest()).iterator());
         when(ExtensionList.lookup(SCMHead.HeadByItem.class)).thenReturn(extensionList);
 
         Caches.PullRequestCacheLoader loader = new Caches.PullRequestCacheLoader(jenkins);
-        BranchImpl.PullRequest pr = loader.load(job.getFullName()).orNull();
+        BranchImpl.PullRequest pr = loader.load(job.getFullName());
 
         assertNotNull(pr);
         assertEquals("Hates Cake", pr.getAuthor());
@@ -203,11 +202,11 @@ public class CachesTest {
         PowerMockito.mockStatic(ExtensionList.class);
 
         ExtensionList<SCMHead.HeadByItem> extensionList = mock(ExtensionList.class);
-        when(extensionList.iterator()).thenReturn(Lists.<SCMHead.HeadByItem>newArrayList().iterator());
+        when(extensionList.iterator()).thenReturn(Collections.emptyIterator());
         when(ExtensionList.lookup(SCMHead.HeadByItem.class)).thenReturn(extensionList);
 
         Caches.PullRequestCacheLoader loader = new Caches.PullRequestCacheLoader(jenkins);
-        BranchImpl.PullRequest pr = loader.load(job.getFullName()).orNull();
+        BranchImpl.PullRequest pr = loader.load(job.getFullName());
 
         assertNull(pr);
     }
@@ -221,11 +220,11 @@ public class CachesTest {
         PowerMockito.mockStatic(ExtensionList.class);
 
         ExtensionList<SCMHead.HeadByItem> extensionList = mock(ExtensionList.class);
-        when(extensionList.iterator()).thenReturn(Lists.<SCMHead.HeadByItem>newArrayList(new HeadByItemForTest()).iterator());
+        when(extensionList.iterator()).thenReturn(Collections.<SCMHead.HeadByItem>singletonList(new HeadByItemForTest()).iterator());
         when(ExtensionList.lookup(SCMHead.HeadByItem.class)).thenReturn(extensionList);
 
         Caches.PullRequestCacheLoader loader = new Caches.PullRequestCacheLoader(jenkins);
-        BranchImpl.PullRequest pr = loader.load(job.getFullName()).orNull();
+        BranchImpl.PullRequest pr = loader.load(job.getFullName());
 
         assertNotNull(pr);
         assertEquals("Hates Cake", pr.getAuthor());

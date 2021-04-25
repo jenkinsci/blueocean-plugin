@@ -1,8 +1,6 @@
 package io.blueocean.ath.sse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.JenkinsUser;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
@@ -29,12 +27,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.security.SecureRandom;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 
 public class SSEClientRule extends ExternalResource {
@@ -126,7 +125,7 @@ public class SSEClientRule extends ExternalResource {
 
         JSONObject req = new JSONObject()
             .put("dispatcherId", clientId)
-            .put("subscribe", new JSONArray(ImmutableList.of(
+            .put("subscribe", new JSONArray( Collections.singletonList(
                 new JSONObject().put("jenkins_org", "jenkins")
                                 .put("jenkins_channel", "job"))))
             .put("unsubscribe", new JSONArray());
@@ -164,7 +163,7 @@ public class SSEClientRule extends ExternalResource {
             .pollingEvery(1000, TimeUnit.MILLISECONDS)
             .withTimeout(120, TimeUnit.SECONDS)
             .ignoring(NoSuchElementException.class)
-            .until( events -> isEvents.apply( events) );
+            .until(isEvents::test);
     }
 }
 

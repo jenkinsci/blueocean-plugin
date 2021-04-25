@@ -1,13 +1,14 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
-import com.google.common.base.Predicate;
 import hudson.Extension;
 import hudson.model.Item;
 import io.jenkins.blueocean.service.embedded.rest.ContainerFilter;
 import jenkins.branch.OrganizationFolder;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.mixin.ChangeRequestSCMHead;
+
+import java.util.function.Predicate;
 
 public class PipelineJobFilters {
     public static boolean isPullRequest(Item item) {
@@ -17,7 +18,7 @@ public class PipelineJobFilters {
 
     @Extension
     public static class FolderJobFilter extends ContainerFilter {
-        private final Predicate<Item> filter = job -> !(Folder.class.equals(job.getClass()) || job instanceof OrganizationFolder);
+        private final Predicate<Item> filter = job -> !(Folder.class.equals( job.getClass()) || job instanceof OrganizationFolder);
         @Override
         public String getName() {
             return "no-folders";

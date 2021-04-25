@@ -13,17 +13,15 @@ import com.github.tomakehurst.wiremock.http.Request;
 import com.github.tomakehurst.wiremock.http.Response;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.stubbing.StubMapping;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
 import hudson.util.DescribableList;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
-import jenkins.scm.api.SCMSource;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.junit.After;
 import org.junit.Rule;
@@ -36,6 +34,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -92,7 +91,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
                     })
     );
 
-    private final List<StubMapping> perTestStubMappings = new ArrayList<>();
+    protected final List<StubMapping> perTestStubMappings = new ArrayList<>();
 
     @Override
     public void setup() throws Exception {
@@ -100,6 +99,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
         //setup github api mock with WireMock
         new File("src/test/resources/api/mappings").mkdirs();
         new File("src/test/resources/api/__files").mkdirs();
+
         githubApi.enableRecordMappings(new SingleRootFileSource("src/test/resources/api/mappings"),
                 new SingleRootFileSource("src/test/resources/api/__files"));
 
@@ -119,12 +119,10 @@ public abstract class GithubMockBase extends PipelineBaseTest {
     @After
     public void tearDown() {
         if (!perTestStubMappings.isEmpty()) {
-            for (StubMapping mapping : perTestStubMappings) {
-                githubApi.removeStub(mapping);
-            }
-
+            perTestStubMappings.forEach( mapping -> githubApi.removeStub( mapping));
             perTestStubMappings.clear();
         }
+        githubApi.resetAll();
     }
 
     static String getOrgName() {
@@ -137,10 +135,10 @@ public abstract class GithubMockBase extends PipelineBaseTest {
 
     protected String createGithubCredential(User user) throws UnirestException {
         Map r = new RequestBuilder(baseUrl)
-                .data(ImmutableMap.of("accessToken", accessToken))
+                .data(MapsHelper.of("accessToken", accessToken))
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .crumb( this.crumb )
+                .crumb(this.crumb)
                 .put("/organizations/" + getOrgName() + "/scm/github/validate/?apiUrl="+githubApiUrl)
                 .build(Map.class);
         String credentialId = (String) r.get("credentialId");
@@ -153,7 +151,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
     }
     protected String createGithubEnterpriseCredential(User user) throws UnirestException {
         Map r = new RequestBuilder(baseUrl)
-            .data(ImmutableMap.of("accessToken", accessToken))
+            .data(MapsHelper.of("accessToken", accessToken))
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
             .crumb( this.crumb )
@@ -183,7 +181,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
         when(scmSource.getCredentialsId()).thenReturn(credentialId);
         when(scmSource.getRepoOwner()).thenReturn("cloudbeers");
         when(scmSource.getRepository()).thenReturn("PR-demo");
-        when(mbp.getSCMSources()).thenReturn(Lists.<SCMSource>newArrayList(scmSource));
+        when(mbp.getSCMSources()).thenReturn(Collections.singletonList(scmSource));
         BlueOceanCredentialsProvider.FolderPropertyImpl folderProperty = mock(BlueOceanCredentialsProvider.FolderPropertyImpl.class);
         DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> mbpProperties = new DescribableList<>(mbp);
         mbpProperties.add(new BlueOceanCredentialsProvider.FolderPropertyImpl(

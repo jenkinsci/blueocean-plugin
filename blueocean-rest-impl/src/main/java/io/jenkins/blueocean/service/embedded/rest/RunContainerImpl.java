@@ -1,7 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
@@ -18,7 +16,6 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -33,6 +30,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Vivek Pandey
@@ -94,12 +93,8 @@ public class RunContainerImpl extends BlueRunContainer {
     }
 
     private Iterator<BlueRun> getRuns(Iterable<BlueRun> runs) {
-        return Iterables.concat(Iterables.transform(QueueUtil.getQueuedItems(pipeline.getOrganization(), job), new Function<BlueQueueItem, BlueRun>() {
-            @Override
-            public BlueRun apply(BlueQueueItem input) {
-                return input.toRun();
-            }
-        }), runs).iterator();
+        return Stream.concat(QueueUtil.getQueuedItems(pipeline.getOrganization(), job).stream().map(BlueQueueItem::toRun),
+                            StreamSupport.stream(runs.spliterator(), false)).iterator();
     }
 
     /**
@@ -118,12 +113,12 @@ public class RunContainerImpl extends BlueRunContainer {
             List<ParameterValue> parameterValues = getParameterValue(request);
             int expectedBuildNumber = job.getNextBuildNumber();
             if(parameterValues.size() > 0) {
-                scheduleResult = Jenkins.getInstance()
+                scheduleResult = Jenkins.get()
                         .getQueue()
                         .schedule2((Queue.Task) job, 0, new ParametersAction(parameterValues),
                                 new CauseAction(new Cause.UserIdCause()));
             }else {
-                scheduleResult = Jenkins.getInstance()
+                scheduleResult = Jenkins.get()
                         .getQueue()
                         .schedule2((Queue.Task) job, 0, new CauseAction(new Cause.UserIdCause()));
             }
