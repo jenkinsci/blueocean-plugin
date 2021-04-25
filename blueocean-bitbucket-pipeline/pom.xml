@@ -54,6 +54,11 @@
       <scope>test</scope>
     </dependency>
 
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>blueocean-commons</artifactId>
+      </dependency>
+
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock-jre8-standalone</artifactId>

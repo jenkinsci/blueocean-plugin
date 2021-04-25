@@ -3,9 +3,6 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.util.VersionNumber;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
@@ -33,6 +30,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -177,7 +175,7 @@ public class BitbucketServerApi extends BitbucketApi {
     public @Nonnull String getContent(@Nonnull String orgId, @Nonnull String repoSlug, @Nonnull String path, @Nonnull String commitId){
         List<String> content = new ArrayList<>();
         getAndBuildContent(orgId, repoSlug, path, commitId,0, 500, content); //default size as in bitbucket API
-        return Joiner.on('\n').join(content);
+        return String.join("\n", content);
     }
 
     @Override
@@ -328,19 +326,13 @@ public class BitbucketServerApi extends BitbucketApi {
     }
 
     private void collectLines(List<Map<String,String>> lineMap, final List<String> lines){
-        lines.addAll(Lists.transform(lineMap, new Function<Map<String,String>, String>() {
-            @Nullable
-            @Override
-            public String apply(@Nullable Map<String, String> input) {
-                if(input != null){
-                    String text = input.get("text");
-                    if(text != null){
-                        return text;
-                    }
-                }
-                return null;
+
+        lines.addAll(lineMap.stream().map( input ->  {
+            if(input != null){
+                return input.get("text");
             }
-        }));
+            return null;
+        }).collect(Collectors.toList()));
     }
 
     private void assertDefaultBranch(BbBranch defaultBranch, String projectKey, String repo){

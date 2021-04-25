@@ -3,7 +3,6 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
 import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import com.google.common.base.Preconditions;
 import hudson.model.Item;
 import hudson.model.User;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.BitbucketCloudScm;
@@ -33,6 +32,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Vivek Pandey
@@ -208,12 +208,12 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
                     //We have to do this because apiUrl might be of WireMock server and not Github
                     || (StringUtils.isNotBlank(scmId) && scmId.equals(BitbucketCloudScm.ID))) {
                 scm = new BitbucketCloudScm( () -> {
-                    Preconditions.checkNotNull(organization);
+                    Objects.requireNonNull(organization);
                     return organization.getLink().rel("scm");
                 } );
             }else{ //server
                 scm = new BitbucketServerScm(( () -> {
-                    Preconditions.checkNotNull(organization);
+                    Objects.requireNonNull(organization);
                     return organization.getLink().rel("scm");
                 } ));
             }

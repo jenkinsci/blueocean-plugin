@@ -4,22 +4,15 @@ import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
 import com.cloudbees.jenkins.plugins.bitbucket.BranchDiscoveryTrait;
 import com.cloudbees.jenkins.plugins.bitbucket.ForkPullRequestDiscoveryTrait;
 import com.cloudbees.jenkins.plugins.bitbucket.OriginPullRequestDiscoveryTrait;
-import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import edu.umd.cs.findbugs.annotations.NonNull;
+import io.jenkins.blueocean.commons.CollectionsHelper;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import jenkins.branch.MultiBranchProject;
-import jenkins.model.Jenkins;
 import jenkins.plugins.git.traits.CleanAfterCheckoutTrait;
 import jenkins.plugins.git.traits.CleanBeforeCheckoutTrait;
 import jenkins.plugins.git.traits.LocalBranchTrait;
-import jenkins.scm.api.SCMHeadCategory;
-import jenkins.scm.api.SCMHeadObserver;
 import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
-import jenkins.scm.api.trait.SCMBuilder;
-import jenkins.scm.api.trait.SCMSourceContext;
 import jenkins.scm.api.trait.SCMSourceTrait;
-import jenkins.scm.api.trait.SCMSourceTraitDescriptor;
 import jenkins.scm.api.trait.SCMTrait;
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,14 +37,14 @@ public class BitbucketPipelineCreateRequestTest extends BbServerWireMock {
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
             .crumb( crumb )
             .post("/organizations/jenkins/pipelines/")
-            .data(ImmutableMap.of(
+            .data( CollectionsHelper.of(
                 "name","pipeline1",
                 "$class", "io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest",
-                "scmConfig", ImmutableMap.of(
+                "scmConfig", CollectionsHelper.of(
                     "id", BitbucketServerScm.ID,
                     "credentialId", credentialId,
                     "uri", apiUrl,
-                    "config", ImmutableMap.of(
+                    "config", CollectionsHelper.of(
                         "repoOwner", "TESTP",
                         "repository", "pipeline-demo-test"
                     )
@@ -94,14 +87,14 @@ public class BitbucketPipelineCreateRequestTest extends BbServerWireMock {
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
                 .crumb( crumb )
                 .post("/organizations/jenkins/pipelines/")
-                .data(ImmutableMap.of(
+                .data(CollectionsHelper.of(
                     "name","pipeline1",
                     "$class", "io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest",
-                    "scmConfig", ImmutableMap.of(
+                    "scmConfig", CollectionsHelper.of(
                         "id", BitbucketServerScm.ID,
                         "credentialId", credentialId,
                         "uri", apiUrl,
-                        "config", ImmutableMap.of(
+                        "config", CollectionsHelper.of(
                             "repoOwner", "TESTP",
                             "repository", "pipeline-demo-test"
                         )
@@ -120,13 +113,13 @@ public class BitbucketPipelineCreateRequestTest extends BbServerWireMock {
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
             .crumb( crumb )
             .post("/organizations/jenkins/pipelines/")
-            .data(ImmutableMap.of(
+            .data(CollectionsHelper.of(
                 "name","pipeline1",
                 "$class", "io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest",
-                "scmConfig", ImmutableMap.of(
+                "scmConfig", CollectionsHelper.of(
                     "id", BitbucketServerScm.ID,
                     "uri", apiUrl,
-                    "config", ImmutableMap.of(
+                    "config", CollectionsHelper.of(
                         "repoOwner", "TESTP",
                         "repository", "pipeline-demo-test"
                     )

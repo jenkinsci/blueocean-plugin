@@ -4,7 +4,6 @@ import com.cloudbees.plugins.credentials.CredentialsDescriptor;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.ImmutableMap;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.util.Secret;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
@@ -17,6 +16,7 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbRepo;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbSaveContentResponse;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbUser;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerBranch;
+import io.jenkins.blueocean.commons.CollectionsHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -183,10 +183,10 @@ public class BitbucketApiTest extends BbServerWireMock {
     @Test
     public void testCreateNewBranchOnExistingRepo(){
         BbBranch branch = api.getDefaultBranch("TESTP","pipeline-demo-test");
-        BbBranch newBranch = api.createBranch("TESTP", "pipeline-demo-test",
-                ImmutableMap.of("name", "feature1",
-                        "startPoint", branch.getLatestCommit(),
-                        "message", "new branch"));
+        BbBranch newBranch = api.createBranch( "TESTP", "pipeline-demo-test",
+                                               CollectionsHelper.of( "name", "feature1",
+                                                                     "startPoint", branch.getLatestCommit(),
+                                                                     "message", "new branch"));
         assertEquals("feature1", newBranch.getDisplayId());
         assertEquals(branch.getLatestCommit(), newBranch.getLatestCommit());
     }
