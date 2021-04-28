@@ -1,8 +1,7 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Files;
 import hudson.model.User;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import jenkins.plugins.git.GitSampleRepoRule;
 import org.apache.commons.io.FileUtils;
@@ -14,7 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.Serializable;
+import java.nio.file.Files;
 import java.util.Map;
 
 public class GitUtilsTest extends PipelineBaseTest {
@@ -56,7 +55,7 @@ public class GitUtilsTest extends PipelineBaseTest {
     @Test
     public void testOperations() throws Exception {
         String repoUrl = repo.getRoot().getCanonicalPath();
-        File cloneDir = Files.createTempDir();
+        File cloneDir = Files.createTempDirectory("bo_test").toFile();
         Git gitClient = Git.cloneRepository()
             .setCloneAllBranches(false)
             .setURI(repoUrl)
@@ -109,9 +108,9 @@ public class GitUtilsTest extends PipelineBaseTest {
             .get("/organizations/jenkins/user/publickey/").build(Map.class);
 
         String id = (String)resp.get("id");
-        Assert.assertTrue(id != null);
+        Assert.assertNotNull(id);
 
-        final Map<String, Object> body = ImmutableMap.of(
+        final Map<String, Object> body = MapsHelper.of(
             "repositoryUrl", "git@github.com:vivek/capability-annotation.git",
             "credentialId", id,
             "requirePush", true,

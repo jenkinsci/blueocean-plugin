@@ -7,8 +7,8 @@ import java.util.Map;
 /**
  * Some helpers to replace some Guava collections tools
  */
-public class CollectionsHelper {
-    private CollectionsHelper() {
+public class MapsHelper {
+    private MapsHelper() {
     }
 
     public static <K,V> Map<K,V> of(K k1, V v1) {
@@ -39,6 +39,23 @@ public class CollectionsHelper {
         map.put(k3, v3);
         map.put(k4, v4);
         return Collections.unmodifiableMap(map);
+    }
+
+    public static class Builder<K, V> {
+        private HashMap<K,V> map;
+
+        public Builder(){
+            map = new HashMap<>();
+        }
+
+        public Builder put(K k, V v){
+            map.put(k, v);
+            return this;
+        }
+
+        public Map<K, V> build(){
+            return Collections.unmodifiableMap(map);
+        }
     }
 
 }

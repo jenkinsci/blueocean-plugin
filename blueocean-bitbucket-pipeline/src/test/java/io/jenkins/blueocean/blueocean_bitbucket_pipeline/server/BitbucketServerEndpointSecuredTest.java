@@ -5,7 +5,7 @@ import hudson.model.Item;
 import hudson.model.User;
 import hudson.security.GlobalMatrixAuthorizationStrategy;
 import hudson.security.HudsonPrivateSecurityRealm;
-import io.jenkins.blueocean.commons.CollectionsHelper;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
 import jenkins.model.Jenkins;
@@ -49,7 +49,7 @@ public class BitbucketServerEndpointSecuredTest
     public void createAndListFailAnonymous() throws Exception {
         HttpResponse<String> response = request()
             .crumb( crumb )
-            .data( CollectionsHelper.of(
+            .data( MapsHelper.of(
                 "name", "My Server",
                 "apiUrl", "https://foo.com/git/"
             ))
@@ -64,7 +64,7 @@ public class BitbucketServerEndpointSecuredTest
         HttpResponse<String> response = request()
             .crumb( crumb )
             .jwtToken( getJwtToken( j.jenkins, readUser.getId(), "pacific_ale") )
-            .data(CollectionsHelper.of(
+            .data( MapsHelper.of(
                 "name", "My Server",
                 "apiUrl", "https://foo.com/git/"
             ))
@@ -82,7 +82,7 @@ public class BitbucketServerEndpointSecuredTest
             .crumb( crumb )
             .jwtToken( getJwtToken( j.jenkins, writeUser.getId(), "pale_ale") )
             //.auth("read_user", "readonlymate")
-            .data(CollectionsHelper.of(
+            .data( MapsHelper.of(
                 "name", "",
                 "apiUrl", "https://foo.com/git/"
             ))

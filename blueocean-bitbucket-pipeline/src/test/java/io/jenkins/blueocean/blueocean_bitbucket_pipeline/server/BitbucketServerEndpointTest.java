@@ -2,7 +2,7 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.jenkins.blueocean.commons.DigestUtils;
-import io.jenkins.blueocean.commons.CollectionsHelper;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.util.HttpRequest;
 import org.junit.Assert;
@@ -50,7 +50,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(400)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(CollectionsHelper.of(
+                .data( MapsHelper.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
                 ))
@@ -73,7 +73,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(400)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(CollectionsHelper.of(
+                .data( MapsHelper.of(
                         "name", "My Server",
                         "apiUrl", "http://foobar/"
                 ))
@@ -116,7 +116,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(400)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(CollectionsHelper.of("name", "foo"))
+                .data( MapsHelper.of( "name", "foo"))
                 .post(URL)
                 .build(Map.class);
         Assert.assertNotNull(resp);
@@ -136,7 +136,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(400)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(CollectionsHelper.of("apiUrl", apiUrl))
+                .data( MapsHelper.of( "apiUrl", apiUrl))
                 .post(URL)
                 .build(Map.class);
         Assert.assertNotNull(resp);
@@ -157,7 +157,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(200)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(CollectionsHelper.of(
+                .data( MapsHelper.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
                 ))
@@ -170,7 +170,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(400)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(CollectionsHelper.of(
+                .data( MapsHelper.of(
                         "name", "My Server 2",
                         "apiUrl", apiUrl
                 ))
@@ -195,7 +195,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(200)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(CollectionsHelper.of(
+                .data( MapsHelper.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
                 ))
@@ -245,7 +245,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(400)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(CollectionsHelper.of(
+                .data( MapsHelper.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
                 ))
@@ -269,7 +269,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(200)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(CollectionsHelper.of(
+                .data( MapsHelper.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
                 ))
@@ -306,7 +306,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
 
         httpRequest().Post(URL)
             .header( crumb.field, crumb.value )
-            .bodyJson(CollectionsHelper.of(
+            .bodyJson( MapsHelper.of(
                 "name", "My Server",
                 "apiUrl", apiUrl
             ))

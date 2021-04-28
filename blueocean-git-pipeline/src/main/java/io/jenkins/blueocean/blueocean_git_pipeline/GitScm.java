@@ -6,10 +6,7 @@ import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
-import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import hudson.Extension;
 import hudson.model.User;
 import hudson.util.HttpResponses;
@@ -44,8 +41,10 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class GitScm extends AbstractScm {
 
@@ -151,7 +150,7 @@ public class GitScm extends AbstractScm {
 
     protected StaplerRequest getStaplerRequest() {
         StaplerRequest request = Stapler.getCurrentRequest();
-        Preconditions.checkNotNull(request, "Must be called in HTTP request context");
+        Objects.requireNonNull(request, "Must be called in HTTP request context");
         return request;
     }
 
@@ -215,7 +214,7 @@ public class GitScm extends AbstractScm {
         } else {
             try {
                 String fullName = request.getJSONObject("pipeline").getString("fullName");
-                SCMSourceOwner item = Jenkins.getInstance().getItemByFullName(fullName, SCMSourceOwner.class);
+                SCMSourceOwner item = Jenkins.get().getItemByFullName(fullName, SCMSourceOwner.class);
                 if (item != null) {
                     scmSource = (AbstractGitSCMSource) item.getSCMSources().iterator().next();
                     repositoryUrl = scmSource.getRemote();
@@ -263,7 +262,7 @@ public class GitScm extends AbstractScm {
         final StandardCredentials creds = CredentialsMatchers.firstOrNull(
             CredentialsProvider.lookupCredentials(
                 StandardCredentials.class,
-                Jenkins.getInstance(),
+                Jenkins.get(),
                 Jenkins.getAuthentication(),
                 (List<DomainRequirement>) null),
             CredentialsMatchers.allOf(CredentialsMatchers.withId(credentialId))
@@ -327,16 +326,16 @@ public class GitScm extends AbstractScm {
 
         try {
             if (existingCredential == null) {
-                CredentialsUtils.createCredentialsInUserStore(newCredential,
-                                                              user,
-                                                              CREDENTIAL_DOMAIN_NAME,
-                                                              ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
+                CredentialsUtils.createCredentialsInUserStore( newCredential,
+                                                               user,
+                                                               CREDENTIAL_DOMAIN_NAME,
+                                                               Collections.singletonList(new BlueOceanDomainSpecification()));
             } else {
                 CredentialsUtils.updateCredentialsInUserStore(existingCredential,
                                                               newCredential,
                                                               user,
                                                               CREDENTIAL_DOMAIN_NAME,
-                                                              ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
+                                                              Collections.singletonList(new BlueOceanDomainSpecification()));
             }
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException("Could not persist credential", e);
