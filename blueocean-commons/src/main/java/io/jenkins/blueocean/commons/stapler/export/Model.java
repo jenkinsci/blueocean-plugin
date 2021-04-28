@@ -23,7 +23,6 @@
 
 package io.jenkins.blueocean.commons.stapler.export;
 
-import com.google.common.base.Predicate;
 import io.jenkins.blueocean.commons.stapler.export.TreePruner.ByDepth;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -41,6 +40,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -128,23 +128,15 @@ public class Model<T> {
     /**
      * Does a property exist strictly in this class?
      */
-    /*package*/ final Predicate<String> HAS_PROPERTY_NAME = new Predicate<String>() {
-        @Override
-        public boolean apply(@Nullable String name) {
-            return propertyNames.contains(name);
-        }
-    };
+    /*package*/ final Predicate<String> HAS_PROPERTY_NAME = name -> propertyNames.contains( name);
     /**
      * Does a property exist strictly in this class or its ancestors?
      */
-    /*package*/ final Predicate<String> HAS_PROPERTY_NAME_IN_ANCESTORY = new Predicate<String>() {
-        @Override
-        public boolean apply(@Nullable String name) {
-            for (Model m=Model.this; m!=null; m=m.superModel)
-                if (m.propertyNames.contains(name))
-                    return true;
-            return false;
-        }
+    /*package*/ final Predicate<String> HAS_PROPERTY_NAME_IN_ANCESTORY = name -> {
+        for (Model m=Model.this; m!=null; m=m.superModel)
+            if (m.propertyNames.contains(name))
+                return true;
+        return false;
     };
 
     /**
