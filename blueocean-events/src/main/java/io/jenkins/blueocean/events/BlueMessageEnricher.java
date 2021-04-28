@@ -70,7 +70,6 @@ public class BlueMessageEnricher extends MessageEnricher {
             maybeEnrichMessage(message);
         } catch (Exception e) {
             LOGGER.log(WARNING, "Unable to enrich message: " + e.getMessage(), e);
-            return;
         }
     }
 
@@ -109,7 +108,7 @@ public class BlueMessageEnricher extends MessageEnricher {
                     return;
                 }
                 final long queueId = Long.parseLong(queueIdStr);
-                Queue.Item queueItem = Jenkins.getInstance().getQueue().getItem(queueId);
+                Queue.Item queueItem = Jenkins.get().getQueue().getItem(queueId);
                 if (queueItem == null) {
                     return;
                 }
