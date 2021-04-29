@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.auth.jwt;
 
-import hudson.ExtensionPoint;
 import io.jenkins.blueocean.commons.ServiceException;
 import net.sf.json.JSONObject;
 import org.jose4j.jws.AlgorithmIdentifiers;
