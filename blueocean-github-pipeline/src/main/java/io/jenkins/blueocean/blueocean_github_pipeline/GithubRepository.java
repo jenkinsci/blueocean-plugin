@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import com.google.common.collect.ImmutableMap;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepository;
@@ -53,9 +53,9 @@ public class GithubRepository extends ScmRepository {
 
     @Override
     public Map<String, Boolean> getPermissions() {
-        return ImmutableMap.of("admin",ghRepository.hasAdminAccess(),
-                "push", ghRepository.hasPushAccess(),
-                "pull", ghRepository.hasPullAccess());
+        return MapsHelper.of("admin", ghRepository.hasAdminAccess(),
+                             "push", ghRepository.hasPushAccess(),
+                             "pull", ghRepository.hasPullAccess());
     }
 
     @Override

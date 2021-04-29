@@ -10,10 +10,10 @@ import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredenti
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
-import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.Item;
 import hudson.model.User;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
@@ -80,9 +80,9 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .crumb( this.crumb )
                 .post("/organizations/jenkins/pipelines/")
-                .data(ImmutableMap.of("name", "pipeline1", "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("id", GithubScm.ID, "uri", githubApiUrl, "credentialId", credentialId,
-                                "config", ImmutableMap.of("repoOwner", "cloudbeers", "repository", "PR-demo"))))
+                .data(MapsHelper.of( "name", "pipeline1", "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
+                                      "scmConfig", MapsHelper.of("id", GithubScm.ID, "uri", githubApiUrl, "credentialId", credentialId,
+                                "config", MapsHelper.of("repoOwner", "cloudbeers", "repository", "PR-demo"))))
                 .build(Map.class);
         assertNotNull(r);
         assertEquals("pipeline1", r.get("name"));
@@ -120,7 +120,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         OrganizationImpl organization = new OrganizationImpl("jenkins", j.jenkins);
         String credentialId = createGithubCredential(user);
 
-        JSONObject config = JSONObject.fromObject(ImmutableMap.of("repoOwner", "vivek", "repository", "empty1"));
+        JSONObject config = JSONObject.fromObject(MapsHelper.of("repoOwner", "vivek", "repository", "empty1"));
 
         GithubPipelineCreateRequest request = new GithubPipelineCreateRequest(
                 "empty1", new BlueScmConfig(GithubScm.ID, githubApiUrl, credentialId, config));
@@ -135,7 +135,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         OrganizationImpl organization = new OrganizationImpl("jenkins", j.jenkins);
         String credentialId = createGithubCredential(user);
 
-        JSONObject config = JSONObject.fromObject(ImmutableMap.of("repoOwner", "vivek", "repository", "empty1"));
+        JSONObject config = JSONObject.fromObject(MapsHelper.of("repoOwner", "vivek", "repository", "empty1"));
 
         GithubPipelineCreateRequest request = new GithubPipelineCreateRequest(
             "empty1/empty2", new BlueScmConfig(GithubScm.ID, githubApiUrl, credentialId, config));
@@ -351,7 +351,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
                 .post("/organizations/jenkins/pipelines/p/runs/")
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .crumb( this.crumb )
-                .data(ImmutableMap.of())
+                .data(Collections.emptyMap())
                 .status(200)
                 .build(Map.class);
 

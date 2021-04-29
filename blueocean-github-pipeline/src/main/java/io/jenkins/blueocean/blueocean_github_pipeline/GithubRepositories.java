@@ -2,8 +2,6 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositories;
@@ -13,11 +11,11 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Vivek Pandey
@@ -113,15 +111,9 @@ public class GithubRepositories extends ScmRepositories {
 
     @Override
     public Iterable<ScmRepository> getItems() {
-        return Iterables.transform(repositories, new Function<GHRepository, ScmRepository>() {
-            @Override
-            public ScmRepository apply(@Nullable GHRepository input) {
-                if(input == null){
-                    return null;
-                }
-                return new GithubRepository(input, credential, GithubRepositories.this);
-            }
-        });
+        return repositories.stream()
+            .map(ghRepository -> new GithubRepository(ghRepository, credential, GithubRepositories.this))
+            .collect( Collectors.toList());
     }
 
     @Exported
