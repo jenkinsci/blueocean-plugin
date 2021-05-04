@@ -177,7 +177,7 @@ public class Export {
         p.writeTo(item, pruner, dw);
     }
 
-    private Export() {};
+    private Export() {}
 
     private static class BlueOceanExportInterceptor extends ExportInterceptor{
         @Override
@@ -197,7 +197,7 @@ public class Export {
         }
 
         private void printError(Class modelClass, Throwable e){
-            PluginWrapper plugin = Jenkins.getInstance().getPluginManager().whichPlugin(modelClass);
+            PluginWrapper plugin = Jenkins.get().getPluginManager().whichPlugin(modelClass);
             String msg;
             if (plugin != null) {
                 String url = plugin.getUrl() == null ? "https://issues.jenkins-ci.org/" : plugin.getUrl();

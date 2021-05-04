@@ -23,7 +23,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
 import org.junit.Rule;
@@ -32,12 +31,15 @@ import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(ATHJUnitRunner.class)
 public class FolderTest extends BlueOceanAcceptanceTest {
-    private Logger logger = Logger.getLogger(FolderTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FolderTest.class);
 
     private static final Folder folder = Folder.folders("a folder", "bfolder", "cfolder");
 
