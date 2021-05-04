@@ -7,7 +7,6 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.annotation.Nonnull;
 
