@@ -32,8 +32,7 @@ mvn clean install -DskipTests -DcleanNode
 ./run.sh
 ```
 
-This is mainly for CI servers. It starts the selenium docker container and runs all
-nightwatch and java ATH tests in one shot.
+This is mainly for CI servers. It starts the selenium docker container and runs all java ATH tests in one shot.
 
 ### Run tests against a local instance
 
@@ -87,38 +86,19 @@ github.deleteRepo=<true/false should the code delete repo once test is done>
 github.randomSuffix=<true/false - add a random suffix to repo name (ie must have for CI>
 ```
 
-#### Java Webdriver Tests via Intellij (and probably other IDEs)
+#### Java Webdriver Tests via IntelliJ (and probably other IDEs)
 
 Running tests via the IDE works as expected as long as the standalone part of the ATH is running.
 
-To start a test in Intellij the easiest way is to right click on the test class or method and click Run test.
+To start a test in IntelliJ the easiest way is to right click on the test class or method and click Run test.
 
 NOTE: if you have a `~/.blueocean-ath-config` it will be used when running tests this way.
-
-#### JavaScript [nightwatch] tests.
-
-Nightwatch tests can be run via the nightwatch npm package (`npm install -g nightwatch`). It is
-possible to specify specific test files, or whole directories which it will recursively find tests in.
-
-```bash
-nightwatch src/test/js/
-nightwatch src/test/js/edgeCases/
-nightwatch src/test/js/edgeCases/folder.js
-```
-
-When running in `--dev` mode, it can be useful to turn on client code log output. To do this, simply set
-the `LOG_CONFIG` env variable e.g. to turn on SSE logging:
-
-```bash
-export LOG_CONFIG=sse
-nightwatch src/test/js/
-```
 
 ## Writing Tests
 
 ### Java Webdriver tests
 
-#### Intellij
+#### IntelliJ
 
 Make sure you add the acceptance-tests to your intellij blueocean project by right-clicking on `acceptance-tests/pom.xml`
 and adding it to the project.
@@ -224,7 +204,7 @@ public class MySecondATHTest{
 
        // This waits for any builds that have been queued to finish.
        sseClient.untilEvents(SSEEvents.activityComplete(pipelineName));
-       // Clear all events so far so that when wait is called again it doesnt see the old events.
+       // Clear all events so far so that when wait is called again it doesn't see the old events.
        sseClient.clear();
 
        // ... some more run stuff
@@ -244,7 +224,7 @@ public class MyAwesomePage {
 
     @Inject
     WaitUtil wait;
-    // PageFactory.initElements drivers the @Findby annatations. TBD if we want to use these TBH
+    // PageFactory.initElements drivers the @Findby annotations. TBD if we want to use these TBH
     @Inject
     public MyAwesomePage(WebDriver driver) {
         PageFactory.initElements(driver, this);
@@ -270,7 +250,7 @@ Any new Page Object classes need to be bound in `ATHModule#configure` to be able
 
 #### Pipeline Helper
 
-These are a series of helpers to deal with pipelines. They started life to deal with pipelines being in folders. It offes a way
+These are a series of helpers to deal with pipelines. They started life to deal with pipelines being in folders. It offers a way
 to give PageObjects more contextual information about what they are operating on without having to be explicit about it in every method call.
 
 ```java
@@ -314,6 +294,3 @@ public class MySecondATHTest{
     }
 }
 ```
-
-###
-[nightwatch]: http://nightwatchjs.org/

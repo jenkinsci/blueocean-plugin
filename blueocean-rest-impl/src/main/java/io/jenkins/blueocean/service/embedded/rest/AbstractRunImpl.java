@@ -1,10 +1,23 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Function;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.Date;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang.BooleanUtils;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.export.Exported;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Collections2;
+
 import hudson.model.Action;
 import hudson.model.CauseAction;
 import hudson.model.Result;
@@ -13,6 +26,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
@@ -24,22 +38,7 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
-import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.GenericResource;
-import jenkins.util.SystemProperties;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.kohsuke.stapler.QueryParameter;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Date;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Basic {@link BlueRun} implementation.
@@ -50,8 +49,10 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     public static final String BLUEOCEAN_FEATURE_RUN_DESCRIPTION_ENABLED = "blueocean.feature.run.description.enabled";
 
-    public static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-    private static final Logger LOGGER = Logger.getLogger(AbstractRunImpl.class.getName());
+    public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+        .withZone(ZoneId.systemDefault());
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( AbstractRunImpl.class.getName());
 
     private static final long TEST_SUMMARY_CACHE_MAX_SIZE = Long.getLong("TEST_SUMMARY_CACHE_MAX_SIZE", 10000);
     private static final Cache<String, Optional<BlueTestSummary>> TEST_SUMMARY = CacheBuilder.newBuilder()
@@ -69,9 +70,10 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
         this.organization = organization;
     }
 
-    @Nonnull
+    @Override
+    @Exported(inline = true)
     public Container<BlueChangeSetEntry> getChangeSet() {
-        return Containers.empty(getLink());
+        return new ChangeSetContainerImpl(organization, this, run);
     }
 
     @Override
@@ -98,7 +100,8 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public String getDescription() {
-        return SystemProperties.getBoolean(BLUEOCEAN_FEATURE_RUN_DESCRIPTION_ENABLED, true) ? run.getDescription() : null;
+        String descriptionEnabled = System.getProperty( BLUEOCEAN_FEATURE_RUN_DESCRIPTION_ENABLED, "true" );
+        return BooleanUtils.toBoolean( descriptionEnabled ) ? run.getDescription() : null;
     }
 
     @Override
@@ -113,12 +116,12 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public String getEnQueueTimeString() {
-        return DATE_FORMAT.print(getEnQueueTime().getTime());
+        return DATE_FORMAT.format(getEnQueueTime().toInstant());
     }
 
     @Override
     public String getStartTimeString(){
-        return DATE_FORMAT.print(getStartTime().getTime());
+        return DATE_FORMAT.format(getStartTime().toInstant());
     }
 
     @Override
@@ -127,7 +130,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
         if(endTime == null) {
             return null;
         } else {
-            return DATE_FORMAT.print(endTime.getTime());
+            return DATE_FORMAT.format(endTime.toInstant());
         }
     }
 
@@ -229,22 +232,38 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueTestSummary getTestSummary() {
+        return null;
+    }
+
+    @Override
+    public BlueTestSummary getBlueTestSummary() {
+        BlueTestSummary blueTestSummary = null;
         if (getStateObj() == BlueRunState.FINISHED) {
             try {
-                return TEST_SUMMARY.get(run.getExternalizableId(), new Callable<Optional<BlueTestSummary>>() {
-                    @Override
-                    public Optional<BlueTestSummary> call() throws Exception {
-                        BlueTestSummary summary = BlueTestResultFactory.resolve(run, parent).summary;
-                        return summary == null ? Optional.<BlueTestSummary>absent() : Optional.of(summary);
-                    }
-                }).orNull();
+                blueTestSummary =  TEST_SUMMARY.get(run.getExternalizableId(),  () -> {
+                                            LOGGER.debug( "load test summary {} thread {}", //
+                                                          run.getExternalizableId(), //
+                                                          Thread.currentThread().getName() );
+                                            BlueTestSummary summary = BlueTestResultFactory.resolve(run, parent).summary;
+                                            return summary == null ? Optional.absent() : Optional.of(summary);
+                                        }
+                ).orNull();
             } catch (ExecutionException e) {
-                LOGGER.log(Level.SEVERE, "Could not load summary from cache", e);
-                return null;
+                LOGGER.error("Could not load test summary from cache", e);
             }
         } else {
-            return BlueTestResultFactory.resolve(run, this).summary;
+            blueTestSummary =  BlueTestResultFactory.resolve(run, this).summary;
         }
+
+        // .../runs/123/blueTestSummary
+        if (blueTestSummary == null)
+        {
+            // Just use an empty one while we wait to avoid 404
+            return new BlueTestSummary(0,0,0,0,0,0,0,this.getLink());
+        }
+        Link link = this.getLink().rel("blueTestSummary");
+        blueTestSummary.setLink( link );
+        return blueTestSummary;
     }
 
     public Collection<BlueActionProxy> getActions() {
@@ -326,7 +345,21 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public Links getLinks() {
-        return super.getLinks().add("parent", parent.getLink());
+        Links links = super.getLinks().add("parent", parent.getLink());
+        Run nextRun = run.getNextBuild();
+        Run prevRun = run.getPreviousBuild();
+
+        if(nextRun != null) {
+            Link nextRunLink = LinkResolver.resolveLink(nextRun);
+            links.add("nextRun", nextRunLink);
+        }
+
+        if(prevRun != null) {
+            Link prevRunLink = LinkResolver.resolveLink(prevRun);
+            links.add("prevRun", prevRunLink);
+        }
+
+        return links;
     }
 
     public static class BlueCauseImpl extends BlueCause {
@@ -356,12 +389,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
         }
 
         static Collection<BlueCause> getCauses(Collection<hudson.model.Cause> causes) {
-            return Collections2.transform(causes, new Function<hudson.model.Cause, BlueCause>() {
-                @Override
-                public BlueCause apply(@Nullable hudson.model.Cause input) {
-                    return new BlueCauseImpl(input);
-                }
-            });
+            return causes.stream().map( input -> new BlueCauseImpl(input)).collect(Collectors.toList());
         }
     }
 }

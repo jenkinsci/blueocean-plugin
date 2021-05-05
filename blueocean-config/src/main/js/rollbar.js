@@ -15,7 +15,7 @@ function normalizeURL(location) {
     return normalizedUrl;
 }
 
-var transformer = function (payload) {
+var transformer = function(payload) {
     payload.data.request.user_ip = '0.0.0.0';
     payload.data.request.url = normalizeURL(window.location.pathname);
 };
@@ -31,7 +31,7 @@ var _rollbarConfig = {
     code_version: window.$blueocean.config.version, // see header.jelly
     source_map_enabled: true,
     guess_uncaught_frames: true,
-    transform: transformer
+    transform: transformer,
 };
 
 var rollbarBrowser = require('rollbar-browser');
@@ -56,4 +56,3 @@ window.$blueocean_Rollbar = Rollbar;
 //} catch (e) {
 //    $blueocean_Rollbar.error('Problem calling foo()', e);
 //}
-

@@ -373,7 +373,7 @@ public class BlueI18n implements ApiRoutable {
                 // Set pugin version info that can be used by the browser to
                 // determine if it wants to use the resource bundle, or not.
                 // The versions may not match (in theory - should never happen),
-                // in which case the brwoser might not want to use the bundle data.
+                // in which case the browser might not want to use the bundle data.
                 jsonObject.put("plugin-version-requested", bundleCacheEntry.bundleParams.pluginVersion);
                 PluginWrapper pluginWrapper = bundleCacheEntry.bundleParams.getPlugin();
                 if(pluginWrapper != null) {

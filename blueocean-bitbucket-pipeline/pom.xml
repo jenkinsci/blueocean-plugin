@@ -5,13 +5,13 @@
   <parent>
     <artifactId>blueocean-parent</artifactId>
     <groupId>io.jenkins.blueocean</groupId>
-    <version>1.5.0-beta-1-SNAPSHOT</version>
+    <version>${revision}${changelist}</version>
   </parent>
 
   <name>Bitbucket Pipeline for Blue Ocean</name>
   <artifactId>blueocean-bitbucket-pipeline</artifactId>
   <packaging>hpi</packaging>
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+  <url>https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean/doc/BlueOcean.adoc</url>
 
   <properties>
     <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
@@ -41,23 +41,8 @@
     </dependency>
 
     <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpmime</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact</artifactId>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>apache-httpcomponents-client-4-api</artifactId>
     </dependency>
 
     <!-- test dependencies -->
@@ -71,7 +56,13 @@
 
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
-      <artifactId>wiremock-standalone</artifactId>
+      <artifactId>wiremock-jre8-standalone</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>matrix-auth</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -79,23 +70,18 @@
     <dependency>
       <groupId>io.jenkins.blueocean</groupId>
       <artifactId>blueocean-rest-impl</artifactId>
-      <version>1.5.0-beta-1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>fluent-hc</artifactId>
-      <version>4.5.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.damnhandy</groupId>
       <artifactId>handy-uri-templates</artifactId>
-      <version>2.1.6</version>
+      <version>2.1.8</version>
       <scope>test</scope>
     </dependency>
     <!-- end HttpRequest -->
+
   </dependencies>
 
 </project>

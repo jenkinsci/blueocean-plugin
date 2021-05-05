@@ -2,15 +2,14 @@
  * Created by cmeyers on 7/29/16.
  */
 import defaultFetch from 'isomorphic-fetch';
-import config from '../urlconfig';
-import utils from '../utils';
-import AppConfig from '../config';
+import { UrlConfig } from '../urlconfig';
+import { Utils } from '../utils';
+import { AppConfig } from '../config';
 
 /**
  * Wraps the SSE Gateway and fetches data related to events from REST API.
  */
 export class SseBus {
-
     constructor(connection, fetch) {
         this.id = this._random();
         this.connection = connection;
@@ -20,7 +19,7 @@ export class SseBus {
     }
 
     dispose() {
-        Object.keys(this.sseListeners).forEach((token) => {
+        Object.keys(this.sseListeners).forEach(token => {
             this.unsubscribe(token);
         });
 
@@ -43,9 +42,13 @@ export class SseBus {
         };
 
         if (!this.sseListeners.job) {
-            const sseListener = this.connection.subscribe('job', (event) => {
-                this._handleJobEvent(event);
-            }, { jenkins_org: AppConfig.getOrganizationName() });
+            const sseListener = this.connection.subscribe(
+                'job',
+                event => {
+                    this._handleJobEvent(event);
+                },
+                { jenkins_org: AppConfig.getOrganizationName() }
+            );
 
             this.sseListeners.job = sseListener;
         }
@@ -63,13 +66,9 @@ export class SseBus {
     }
 
     _handleJobEvent(event) {
-        const subscriptions = Object
-            .keys(this.externalListeners)
-            .map(subId => this.externalListeners[subId]);
+        const subscriptions = Object.keys(this.externalListeners).map(subId => this.externalListeners[subId]);
 
-        const interestedListeners = subscriptions
-            .filter(sub => sub.filter(event))
-            .map(sub => sub.listener);
+        const interestedListeners = subscriptions.filter(sub => sub.filter(event)).map(sub => sub.listener);
 
         // if no filters are interested in the event, bail
         if (interestedListeners.length === 0) {
@@ -77,31 +76,31 @@ export class SseBus {
         }
 
         switch (event.jenkins_event) {
-        case 'job_crud_created':
-        case 'job_crud_deleted':
-        case 'job_crud_renamed':
-            this._refetchPipelines();
-            break;
-        case 'job_run_queue_buildable':
-        case 'job_run_queue_enter':
-            this._enqueueJob(event, interestedListeners);
-            break;
-        case 'job_run_queue_left':
-        case 'job_run_queue_blocked': {
-            break;
-        }
-        case 'job_run_paused':
-        case 'job_run_unpaused':
-        case 'job_run_started': {
-            this._updateJob(event, interestedListeners);
-            break;
-        }
-        case 'job_run_ended': {
-            this._updateJob(event, interestedListeners);
-            break;
-        }
-        default :
-        // Else ignore the event.
+            case 'job_crud_created':
+            case 'job_crud_deleted':
+            case 'job_crud_renamed':
+                this._refetchPipelines();
+                break;
+            case 'job_run_queue_buildable':
+            case 'job_run_queue_enter':
+                this._enqueueJob(event, interestedListeners);
+                break;
+            case 'job_run_queue_left':
+            case 'job_run_queue_blocked': {
+                break;
+            }
+            case 'job_run_paused':
+            case 'job_run_unpaused':
+            case 'job_run_started': {
+                this._updateJob(event, interestedListeners);
+                break;
+            }
+            case 'job_run_ended': {
+                this._updateJob(event, interestedListeners);
+                break;
+            }
+            default:
+            // Else ignore the event.
         }
     }
 
@@ -112,11 +111,9 @@ export class SseBus {
     _enqueueJob(event, listeners) {
         const queuedRun = {};
 
-        queuedRun.pipeline = event.job_ismultibranch ?
-            event.blueocean_job_branch_name :
-            event.blueocean_job_pipeline_name;
+        queuedRun.pipeline = event.job_ismultibranch ? event.blueocean_job_branch_name : event.blueocean_job_pipeline_name;
 
-        const runUrl = utils.cleanSlashes(`${event.blueocean_job_rest_url}/runs/${event.job_run_queueId}`);
+        const runUrl = Utils.cleanSlashes(`${event.blueocean_job_rest_url}/runs/${event.job_run_queueId}`);
 
         queuedRun._links = {
             self: {
@@ -133,33 +130,32 @@ export class SseBus {
     }
 
     _updateJob(event, listeners) {
-        const baseUrl = config.getJenkinsRootURL();
-        const url = utils.cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`);
+        const baseUrl = UrlConfig.getJenkinsRootURL();
+        const url = Utils.cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`);
 
-        this.fetch(url)
-            .then((data) => {
-                const updatedRun = utils.clone(data);
+        this.fetch(url).then(data => {
+            const updatedRun = Utils.clone(data);
 
-                // FIXME: Talk to CMeyers why we cannot use the data.state?
-                // in many cases the SSE and subsequent REST call occur so quickly
-                // that the run's state is stale. force the state to the correct value.
-                if (event.jenkins_event === 'job_run_ended') {
-                    updatedRun.state = 'FINISHED';
-                    // in some cases the state is finished but result is still unknown; assume success for now
-                    if (updatedRun.result === 'UNKNOWN') {
-                        console.log('forcing run result from UNKNOWN to SUCCESS for ' + url);
-                        updatedRun.result = 'SUCCESS';
-                    }
-                } else if (event.jenkins_event === 'job_run_paused') {
-                    updatedRun.state = 'PAUSED';
-                } else {
-                    updatedRun.state = 'RUNNING';
+            // FIXME: Talk to CMeyers why we cannot use the data.state?
+            // in many cases the SSE and subsequent REST call occur so quickly
+            // that the run's state is stale. force the state to the correct value.
+            if (event.jenkins_event === 'job_run_ended') {
+                updatedRun.state = 'FINISHED';
+                // in some cases the state is finished but result is still unknown; assume success for now
+                if (updatedRun.result === 'UNKNOWN') {
+                    console.log('forcing run result from UNKNOWN to SUCCESS for ' + url);
+                    updatedRun.result = 'SUCCESS';
                 }
+            } else if (event.jenkins_event === 'job_run_paused') {
+                updatedRun.state = 'PAUSED';
+            } else {
+                updatedRun.state = 'RUNNING';
+            }
 
-                for (const listener of listeners) {
-                    listener(updatedRun, event);
-                }
-            });
+            for (const listener of listeners) {
+                listener(updatedRun, event);
+            }
+        });
     }
 
     _updateMultiBranchPipelineBranches() {

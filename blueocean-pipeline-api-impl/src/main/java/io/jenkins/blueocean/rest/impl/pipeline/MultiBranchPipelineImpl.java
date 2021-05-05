@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.Job;
@@ -35,11 +36,20 @@ import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
+import io.jenkins.blueocean.service.embedded.util.Disabler;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
+import jenkins.branch.BranchProjectFactory;
 import jenkins.branch.MultiBranchProject;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.multibranch.AbstractWorkflowBranchProjectFactory;
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowBranchProjectFactory;
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -57,11 +67,24 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     private final Link self;
     private final BlueOrganization organization;
+    private String scriptPath = "Jenkinsfile";
 
     public MultiBranchPipelineImpl(BlueOrganization organization, MultiBranchProject mbp) {
         this.mbp = mbp;
         this.organization = organization;
         this.self = this.organization.getLink().rel("pipelines").rel(PipelineImpl.getRecursivePathFromFullName(this));
+    }
+
+
+    @Exported(
+        name = "scriptPath"
+    )
+    public String getScriptPath() {
+        return scriptPath;
+    }
+
+    private void setScriptPath(String scriptPath) {
+        this.scriptPath = scriptPath;
     }
 
     @Nonnull
@@ -252,7 +275,16 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         @Override
         public MultiBranchPipelineImpl getPipeline(Item item, Reachable parent, BlueOrganization organization) {
             if (item instanceof MultiBranchProject) {
-                return new MultiBranchPipelineImpl(organization, (MultiBranchProject) item);
+                MultiBranchPipelineImpl mbpi = new MultiBranchPipelineImpl(organization, (MultiBranchProject) item);
+                if (item instanceof WorkflowMultiBranchProject) {
+                    WorkflowMultiBranchProject wfmbp = (WorkflowMultiBranchProject)item;
+                    BranchProjectFactory<WorkflowJob, WorkflowRun> bpf = wfmbp.getProjectFactory();
+                    if (bpf instanceof WorkflowBranchProjectFactory) {
+                        String sp = ((WorkflowBranchProjectFactory) bpf).getScriptPath();
+                        mbpi.setScriptPath(sp);
+                    }
+                }
+                return mbpi;
             }
             return null;
         }
@@ -309,5 +341,21 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     @Override
     public BlueTrendContainer getTrends() {
         return null;
+    }
+
+    @Override
+    @SuppressFBWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "isDisabled will return null if the job type doesn't support it")
+    public Boolean getDisabled() {
+        return null; // NOT SUPPORTED
+    }
+
+    @Override
+    public void enable() throws IOException {
+        throw new ServiceException.MethodNotAllowedException("Cannot enable this item");
+    }
+
+    @Override
+    public void disable() throws IOException {
+        throw new ServiceException.MethodNotAllowedException("Cannot disable this item");
     }
 }

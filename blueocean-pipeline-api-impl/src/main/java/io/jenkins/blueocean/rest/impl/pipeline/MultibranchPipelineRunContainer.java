@@ -86,7 +86,11 @@ public class MultibranchPipelineRunContainer extends BlueRunContainer{
         }
 
         for (final BluePipeline b : branches) {
-            Iterator<BlueRun> it = b.getRuns().iterator(0, MAX_MBP_RUNS_ROWS);
+            BlueRunContainer blueRunContainer = b.getRuns();
+            if(blueRunContainer==null){
+                continue;
+            }
+            Iterator<BlueRun> it = blueRunContainer.iterator(0, MAX_MBP_RUNS_ROWS);
             int count = 0;
             Utils.skip(it, start);
             while (it.hasNext() && count++ < limit) {
@@ -100,14 +104,8 @@ public class MultibranchPipelineRunContainer extends BlueRunContainer{
     }
 
     static void sortBranchesByLatestRun(List<BluePipeline> branches) {
-        Collections.sort(branches, new Comparator<BluePipeline>() {
-            @Override
-            public int compare(BluePipeline o1, BluePipeline o2) {
-                BlueRun o1LatestRun = o1.getLatestRun();
-                BlueRun o2LatestRun = o2.getLatestRun();
-                return LATEST_RUN_START_TIME_COMPARATOR.compare(o1LatestRun, o2LatestRun);
-            }
-        });
+        Collections.sort(branches, ( o1, o2 ) ->
+            LATEST_RUN_START_TIME_COMPARATOR.compare(o1.getLatestRun(), o2.getLatestRun()));
     }
 
     private boolean retry(boolean[] retries) {
@@ -142,7 +140,11 @@ public class MultibranchPipelineRunContainer extends BlueRunContainer{
             if (!retries[i]) {
                 continue;
             }
-            Iterator<BlueRun> it = b.getRuns().iterator(startIndexes[i], limits[i]);
+            BlueRunContainer blueRunContainer = b.getRuns();
+            if(blueRunContainer==null){
+                continue;
+            }
+            Iterator<BlueRun> it = blueRunContainer.iterator(startIndexes[i], limits[i]);
             int lcount = 0;
             while (it.hasNext() && count < remainingCount) {
                 lcount++;

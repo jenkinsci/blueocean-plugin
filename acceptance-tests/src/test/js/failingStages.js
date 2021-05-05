@@ -85,12 +85,12 @@ module.exports = {
         //check that we see a stage graph:
         blueRunDetailPage.waitForElementVisible('.progress-spinner.running');
         blueRunDetailPage.waitForElementVisible('.BasicHeader--running')
-        blueRunDetailPage.waitForElementVisible('.pipeline-node-selected');
+        blueRunDetailPage.waitForElementVisible('.PWGx-pipeline-node-selected');
         blueRunDetailPage.waitForElementVisible('.download-log-button');
-        blueRunDetailPage.waitForElementVisible('.pipeline-selection-highlight');
+        blueRunDetailPage.waitForElementVisible('.PWGx-pipeline-selection-highlight');
         // in Chrome, 'Visible' seems to fail but 'Present' works ok
-        blueRunDetailPage.waitForElementPresent('.pipeline-connector');
-        blueRunDetailPage.waitForElementPresent('.pipeline-node-hittarget');
+        blueRunDetailPage.waitForElementPresent('.PWGx-pipeline-connector');
+        blueRunDetailPage.waitForElementPresent('.PWGx-pipeline-node-hittarget');
 
         // this will show up when it has finished replaying
         blueRunDetailPage.waitForElementVisible('.replay-button');

@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
@@ -21,10 +21,12 @@ import io.jenkins.blueocean.rest.model.BluePipelineFolder;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.BlueTrendContainer;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.util.Disabler;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -185,20 +187,42 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     }
 
     @Override
+    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "getPipelines() can definitely be null see MatrixProjectImpl so findbugs is wrong...")
     public Iterable<String> getPipelineFolderNames() {
-        return Iterables.transform(getPipelines(), new Function<BluePipeline, String>() {
-            @Override
-            public String apply(@Nullable BluePipeline input) {
-                if (input != null && input instanceof BluePipelineFolder) {
-                    return input.getName();
-                }
-                return null;
+        BluePipelineContainer bluePipelineContainer = getPipelines();
+        if(bluePipelineContainer==null) {
+            return Collections.emptyList();
+        }
+        return Iterables.transform(bluePipelineContainer, input -> {
+            if (input != null && input instanceof BluePipelineFolder) {
+                return input.getName();
             }
+            return null;
         });
     }
 
     @Override
     public BlueTrendContainer getTrends() {
         return null;
+    }
+
+    @Override
+    @SuppressFBWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "isDisabled will return null if the job type doesn't support it")
+    public Boolean getDisabled() {
+        return Disabler.isDisabled(folder);
+    }
+
+    @Override
+    public void enable() throws IOException {
+        if (getPermissions().getOrDefault(BluePipeline.CONFIGURE_PERMISSION, Boolean.FALSE)) {
+            Disabler.makeDisabled(folder, false);
+        }
+    }
+
+    @Override
+    public void disable() throws IOException {
+        if (getPermissions().getOrDefault(BluePipeline.CONFIGURE_PERMISSION, Boolean.FALSE)) {
+            Disabler.makeDisabled(folder, true);
+        }
     }
 }

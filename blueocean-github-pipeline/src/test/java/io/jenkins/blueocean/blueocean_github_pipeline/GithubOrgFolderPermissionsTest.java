@@ -13,8 +13,11 @@ import jenkins.model.ModifiableTopLevelItemGroup;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
 import org.jvnet.hudson.test.TestExtension;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -24,6 +27,8 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 
+@RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubOrgFolderPermissionsTest extends GithubMockBase {
 
     @Test
@@ -67,18 +72,19 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         createGithubPipeline(false);
     }
 
-    private void createGithubPipeline(boolean shouldSuceed) throws Exception {
+    private void createGithubPipeline(boolean shouldSucceed) throws Exception {
         String credentialId = createGithubCredential(user);
         String pipelineName = "cloudbeers";
         Map resp = new RequestBuilder(baseUrl)
-                .status(shouldSuceed ? 201 : 403)
+                .status(shouldSucceed ? 201 : 403)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .crumb( this.crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(GithubTestUtils.buildRequestBody(GithubScm.ID,null, githubApiUrl, pipelineName, "PR-demo"))
                 .build(Map.class);
 
         TopLevelItem item = getOrgRoot().getItem(pipelineName);
-        if (shouldSuceed) {
+        if (shouldSucceed) {
             assertEquals(pipelineName, resp.get("name"));
             assertEquals("io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl", resp.get("_class"));
 
@@ -104,7 +110,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         private OrganizationImpl instance;
 
         public TestOrganizationFactoryImpl() throws IOException {
-            Folder f = Jenkins.getInstance().createProject(Folder.class, "CustomOrg");
+            Folder f = Jenkins.get().createProject(Folder.class, "CustomOrg");
             instance = new OrganizationImpl("custom", f);
         }
 

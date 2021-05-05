@@ -7,6 +7,9 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -23,6 +26,9 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author cliffmeyers
  */
+
+@RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubEnterpriseApiTest extends GithubMockBase {
 
     @Test
@@ -63,7 +69,7 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
 
     @Test
     public void fetchExistingCredentialApiUrlRequired() throws IOException, UnirestException {
-        // fetch the github-enterprise endpoint without specifiying apirUrl
+        // fetch the github-enterprise endpoint without specifying apirUrl
         Map r = new RequestBuilder(baseUrl)
             .status(400)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
@@ -105,7 +111,7 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
             .get("/organizations/jenkins/scm/github-enterprise/?apiUrl="+githubApiUrl)
             .build(Map.class);
 
-        assertTrue(r.get("message").toString().equals("Invalid accessToken"));
+        assertEquals("Invalid accessToken", r.get("message").toString());
     }
 
     @Test

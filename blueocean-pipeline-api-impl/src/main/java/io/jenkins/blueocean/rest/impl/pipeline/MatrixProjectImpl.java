@@ -1,9 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-/**
- * @author Vivek Pandey
- */
-
 import hudson.Extension;
 import hudson.matrix.MatrixProject;
 import hudson.model.Item;

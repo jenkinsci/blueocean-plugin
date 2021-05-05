@@ -5,10 +5,11 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/design-language';
 
-import { RunApi as runApi, ToastUtils } from '../index';
-import Security from '../security';
+import { RunApi as runApi } from '../';
+import { ToastUtils } from '../ToastUtils';
+import { Security } from '../security';
 import { stopProp } from '../utils';
-import i18nTranslator from '../i18n/i18n';
+import { i18nTranslator } from '../i18n/i18n';
 
 const { permit } = Security;
 const translate = i18nTranslator('blueocean-web');
@@ -21,7 +22,6 @@ function isRunFinished(run) {
  * ReplayButton allows a pipeline or branch to be re-run when in a failure state.
  */
 export class ReplayButton extends Component {
-
     constructor(props) {
         super(props);
 
@@ -49,7 +49,8 @@ export class ReplayButton extends Component {
             replaying: true,
         });
 
-        runApi.replayRun(this.props.latestRun)
+        runApi
+            .replayRun(this.props.latestRun)
             .then(run => ToastUtils.createRunStartedToast(this.props.runnable, run, this.props.onNavigation))
             .then(runDetailsUrl => this._afterReplayStarted(runDetailsUrl));
     }
@@ -79,9 +80,8 @@ export class ReplayButton extends Component {
             return null;
         }
 
-
         return (
-            <div className={`replay-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
+            <div className={`replay-button-component ${outerClass}`} onClick={event => stopProp(event)}>
                 <a className={`replay-button ${innerButtonClass}`} title={replayLabel} onClick={() => this._onReplayClick()}>
                     <Icon size={24} icon="AvReplay" />
                     <span className="button-label">{replayLabel}</span>

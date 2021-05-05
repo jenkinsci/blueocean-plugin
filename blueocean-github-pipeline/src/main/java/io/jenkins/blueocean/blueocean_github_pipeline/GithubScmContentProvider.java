@@ -226,21 +226,15 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
                     //tests might add scmId to indicate which Scm should be used to find credential
                     //We have to do this because apiUrl might be of WireMock server and not Github
                     || (StringUtils.isNotBlank(scmId) && scmId.equals(GithubScm.ID))) {
-                scm = new GithubScm(new Reachable() {
-                    @Override
-                    public Link getLink() {
-                        Preconditions.checkNotNull(organization);
-                        return organization.getLink().rel("scm");
-                    }
-                });
+                scm = new GithubScm( () -> {
+                    Preconditions.checkNotNull(organization);
+                    return organization.getLink().rel("scm");
+                } );
             }else{ //GHE
-                scm = new GithubEnterpriseScm((new Reachable() {
-                    @Override
-                    public Link getLink() {
-                        Preconditions.checkNotNull(organization);
-                        return organization.getLink().rel("scm");
-                    }
-                }));
+                scm = new GithubEnterpriseScm(( () -> {
+                    Preconditions.checkNotNull(organization);
+                    return organization.getLink().rel("scm");
+                } ));
             }
 
             //pick up github credential from user's store

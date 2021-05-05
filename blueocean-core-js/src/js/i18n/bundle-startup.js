@@ -28,9 +28,9 @@
  * Ensures that i18n resources are loaded before the bundle starts to execute.
  */
 
-import config from '../config';
-import logging from '../logging';
-import i18nTranslator from './i18n';
+import { AppConfig } from '../config';
+import { logging } from '../logging';
+import { i18nTranslator } from './i18n';
 
 const logger = logging.logger('io.jenkins.blueocean.i18n.startup');
 
@@ -42,12 +42,12 @@ const logger = logging.logger('io.jenkins.blueocean.i18n.startup');
  */
 export function execute(done, bundleConfig) {
     if (bundleConfig.hpiPluginId) {
-        const pluginInfo = config.getPluginInfo(bundleConfig.hpiPluginId);
+        const pluginInfo = AppConfig.getPluginInfo(bundleConfig.hpiPluginId);
         if (pluginInfo) {
             if (pluginInfo.i18nBundles && pluginInfo.i18nBundles.length > 0) {
                 logger.debug(`Plugin ${bundleConfig.hpiPluginId} defines i18n resource bundles that must be loaded:`, pluginInfo.i18nBundles);
                 const loadedBundles = [];
-                const loadBundle = (namespace) => {
+                const loadBundle = namespace => {
                     let hpiPluginId = bundleConfig.hpiPluginId;
                     let i18nResource = namespace;
 
@@ -74,13 +74,13 @@ export function execute(done, bundleConfig) {
                     // Any random key is fine ... just needs to trigger the loading.
                     translator('xxxx');
                 };
-                pluginInfo.i18nBundles.forEach((bundleNamespace) => loadBundle(bundleNamespace));
+                pluginInfo.i18nBundles.forEach(bundleNamespace => loadBundle(bundleNamespace));
             } else {
                 logger.debug(`Plugin "${bundleConfig.hpiPluginId}" doesn't define any i18n resource bundles.`);
                 done();
             }
         } else {
-            logger.warn(`Unexpected error finding pluging info for plugin ${bundleConfig.hpiPluginId}. There should be a preloaded jsExtensions entry.`);
+            logger.warn(`Unexpected error finding plugin info for plugin ${bundleConfig.hpiPluginId}. There should be a preloaded jsExtensions entry.`);
             done();
         }
     } else {

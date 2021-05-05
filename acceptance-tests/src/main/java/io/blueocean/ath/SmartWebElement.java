@@ -1,7 +1,6 @@
 package io.blueocean.ath;
 
 import com.google.common.base.Preconditions;
-import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -14,9 +13,13 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * Wrapper around an underlying WebDriver that automatically handles waits and common gotchas
@@ -25,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  * Accepts expressions for css and xpath, if the provided lookup starts with a /, XPath is used
  */
 public class SmartWebElement implements WebElement {
-    private static Logger logger = Logger.getLogger(SmartWebElement.class);
+    private static Logger logger = LoggerFactory.getLogger(SmartWebElement.class);
     public static final int DEFAULT_TIMEOUT = Integer.getInteger("webDriverDefaultTimeout", 3000);
     public static final int RETRY_COUNT = 3;
 
@@ -74,7 +77,7 @@ public class SmartWebElement implements WebElement {
             .pollingEvery(100, TimeUnit.MILLISECONDS)
             .withTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
             .ignoring(NoSuchElementException.class)
-            .until(ExpectedConditions.numberOfElementsToBeMoreThan(by, 0));
+            .until(driver -> driver.findElements(SmartWebElement.this.by));
     }
 
     /**
@@ -107,8 +110,9 @@ public class SmartWebElement implements WebElement {
      * @return true if visible, false if not
      */
     public boolean isVisible() {
-
-        return getElement().isDisplayed();
+        WebDriverWait wait = new WebDriverWait(getDriver(), 60);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(by));
+        return getDriver().findElement(by).isDisplayed();
     }
 
 
@@ -129,29 +133,9 @@ public class SmartWebElement implements WebElement {
 
     @Override
     public void click() {
-        for (int i = 0; i < RETRY_COUNT; i++) {
-            try {
-                WebElement e = getElement();
-                e.click();
-                if (i > 0) {
-                    logger.info(String.format("retry click successful for %s", by.toString()));
-                }
-                return;
-            } catch (WebDriverException ex) {
-                if (ex.getMessage().contains("is not clickable at point")) {
-                    logger.warn(String.format("%s not clickable: will retry click", by.toString()));
-                    logger.debug("exception: " + ex.getMessage());
-                    try {
-                        // typically this is during an animation, which should not take long
-                        Thread.sleep(500);
-                    } catch(InterruptedException ie) {
-                        // ignore
-                    }
-                } else {
-                    throw ex;
-                }
-            }
-        }
+        WebDriverWait wait = new WebDriverWait(getDriver(), 60);
+        wait.until(ExpectedConditions.elementToBeClickable(by));
+        getDriver().findElement(by).click();
     }
 
     @Override

@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.jvnet.hudson.test.TestExtension;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class PipelinePluginAnalyticsTest extends PipelineBaseTest {
 

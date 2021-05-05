@@ -30,7 +30,7 @@ public abstract class BlueOrganization extends Resource implements Routable{
     public abstract String getDisplayName();
 
     @Navigable
-    //   /organizations/jenkins/piplelines/f1
+    //   /organizations/jenkins/pipelines/f1
     public abstract BluePipelineContainer getPipelines();
 
     /**

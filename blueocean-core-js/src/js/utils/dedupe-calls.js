@@ -22,16 +22,17 @@ export class DeDupeCallTracker {
      */
     dedupe(key, promiseCreator) {
         // get active or create
-        return this.promises[key] || (this.promises[key] =
-            promiseCreator()
-            .then((data) => {
-                delete this.promises[key];
-                return data;
-            })
-            .catch((err) => {
-                delete this.promises[key];
-                return Promise.reject(err);
-            })
+        return (
+            this.promises[key] ||
+            (this.promises[key] = promiseCreator()
+                .then(data => {
+                    delete this.promises[key];
+                    return data;
+                })
+                .catch(err => {
+                    delete this.promises[key];
+                    return Promise.reject(err);
+                }))
         );
     }
 }
@@ -45,6 +46,6 @@ const deDupeCallTracker = new DeDupeCallTracker();
  * @promiseCreator: function that will return an initial promise, e.g. () => fetch(...)
  * @return a Promise
  */
-export default function dedupe(key, promiseCreator) {
+export function dedupe(key, promiseCreator) {
     return deDupeCallTracker.dedupe(key, promiseCreator);
 }

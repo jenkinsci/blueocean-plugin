@@ -1,10 +1,6 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -16,6 +12,7 @@ import io.jenkins.blueocean.scm.api.AbstractScmSourceEvent;
 import jenkins.branch.MultiBranchProject;
 import jenkins.plugins.git.traits.CleanAfterCheckoutTrait;
 import jenkins.plugins.git.traits.CleanBeforeCheckoutTrait;
+import jenkins.plugins.git.traits.LocalBranchTrait;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.SCMSourceOwner;
 import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
@@ -33,8 +30,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -48,7 +48,7 @@ public class GithubPipelineCreateRequest extends AbstractMultiBranchCreateReques
 
     @Override
     protected SCMSource createSource(@Nonnull MultiBranchProject project, @Nonnull BlueScmConfig scmConfig) {
-        // Update endpoint only if its Github Enterprise
+        // Update endpoint only if its GitHub Enterprise
         if(scmConfig.getId().equals(GithubEnterpriseScm.ID)) {
             updateEndpoints(scmConfig.getUri());
         }
@@ -64,6 +64,7 @@ public class GithubPipelineCreateRequest extends AbstractMultiBranchCreateReques
                 .withTrait(new OriginPullRequestDiscoveryTrait(strategies))
                 .withTrait(new CleanBeforeCheckoutTrait())
                 .withTrait(new CleanAfterCheckoutTrait())
+                .withTrait(new LocalBranchTrait())
                 .build();
     }
 
@@ -86,7 +87,7 @@ public class GithubPipelineCreateRequest extends AbstractMultiBranchCreateReques
 
     @Override
     protected List<ErrorMessage.Error> validate(String name, BlueScmConfig scmConfig) {
-        List<ErrorMessage.Error> errors = Lists.newArrayList();
+        List<ErrorMessage.Error> errors = new ArrayList();
         StandardUsernamePasswordCredentials credentials = null;
         String credentialId = computeCredentialIdWithGithubDefault(scmConfig);
         if(StringUtils.isBlank(scmConfig.getUri())){
@@ -142,14 +143,14 @@ public class GithubPipelineCreateRequest extends AbstractMultiBranchCreateReques
         GitHubConfiguration config = GitHubConfiguration.get();
         synchronized (config) {
             final String finalApiUrl = apiUrl;
-            Endpoint endpoint = Iterables.find(config.getEndpoints(), new Predicate<Endpoint>() {
-                @Override
-                public boolean apply(@Nullable Endpoint input) {
-                    return input != null && input.getApiUri().equals(finalApiUrl);
-                }
-            }, null);
+            Optional<Endpoint> optionalEndpoint = config.getEndpoints()
+                .stream()
+                .filter( input -> input != null && input.getApiUri().equals( finalApiUrl))
+                .findFirst();
+            Endpoint endpoint = optionalEndpoint.isPresent()? optionalEndpoint.get():null;
+
             if (endpoint == null) {
-                config.setEndpoints(ImmutableList.of(new Endpoint(apiUrl, apiUrl)));
+                config.setEndpoints(Collections.singletonList(new Endpoint( apiUrl, apiUrl)));
                 config.save();
             }
         }

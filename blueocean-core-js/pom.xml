@@ -5,7 +5,7 @@
     <parent>
         <artifactId>blueocean-parent</artifactId>
         <groupId>io.jenkins.blueocean</groupId>
-        <version>1.5.0-beta-1-SNAPSHOT</version>
+        <version>${revision}${changelist}</version>
     </parent>
 
     <artifactId>blueocean-core-js</artifactId>
@@ -13,7 +13,7 @@
 
     <name>Blue Ocean Core JS</name>
 
-    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Core+JS</url>
+    <url>https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean/doc/BlueOcean.adoc</url>
 
     <build>
         <resources>

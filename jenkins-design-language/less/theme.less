@@ -113,9 +113,27 @@ main {
 .status-color(@status, @color, @color-lite) {
     .@{status}-bg {
         background-color: @color;
+
+        .actions-container:after {
+            background-color: @color;
+            transition: background-color 0.15s;
+        }
+
+        &:hover .actions-container:after {
+            background-color: transparent;
+        }
     }
     .@{status}-bg-lite {
         background-color: @color-lite;
+
+        .actions-container:after {
+            background-color: @color-lite;
+            transition: background-color 0.15s;
+        }
+
+        &:hover .actions-container:after {
+            background-color: transparent;
+        }
     }
     .@{status}-fill {
         fill: @color;

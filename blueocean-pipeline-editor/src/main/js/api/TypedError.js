@@ -1,8 +1,7 @@
 /**
  * Utlity class for "typing" of server errors
  */
-class TypedError {
-
+export class TypedError {
     constructor(type, serverError) {
         this.type = type;
 
@@ -12,7 +11,4 @@ class TypedError {
             this.errors = serverError.errors;
         }
     }
-
 }
-
-export default TypedError;

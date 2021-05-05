@@ -10,8 +10,14 @@ function cleanSlashes(url: string) {
     let urlParams = '';
 
     if (url && url.indexOf('?') > -1) {
-        baseUrl = url.split('?').slice(0, 1).join('');
-        urlParams = url.split('?').slice(-1).join('');
+        baseUrl = url
+            .split('?')
+            .slice(0, 1)
+            .join('');
+        urlParams = url
+            .split('?')
+            .slice(-1)
+            .join('');
     } else {
         baseUrl = url;
     }
@@ -45,7 +51,7 @@ export function stopProp(event) {
     event.preventDefault(); // Keeps event from triggering DOM builtins such as <a> elements
 }
 
-export default {
+export const Utils = {
     stopProp,
     cleanSlashes,
     randomId,
@@ -54,9 +60,7 @@ export default {
         return JSON.parse(JSON.stringify(obj));
     },
     windowOrGlobal() {
-        return (typeof self === 'object' && self.self === self && self) ||
-  (typeof global === 'object' && global.global === global && global) ||
-  this;
+        return (typeof self === 'object' && self.self === self && self) || (typeof global === 'object' && global.global === global && global) || this;
     },
     refreshPage() {
         if (this.windowOrGlobal().location.reload) {

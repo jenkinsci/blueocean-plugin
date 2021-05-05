@@ -5,12 +5,19 @@ import { removeMarkupTags } from '../../stringUtil';
 
 export class Boolean extends Component {
     render() {
-        const { defaultParameterValue: { value }, description, name, onChange } = this.props;
+        const {
+            defaultParameterValue: { value },
+            description,
+            name,
+            onChange,
+        } = this.props;
         const cleanName = removeMarkupTags(name);
         const cleanDescription = removeMarkupTags(description);
-        return (<FormElement title={ cleanDescription } className="underline">
-            <Checkbox {...{ checked: value, name: cleanName, label: cleanName, onToggle: onChange }} />
-        </FormElement>);
+        return (
+            <FormElement title={cleanDescription} className="underline">
+                <Checkbox {...{ checked: value, name: cleanName, label: cleanName, onToggle: onChange }} />
+            </FormElement>
+        );
     }
 }
 

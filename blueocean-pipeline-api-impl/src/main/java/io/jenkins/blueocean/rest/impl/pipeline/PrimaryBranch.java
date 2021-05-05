@@ -19,12 +19,8 @@ public final class PrimaryBranch {
     @SuppressWarnings("unchecked")
     @Nullable
     public static Job resolve(@Nonnull AbstractFolder folder) {
-        Job job = Iterables.find((Collection<Job>)folder.getAllJobs(), new Predicate<Job>() {
-            @Override
-            public boolean apply(@Nullable Job input) {
-                return input != null && input.getAction(PrimaryInstanceMetadataAction.class) != null;
-            }
-        }, null);
+        Job job = Iterables.find((Collection<Job>)folder.getAllJobs(),
+                                 input-> input != null && input.getAction(PrimaryInstanceMetadataAction.class) != null, null);
         // Kept for backward compatibility for Git SCMs that do not yet implement PrimaryInstanceMetadataAction
         if (job == null) {
             job = (Job) folder.getJob(DEFAULT_BRANCH);

@@ -61,17 +61,26 @@ abstract class GitReadSaveRequest  {
         this.contents = contents == null ? null : contents.clone(); // grr findbugs
     }
 
-    @CheckForNull StandardCredentials getCredential() {
+    @CheckForNull
+    StandardCredentials getCredential() {
         StandardCredentials credential = null;
+
+        User user = User.current();
+        if (user == null) {
+            throw new ServiceException.UnauthorizedException("Not authenticated");
+        }
+
+        // Get committer info and credentials
         if (GitUtils.isSshUrl(gitSource.getRemote()) || GitUtils.isLocalUnixFileUrl(gitSource.getRemote())) {
-            // Get committer info and credentials
-            User user = User.current();
-            if (user == null) {
-                throw new ServiceException.UnauthorizedException("Not authenticated");
-            }
             credential = UserSSHKeyManager.getOrCreate(user);
         } else {
-            throw new ServiceException.UnauthorizedException("Editing only supported for repositories using SSH");
+            String credentialId = GitScm.makeCredentialId(gitSource.getRemote());
+
+            if (credentialId != null) {
+                credential = CredentialsUtils.findCredential(credentialId,
+                                                             StandardCredentials.class,
+                                                             new BlueOceanDomainRequirement());
+            }
         }
         return credential;
     }

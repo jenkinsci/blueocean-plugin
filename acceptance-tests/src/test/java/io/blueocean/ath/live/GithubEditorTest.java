@@ -10,39 +10,23 @@ import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
 import io.blueocean.ath.sse.SSEClientRule;
-import org.apache.log4j.Logger;
+import io.blueocean.ath.util.GithubHelper;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
 import org.openqa.selenium.WebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.Properties;
 
 @Login
 @RunWith(ATHJUnitRunner.class)
 public class GithubEditorTest {
-    private Logger logger = Logger.getLogger(GithubEditorTest.class);
-
-    private Properties props = new Properties();
-    private String token;
-    private String organization;
-    private String repo;
-    private Boolean deleteRepo = false;
-    private Boolean randomSuffix = false;
-
-    private GitHub github;
-    private GHRepository ghRepository;
+    private Logger logger = LoggerFactory.getLogger(GithubEditorTest.class);
 
     @Inject
     GithubCreationPage creationPage;
@@ -62,22 +46,17 @@ public class GithubEditorTest {
     @Inject
     CustomJenkinsServer jenkins;
 
+    @Inject
+    GithubHelper helper;
+
     /**
-     * Cleans up repostory after the test has completed.
+     * Cleans up repository after the test has completed.
      *
      * @throws IOException
      */
     @After
     public void deleteRepository() throws IOException {
-        if(deleteRepo) {
-            try {
-                GHRepository repositoryToDelete = github.getRepository(organization + "/" + repo);
-                repositoryToDelete.delete();
-                logger.info("Deleted repository " + repo);
-            } catch (FileNotFoundException e) {
-
-            }
-        }
+        helper.cleanupRepository();
     }
 
     /**
@@ -87,33 +66,7 @@ public class GithubEditorTest {
      */
     @Before
     public void createBlankRepo() throws IOException {
-        props.load(new FileInputStream("live.properties"));
-        token = props.getProperty("github.token");
-        organization = props.getProperty("github.org");
-        repo = props.getProperty("github.repo");
-        deleteRepo = Boolean.parseBoolean(props.getProperty("github.deleteRepo", "false"));
-        randomSuffix = Boolean.parseBoolean(props.getProperty("github.randomSuffix", "false"));
-
-        Assert.assertNotNull(token);
-        Assert.assertNotNull(organization);
-        Assert.assertNotNull(repo);
-
-        logger.info("Loaded test properties");
-        if(randomSuffix) {
-            SecureRandom random = new SecureRandom();
-            repo = repo + "-" + new BigInteger(50, random).toString(16);
-        }
-
-        github = GitHub.connectUsingOAuth(token);
-        Assert.assertTrue(github.isCredentialValid());
-        logger.info("Github credentials are valid");
-
-        deleteRepository();
-
-        ghRepository = github.createRepository(repo)
-            .autoInit(true)
-            .create();
-        logger.info("Created repository " + repo);
+        helper.createEmptyRepository();
     }
 
 
@@ -124,18 +77,98 @@ public class GithubEditorTest {
      */
     @Test
     public void testEditor() throws IOException {
-        creationPage.createPipeline(token, organization, repo, true);
-        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
         editorPage.simplePipeline();
+        editorPage.saveBranch("main");
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
         driver.navigate().refresh();
         sseClient.untilEvents(pipeline.buildsFinished);
         sseClient.clear();
         BranchPage branchPage = activityPage.clickBranchTab();
-        branchPage.openEditor("master");
+        branchPage.openEditor("main");
         editorPage.saveBranch("new - branch");
         activityPage.checkUrl();
         activityPage.getRunRowForBranch("new-branch");
+        sseClient.untilEvents(pipeline.buildsFinished);
+    }
+
+    /**
+     * This test covers creation of a pipeline, and changes agent settings within it.
+     */
+    @Test
+    public void testEditorChangeAgentSetting() throws IOException {
+        String newBranchName = "made-by-testEditorChangeAgentSetting";
+        creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
+        editorPage.simplePipeline();
+        editorPage.saveBranch("main");
+        ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
+        sseClient.untilEvents(pipeline.buildsFinished);
+        sseClient.clear();
+        BranchPage branchPage = activityPage.clickBranchTab();
+        branchPage.openEditor("main");
+        editorPage.setAgentLabel("none");
+        editorPage.saveBranch(newBranchName);
+        activityPage.checkUrl();
+        activityPage.getRunRowForBranch(newBranchName);
+        sseClient.untilEvents(pipeline.buildsFinished);
+    }
+
+    /**
+     * This test covers creation of a pipeline, and subsequently adds a
+     * stage within that same pipeline, then saves it to a new branch.
+     */
+    @Test
+    public void testEditorAddAndDeleteStage() throws IOException {
+        String firstBranchName = "branch-before-delete";
+        String secondBranchName = "branch-after-delete";
+        String stageToDelete = "stage to be deleted";
+        creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
+        editorPage.simplePipeline();
+        editorPage.saveBranch("main");
+        ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
+        sseClient.untilEvents(pipeline.buildsFinished);
+        sseClient.clear();
+        BranchPage branchPage = activityPage.clickBranchTab();
+        branchPage.openEditor("main");
+        editorPage.addStageToPipeline(pipeline, stageToDelete);
+        editorPage.saveBranch(firstBranchName);
+        activityPage.checkUrl();
+        activityPage.getRunRowForBranch(firstBranchName);
+        sseClient.untilEvents(pipeline.buildsFinished);
+        sseClient.clear();
+        branchPage.open();
+        // The delete operations are here.
+        branchPage.openEditor(firstBranchName);
+        editorPage.deleteStage(stageToDelete);
+        editorPage.saveBranch(secondBranchName);
+        activityPage.checkUrl();
+        activityPage.getRunRowForBranch(secondBranchName);
+        sseClient.untilEvents(pipeline.buildsFinished);
+    }
+
+    /**
+     * This test covers creation of a pipeline, and adds an environment
+     * variable to it.
+     */
+    @Test
+    public void testEditorSetEnvironmentVariables() throws IOException {
+        String newBranchName = "made-by-testEditorSetEnvironmentVariables";
+        creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
+        editorPage.simplePipeline();
+        editorPage.saveBranch("main");
+        ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
+        sseClient.untilEvents(pipeline.buildsFinished);
+        sseClient.clear();
+        BranchPage branchPage = activityPage.clickBranchTab();
+        branchPage.openEditor("main");
+        editorPage.setEnvironmentVariable("NY_NEW_VAR", "MY_NEW_VALUE");
+        editorPage.saveBranch(newBranchName);
+        activityPage.checkUrl();
+        activityPage.getRunRowForBranch(newBranchName);
         sseClient.untilEvents(pipeline.buildsFinished);
     }
 
@@ -146,7 +179,7 @@ public class GithubEditorTest {
     public void testEditorWithSpace() throws IOException {
         // Gotta make Jenkins clear out its credential store or we might get a false positive depending on test order
         jenkins.deleteUserDomainCredential("alice", "blueocean-github-domain", "github");
-        creationPage.createPipeline(" " + token + " ", organization, repo, false);
+        creationPage.createPipeline(" " + helper.getAccessToken() + " ", helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), false);
     }
 
     /**
@@ -156,18 +189,14 @@ public class GithubEditorTest {
      */
     @Test
     public void testEditorParallel() throws IOException {
-        creationPage.createPipeline(token, organization, repo, true);
-        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
-        editorPage.parallelPipeline("branch-with-parallels", 3);
+        String branchNameForParallelPipeline = "branch-with-parallels";
+        creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
+        editorPage.parallelPipeline(4);
+        editorPage.saveBranch(branchNameForParallelPipeline);
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
-        driver.navigate().refresh();
         sseClient.untilEvents(pipeline.buildsFinished);
         sseClient.clear();
-        BranchPage branchPage = activityPage.clickBranchTab();
-        branchPage.openEditor("branch-with-parallels");
-        editorPage.saveBranch("new - branch");
-        activityPage.checkUrl();
         activityPage.getRunRowForBranch("branch-with-parallels");
-        sseClient.untilEvents(pipeline.buildsFinished);
     }
 }

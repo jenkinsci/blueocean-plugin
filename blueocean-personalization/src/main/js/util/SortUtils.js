@@ -2,13 +2,10 @@
  * Created by cmeyers on 9/14/16.
  */
 // the order the cards should be displayed based on their result/state (aka 'status')
-const statusSortOrder = [
-    'UNKNOWN', 'FAILURE', 'ABORTED', 'NOT_BUILT',
-    'UNSTABLE', 'RUNNING', 'QUEUED', 'SUCCESS',
-];
+const statusSortOrder = ['UNKNOWN', 'FAILURE', 'ABORTED', 'NOT_BUILT', 'UNSTABLE', 'RUNNING', 'QUEUED', 'SUCCESS'];
 
-export const extractStatus = (favorite) => {
-    const latestRun = favorite && favorite.item && favorite.item.latestRun || {};
+export const extractStatus = favorite => {
+    const latestRun = (favorite && favorite.item && favorite.item.latestRun) || {};
     return latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
 };
 
@@ -65,7 +62,6 @@ export const sortByStatusByRecent = (favoriteA, favoriteB) => {
  * Applies proper sorting to favorites.
  */
 export class FavoritesSortHelper {
-
     constructor() {
         this._statusMap = {};
     }
@@ -106,5 +102,4 @@ export class FavoritesSortHelper {
 
         return allFavorites.slice();
     }
-
 }

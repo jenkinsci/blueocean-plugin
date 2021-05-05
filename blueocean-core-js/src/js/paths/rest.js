@@ -1,7 +1,8 @@
+import { JenkinsEncode } from '../utils/jenkins-encode';
 /**
  * This object defines rest paths
  */
-export default {
+export const RestPaths = {
     _convertSlashes(pipeline) {
         return pipeline.replace(/\//g, '/pipelines/');
     },
@@ -18,7 +19,9 @@ export default {
             searchTextQuery = ('*' + searchText + '*').replace(/\//g, '*/*').replace('**', '*');
         }
 
-        return `${this.apiRoot()}/search/?q=type:pipeline${organization};pipeline:${encodeURIComponent(searchTextQuery)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+        return `${this.apiRoot()}/search/?q=type:pipeline${organization};pipeline:${encodeURIComponent(
+            searchTextQuery
+        )};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
     },
 
     runs(organization, pipeline, branch) {
@@ -28,7 +31,7 @@ export default {
 
     run({ organization, pipeline, branch, runId }) {
         if (branch) {
-            return `${this.pipeline(organization, pipeline)}branches/${encodeURIComponent(encodeURIComponent(branch))}/runs/${runId}/`;
+            return `${this.pipeline(organization, pipeline)}branches/${encodeURIComponent(JenkinsEncode.encode(branch))}/runs/${runId}/`;
         }
 
         return `${this.pipeline(organization, pipeline)}runs/${runId}/`;

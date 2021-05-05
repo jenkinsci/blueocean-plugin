@@ -2,7 +2,7 @@
  * Created by cmeyers on 9/16/16.
  */
 
-import config from './config';
+import { AppConfig } from './config';
 import { User } from './User';
 
 /**
@@ -13,10 +13,8 @@ import { User } from './User';
  * @param subject
  * @returns {{read: (function()), create: (function()), start: (function()), stop: (function())}}
  */
-const permit = (subject) => {
-    const checkPermissions = (permissionName) => (
-        subject && subject.permissions && !!subject.permissions[permissionName]
-    );
+const permit = subject => {
+    const checkPermissions = permissionName => subject && subject.permissions && !!subject.permissions[permissionName];
 
     return {
         read: () => checkPermissions('read'),
@@ -28,14 +26,14 @@ const permit = (subject) => {
 };
 
 function isSecurityEnabled() {
-    return !!config.getSecurityConfig().enabled;
+    return !!AppConfig.getSecurityConfig().enabled;
 }
 
 function isAnonymousUser() {
     return User.current().isAnonymous();
 }
 
-export default {
+export const Security = {
     permit,
     isSecurityEnabled,
     isAnonymousUser,

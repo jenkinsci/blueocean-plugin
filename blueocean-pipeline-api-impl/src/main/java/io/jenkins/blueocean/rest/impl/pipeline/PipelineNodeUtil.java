@@ -96,13 +96,18 @@ public class PipelineNodeUtil {
         if(node == null){
             return false;
         }
+
         for (Action action : node.getActions()) {
             if (action instanceof TagsAction && ((TagsAction) action).getTagValue(StageStatus.TAG_NAME) != null) {
                 TagsAction tagsAction =  (TagsAction) action;
                 String value = tagsAction.getTagValue(StageStatus.TAG_NAME);
-                return value != null && value.equals(StageStatus.getSkippedForConditional());
+                return value != null && (value.equals(StageStatus.getSkippedForConditional()) ||
+                                        value.equals(StageStatus.getSkippedForFailure()) ||
+                                        value.equals(StageStatus.getSkippedForUnstable())
+                );
             }
         }
+
         return false;
     }
 
@@ -171,13 +176,10 @@ public class PipelineNodeUtil {
         return null;
     }
 
-    public static final Predicate<FlowNode> isLoggable = new Predicate<FlowNode>() {
-        @Override
-        public boolean apply(@Nullable FlowNode input) {
+    public static final Predicate<FlowNode> isLoggable = input -> {
             if(input == null)
                 return false;
             return input.getAction(LogAction.class) != null;
-        }
     };
 
     public static boolean isPausedForInputStep(@Nonnull StepAtomNode step, @Nullable InputAction inputAction){

@@ -12,6 +12,7 @@ import jenkins.plugins.git.GitSCMSource;
 import jenkins.plugins.git.traits.BranchDiscoveryTrait;
 import jenkins.plugins.git.traits.CleanAfterCheckoutTrait;
 import jenkins.plugins.git.traits.CleanBeforeCheckoutTrait;
+import jenkins.plugins.git.traits.LocalBranchTrait;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.trait.SCMSourceTrait;
 import org.apache.commons.lang.StringUtils;
@@ -38,6 +39,7 @@ public class GitPipelineCreateRequest extends AbstractMultiBranchCreateRequest {
         traits.add(new BranchDiscoveryTrait());
         traits.add(new CleanBeforeCheckoutTrait());
         traits.add(new CleanAfterCheckoutTrait());
+        traits.add(new LocalBranchTrait());
         return gitSource;
     }
 

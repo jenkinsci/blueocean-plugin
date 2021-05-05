@@ -3,8 +3,8 @@ import LngDetector from 'i18next-browser-languagedetector';
 import { store } from '@jenkins-cd/js-extensions';
 import XHR from 'i18next-xhr-backend';
 
-import urlConfig from '../urlconfig';
-import logging from '../logging';
+import { UrlConfig } from '../urlconfig';
+import { logging } from '../logging';
 import { Fetch } from '../fetch';
 
 const logger = logging.logger('io.jenkins.blueocean.i18n');
@@ -19,9 +19,9 @@ export const defaultLngDetector = new LngDetector(null, {
     lookupQuerystring: 'language',
     // Don't use the default (document.documentElement) because that can
     // trigger the browsers auto-translate, which is quite annoying.
-    htmlTag: (window.document ? window.document.head : undefined),
+    htmlTag: window.document ? window.document.head : undefined,
 });
-const prefix = urlConfig.getJenkinsRootURL() || '';
+const prefix = UrlConfig.getJenkinsRootURL() || '';
 const FALLBACK_LANG = '';
 
 function newPluginXHR(pluginName) {
@@ -42,11 +42,17 @@ function newPluginXHR(pluginName) {
             if (logger.isDebugEnabled()) {
                 logger.debug('loading data for', url);
             }
-            Fetch.fetchJSON(url, { disableCapabilites: true, disableLoadingIndicator: true, ignoreRefreshHeader: true }).then(data => {
+            const fetchOptions = {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+            Fetch.fetchJSON(url, { disableCapabilities: true, disableLoadingIndicator: true, ignoreRefreshHeader: true, fetchOptions }).then(data => {
                 callback(data, { status: 200 });
             });
         },
-        parse: (response) => {
+        parse: response => {
             if (logger.isDebugEnabled()) {
                 logger.debug('Received i18n resource bundle for plugin "%s".', pluginName, response.data);
             }
@@ -70,7 +76,8 @@ const i18nextInstance = (backend, lngDetector = defaultLngDetector, options) => 
     if (!options) {
         throw new Error('Invalid call to create a new i18next instance. No i18next options supplied.');
     }
-    return i18next.createInstance()
+    return i18next
+        .createInstance()
         .use(backend)
         .use(lngDetector)
         .init(options);
@@ -79,13 +86,13 @@ const i18nextInstance = (backend, lngDetector = defaultLngDetector, options) => 
 const translatorCache = {};
 let useMockFallback = false;
 
-const assertPluginNameDefined = (pluginName) => {
+const assertPluginNameDefined = pluginName => {
     if (!pluginName) {
         throw new Error('"pluginName" arg cannot be null/blank');
     }
 };
 
-const toDefaultNamespace = (pluginName) => {
+const toDefaultNamespace = pluginName => {
     assertPluginNameDefined(pluginName);
     // Replace all hyphen chars with a dot.
     return `jenkins.plugins.${pluginName.replace(/-/g, '.')}.Messages`;
@@ -135,7 +142,7 @@ function buildCacheKey(pluginName, namespace = toDefaultNamespace(pluginName)) {
  * for the "blueocean-dashboard" plugin.
  * @return An i18n Translator instance.
  */
-export default function i18nTranslator(pluginName, namespace, onLoad) {
+export function i18nTranslator(pluginName, namespace, onLoad) {
     assertPluginNameDefined(pluginName);
 
     const translatorCacheKey = buildCacheKey(pluginName, namespace);
@@ -206,4 +213,3 @@ export function enableMocksForI18n() {
 export function disableMocksForI18n() {
     useMockFallback = false;
 }
-

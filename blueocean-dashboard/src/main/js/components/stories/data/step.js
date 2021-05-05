@@ -81,11 +81,11 @@ export const step = {
             '_class': 'hudson.model.StringParameterDefinition',
             'defaultParameterValue': {
                 '_class': 'hudson.model.StringParameterValue',
-                'name': 'this is a string parmeter',
+                'name': 'this is a string parameter',
                 'value': 'yeah',
             },
             'description': 'string parameter desc',
-            'name': 'this is a string parmeter',
+            'name': 'this is a string parameter',
             'type': 'StringParameterDefinition',
         }, {
             '_class': 'hudson.model.PasswordParameterDefinition',

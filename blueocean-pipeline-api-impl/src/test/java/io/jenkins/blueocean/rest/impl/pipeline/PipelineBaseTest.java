@@ -14,11 +14,12 @@ import com.mashape.unirest.request.HttpRequestWithBody;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.User;
+import hudson.security.csrf.CrumbIssuer;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
 import jenkins.model.Jenkins;
-import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.userdetails.UserDetails;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
@@ -49,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.LogManager;
+import java.util.stream.Collectors;
 
 import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
 import static org.junit.Assert.fail;
@@ -57,7 +59,7 @@ import static org.junit.Assert.fail;
  * @author Vivek Pandey
  */
 public abstract class PipelineBaseTest{
-    private static  final Logger LOGGER = LoggerFactory.getLogger(PipelineBaseTest.class);
+    protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @BeforeClass
     public static void enableJWT() {
@@ -76,6 +78,8 @@ public abstract class PipelineBaseTest{
 
     protected String jwtToken;
 
+    protected Crumb crumb;
+
     protected String getContextPath(){
         return "blue/rest";
     }
@@ -88,6 +92,8 @@ public abstract class PipelineBaseTest{
         }
         this.baseUrl = j.jenkins.getRootUrl() + getContextPath();
         this.jwtToken = getJwtToken(j.jenkins);
+        this.crumb = getCrumb(j.jenkins );
+
         Unirest.setObjectMapper(new ObjectMapper() {
             public <T> T readValue(String value, Class<T> valueType) {
                 try {
@@ -95,10 +101,10 @@ public abstract class PipelineBaseTest{
                         value = "{}";
                     }
                     T r =  JsonConverter.om.readValue(value, valueType);
-                    LOGGER.info("Response:\n"+JsonConverter.om.writeValueAsString(r));
+                    LOGGER.debug("Response:\n"+JsonConverter.om.writeValueAsString(r));
                     return r;
-                } catch (IOException e) {
-                    LOGGER.info("Failed to parse JSON: "+value+". "+e.getMessage());
+                } catch (IOException | RuntimeException e) {
+                    LOGGER.error("Failed to parse JSON: "+value+". "+e.getMessage());
                     throw new RuntimeException(e);
                 }
             }
@@ -106,7 +112,7 @@ public abstract class PipelineBaseTest{
             public String writeValue(Object value) {
                 try {
                     String str = JsonConverter.om.writeValueAsString(value);
-                    LOGGER.info("Request:\n"+str);
+                    LOGGER.debug("Request:\n"+str);
                     return str;
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
@@ -118,6 +124,19 @@ public abstract class PipelineBaseTest{
 //
 //        HttpClient client = new HttpClient();
 //        Unirest.setHttpClient();
+    }
+
+    protected static class Crumb {
+        public String field, value;
+    }
+
+    public static Crumb getCrumb(Jenkins jenkins) throws Exception {
+
+        Crumb crumb  = new Crumb();
+        CrumbIssuer crumbIssuer = jenkins.getCrumbIssuer();
+        crumb.field = crumbIssuer.getCrumbRequestField();
+        crumb.value = crumbIssuer.getCrumb();
+        return crumb;
     }
 
     protected <T> T  get(String path, Class<T> type){
@@ -179,6 +198,7 @@ public abstract class PipelineBaseTest{
             HttpResponse<Map> response = Unirest.post(getBaseUrl(path))
                 .header("Content-Type","application/json")
                 .header("Authorization", "Bearer "+jwtToken)
+                .header( crumb.field, crumb.value )
                 .body(body).asObject(Map.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();
@@ -344,15 +364,12 @@ public abstract class PipelineBaseTest{
     }
 
     protected List<FlowNode> getStages(NodeGraphBuilder builder){
-        List<FlowNode> nodes = new ArrayList<>();
-        for(FlowNodeWrapper node: builder.getPipelineNodes()){
-            if(node.type == FlowNodeWrapper.NodeType.STAGE){
-                nodes.add(node.getNode());
-            }
-        }
-
-        return nodes;
+        return builder.getPipelineNodes().stream()
+            .filter( nodeWrapper -> nodeWrapper.type == FlowNodeWrapper.NodeType.STAGE )
+            .map( nodeWrapper -> nodeWrapper.getNode() )
+            .collect( Collectors.toList() );
     }
+
     protected List<FlowNode> getAllSteps(WorkflowRun run){
         PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
         ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
@@ -363,25 +380,18 @@ public abstract class PipelineBaseTest{
         return steps;
     }
     protected List<FlowNode> getStagesAndParallels(NodeGraphBuilder builder){
-        List<FlowNode> nodes = new ArrayList<>();
-        for(FlowNodeWrapper node: builder.getPipelineNodes()){
-            if(node.type == FlowNodeWrapper.NodeType.STAGE || node.type == FlowNodeWrapper.NodeType.PARALLEL){
-                nodes.add(node.getNode());
-            }
-        }
+        return builder.getPipelineNodes().stream()
+            .filter( nodeWrapper -> nodeWrapper.type == FlowNodeWrapper.NodeType.PARALLEL || nodeWrapper.type == FlowNodeWrapper.NodeType.STAGE)
+            .map( nodeWrapper -> nodeWrapper.getNode() )
+            .collect( Collectors.toList() );
 
-        return nodes;
     }
 
     protected List<FlowNode> getParallelNodes(NodeGraphBuilder builder){
-        List<FlowNode> nodes = new ArrayList<>();
-        for(FlowNodeWrapper node: builder.getPipelineNodes()){
-            if(node.type == FlowNodeWrapper.NodeType.PARALLEL){
-                nodes.add(node.getNode());
-            }
-        }
-
-        return nodes;
+        return builder.getPipelineNodes().stream()
+            .filter( nodeWrapper -> nodeWrapper.type == FlowNodeWrapper.NodeType.PARALLEL )
+            .map( nodeWrapper -> nodeWrapper.getNode() )
+            .collect( Collectors.toList() );
     }
 
     protected String getHrefFromLinks(Map resp, String link){
@@ -428,6 +438,7 @@ public abstract class PipelineBaseTest{
         private String baseUrl;
         private int expectedStatus = 200;
         private String token;
+        private Crumb crumb;
 
         private Map<String,String> headers = new HashMap<>();
 
@@ -463,6 +474,11 @@ public abstract class PipelineBaseTest{
 
         public RequestBuilder jwtToken(String token){
             this.token = token;
+            return this;
+        }
+
+        public RequestBuilder crumb(Crumb crumb){
+            this.crumb = crumb;
             return this;
         }
 
@@ -507,50 +523,58 @@ public abstract class PipelineBaseTest{
             return this;
         }
 
-        public <T> T build(Class<T> clzzz) {
+        public HttpRequest build() {
             assert url != null;
             assert url.startsWith("/");
-            try {
-                HttpRequest request;
-                switch (method) {
-                    case "PUT":
-                        request = Unirest.put(getBaseUrl(url));
-                        break;
-                    case "POST":
-                        request = Unirest.post(getBaseUrl(url));
-                        break;
-                    case "GET":
-                        request = Unirest.get(getBaseUrl(url));
-                        break;
-                    case "DELETE":
-                        request = Unirest.delete(getBaseUrl(url));
-                        break;
-                    default:
-                        throw new RuntimeException("No default options");
 
-                }
-                request.header("Accept-Encoding","");
-                if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){
-                    request.basicAuth(username, password);
+            HttpRequest request;
+            switch (method) {
+                case "PUT":
+                    request = Unirest.put(getBaseUrl(url));
+                    break;
+                case "POST":
+                    request = Unirest.post(getBaseUrl(url));
+                    break;
+                case "GET":
+                    request = Unirest.get(getBaseUrl(url));
+                    break;
+                case "DELETE":
+                    request = Unirest.delete(getBaseUrl(url));
+                    break;
+                default:
+                    throw new RuntimeException("No default options");
+
+            }
+            if(crumb!=null){
+                request.header( crumb.field, crumb.value );
+            }
+            request.header("Accept-Encoding","");
+            if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){
+                request.basicAuth(username, password);
+            }else{
+                if (token == null) {
+                    request.header("Authorization", "Bearer " + PipelineBaseTest.this.jwtToken);
                 }else{
-                    if (token == null) {
-                        request.header("Authorization", "Bearer " + PipelineBaseTest.this.jwtToken);
-                    }else{
-                        request.header("Authorization", "Bearer " + token);
-                    }
+                    request.header("Authorization", "Bearer " + token);
                 }
+            }
 
-                request.header("Content-Type", contentType);
+            request.header("Content-Type", contentType);
 
-                request.headers(headers);
+            request.headers(headers);
 
-                if(request instanceof HttpRequestWithBody && data != null) {
-                    ((HttpRequestWithBody)request).body(data);
-                }
+            if(request instanceof HttpRequestWithBody && data != null) {
+                ((HttpRequestWithBody)request).body(data);
+            }
+            return request;
+        }
 
+        public <T> T build(Class<T> clzzz) {
+            try {
+                HttpRequest request = build();
                 HttpResponse<T> response = request.asObject(clzzz);
                 Assert.assertEquals(response.getStatusText(), expectedStatus, response.getStatus());
-                return response.getBody();
+            return response.getBody();
             } catch (UnirestException e) {
                 throw new RuntimeException(e);
             }
@@ -607,12 +631,14 @@ public abstract class PipelineBaseTest{
         hudson.model.User bob = User.get(userId);
 
         bob.setFullName(fullName);
-        bob.addProperty(new Mailer.UserProperty(email));
+        if(email != null ) {
+            bob.addProperty(new Mailer.UserProperty(email));
+        }
 
 
         UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
 
-        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(bob.getId(), bob.getId(), d.getAuthorities()));
         return bob;
     }
     protected User login() throws IOException {

@@ -4,13 +4,14 @@ import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import com.offbytwo.jenkins.model.FolderJob;
+import com.offbytwo.jenkins.model.Job;
 import io.blueocean.ath.GitRepositoryRule;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.sse.SSEEvents;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.List;
+import org.json.JSONObject;
 
 public class MultiBranchPipeline extends AbstractPipeline {
 
@@ -27,15 +28,26 @@ public class MultiBranchPipeline extends AbstractPipeline {
     }
 
     public MultiBranchPipeline createPipeline(GitRepositoryRule git) throws IOException {
-        jobApi.createMultlBranchPipeline(jobApi.getFolder(getFolder(), true), getName(), git);
+        jobApi.createMultiBranchPipeline(jobApi.getFolder(getFolder(), true), getName(), git);
         return this;
     }
+
+    public MultiBranchPipeline createPipeline(FolderJob folderJob, GitRepositoryRule git) throws IOException {
+        jobApi.createMultiBranchPipeline(folderJob, getName(), git);
+        return this;
+    }
+
 
     public Predicate<List<JSONObject>> buildsFinished = list -> SSEEvents.activityComplete(getFolder().getPath(getName())).apply(list);
 
     public MultiBranchPipeline buildBranch(String branch) throws IOException {
         jobApi.buildBranch(getFolder(), getName(), branch);
         return this;
+    }
+
+    // Uses jobApi.build(Folder folder, String pipeline) to force a rescan.
+    public void rescanThisPipeline() throws IOException {
+        jobApi.build(getFolder(), getName());
     }
 
     public void stopAllRuns() throws IOException {

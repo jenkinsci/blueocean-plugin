@@ -3,7 +3,7 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import hudson.ExtensionList;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
-import org.apache.tools.ant.ExtensionPoint;
+import hudson.ExtensionPoint;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
  *
  * @author Vivek Pandey
  */
-public abstract class BitbucketApiFactory extends ExtensionPoint{
+public abstract class BitbucketApiFactory implements ExtensionPoint {
     /**
      * @return true if this factory can handle this scmId
      */
@@ -25,7 +25,7 @@ public abstract class BitbucketApiFactory extends ExtensionPoint{
      *
      * Before calling this method, clients must ensure {@link #handles(String)} is called first and returned true
      *
-     * @param apiUrl API url (host url) of bitbucket server or cloud. e.g. https://mybitcuketserver.com/
+     * @param apiUrl API url (host url) of bitbucket server or cloud. e.g. https://mybitbucketserver.com/
      * @param credentials {@link StandardUsernamePasswordCredentials}
      * @return {@link BitbucketApi} instance
      */

@@ -1,9 +1,6 @@
 package io.jenkins.blueocean.service.embedded.jira;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.plugins.jira.JiraBuildAction;
@@ -17,10 +14,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.mockito.ArgumentCaptor;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -29,6 +34,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(JiraSite.class)
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class JiraSCMListenerTest {
 
     @Rule
@@ -56,7 +62,7 @@ public class JiraSCMListenerTest {
 
             @Override
             public Iterator<Entry> iterator() {
-                return ImmutableSet.of(entry).iterator();
+                return Collections.singletonList(entry).iterator();
             }
         };
 
@@ -73,8 +79,8 @@ public class JiraSCMListenerTest {
         when(rawIssue.getKey()).thenReturn("TEST-123");
         when(rawIssue.getSummary()).thenReturn("Foo");
 
-        when(session.getIssuesFromJqlSearch("key in ('TEST-123')")).thenReturn(Lists.newArrayList(rawIssue));
-        JiraBuildAction action = new JiraBuildAction(run, Sets.<JiraIssue>newHashSet());
+        when(session.getIssuesFromJqlSearch("key in ('TEST-123')")).thenReturn(Collections.singletonList(rawIssue));
+        JiraBuildAction action = new JiraBuildAction(run, new HashSet());
         when(run.getAction(JiraBuildAction.class)).thenReturn(action);
 
         listener.onChangeLogParsed(run, null,null, set);
@@ -107,7 +113,7 @@ public class JiraSCMListenerTest {
 
             @Override
             public Iterator<Entry> iterator() {
-                return ImmutableSet.of(entry).iterator();
+                return Collections.singletonList(entry).iterator();
             }
         };
 
@@ -124,7 +130,7 @@ public class JiraSCMListenerTest {
         when(rawIssue.getKey()).thenReturn("TEST-123");
         when(rawIssue.getSummary()).thenReturn("Foo");
 
-        when(session.getIssuesFromJqlSearch("key in ('TEST-123')")).thenReturn(Lists.newArrayList(rawIssue));
+        when(session.getIssuesFromJqlSearch("key in ('TEST-123')")).thenReturn(Collections.singletonList(rawIssue));
         when(run.getAction(JiraBuildAction.class)).thenReturn(null);
 
         ArgumentCaptor<JiraBuildAction> actionArgumentCaptor = ArgumentCaptor.forClass(JiraBuildAction.class);
@@ -161,7 +167,7 @@ public class JiraSCMListenerTest {
 
             @Override
             public Iterator<Entry> iterator() {
-                return ImmutableSet.of(entry).iterator();
+                return Collections.singletonList(entry).iterator();
             }
         };
 
@@ -172,7 +178,7 @@ public class JiraSCMListenerTest {
         when(site.getIssuePattern()).thenReturn(JiraSite.DEFAULT_ISSUE_PATTERN);
         when(JiraSite.get(job)).thenReturn(site);
 
-        JiraBuildAction action = new JiraBuildAction(run, Sets.<JiraIssue>newHashSet());
+        JiraBuildAction action = new JiraBuildAction(run, new HashSet());
         when(run.getAction(JiraBuildAction.class)).thenReturn(action);
 
         listener.onChangeLogParsed(run, null,null, set);
@@ -191,7 +197,39 @@ public class JiraSCMListenerTest {
 
     @Test
     public void constructJQLQuery() throws Exception {
-        Assert.assertEquals("key in ('JENKINS-123')", JiraSCMListener.constructJQLQuery(Lists.newArrayList("JENKINS-123")));
-        Assert.assertEquals("key in ('JENKINS-123','FOO-123','VIVEK-123')", JiraSCMListener.constructJQLQuery(Lists.newArrayList("JENKINS-123", "FOO-123", "VIVEK-123")));
+        Assert.assertEquals("key in ('JENKINS-123')",
+                            JiraSCMListener.constructJQLQuery(Collections.singletonList("JENKINS-123")));
+        Assert.assertEquals("key in ('JENKINS-123','FOO-123','VIVEK-123')",
+                            JiraSCMListener.constructJQLQuery( Arrays.asList("JENKINS-123", "FOO-123", "VIVEK-123")));
     }
+
+    @Test
+    public void uniqueIssueKeys() throws Exception {
+        ChangeLogSet<ChangeLogSet.Entry> entries = build( "TST-123", "TST-123", "TST-123", "TST-124",
+                                                          "TST-123", "TST-124", "TST-125");
+        Collection<String> keys = JiraSCMListener.getIssueKeys( entries, JiraSite.DEFAULT_ISSUE_PATTERN );
+        Assert.assertEquals(3, keys.size());
+    }
+
+
+    private static ChangeLogSet build( String... texts) {
+        List<ChangeLogSet.Entry> entries = Arrays.asList( texts ).stream().map( text -> {
+            final ChangeLogSet.Entry entry = mock(ChangeLogSet.Entry.class);
+            when(entry.getMsg()).thenReturn(text);
+            return  entry;
+        } ).collect( Collectors.toList() );
+
+        return new ChangeLogSet<ChangeLogSet.Entry>(null, null) {
+            @Override
+            public boolean isEmptySet() {
+                return false;
+            }
+
+            @Override
+            public Iterator<Entry> iterator() {
+                return entries.iterator();
+            }
+        };
+    }
+
 }

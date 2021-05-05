@@ -10,11 +10,10 @@ var PropTypes = React.PropTypes;
  * "router" context property in order for extensions to be able to use &lt;Link&gt; from react-router.
  */
 export class ContextBridge extends React.Component {
-
     getChildContext() {
         return {
             router: this.props.router,
-            config: this.props.config
+            config: this.props.config,
         };
     }
 
@@ -25,11 +24,11 @@ export class ContextBridge extends React.Component {
 
 ContextBridge.childContextTypes = {
     router: PropTypes.object,
-    config: PropTypes.object
+    config: PropTypes.object,
 };
 
 ContextBridge.propTypes = {
     children: PropTypes.any,
     router: PropTypes.object,
-    config: PropTypes.object
+    config: PropTypes.object,
 };

@@ -503,15 +503,14 @@ public class PipelineApiTest extends BaseTest {
         assertEquals(1, artifacts.size());
         assertEquals("fizz", ((Map) artifacts.get(0)).get("name"));
 
-        String artifactName = (String) ((Map) artifacts.get(0)).get("name");
-        String name = ArtifactImpl.class.getName() + ":" + artifactName;
+        String artifactId = (String) ((Map) artifacts.get(0)).get("id");
         ArtifactContainerImpl container = new ArtifactContainerImpl(b, new Reachable() {
             @Override
             public Link getLink() {
                 return new Link("/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/artifacts/");
             }
         });
-        BlueArtifact blueArtifact = container.get(name);
+        BlueArtifact blueArtifact = container.get(artifactId);
         assertNotNull(blueArtifact);
     }
 
@@ -557,7 +556,7 @@ public class PipelineApiTest extends BaseTest {
         p2.scheduleBuild2(0).waitForStart();
 
         // Run the third pipeline
-        Map r = request().post("/organizations/jenkins/pipelines/pipeline3/runs/").build(Map.class);
+        Map r = request().crumb( crumb ).post("/organizations/jenkins/pipelines/pipeline3/runs/").build(Map.class);
 
         // Ensure it is still in the queue
         assertNotNull(p3.getQueueItem());
@@ -584,11 +583,16 @@ public class PipelineApiTest extends BaseTest {
     public void getPipelinesExtensionTest() throws Exception {
 
         Project p = j.createProject(TestProject.class,"pipeline1");
+        j.assertBuildStatusSuccess(p.scheduleBuild2(0));
 
         Map<String,Object> response = get("/organizations/jenkins/pipelines/pipeline1");
         validatePipeline(p, response);
 
         assertEquals("hello world!", response.get("hello"));
+        assertNotNull(response.get("latestRun"));
+        Map latestRun = (Map) response.get("latestRun");
+        assertEquals("pipeline1", latestRun.get("pipeline"));
+        assertEquals("TestBuild", latestRun.get("type"));
     }
 
     @Extension(ordinal = 3)
@@ -883,7 +887,7 @@ public class PipelineApiTest extends BaseTest {
         public OrganizationImpl get(String name) {
             if (instance != null) {
                 if (instance.getName().equals(name)) {
-                    System.out.println("" + name + " Intance returned " + instance);
+                    System.out.println("" + name + " Instance returned " + instance);
                     return instance;
                 }
             }

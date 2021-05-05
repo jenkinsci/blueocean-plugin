@@ -9,12 +9,11 @@ type Props = {
     checked: boolean,
     label: string,
     onToggle: (checked: boolean) => void,
-}
+};
 
 export class Checkbox extends Component {
-
     state: {
-        checked: boolean
+        checked: boolean,
     };
 
     static defaultProps = {
@@ -22,7 +21,7 @@ export class Checkbox extends Component {
         checked: false,
     };
 
-    get checked():boolean {
+    get checked(): boolean {
         return this.state.checked;
     }
 
@@ -36,7 +35,7 @@ export class Checkbox extends Component {
 
     _updateState(props: Props) {
         this.setState({
-            checked: props.checked
+            checked: props.checked,
         });
     }
 
@@ -45,7 +44,7 @@ export class Checkbox extends Component {
             const checked = e.target.checked;
 
             this.setState({
-                checked: checked
+                checked: checked,
             });
 
             if (this.props.onToggle) {
@@ -65,27 +64,19 @@ export class Checkbox extends Component {
 
         return (
             <div className={`Checkbox ${extraClass}`}>
-                <label className="Checkbox-wrapper"
-                       onClick={(event) => event.stopPropagation()}
-                >
-                    <input type="checkbox"
-                           name={this.props.name}
-                           onChange={this._toggle}
-                           checked={this.state.checked}
-                           disabled={this.props.disabled}
-                           onClick={this._clicked}
+                <label className="Checkbox-wrapper" onClick={event => event.stopPropagation()}>
+                    <input
+                        type="checkbox"
+                        name={this.props.name}
+                        onChange={this._toggle}
+                        checked={this.state.checked}
+                        disabled={this.props.disabled}
+                        onClick={this._clicked}
                     />
 
-                    <div className="Checkbox-indicator">
-                        { !this.props.children ?
-                            <Icon icon="NavigationCheck" size={20} /> :
-                            this.props.children
-                        }
-                    </div>
+                    <div className="Checkbox-indicator">{!this.props.children ? <Icon icon="NavigationCheck" size={20} /> : this.props.children}</div>
 
-                    { this.props.label &&
-                        <div className="Checkbox-text">{this.props.label}</div>
-                    }
+                    {this.props.label && <div className="Checkbox-text">{this.props.label}</div>}
                 </label>
             </div>
         );
@@ -99,5 +90,5 @@ Checkbox.propTypes = {
     name: PropTypes.string,
     checked: PropTypes.bool,
     disabled: PropTypes.bool,
-    onToggle: PropTypes.func
+    onToggle: PropTypes.func,
 };

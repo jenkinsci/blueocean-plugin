@@ -6,7 +6,7 @@ import '../utils/rAf';
 
 import { Dropdown } from '../../../src/js/components';
 
-const options = ['Thor', 'Ironman', 'Captian America'];
+const options = ['Thor', 'Ironman', 'Captain America'];
 
 describe("Dropdown", () => {
     it('dropDown button title should be default title', () => {
@@ -55,5 +55,37 @@ describe("Dropdown", () => {
         assert.equal(drop.find('ul.Dropdown-menu').length, 1);
         assert.equal(drop.find('ul.Dropdown-menu li').length, options.length); // dropdown options same length then our array?
         assert.equal(drop.find('#unit').length, 1); // only on footer?
+    });
+    it('dropDown should show footer on space key', () => {
+        const wrapper = mount(<Dropdown { ...{
+            options,
+            footer: <div id="unit">This is a custom footer</div>,
+        }}
+        />);
+        assert.ok(wrapper);
+        const drop = wrapper.find('Dropdown');
+        const props = drop.find('button').props();
+        assert.equal(props.title, 'Select an option');
+        // click on dropDown button
+        drop.find('button').simulate('keyDown', { keyCode: 32 }); // trigger keydown event
+        assert.equal(drop.find('ul.Dropdown-menu').length, 1);
+        assert.equal(drop.find('ul.Dropdown-menu li').length, options.length); // dropdown options same length then our array?
+        assert.equal(drop.find('#unit').length, 1); // only on footer?
+    });
+    it('dropDown should still have focus after option selection', () => {
+        const wrapper = mount(<Dropdown { ...{
+            options,
+        }}
+        />);
+        assert.ok(wrapper);
+        const drop = wrapper.find('Dropdown');
+        // click the dropDown button
+        drop.find('button').simulate('click');
+        // click on the 1st option
+        drop.find("li a").first().simulate('click');
+        //get focused element
+        const focusedElement = document.activeElement;
+        //verify that the focused element is the dropdown button
+        assert.equal(focusedElement, drop.find('button').get(0));
     });
 });

@@ -17,6 +17,7 @@ import org.jenkinsci.plugins.workflow.test.steps.SemaphoreStep;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
 import org.kohsuke.stapler.AcceptHeader;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -82,7 +83,7 @@ public class PipelineApiTest extends PipelineBaseTest {
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
             "   stage ('Build1'); " +
-            "   sh('sleep 60') " +
+            "   sleep(60);" +
             "   stage ('Test1'); " +
             "   echo ('Testing'); " +
             "}"));
@@ -144,7 +145,7 @@ public class PipelineApiTest extends PipelineBaseTest {
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
             "   stage ('Build1'); " +
-            "   sh('sleep 120') " +
+            "   sleep(120);" +
             "   stage ('Test1'); " +
             "   echo ('Testing'); " +
             "}"));
@@ -248,7 +249,7 @@ public class PipelineApiTest extends PipelineBaseTest {
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
             "   stage ('Build1'); " +
-            "   sh('sleep 60') " +
+            "   sleep(60); " +
             "   stage ('Test1'); " +
             "   echo ('Testing'); " +
             "}"));
@@ -287,6 +288,14 @@ public class PipelineApiTest extends PipelineBaseTest {
         String href = getHrefFromLinks(p, "self");
 
         Assert.assertEquals("/job/mp1/", href);
+    }
+
+    @Issue("JENKINS-52307")
+    @Test
+    public void matrixProjectEmptyBuild() throws Exception{
+        MatrixProject mp = j.jenkins.createProject(MatrixProject.class, "mp1");
+        List response = get("/organizations/jenkins/pipelines/", List.class);
+        Assert.assertNotNull( response );
     }
 
     @ExportedBean

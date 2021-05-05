@@ -35,7 +35,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Secret.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class BitbucketApiTest extends BbServerWireMock {
     private BitbucketApi api;
 
@@ -160,6 +160,24 @@ public class BitbucketApiTest extends BbServerWireMock {
         assertNotNull(saveResponse.getCommitId());
         String content = api.getContent("TESTP", "empty-repo-test", "README.md", (String) saveResponse.getCommitId());
         assertEquals("This is test content in new file", content);
+    }
+
+    @Test
+    public void testEmptyRepo204(){
+        BbBranch branch = api.getDefaultBranch("TESTP","empty1");
+        assertNull(branch);
+    }
+
+    @Test
+    public void testDefaultBranchPre5_6_0(){
+        BbBranch branch = api.getDefaultBranch("TESTP","empty-repo-test");
+        assertNull(branch);
+    }
+
+    @Test
+    public void testDefaultBranch5_6_0(){
+        BbBranch branch = api.getDefaultBranch("TESTP","empty1");
+        assertNull(branch);
     }
 
     @Test

@@ -21,7 +21,7 @@ class PipelineEditorLink extends React.Component {
         }
 
         if (!this.state.supportsSave) {
-            return <div/>;
+            return <div />;
         }
 
         const { run, pipeline } = this.props;
@@ -45,20 +45,18 @@ class PipelineEditorLink extends React.Component {
         const { pipeline } = this.props;
         const folder = pipeline.fullName.split('/')[0];
         const href = Paths.rest.apiRoot() + '/organizations/' + pipeline.organization + '/pipelines/' + folder + '/';
-        pipelineService.fetchPipeline(href, { useCache: true, disableCapabilites: false })
-            .then(pipeline => {
-                if (this._canSavePipeline(pipeline)) {
-                    this.setState({ supportsSave: true });
-                }
-            });
+        pipelineService.fetchPipeline(href, { useCache: true, disableCapabilities: false }).then(pipeline => {
+            if (this._canSavePipeline(pipeline)) {
+                this.setState({ supportsSave: true });
+            }
+        });
     }
 
     _canSavePipeline(pipeline) {
         if (pipeline.scmSource && pipeline.scmSource.id === 'git') {
             return true;
         }
-        if (pipeline._capabilities && pipeline._capabilities
-                .find(capability => capability === 'io.jenkins.blueocean.rest.model.BluePipelineScm')) {
+        if (pipeline._capabilities && pipeline._capabilities.find(capability => capability === 'io.jenkins.blueocean.rest.model.BluePipelineScm')) {
             return true;
         }
         return false;

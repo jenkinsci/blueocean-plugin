@@ -30,6 +30,7 @@ export const latestRuns = [{
             'affectedPaths': [
                 'Jenkinsfile'
             ],
+            'checkoutCount': '0',
             'commitId': '21552ff3072684cc1d593376b7cc7023deb15e1c',
             'comment': 'Update Jenkinsfile\n',
             'date': '2016-03-15 00:35:58 +0100',
@@ -49,6 +50,7 @@ export const latestRuns = [{
             'affectedPaths': [
                 'Jenkinsfile'
             ],
+            'checkoutCount': '0',
             'commitId': 'eb92e0df899ff742b002a3ea652f4eb406ea83b8',
             'comment': 'Update Jenkinsfile\n',
             'date': '2016-03-15 00:33:40 +0100',

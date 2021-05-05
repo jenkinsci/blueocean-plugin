@@ -1,31 +1,31 @@
 {
-  "id" : "ecc0dbb8-a907-3556-93e1-718653651f1a",
-  "request" : {
-    "url" : "/api/2.0/repositories/vivekp7/demo1/src/0a094f774e33b8a0ad144b9dacf476e594a0f78c/foo",
-    "method" : "GET"
+  "id": "ecc0dbb8-a907-3556-93e1-718653651f1a",
+  "request": {
+    "url": "/api/2.0/repositories/%7B1c5c9255-d59f-47e2-b5c7-52269c0332b9%7D/demo1/src/0a094f774e33b8a0ad144b9dacf476e594a0f78c/foo",
+    "method": "GET"
   },
-  "response" : {
-    "status" : 200,
-    "bodyFileName" : "body-0a094f774e33b8a0ad144b9dacf476e594a0f78c-foo-rUiy7.txt",
-    "headers" : {
-      "Server" : "nginx",
-      "Vary" : "Authorization",
-      "Content-Type" : "text/plain",
-      "X-OAuth-Scopes" : "webhook, pullrequest:write, project, team, email",
-      "Strict-Transport-Security" : "max-age=31536000; includeSubDomains; preload",
-      "Date" : "Tue, 27 Jun 2017 17:38:54 GMT",
-      "X-Served-By" : "app-141",
-      "ETag" : "4047643135854232714",
-      "X-Static-Version" : "dce5f507b47a",
-      "X-Content-Type-Options" : "nosniff",
-      "X-Accepted-OAuth-Scopes" : "repository",
-      "X-Credential-Type" : "apppassword",
-      "X-Render-Time" : "0.0709509849548",
-      "Connection" : "keep-alive",
-      "X-Request-Count" : "253",
-      "X-Frame-Options" : "SAMEORIGIN",
-      "X-Version" : "dce5f507b47a"
+  "response": {
+    "status": 200,
+    "bodyFileName": "body-0a094f774e33b8a0ad144b9dacf476e594a0f78c-foo-rUiy7.txt",
+    "headers": {
+      "Server": "nginx",
+      "Vary": "Authorization",
+      "Content-Type": "text/plain",
+      "X-OAuth-Scopes": "webhook, pullrequest:write, project, team, email",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+      "Date": "Tue, 27 Jun 2017 17:38:54 GMT",
+      "X-Served-By": "app-141",
+      "ETag": "4047643135854232714",
+      "X-Static-Version": "dce5f507b47a",
+      "X-Content-Type-Options": "nosniff",
+      "X-Accepted-OAuth-Scopes": "repository",
+      "X-Credential-Type": "apppassword",
+      "X-Render-Time": "0.0709509849548",
+      "Connection": "keep-alive",
+      "X-Request-Count": "253",
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-Version": "dce5f507b47a"
     }
   },
-  "uuid" : "ecc0dbb8-a907-3556-93e1-718653651f1a"
+  "uuid": "ecc0dbb8-a907-3556-93e1-718653651f1a"
 }

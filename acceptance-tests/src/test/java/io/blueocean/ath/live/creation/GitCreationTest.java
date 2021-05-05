@@ -30,7 +30,8 @@ import java.util.Properties;
 public class GitCreationTest extends BlueOceanAcceptanceTest {
     private Logger logger = Logger.getLogger(GitCreationTest.class);
 
-    @Inject @Named("live")
+    @Inject
+    @Named("live")
     Properties liveProperties;
 
     @Inject
@@ -41,7 +42,8 @@ public class GitCreationTest extends BlueOceanAcceptanceTest {
     @Inject
     WaitUtil wait;
 
-    @Inject @Rule
+    @Inject
+    @Rule
     public SSEClientRule sseClient;
 
     @Test
@@ -56,13 +58,13 @@ public class GitCreationTest extends BlueOceanAcceptanceTest {
         Assert.assertNotNull(pipelineName);
         logger.info("PipelineNameHttps: " + pipelineName);
         logger.info("git repo - " + gitUrl);
-        AbstractPipeline pipeline = gitCreationPage.createPipeline(sseClient, pipelineName, gitUrl, null, user, pass);
+        AbstractPipeline pipeline = gitCreationPage.createPipelinePW(sseClient, pipelineName, gitUrl, user, pass);
         pipeline.getActivityPage().testNumberRunsComplete(1);
     }
 
     @Ignore
     @Test
-    public void testSSHPrivateRepostory() throws IOException, GitAPIException, URISyntaxException {
+    public void testSSHPrivateRepository() throws IOException, GitAPIException, URISyntaxException {
         String gitUrl = liveProperties.getProperty("git.ssh.repository");
         String privateKeyFile = liveProperties.getProperty("git.ssh.keyfile");
         String pipelineName = liveProperties.getProperty("git.ssh.pipelineName");
@@ -73,10 +75,7 @@ public class GitCreationTest extends BlueOceanAcceptanceTest {
         logger.info("git repo - " + gitUrl);
         String key = IOUtils.toString(new FileInputStream(privateKeyFile));
 
-        MultiBranchPipeline pipeline = gitCreationPage.createPipeline(sseClient, pipelineName, gitUrl, key, null, null);
+        MultiBranchPipeline pipeline = gitCreationPage.createPipelineSSH(sseClient, pipelineName, gitUrl, key);
         pipeline.getActivityPage().testNumberRunsComplete(1);
-
     }
-
-
 }

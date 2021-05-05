@@ -9,9 +9,7 @@ import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.Container;
-import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
-
 import org.kohsuke.stapler.export.ExportedBean;
 
 import javax.annotation.Nonnull;

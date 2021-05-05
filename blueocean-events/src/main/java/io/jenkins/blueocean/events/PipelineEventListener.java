@@ -1,10 +1,22 @@
 package io.jenkins.blueocean.events;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineInputStepListener;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeUtil;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.pubsub.Events;
 import org.jenkinsci.plugins.pubsub.Message;
 import org.jenkinsci.plugins.pubsub.MessageException;
@@ -15,28 +27,18 @@ import org.jenkinsci.plugins.workflow.actions.BodyInvocationAction;
 import org.jenkinsci.plugins.workflow.actions.QueueItemAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
-import org.jenkinsci.plugins.workflow.graph.StepNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
 import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionListener;
 import org.jenkinsci.plugins.workflow.flow.GraphListener;
 import org.jenkinsci.plugins.workflow.graph.FlowEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.jenkinsci.plugins.workflow.graph.StepNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStep;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 
 
 /**
@@ -51,16 +53,30 @@ public class PipelineEventListener implements GraphListener {
 
     private static final Logger LOGGER = Logger.getLogger(PipelineEventListener.class.getName());
 
-    private final Map<FlowExecution, String> currentStageName = new WeakHashMap<>();
-    private final Map<FlowExecution, String> currentStageId = new WeakHashMap<>();
+    private final Cache<FlowExecution, String> currentStageNameCache = CacheBuilder.newBuilder()
+                                                                    .weakKeys()
+                                                                    .build();
+    private final Cache<FlowExecution, String> currentStageIdCache = CacheBuilder.newBuilder()
+                                                                    .weakKeys()
+                                                                    .build();
+
+
+    private final ConcurrentMap<FlowExecution, String> currentStageName = currentStageNameCache.asMap();
+
+    private final ConcurrentMap<FlowExecution, String> currentStageId = currentStageIdCache.asMap();
+
 
     @Override
     public void onNewHead(FlowNode flowNode) {
         // test whether we have a stage node
         if (PipelineNodeUtil.isStage(flowNode)) {
             List<String> branch = getBranch(flowNode);
-            currentStageName.put(flowNode.getExecution(), flowNode.getDisplayName());
-            currentStageId.put(flowNode.getExecution(), flowNode.getId());
+            if(flowNode.getDisplayName()!=null) {
+                currentStageName.put(flowNode.getExecution(), flowNode.getDisplayName());
+            }
+            if(flowNode.getId()!=null) {
+                currentStageId.put( flowNode.getExecution(), flowNode.getId() );
+            }
             publishEvent(newMessage(PipelineEventChannel.Event.pipeline_stage, flowNode, branch));
         } else if (flowNode instanceof StepStartNode) {
             if (flowNode.getAction(BodyInvocationAction.class) != null) {
@@ -79,9 +95,7 @@ public class PipelineEventListener implements GraphListener {
             if (flowNode.getAction(BodyInvocationAction.class) != null) {
                 FlowNode startNode = ((StepEndNode) flowNode).getStartNode();
                 String startNodeId = startNode.getId();
-
                 List<String> branch = getBranch(startNode);
-
                 branch.add(startNodeId);
                 publishEvent(newMessage(PipelineEventChannel.Event.pipeline_block_end, flowNode, branch));
             }
@@ -90,45 +104,13 @@ public class PipelineEventListener implements GraphListener {
         }
     }
 
-    private List<String> getBranch(FlowNode flowNode) {
-        List<String> branch = new ArrayList<>();
-        FlowNode parentBlock = getParentBlock(flowNode);
-
-        while (parentBlock != null) {
-            branch.add(0, parentBlock.getId());
-            parentBlock = getParentBlock(parentBlock);
-        }
-
-        return branch;
+    /* package: so that we can unit test it */ List<String> getBranch(FlowNode flowNode) {
+        return Lists.reverse(flowNode.getAllEnclosingIds());
     }
 
-    private FlowNode getParentBlock(FlowNode flowNode) {
-        List<FlowNode> parents = flowNode.getParents();
-
-        for (FlowNode parent : parents) {
-            if (parent instanceof StepStartNode) {
-                if (parent.getAction(BodyInvocationAction.class) != null) {
-                    return parent;
-                }
-            }
-        }
-
-        for (FlowNode parent : parents) {
-            if (parent instanceof StepEndNode) {
-                continue;
-            }
-            FlowNode grandparent = getParentBlock(parent);
-            if (grandparent != null) {
-                return grandparent;
-            }
-        }
-
-        return null;
-    }
-
-    private String toPath(List<String> branch) {
+    private String toPath(Collection<String> branch) {
         StringBuilder builder = new StringBuilder();
-        for (String leaf : branch) {
+        for(String leaf: branch){
             if(builder.length() > 0) {
                 builder.append("/");
             }
@@ -164,7 +146,7 @@ public class PipelineEventListener implements GraphListener {
         return message;
     }
 
-    private Message newMessage(PipelineEventChannel.Event event, FlowNode flowNode, List<String> branch) {
+    private Message newMessage(PipelineEventChannel.Event event, FlowNode flowNode, Collection<String> branch) {
         Message message = newMessage(event, flowNode.getExecution());
 
         message.set(PipelineEventChannel.EventProps.pipeline_step_flownode_id, flowNode.getId());

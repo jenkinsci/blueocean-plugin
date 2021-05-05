@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+    stages {
+        stage('SCM') {
+            steps {
+                script {
+                    checkout([ $class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[ $class: 'RelativeTargetDirectory', relativeTargetDir: 'repo' ]],
+                        submoduleCfg: [],
+                        userRemoteConfigs:[[ name: 'origin', url: '%REPO%' ]]
+                    ])
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                script {
+                    echo "build step"
+                    sh "ls"
+                }
+            }
+        }
+        stage('Results') {
+            steps {
+                script {
+                    echo "results step"
+                }
+            }
+        }
+    }
+}

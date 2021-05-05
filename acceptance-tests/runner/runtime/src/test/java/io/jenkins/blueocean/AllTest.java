@@ -1,6 +1,5 @@
 package io.jenkins.blueocean;
 
-import com.github.eirslett.maven.plugins.frontend.lib.TaskRunnerException;
 import org.junit.Assert;
 import org.junit.Test;
 

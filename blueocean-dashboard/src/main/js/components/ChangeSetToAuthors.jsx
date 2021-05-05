@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 
 export default class ChangeSetToAuthors extends Component {
-
     constructor(props) {
         super(props);
         this.state = { condense: false };
@@ -32,8 +31,11 @@ export default class ChangeSetToAuthors extends Component {
     }
 
     render() {
-        const { props: { changeSet, onAuthorsClick, t }, state: { condense } } = this;
-        const authors = changeSet && changeSet.map ? [...(new Set(changeSet.map(change => change.author.fullName)):any)] : [];
+        const {
+            props: { changeSet, onAuthorsClick, t },
+            state: { condense },
+        } = this;
+        const authors = changeSet && changeSet.map ? [...(new Set(changeSet.map(change => change.author.fullName)): any)] : [];
         let children = t('rundetail.header.changes.none', {
             defaultValue: 'No changes',
         });
@@ -50,13 +52,13 @@ export default class ChangeSetToAuthors extends Component {
                     defaultValue: 'Changes by {0}',
                 });
             }
-            children = (<a className="authors" onClick={onAuthorsClick}>
-               {nested}
-            </a>);
+            children = (
+                <a className="authors" onClick={onAuthorsClick}>
+                    {nested}
+                </a>
+            );
         }
-        return (<div ref="authorsWrapper">
-            {children }
-        </div>);
+        return <div ref="authorsWrapper">{children}</div>;
     }
 }
 

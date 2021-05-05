@@ -1,11 +1,11 @@
 import { Pager } from './Pager';
-import RestPaths from '../paths/rest';
+import { RestPaths } from '../paths/rest';
 import { Fetch } from '../fetch';
-import utils from '../utils';
+import { Utils } from '../utils';
 import { BunkerService } from './BunkerService';
 import { action } from 'mobx';
 /**
- * This class handles pipeline related data. This includes pipelines, branches and pullrequeusts as they are
+ * This class handles pipeline related data. This includes pipelines, branches and pullrequests as they are
  * all pipelines in the backend.
  *
  * @export
@@ -52,7 +52,6 @@ export class PipelineService extends BunkerService {
         });
     }
 
-
     /**
      * Gets pager for /blue/organization/:organization/pipelines/:pipeline/pullRequests
      *
@@ -72,8 +71,8 @@ export class PipelineService extends BunkerService {
      * @param {Object} pipelineData Raw data from backend.
      * @return {Object} mapped pipelineData with latestRun set to be a mobx computed value.
      */
-    bunkerMapper = (pipelineData) => {
-        const data = utils.clone(pipelineData);
+    bunkerMapper = pipelineData => {
+        const data = Utils.clone(pipelineData);
         const latestRun = data.latestRun;
 
         if (latestRun) {
@@ -81,7 +80,7 @@ export class PipelineService extends BunkerService {
         }
 
         return data;
-    }
+    };
     /**
      * Gets a pipeline from the store
      *
@@ -91,7 +90,6 @@ export class PipelineService extends BunkerService {
     getPipeline(href) {
         return this.getItem(href);
     }
-
 
     /**
      * Fetches pipeline from the backend and stores it in
@@ -108,7 +106,6 @@ export class PipelineService extends BunkerService {
 
         return Fetch.fetchJSON(href).then(data => this.setItem(data));
     }
-
 
     /**
      * MobX Action to update the latest run on a pipeline. Use for SSE. This will cause a reaction

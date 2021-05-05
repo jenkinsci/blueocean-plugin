@@ -4,7 +4,7 @@ import hudson.model.JDK;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.hamcrest.Matcher;
-import org.jenkinsci.plugins.pipeline.modeldefinition.agent.impl.DockerPipeline;
+import org.jenkinsci.plugins.pipeline.modeldefinition.agent.impl.Label;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -30,17 +30,19 @@ public class PipelineMetadataServiceTest {
     @Test
     public void testBasicStepsReturned() throws IOException {
         JSONWebResponse rsp = j.getJSON("blue/rest/pipeline-metadata/pipelineStepMetadata");
-        
         assert(rsp != null) : "Should have results";
         JSONObject node = null;
+        JSONObject withSonarQubeEnv = null;
         for (Object o : JSONArray.fromObject(rsp.getContentAsString())) {
             JSONObject meta = (JSONObject)o;
             if("node".equals(meta.get("functionName"))) {
                 node = meta;
-                break;
+            } else if ("withSonarQubeEnv".equals(meta.get("functionName"))) {
+                withSonarQubeEnv = meta;
             }
         }
         assert(node != null) : "PipelineStepMetadata node not found";
+        assert(withSonarQubeEnv != null) : "PipelineStepMetadata withSonarQubeEnv not found";
     }
 
     @Test
@@ -55,7 +57,7 @@ public class PipelineMetadataServiceTest {
         ExportedDescribableModel m = null;
 
         for (ExportedDescribableModel a : agents) {
-            if (a.getType().equals(DockerPipeline.class.getName())) {
+            if (a.getType().endsWith(Label.class.getName())) {
                 m = a;
             }
         }
@@ -119,7 +121,7 @@ public class PipelineMetadataServiceTest {
         steps.addAll(Arrays.asList(svc.doPipelineStepMetadata()));
 
         assertFalse(steps.isEmpty());
-        
+
         // Verify we have a Symbol-provided Builder or Publisher
         assertThat(steps, hasItem(stepWithName("archiveArtifacts")));
 
@@ -131,6 +133,9 @@ public class PipelineMetadataServiceTest {
 
         // Verify that we *do* have advanced steps that are explicitly whitelisted in.
         assertThat(steps, hasItem(stepWithName("catchError")));
+
+        // Verify that we have a Symbol-provided SimpleBuildWrapper
+        assertThat(steps, hasItem(stepWithName("withSonarQubeEnv")));
     }
 
     private Matcher<? super ExportedPipelineStep> stepWithName(String stepName) {

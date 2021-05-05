@@ -56,37 +56,31 @@ public class RunContainerImpl extends BlueRunContainer {
     public BlueRun get(String name) {
         RunList<? extends hudson.model.Run> runList = job.getBuilds();
 
-        hudson.model.Run run = null;
-        if (name != null) {
-            for (hudson.model.Run r : runList) {
-                if (r.getId().equals(name)) {
-                    run = r;
-                    break;
-                }
-            }
-
-            int number;
-            try {
-                number = Integer.parseInt(name);
-            } catch (NumberFormatException e) {
-                throw new NotFoundException(String.format("Run %s not found in organization %s and pipeline %s",
-                    name, pipeline.getOrganizationName(), job.getName()));
-            }
-            for (BlueQueueItem item : QueueUtil.getQueuedItems(pipeline.getOrganization(), job)) {
-                if (item.getExpectedBuildNumber() == number) {
-                    return item.toRun();
-                }
-            }
-
-            if (run == null) {
-                throw new NotFoundException(
-                    String.format("Run %s not found in organization %s and pipeline %s",
-                        name, pipeline.getOrganizationName(), job.getName()));
-            }
-        } else {
-            run = runList.getLastBuild();
+        if (name == null) {
+            return BlueRunFactory.getRun(runList.getLastBuild(), pipeline);
         }
-        return  BlueRunFactory.getRun(run, pipeline);
+
+        for (hudson.model.Run r : runList) {
+            if (r.getId().equals(name)) {
+                return BlueRunFactory.getRun(r, pipeline);
+            }
+        }
+
+        int number;
+        try {
+            number = Integer.parseInt(name);
+        } catch (NumberFormatException e) {
+            throw new NotFoundException(String.format("Run %s not found in organization %s and pipeline %s",
+                    name, pipeline.getOrganizationName(), job.getName()));
+        }
+        for (BlueQueueItem item : QueueUtil.getQueuedItems(pipeline.getOrganization(), job)) {
+            if (item.getExpectedBuildNumber() == number) {
+                return item.toRun();
+            }
+        }
+        throw new NotFoundException(
+            String.format("Run %s not found in organization %s and pipeline %s",
+                name, pipeline.getOrganizationName(), job.getName()));
     }
 
     @Override

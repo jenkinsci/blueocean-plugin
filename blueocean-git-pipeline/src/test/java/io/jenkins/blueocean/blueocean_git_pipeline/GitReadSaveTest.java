@@ -116,7 +116,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         repoNoJenkinsfile.init();
         repoNoJenkinsfile.write("file", "nearly empty file");
         repoNoJenkinsfile.git("add", "file");
-        repoNoJenkinsfile.git("commit", "--all", "--message=initilaize the repo");
+        repoNoJenkinsfile.git("commit", "--all", "--message=initialize the repo");
 
         // we're using this to test push/pull, allow pushes to current branch, we reset it to match
         repoNoJenkinsfile.git("config", "--local", "--add", "receive.denyCurrentBranch", "false");
@@ -145,7 +145,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
             repoForSSH.init();
             repoForSSH.write("Jenkinsfile", masterPipelineScript);
             repoForSSH.git("add", "Jenkinsfile");
-            repoForSSH.git("commit", "--all", "--message=initilaize the repo");
+            repoForSSH.git("commit", "--all", "--message=initialize the repo");
 
             // we're using this to test push/pull, allow pushes to current branch, we reset it to match
             repoForSSH.git("config", "--local", "--add", "receive.denyCurrentBranch", "false");
@@ -153,9 +153,17 @@ public class GitReadSaveTest extends PipelineBaseTest {
     }
 
     private void startSSH() throws Exception {
+        startSSH(null);
+    }
+    private void startSSH(@Nullable User u) throws Exception {
         if (sshd == null) {
             // Set up an SSH server with access to a git repo
-            User user = login();
+            User user;
+            if(u == null) {
+                user = login();
+            } else {
+                user = u;
+            }
             final BasicSSHUserPrivateKey key = UserSSHKeyManager.getOrCreate(user);
             final JSch jsch = new JSch();
             final KeyPair pair = KeyPair.load(jsch, key.getPrivateKey().getBytes(), null);
@@ -183,7 +191,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
     @Test
     public void testRepositoryCallbackToFSFunctionAdapter() throws IOException, InterruptedException {
         final boolean[] called = { false };
-        new GitCacheCloneReadSaveRequest.RepositoryCallbackToFSFunctionAdapter<>(new GitSCMFileSystem.FSFunction<Object>() {
+        new GitBareRepoReadSaveRequest.RepositoryCallbackToFSFunctionAdapter<>(new GitSCMFileSystem.FSFunction<Object>() {
             @Override
             public Object invoke(Repository repository) throws IOException, InterruptedException {
                 called[0] = true;
@@ -191,18 +199,6 @@ public class GitReadSaveTest extends PipelineBaseTest {
             }
         }).invoke(null, null);
         Assert.assertTrue(called[0]);
-    }
-
-    @Test
-    public void testGitCloneReadWrite() throws Exception {
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CLONE, repoWithJenkinsfiles, masterPipelineScript);
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CLONE, repoNoJenkinsfile, null);
-    }
-
-    @Test
-    public void testGitCacheCloneReadWrite() throws Exception {
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_CLONE, repoWithJenkinsfiles, masterPipelineScript);
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_CLONE, repoNoJenkinsfile, null);
     }
 
     @Test
@@ -225,6 +221,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         // Validate bob via repositoryUrl
         Map r = new RequestBuilder(baseUrl)
             .status(200)
+            .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
             .put("/organizations/" + getOrgName() + "/scm/git/validate/")
             .data(ImmutableMap.of(
@@ -238,6 +235,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         String jobName = "test-token-validation";
         r = new RequestBuilder(baseUrl)
             .status(201)
+            .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
             .post("/organizations/" + getOrgName() + "/pipelines/")
             .data(ImmutableMap.of(
@@ -253,6 +251,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         // Test for existing pipeline/job
         r = new RequestBuilder(baseUrl)
             .status(200)
+            .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
             .put("/organizations/" + getOrgName() + "/scm/git/validate/")
             .data(ImmutableMap.of(
@@ -265,6 +264,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         // Test alice fails
         r = new RequestBuilder(baseUrl)
             .status(428)
+            .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
             .put("/organizations/" + getOrgName() + "/scm/git/validate/")
             .data(ImmutableMap.of(
@@ -274,6 +274,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
 
         r = new RequestBuilder(baseUrl)
             .status(428)
+            .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
             .put("/organizations/" + getOrgName() + "/scm/git/validate/")
             .data(ImmutableMap.of(
@@ -293,20 +294,37 @@ public class GitReadSaveTest extends PipelineBaseTest {
         testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, remote, repoForSSH, masterPipelineScript);
     }
 
+    @Test
+    public void bareRepoReadWriteNoEmail() throws Exception {
+        if (!OsUtils.isUNIX()) {
+            return; // can't really run this on windows
+        }
+        User user = login("bob", "Bob Smith", null);
+
+        startSSH(user);
+        String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
+        String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath() + "/.git";
+        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, remote, repoForSSH, masterPipelineScript, user);
+    }
+
     private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull GitSampleRepoRule repo, @Nullable String startPipelineScript) throws Exception {
         testGitReadWrite(type, repo.getRoot().getCanonicalPath(), repo, startPipelineScript);
     }
 
+
     private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull String remote, @Nonnull GitSampleRepoRule repo, @Nullable String startPipelineScript) throws Exception {
+        testGitReadWrite(type,remote,repo,startPipelineScript, login());
+    }
+
+    private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull String remote, @Nonnull GitSampleRepoRule repo, @Nullable String startPipelineScript, @Nullable User user) throws Exception {
         GitReadSaveService.setType(type);
 
         String jobName = repo.getRoot().getName();
 
-        User user = login();
-
         Map r = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of(
                         "name", jobName,
@@ -323,6 +341,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         r = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( crumb )
                 .get(urlJobPrefix + "/scm/content/?branch=master&path=Jenkinsfile&type="+type.name())
                 .build(Map.class);
 
@@ -345,6 +364,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( crumb )
                 .put(urlJobPrefix + "/scm/content/")
                 .data(ImmutableMap.of("content", content))
                 .build(Map.class);
@@ -358,6 +378,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         // check to make sure we get the same thing from the service
         r = new RequestBuilder(baseUrl)
                 .status(200)
+                .crumb( crumb )
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .get(urlJobPrefix + "/scm/content/?branch=master&path=Jenkinsfile&type="+type.name())
                 .build(Map.class);

@@ -26,7 +26,7 @@ const addClass = (clazz, classMap) => {
     classMap[className].push(clazz);
 };
 
-const canWalk = (item) => item && (typeof item === 'object' || Array.isArray(item));
+const canWalk = item => item && (typeof item === 'object' || Array.isArray(item));
 
 const DEFAULT_IGNORED_PROPS = ['_links'];
 
@@ -40,7 +40,6 @@ const DEFAULT_IGNORED_PROPS = ['_links'];
  *          .then(data => augmentCapability(data));
  */
 export class CapabilityAugmenter {
-
     constructor(capabilityStore) {
         this._capabilityStore = capabilityStore;
         this._perfLoggingEnabled = false;
@@ -117,7 +116,8 @@ export class CapabilityAugmenter {
     _resolveCapabilities(data, classMap) {
         const classNames = Object.keys(classMap);
 
-        return this._capabilityStore.resolveCapabilities(...classNames)
+        return this._capabilityStore
+            .resolveCapabilities(...classNames)
             .then(capabilitiesMap => this._injectCapabilities(classMap, capabilitiesMap))
             .then(() => data);
     }
@@ -158,5 +158,4 @@ export class CapabilityAugmenter {
 
         return classMap;
     }
-
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.jenkins.blueocean</groupId>
+        <artifactId>blueocean-parent</artifactId>
+        <version>${revision}${changelist}</version>
+    </parent>
+    <name>DEPRECATED Blue Ocean Executor Info</name>
+    <artifactId>blueocean-executor-info</artifactId>
+    <packaging>hpi</packaging>
+    <description>DEPRECATED plugin.</description>
+    <developers>
+        <developer>
+            <id>kzantow</id>
+            <name>Keith Zantow</name>
+            <email>kzantow@cloudbees.com</email>
+        </developer>
+    </developers>
+
+</project>

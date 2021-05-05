@@ -19,7 +19,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_ABSTRACT
  * @see BluePipelineContainer
  */
 @Capability({BLUE_PIPELINE_FOLDER, JENKINS_ABSTRACT_FOLDER})
-public abstract class BluePipelineFolder extends BluePipeline {
+public abstract class BluePipelineFolder extends BluePipeline implements BlueContainerItem {
 
     private static final String NUMBER_OF_PIPELINES = "numberOfPipelines";
     private static final String NUMBER_OF_FOLDERS = "numberOfFolders";
@@ -35,7 +35,7 @@ public abstract class BluePipelineFolder extends BluePipeline {
      *
      * Gets nested BluePipeline inside the BluePipelineFolder
      *
-     * For example for: /pipelines/folder1/pipelines/folder2/pipelines/p1, call sequnce  will be:
+     * For example for: /pipelines/folder1/pipelines/folder2/pipelines/p1, call sequence  will be:
      *
      * <ul>
      *     <li>getPipelines().get("folder1")</li>

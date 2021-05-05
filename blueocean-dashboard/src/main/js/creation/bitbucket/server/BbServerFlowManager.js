@@ -10,13 +10,10 @@ import BbChooseServerStep from './steps/BbChooseServerStep';
 import BbServerManager from './BbServerManager';
 import STATE from './BbServerCreationState';
 
-
 const translate = i18nTranslator('blueocean-dashboard');
 const MIN_DELAY = 500;
 
-
 export default class BbServerFlowManager extends BbCloudFlowManager {
-
     selectedServer = null;
 
     constructor(creationApi, serverApi) {
@@ -61,12 +58,12 @@ export default class BbServerFlowManager extends BbCloudFlowManager {
     }
 
     _getOrganizationsStepAfterStateId() {
-        return this.credentialSelected ?
-            STATE.STEP_CREDENTIAL : STATE.STEP_CHOOSE_SERVER;
+        return this.credentialSelected ? STATE.STEP_CREDENTIAL : STATE.STEP_CHOOSE_SERVER;
     }
 
     _loadServerList() {
-        return this.serverManager.listServers()
+        return this.serverManager
+            .listServers()
             .then(waitAtLeast(MIN_DELAY))
             .then(success => this._loadServerListComplete(success));
     }

@@ -68,7 +68,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
             BlueRun latestRun1 = pipeline1.getLatestRun();
             BlueRun latestRun2 = pipeline2.getLatestRun();
 
-            // If a pipeline doesnt have a run yet, no need to go further.
+            // If a pipeline doesn't have a run yet, no need to go further.
             if(latestRun1 != null && latestRun2 == null) {
                 return -1;
             }
@@ -106,7 +106,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
                 return pipeline1.getName().compareTo(pipeline2.getName());
             }
 
-            //If both jobs have not eneded yet, we need to order by start time.
+            //If both jobs have not ended yet, we need to order by start time.
             Date startTime1 = latestRun1.getStartTime();
             Date startTime2 = latestRun2.getStartTime();
             if(startTime1 != null && startTime2 == null) {

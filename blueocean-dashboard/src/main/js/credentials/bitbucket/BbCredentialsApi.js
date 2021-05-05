@@ -1,6 +1,5 @@
 import { Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
-import TypedError from '../TypedError';
-
+import { TypedError } from '../TypedError';
 
 export const LoadError = {
     TOKEN_NOT_FOUND: 'TOKEN_NOT_FOUND',
@@ -13,9 +12,7 @@ export const SaveError = {
     UNKNOWN_ERROR: 'UNKNOWN_ERROR',
 };
 
-
 class BbCredentialsApi {
-
     constructor(scmId) {
         this._fetch = Fetch.fetchJSON;
         this.organization = AppConfig.getOrganizationName();
@@ -26,11 +23,7 @@ class BbCredentialsApi {
         const path = UrlConfig.getJenkinsRootURL();
         const credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/?apiUrl=${apiUrl}`);
 
-        return this._fetch(credUrl)
-            .then(
-                result => this._findExistingCredentialSuccess(result),
-                error => this._findExistingCredentialFailure(error)
-            );
+        return this._fetch(credUrl).then(result => this._findExistingCredentialSuccess(result), error => this._findExistingCredentialFailure(error));
     }
 
     _findExistingCredentialSuccess(credential) {
@@ -69,8 +62,7 @@ class BbCredentialsApi {
             body: JSON.stringify(requestBody),
         };
 
-        return this._fetch(validateCredUrl, { fetchOptions })
-            .catch(error => this._createAccessTokenFailure(error));
+        return this._fetch(validateCredUrl, { fetchOptions }).catch(error => this._createAccessTokenFailure(error));
     }
 
     _createAccessTokenFailure(error) {

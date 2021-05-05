@@ -1,0 +1,31 @@
+{
+	"compilerOptions": {
+		"outDir": "build",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"target": "es5",
+		"jsx": "react",
+		"allowJs": false,
+		"declaration" :true,
+		"allowSyntheticDefaultImports": false,
+		"experimentalDecorators": true,
+		"forceConsistentCasingInFileNames": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "strictNullChecks": true,
+        "suppressImplicitAnyIndexErrors": true,
+		"noUnusedLocals": true,
+		"types": [
+			"bluebird-global",
+			"node"
+		],
+		"lib": [
+			"dom",
+			"es2018"
+		]
+	},
+	"exclude": [
+		"target",
+		"**/*.jsx"
+	]
+}

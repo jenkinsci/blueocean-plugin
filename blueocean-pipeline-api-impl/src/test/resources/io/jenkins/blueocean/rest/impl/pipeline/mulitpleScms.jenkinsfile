@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+    stages {
+        stage('Master Branch') {
+            steps {
+                script {
+                    checkout([ $class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[ $class: 'RelativeTargetDirectory', relativeTargetDir: 'repo1' ]],
+                        submoduleCfg: [],
+                        userRemoteConfigs:[[ name: 'origin', url: '%REPO1%' ]]
+                    ])
+                }
+            }
+        }
+        stage('Justreadme Project Branch') {
+            steps {
+                script {
+                    checkout([ $class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[ $class: 'RelativeTargetDirectory', relativeTargetDir: 'repo2' ]],
+                        submoduleCfg: [],
+                        userRemoteConfigs:[[ name: 'origin', url: '%REPO2%' ]]
+                    ])
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                script {
+                    echo "build step"
+                    sh "ls"
+                }
+            }
+        }
+        stage('Results') {
+            steps {
+                script {
+                    echo "results step"
+                }
+            }
+        }
+    }
+}

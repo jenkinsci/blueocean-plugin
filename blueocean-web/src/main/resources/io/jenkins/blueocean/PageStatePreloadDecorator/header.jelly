@@ -1,5 +1,6 @@
+<?jelly escape-by-default='false'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
-  <script>
+  <script>//&lt;![CDATA[
     // construct the state object parent path inside window.$blueocean.
     var stateRoot = window.$blueocean = (window.$blueocean || {});
     (function () {
@@ -36,5 +37,6 @@
         </j:if>
       </j:forEach>
     })();
+    //]]&gt;
   </script>
 </j:jelly>

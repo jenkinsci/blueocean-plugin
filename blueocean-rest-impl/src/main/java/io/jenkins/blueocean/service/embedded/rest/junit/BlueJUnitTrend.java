@@ -8,6 +8,7 @@ import io.jenkins.blueocean.rest.factory.BlueTrendFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.BlueTableRow;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.BlueTrend;
@@ -66,7 +67,7 @@ public class BlueJUnitTrend extends BlueTrend {
 
     @Override
     public Container<BlueTableRow> getRows() {
-        final Iterator<BlueRun> runs = pipeline.getRuns().iterator();
+        BlueRunContainer blueRunContainer = pipeline.getRuns();
 
         return new Container<BlueTableRow>() {
             @Override
@@ -81,12 +82,8 @@ public class BlueJUnitTrend extends BlueTrend {
 
             @Override
             public Iterator<BlueTableRow> iterator() {
-                return Iterators.transform(runs, new Function<BlueRun, BlueTableRow>() {
-                    @Override
-                    public BlueTableRow apply(BlueRun run) {
-                        return new BlueJUnitTrendRow(run.getTestSummary(), run.getId());
-                    }
-                });
+                return blueRunContainer == null ? null
+                    : Iterators.transform(blueRunContainer.iterator(),run -> new BlueJUnitTrendRow(run.getBlueTestSummary(), run.getId()));
             }
         };
     }

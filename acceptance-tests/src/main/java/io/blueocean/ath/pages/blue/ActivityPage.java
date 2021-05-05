@@ -5,8 +5,8 @@ import com.google.inject.assistedinject.AssistedInject;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.factory.BranchPageFactory;
+import io.blueocean.ath.factory.PullRequestsPageFactory;
 import io.blueocean.ath.model.AbstractPipeline;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.annotations.Nullable;
 import org.junit.Assert;
 import org.openqa.selenium.By;
@@ -14,12 +14,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.net.URLEncoder;
 
 public class ActivityPage {
-    private Logger logger = Logger.getLogger(ActivityPage.class);
+    private Logger logger = LoggerFactory.getLogger(ActivityPage.class);
 
     private WebDriver driver;
     private AbstractPipeline pipeline;
@@ -32,6 +34,8 @@ public class ActivityPage {
 
     @Inject
     BranchPageFactory branchPageFactory;
+
+    @Inject PullRequestsPageFactory pullRequestsPageFactory;
 
     @Inject
     public ActivityPage(WebDriver driver) {
@@ -49,7 +53,7 @@ public class ActivityPage {
     @Deprecated
     public void open(String pipeline) {
         driver.get(base + "/blue/organizations/jenkins/" + pipeline + "/activity");
-        logger.info("Opened activity page for " + pipeline);
+        logger.info("Opened activity page for {}", pipeline);
     }
 
     public void checkPipeline() {
@@ -76,15 +80,26 @@ public class ActivityPage {
         return this;
     }
 
-    public void checkForCommitMesssage(String message) {
+    public void checkForCommitMessage(String message) {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()=\"" + message + "\"]")));
-        logger.info("Found commit message '" + message + "'");
+        logger.info("Found commit message '{}'", message);
     }
 
     public BranchPage clickBranchTab() {
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.branches"))).click();
         logger.info("Clicked on branch tab");
-        return branchPageFactory.withPipeline(pipeline).checkUrl();
+        // return branchPageFactory.withPipeline(pipeline).checkUrl();
+        BranchPage page = branchPageFactory.withPipeline(pipeline);
+        Assert.assertNotNull("AbstractPipeline object is null", page);
+        return page.checkUrl();
+    }
+
+    public PullRequestsPage clickPullRequestsTab() {
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.pr"))).click();
+        logger.info("Clicked on PR tab");
+        PullRequestsPage page = pullRequestsPageFactory.withPipeline(pipeline);
+        Assert.assertNotNull("AbstractPipeline object is null", page);
+        return page.checkUrl();
     }
 
     public By getSelectorForBranch(String branchName) {
@@ -92,7 +107,7 @@ public class ActivityPage {
     }
 
     public WebElement getRunRowForBranch(String branchName) {
-        return wait.until(getSelectorForBranch(branchName));
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(getSelectorForBranch(branchName)));
     }
 
     public By getSelectorForRowCells() {
@@ -105,13 +120,24 @@ public class ActivityPage {
     }
 
     public void testNumberRunsComplete(int atLeast) {
+        testNumberRunsComplete(atLeast, "success");
         By selector = By.cssSelector("div[data-pipeline='" + pipeline.getName() + "'].JTable-row circle.success");
         wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(selector, atLeast - 1));
-        logger.info("At least " + atLeast + " runs are complete");
+        logger.info("At least {} runs are complete", atLeast);
+    }
+
+    public void testNumberRunsComplete(int atLeast, String status) {
+        By selector = By.cssSelector("div[data-pipeline='" + pipeline.getName() + "'].JTable-row circle."+status);
+        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(selector, atLeast - 1));
+        logger.info("At least {} runs are complete", atLeast);
     }
 
     public void checkBasicDomElements() {
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("article.activity")));
+        wait.retryAction("check that we are on the activity page", 3, driver -> {
+            wait.until(By.cssSelector("article.activity"), 5000);
+            logger.info("checkBasicDomElements: Activity tab found");
+            return true;
+        });
     }
 
     public void checkFavoriteStatus(boolean isFavorited) {

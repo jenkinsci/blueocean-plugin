@@ -26,7 +26,7 @@ export class KaraokePagerService extends BunkerService {
      * Gets the karaoke pager
      *
      * @param { object } augmenter
-     * @returns {Pager} Pager for this pipelne.
+     * @returns {Pager} Pager for this pipeline.
      */
     generalLogPager(augmenter, location) {
         const { pipeline, branch, run } = augmenter;
@@ -55,7 +55,7 @@ export class KaraokePagerService extends BunkerService {
      * Gets the karaoke pager
      *
      * @param { object } augmenter
-     * @returns {Pager} Pager for this pipelne.
+     * @returns {Pager} Pager for this pipeline.
      */
     logPager(augmenter, step) {
         const { pipeline, branch, run } = augmenter;
@@ -86,7 +86,7 @@ export class KaraokePagerService extends BunkerService {
      * @param {object} augmenter
      * @param {boolean} followAlong
      * @param {object} node
-     * @returns {Pager} Pager for this pipelne.
+     * @returns {Pager} Pager for this pipeline.
      */
     pipelinePager(augmenter, { node }) {
         const { pipeline, branch, run } = augmenter;

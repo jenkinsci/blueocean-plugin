@@ -4,8 +4,7 @@ import { Fetch, FetchFunctions } from './fetch';
 const fetchJSON = Fetch.fetchJSON;
 const fetch = Fetch.fetch;
 
-export default {
-
+export const TestUtils = {
     /**
      * Switches fetch functions with arbitrary replacements.
      * Useful for test spies.

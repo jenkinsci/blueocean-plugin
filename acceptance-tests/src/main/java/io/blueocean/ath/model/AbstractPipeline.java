@@ -6,11 +6,15 @@ import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.factory.ActivityPageFactory;
+import io.blueocean.ath.factory.BranchPageFactory;
 import io.blueocean.ath.factory.RunDetailsArtifactsPageFactory;
 import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
+import io.blueocean.ath.factory.RunDetailsTestsPageFactory;
 import io.blueocean.ath.pages.blue.ActivityPage;
+import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
+import io.blueocean.ath.pages.blue.RunDetailsTestsPage;
 import io.blueocean.ath.sse.SSEEvents;
 import org.json.JSONObject;
 
@@ -27,10 +31,16 @@ public abstract class AbstractPipeline {
     ActivityPageFactory activityPageFactory;
 
     @Inject
+    BranchPageFactory branchPageFactory;
+
+    @Inject
     RunDetailsPipelinePageFactory runDetailsPipelinePageFactory;
 
     @Inject
     RunDetailsArtifactsPageFactory runDetailsArtifactsPageFactory;
+
+    @Inject
+    RunDetailsTestsPageFactory runDetailsTestsPageFactory;
 
     public AbstractPipeline(String name) {
         this(null, name);
@@ -89,12 +99,20 @@ public abstract class AbstractPipeline {
         return activityPageFactory.withPipeline(this);
     }
 
+    public BranchPage getBranchPage() {
+        return branchPageFactory.withPipeline(this);
+    }
+
     public RunDetailsPipelinePage getRunDetailsPipelinePage() {
         return runDetailsPipelinePageFactory.withPipeline(this);
     }
 
     public RunDetailsArtifactsPage getRunDetailsArtifactsPage() {
         return runDetailsArtifactsPageFactory.withPipeline(this);
+    }
+
+    public RunDetailsTestsPage getRunDetailsTestsPage() {
+        return runDetailsTestsPageFactory.withPipeline(this);
     }
 
     public Predicate<List<JSONObject>> buildsFinished = list -> SSEEvents.activityComplete(getFolder().getPath(getName())).apply(list);

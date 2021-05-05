@@ -52,7 +52,7 @@ public class BlueOceanUrlMapperImpl extends BlueOceanUrlMapper {
                 // specifically %. Encoding it again breaks things ala JENKINS-40137. The creation name can also
                 // have spaces, even from the UI (it should prevent that). So, decode to revert anything that's already
                 // encoded and re-encode to do the full monty. Nasty :)
-                return baseUrl +"/" + encodeURIComponent(blueResource.getFullName())+"/detail/" + encodeURIComponent(decodeURIComponent(job.getName())) + "/" + encodeURIComponent(run.getId());
+                return baseUrl + "/" + encodeURIComponent(blueResource.getFullName()) + "/detail/" + encodeURIComponent(decodeURIComponent(job.getName())) + "/" + encodeURIComponent(run.getId()) + "/";
             }
         } else if(modelObject instanceof Item){
             Resource bluePipeline = BluePipelineFactory.resolve((Item)modelObject);
@@ -65,9 +65,9 @@ public class BlueOceanUrlMapperImpl extends BlueOceanUrlMapper {
 
     private String getPipelineUrl(String baseUrl, BluePipeline pipeline){
         if(pipeline instanceof BlueMultiBranchPipeline){
-            return baseUrl + "/" +encodeURIComponent(pipeline.getFullName())+"/branches";
+            return baseUrl + "/" + encodeURIComponent(pipeline.getFullName()) + "/branches/";
         }else{
-            return baseUrl + "/" +encodeURIComponent(pipeline.getFullName());
+            return baseUrl + "/" + encodeURIComponent(pipeline.getFullName()) + "/";
         }
     }
 

@@ -46,12 +46,9 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
         if (resolved.summary == null || resolved.results == null) {
             throw new NotFoundException("no tests");
         }
-        BlueTestResult testResult = Iterables.find(resolved.results, new Predicate<BlueTestResult>() {
-            @Override
-            public boolean apply(@Nullable BlueTestResult input) {
-                return input != null && input.getId().equals(name);
-            }
-        }, null);
+        BlueTestResult testResult = Iterables.find(resolved.results, //
+                                                   input -> input != null && input.getId().equals(name), //
+                                                   null);
         if (testResult == null) {
             throw new NotFoundException("not found");
         }
@@ -66,46 +63,73 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
             throw new NotFoundException("no tests");
         }
         StaplerRequest request = Stapler.getCurrentRequest();
-        Iterator<BlueTestResult> results;
         if (request != null) {
             String status = request.getParameter("status");
             String state = request.getParameter("state");
-            if (isEmpty(status) && isEmpty(state)) {
-                results = resolved.results.iterator();
-            } else if (!isEmpty(status)) {
-                results = filterByStatus(resolved.results, status);
-            } else if (!isEmpty(state)) {
-                results = filterByState(resolved.results, state);
-            } else {
-                throw new BadRequestException("must provide either 'status' or 'state' params");
-            }
-        } else {
-            results = resolved.results.iterator();
+            String age = request.getParameter("age");
+            return getBlueTestResultIterator(resolved.results, status, state, age);
+
         }
-        return results;
+        return resolved.results.iterator();
     }
 
     @VisibleForTesting
-    public static Iterator<BlueTestResult> filterByStatus(Iterable<BlueTestResult> results, String status) {
+    public Iterator<BlueTestResult> getBlueTestResultIterator(Iterable<BlueTestResult> results, String status, String state, String age) {
+        if (isEmpty(status) && isEmpty(state) && isEmpty(age)) {
+            return results.iterator();
+        }
+
+        Predicate<BlueTestResult> predicate = Predicates.alwaysTrue();
+
+        if (!isEmpty(status)) {
+            predicate = Predicates.and(predicate, filterByStatus(status));
+        }
+        if (!isEmpty(state)) {
+            predicate = Predicates.and(predicate, filterByState(state));
+        }
+        if (!isEmpty(age)) {
+            predicate = Predicates.and(predicate, filterByAge(age));
+        }
+        return Iterables.filter(results, predicate).iterator();
+    }
+
+    @VisibleForTesting
+    public static Predicate<BlueTestResult> filterByAge(String age) {
+        Integer _age;
+        try {
+            _age = Integer.parseInt(age);
+        } catch (NumberFormatException ex) {
+            throw new BadRequestException("age is not a number");
+        }
+        return new AgePredicate(_age);
+    }
+
+
+    @VisibleForTesting
+    public static Predicate<BlueTestResult> filterByStatus(String status) {
         String[] statusAtoms = StringUtils.split(status, ',');
         Predicate<BlueTestResult> predicate = Predicates.alwaysFalse();
         if (statusAtoms == null || statusAtoms.length == 0) {
             throw new BadRequestException("status not provided");
         }
         for (String statusString : statusAtoms) {
-            Status queryStatus;
+            Predicate<BlueTestResult> statusPredicate;
             try {
-                queryStatus = Status.valueOf(statusString.toUpperCase());
+                if (statusString.startsWith("!")) {
+                    statusPredicate = Predicates.not(new StatusPredicate(Status.valueOf(statusString.toUpperCase().substring(1))));
+                } else {
+                    statusPredicate  = new StatusPredicate(Status.valueOf(statusString.toUpperCase()));
+                }
             } catch (IllegalArgumentException e) {
                 throw new BadRequestException("bad status " + status, e);
             }
-            predicate = Predicates.or(predicate, new StatusPredicate(queryStatus));
+            predicate = Predicates.or(predicate, statusPredicate );
         }
-        return Iterables.filter(results, predicate).iterator();
+        return predicate;
     }
 
     @VisibleForTesting
-    public static Iterator<BlueTestResult> filterByState(Iterable<BlueTestResult> results, String state) {
+    public static Predicate<BlueTestResult> filterByState(String state) {
         String[] stateAtoms = StringUtils.split(state, ',');
         Predicate<BlueTestResult> predicate = Predicates.alwaysFalse();
         if (stateAtoms == null || stateAtoms.length == 0) {
@@ -113,15 +137,19 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
         }
 
         for (String stateString : stateAtoms) {
-            State queryState;
+            Predicate<BlueTestResult> statePredicate;
             try {
-                queryState = State.valueOf(stateString.toUpperCase());
+                if (stateString.startsWith("!")) {
+                    statePredicate = Predicates.not(new StatePredicate(State.valueOf(stateString.toUpperCase().substring(1))));
+                } else {
+                    statePredicate = new StatePredicate(State.valueOf(stateString.toUpperCase()));
+                }
             } catch (IllegalArgumentException e) {
                 throw new BadRequestException("bad state " + state, e);
             }
-            predicate = Predicates.or(predicate, new StatePredicate(queryState));
+            predicate = Predicates.or(predicate, statePredicate);
         }
-        return Iterables.filter(results, predicate).iterator();
+        return predicate;
     }
 
     static class StatusPredicate implements Predicate<BlueTestResult> {
@@ -148,6 +176,31 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
         @Override
         public boolean apply(@Nullable BlueTestResult input) {
             return input != null && input.getTestState().equals(state);
+        }
+    }
+
+    static class AgePredicate implements Predicate<BlueTestResult> {
+        private final Integer age;
+
+        public AgePredicate(Integer age) {
+            this.age = age;
+        }
+
+        @Override
+        public boolean apply(@Nullable BlueTestResult input) {
+            if (input == null) { return false; }
+
+            // positive means more age
+            if (this.age > 0) {
+                return input.getAge() >= this.age;
+            }
+
+            // negative means less age
+            if (this.age < 0) {
+                return input.getAge() <= Math.abs(this.age);
+            }
+
+            return input.getAge() == age;
         }
     }
 }

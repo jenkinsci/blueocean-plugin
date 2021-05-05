@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 
-import { buildPipelineUrl } from '../../../util/UrlUtils';
+import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 
 import FlowStep from '../../flow2/FlowStep';
 import FlowStepStatus from '../../flow2/FlowStepStatus';
@@ -22,7 +22,7 @@ export default class BbCompleteStep extends React.Component {
     navigatePipeline() {
         const { pipeline } = this.props.flowManager;
         const { organization, fullName } = pipeline;
-        const url = buildPipelineUrl(organization, fullName, 'activity');
+        const url = UrlBuilder.buildPipelineUrl(organization, fullName, 'activity');
         this.props.flowManager.completeFlow({ url });
     }
 
@@ -44,7 +44,11 @@ export default class BbCompleteStep extends React.Component {
         } else if (state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {
             return t('creation.core.status.pending');
         } else if (state === STATE.STEP_COMPLETE_MISSING_JENKINSFILE) {
-            return <span>{t('creation.core.error.missing.jenkinsfile')} <i>{repo.name}</i></span>;
+            return (
+                <span>
+                    {t('creation.core.error.missing.jenkinsfile')} <i>{repo.name}</i>
+                </span>
+            );
         } else if (state === STATE.STEP_COMPLETE_SUCCESS) {
             return t('creation.core.status.completed');
         }
@@ -76,13 +80,13 @@ export default class BbCompleteStep extends React.Component {
             <div>
                 <p className="instructions">{copy}</p>
 
-                { showDashboardLink &&
-                <div>
-                    <p>{t('creation.core.status.return.new_pipelines')}.</p>
+                {showDashboardLink && (
+                    <div>
+                        <p>{t('creation.core.status.return.new_pipelines')}.</p>
 
-                    <button onClick={() => this.navigateDashboard()}>{t('creation.core.button.dashboard')}</button>
-                </div>
-                }
+                        <button onClick={() => this.navigateDashboard()}>{t('creation.core.button.dashboard')}</button>
+                    </div>
+                )}
             </div>
         );
     }
@@ -93,10 +97,9 @@ export default class BbCompleteStep extends React.Component {
         const error = this._getError(flowManager.stateId);
         const title = this._getTitle(flowManager.stateId, flowManager.selectedRepository);
         const content = this._getContent(flowManager.stateId);
-        const loading = (flowManager.stateId === STATE.PENDING_CREATION_SAVING ||
-                            flowManager.stateId === STATE.PENDING_CREATION_EVENTS);
-        const complete = (flowManager.stateId === STATE.STEP_COMPLETE_SUCCESS ||
-                            flowManager.stateId === STATE.STEP_COMPLETE_MISSING_JENKINSFILE) && 'state-completed';
+        const loading = flowManager.stateId === STATE.PENDING_CREATION_SAVING || flowManager.stateId === STATE.PENDING_CREATION_EVENTS;
+        const complete =
+            (flowManager.stateId === STATE.STEP_COMPLETE_SUCCESS || flowManager.stateId === STATE.STEP_COMPLETE_MISSING_JENKINSFILE) && 'state-completed';
 
         return (
             <FlowStep {...this.props} className={`github-complete-step ${complete}`} title={title} status={status} loading={loading} error={error}>

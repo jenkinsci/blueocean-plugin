@@ -2,16 +2,12 @@ import React, { Component, PropTypes } from 'react';
 import { ReadableDate, TableRow, TableCell } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
-import { buildRunDetailsUrl } from '../util/UrlUtils';
+import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import RunHistoryButton from './RunHistoryButton';
 
 function noRun(pr, openRunDetails, t, columns) {
     const actions = [
-        <RunButton className="icon-button"
-                   runnable={pr}
-                   latestRun={pr.latestRun}
-                   onNavigation={openRunDetails}
-        />,
+        <RunButton className="icon-button" runnable={pr} latestRun={pr.latestRun} onNavigation={openRunDetails} />,
 
         <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" {...t} />,
     ];
@@ -29,19 +25,8 @@ function noRun(pr, openRunDetails, t, columns) {
 }
 
 export class PullRequestRowRenderer extends Component {
-
     render() {
-        const {
-            columns,
-            runDetailsUrl,
-            pipelineName,
-            statusIndicator,
-            pullRequestId,
-            summary,
-            author,
-            completed,
-            actions = [],
-        } = this.props;
+        const { columns, runDetailsUrl, pipelineName, statusIndicator, pullRequestId, summary, author, completed, actions = [] } = this.props;
 
         const dataProps = {
             'data-pipeline': pipelineName,
@@ -51,21 +36,14 @@ export class PullRequestRowRenderer extends Component {
             dataProps['data-pr'] = pullRequestId;
         }
 
-        const actionsCell = React.createElement(
-            TableCell,
-            {
-                className: 'TableCell--actions',
-            },
-            ...actions);
-
         return (
             <TableRow columns={columns} linkTo={runDetailsUrl} {...dataProps}>
-                <TableCell>{ statusIndicator }</TableCell>
-                <TableCell>{ pullRequestId || ' - ' }</TableCell>
-                <TableCell>{ summary || ' - ' }</TableCell>
-                <TableCell>{ author || ' - ' }</TableCell>
-                <TableCell>{ completed || ' - ' }</TableCell>
-                { actionsCell }
+                <TableCell>{statusIndicator}</TableCell>
+                <TableCell>{pullRequestId || ' - '}</TableCell>
+                <TableCell>{summary || ' - '}</TableCell>
+                <TableCell>{author || ' - '}</TableCell>
+                <TableCell>{completed || ' - '}</TableCell>
+                <TableCell className="TableCell--actions">{actions}</TableCell>
             </TableRow>
         );
     }
@@ -84,7 +62,6 @@ PullRequestRowRenderer.propTypes = {
 };
 
 export default class PullRequestRow extends Component {
-
     // The number of hardcoded actions not provided by extensions
     static actionItemsCount = 2;
 
@@ -110,7 +87,7 @@ export default class PullRequestRow extends Component {
 
         const result = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
         const { fullName, organization } = contextPipeline;
-        const runDetailsUrl = buildRunDetailsUrl(organization, fullName, decodeURIComponent(latestRun.pipeline), latestRun.id, 'pipeline');
+        const runDetailsUrl = UrlBuilder.buildRunUrl(organization, fullName, decodeURIComponent(latestRun.pipeline), latestRun.id, 'pipeline');
 
         const statusIndicator = (
             <LiveStatusIndicator
@@ -122,36 +99,34 @@ export default class PullRequestRow extends Component {
         );
 
         const completed = (
-            <ReadableDate date={latestRun.endTime}
-                          liveUpdate
-                          locale={locale}
-                          shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
-                          longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+            <ReadableDate
+                date={latestRun.endTime}
+                liveUpdate
+                locale={locale}
+                shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
             />
         );
 
-        const actions = [
-            <RunButton className="icon-button"
-                       runnable={pr}
-                       latestRun={pr.latestRun}
-                       onNavigation={this.openRunDetails}
-            />,
-
-            <RunHistoryButton pipeline={contextPipeline} branchName={pr.name} t={t} />,
-
-            <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" t={t} />,
-        ];
+        const actions = (
+            <div className="actions-container">
+                <RunHistoryButton pipeline={contextPipeline} branchName={pr.name} t={t} />
+                <RunButton className="icon-button" runnable={pr} latestRun={pr.latestRun} onNavigation={this.openRunDetails} />
+                <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" t={t} />
+            </div>
+        );
 
         return (
-            <PullRequestRowRenderer columns={columns}
-                                    runDetailsUrl={runDetailsUrl}
-                                    pipelineName={name}
-                                    statusIndicator={statusIndicator}
-                                    pullRequestId={pullRequest.id}
-                                    summary={pullRequest.title}
-                                    author={pullRequest.author}
-                                    completed={completed}
-                                    actions={actions}
+            <PullRequestRowRenderer
+                columns={columns}
+                runDetailsUrl={runDetailsUrl}
+                pipelineName={name}
+                statusIndicator={statusIndicator}
+                pullRequestId={pullRequest.id}
+                summary={pullRequest.title}
+                author={pullRequest.author}
+                completed={completed}
+                actions={actions}
             />
         );
     }

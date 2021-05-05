@@ -9,6 +9,7 @@ export const pipelines = [
             },
         },
         'displayName': 'moreBeers',
+        'disabled': false,
         'name': 'morebeers',
         'organization': 'jenkins',
         'weatherScore': 0,
@@ -18,7 +19,13 @@ export const pipelines = [
         'numberOfSuccessfulBranches': 0,
         'numberOfSuccessfulPullRequests': 0,
         'totalNumberOfBranches': 1,
-        'totalNumberOfPullRequests': 0
+        'totalNumberOfPullRequests': 0,
+        'permissions': {
+            'create': true,
+            'read': true,
+            'start': true,
+            'stop': true
+        }
     },
     {
         '_class': 'some.class',

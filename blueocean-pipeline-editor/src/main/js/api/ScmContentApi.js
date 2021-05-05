@@ -1,10 +1,9 @@
-import { Fetch, getRestUrl } from '@jenkins-cd/blueocean-core-js';
-import TypedError from './TypedError';
-
+import { Fetch, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
+import { TypedError } from './TypedError';
 
 const Base64 = {
-    encode: (data) => btoa(data),
-    decode: (str) => atob(str),
+    encode: data => btoa(data),
+    decode: str => atob(str),
 };
 
 export const LoadError = {
@@ -14,14 +13,13 @@ export const LoadError = {
     JENKINSFILE_NOT_FOUND: 'JENKINSFILE_NOT_FOUND',
 };
 
-
 /**
  * Load and save content to a pipeline's backing SCM provider.
  */
 class ScmContentApi {
-
-    loadContent({organization, pipeline, branch, path = 'Jenkinsfile'}) {
-        let contentUrl = `${getRestUrl({ organization, pipeline })}scm/content?path=${path}`;
+    loadContent({ organization, pipeline, branch, path = 'Jenkinsfile' }) {
+        const pipelineUrl = UrlBuilder.buildRestUrl(organization, pipeline);
+        let contentUrl = `${pipelineUrl}scm/content?path=${path}`;
         if (branch) {
             contentUrl += `&branch=${encodeURIComponent(branch)}`;
         }
@@ -48,7 +46,7 @@ class ScmContentApi {
         throw error;
     }
 
-    buildSaveContentRequest({organization, pipeline, repo, sourceBranch, targetBranch, sha, message, path = 'Jenkinsfile', content}) {
+    buildSaveContentRequest({ organization, pipeline, repo, sourceBranch, targetBranch, sha, message, path = 'Jenkinsfile', content }) {
         return {
             content: {
                 message,
@@ -58,15 +56,23 @@ class ScmContentApi {
                 repo,
                 sha,
                 base64Data: Base64.encode(content),
-            }
+            },
         };
     }
 
-    saveContent({organization, pipeline, repo, sourceBranch, targetBranch, sha, message, path = 'Jenkinsfile', content}) {
-        const contentUrl = `${getRestUrl({organization, pipeline})}scm/content/`;
+    saveContent({ organization, pipeline, repo, sourceBranch, targetBranch, sha, message, path = 'Jenkinsfile', content }) {
+        const contentUrl = `${UrlBuilder.buildRestUrl(organization, pipeline)}scm/content/`;
 
         const body = this.buildSaveContentRequest({
-            organization, pipeline, repo, sourceBranch, targetBranch, sha, message, path, content,
+            organization,
+            pipeline,
+            repo,
+            sourceBranch,
+            targetBranch,
+            sha,
+            message,
+            path,
+            content,
         });
 
         const fetchOptions = {
@@ -77,8 +83,6 @@ class ScmContentApi {
 
         return Fetch.fetchJSON(contentUrl, { fetchOptions });
     }
-
 }
-
 
 export default ScmContentApi;

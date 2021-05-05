@@ -17,12 +17,17 @@ const rename = require('gulp-rename');
 const copy = require('gulp-copy');
 const svgmin = require('gulp-svgmin');
 const lint = require('gulp-eslint');
-
+const ts = require('gulp-typescript');
+const tsProject = ts.createProject('./tsconfig.json');
 // Options, src/dest folders, etc
 
 const config = {
     react: {
         sources: "src/**/*.{js,jsx}",
+        dest: "dist"
+    },
+    ts: {
+        sources: "src/**/*.{ts,tsx}",
         dest: "dist"
     },
     less: {
@@ -84,7 +89,7 @@ gulp.task("default", ["lint", "test", "build", "validate"]);
 
 // Build all
 
-gulp.task("build", ["compile-react", "less", "copy"]);
+gulp.task("build", ["compile-typescript", "compile-react", "less", "copy"]);
 
 // Compile react sources
 
@@ -95,6 +100,10 @@ gulp.task("compile-react", () =>
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest(config.react.dest)));
 
+gulp.task("compile-typescript", () =>
+    gulp.src(config.ts.sources)
+        .pipe(tsProject())
+        .pipe(gulp.dest(config.ts.dest)));
 // Build the CSS
 
 gulp.task("less", () =>

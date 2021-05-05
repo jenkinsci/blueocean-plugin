@@ -2,7 +2,6 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.cloudbees.hudson.plugins.folder.computed.ComputedFolder;
 import hudson.Extension;
-import hudson.Util;
 import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.Job;
@@ -10,7 +9,6 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
-import io.jenkins.blueocean.rest.factory.BlueIssueFactory;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueIssue;
@@ -26,12 +24,12 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import javax.annotation.CheckForNull;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.PULL_REQUEST;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
 
 /**
  * @author Vivek Pandey
@@ -62,7 +60,11 @@ public class BranchImpl extends PipelineImpl {
 
     @Override
     public Link getLink() {
-        return parent.rel(Util.rawEncode(getName()));
+        try {
+            return parent.rel(URLEncoder.encode(getName(), "UTF-8").replace("+", "%20"));
+        } catch (UnsupportedEncodingException e) {
+            return parent.rel(URLEncoder.encode(getName()).replace("+", "%20"));
+        }
     }
 
     @Navigable

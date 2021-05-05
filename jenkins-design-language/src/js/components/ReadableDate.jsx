@@ -1,6 +1,6 @@
 // @flow
 
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 // needs to be loaded since the moment lib will use require which in run time will fail
 import 'moment/min/locales.min';
@@ -10,11 +10,11 @@ import type Moment from 'moment';
 type Props = {
     locale: ?string,
     date: ?string,
-    liveUpdate: ?boolean
+    liveUpdate: ?boolean,
 };
 
 type State = {
-    date: ?Moment
+    date: ?Moment,
 };
 
 /**
@@ -24,29 +24,27 @@ type State = {
  * If time zone is omitted, then UTC is assumed.
  */
 export class ReadableDate extends Component {
+    state: State;
+    timer: number;
+    timerPeriodMillis: number;
 
-    state:State;
-    timer:number;
-    timerPeriodMillis:number;
-
-    constructor(props:Props) {
+    constructor(props: Props) {
         super(props);
         // When updating, average 1s period, with jitter to spread out the work
         this.timerPeriodMillis = 750 + Math.ceil(Math.random() * 500);
         this.timer = 0;
-        this.state = {date: null};
+        this.state = { date: null };
     }
 
     componentWillMount() {
         this.handleProps(this.props);
     }
 
-    componentWillReceiveProps(nextProps:Props) {
+    componentWillReceiveProps(nextProps: Props) {
         this.handleProps(nextProps);
     }
 
-    handleProps(props:Props) {
-
+    handleProps(props: Props) {
         const { locale = 'en' } = props;
 
         if (this.timer) {
@@ -59,8 +57,7 @@ export class ReadableDate extends Component {
         if (props.date) {
             moment.locale(locale);
             // enforce a ISO-8601 date and try to set proper timezone
-            const aMoment = moment(props.date, moment.ISO_8601)
-                .utcOffset(props.date);
+            const aMoment = moment(props.date, moment.ISO_8601).utcOffset(props.date);
 
             if (aMoment.isValid()) {
                 // a moment has no name.
@@ -74,7 +71,7 @@ export class ReadableDate extends Component {
             }, this.timerPeriodMillis);
         }
 
-        this.setState({date});
+        this.setState({ date });
     }
 
     componentWillUnmount() {
@@ -85,28 +82,25 @@ export class ReadableDate extends Component {
     }
 
     render() {
-        const {date} = this.state;
-        const {
-            shortFormat = 'MMM DD h:mma Z',
-            longFormat = 'MMM DD YYYY h:mma Z' ,
-        } = this.props;
+        const { date } = this.state;
+        const { shortFormat = 'MMM DD h:mma Z', longFormat = 'MMM DD YYYY h:mma Z' } = this.props;
 
         if (date) {
             const now = moment().utc();
 
             // only show the year if from different year
-            let tooltip = date.year() !== now.year() ?
-                date.format(longFormat) :
-                date.format(shortFormat);
+            let tooltip = date.year() !== now.year() ? date.format(longFormat) : date.format(shortFormat);
 
             tooltip = tooltip.replace('+00:00', 'UTC');
 
             return (
-                <time dateTime={this.props.date} title={tooltip}>{date.fromNow()}</time>
+                <time dateTime={this.props.date} title={tooltip}>
+                    {date.fromNow()}
+                </time>
             );
         }
 
-        return (<span>-</span>);
+        return <span>-</span>;
     }
 }
 

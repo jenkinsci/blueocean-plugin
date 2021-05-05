@@ -2,7 +2,7 @@ import { assert } from 'chai';
 import fs from 'fs';
 import path from 'path';
 
-import { convertJenkinsNodeGraph } from '../../main/js/components/PipelineRunGraph.jsx';
+import { convertJenkinsNodeGraph } from '../../main/js/components/GraphNodeConverter.js';
 
 import { StatusIndicator } from '@jenkins-cd/design-language';
 

@@ -12,6 +12,7 @@ import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.traits.CleanAfterCheckoutTrait;
 import jenkins.plugins.git.traits.CleanBeforeCheckoutTrait;
+import jenkins.plugins.git.traits.LocalBranchTrait;
 import jenkins.scm.api.SCMHeadCategory;
 import jenkins.scm.api.SCMHeadObserver;
 import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
@@ -41,6 +42,7 @@ public class BitbucketPipelineCreateRequestTest extends BbServerWireMock {
         Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
             .status(201)
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
+            .crumb( crumb )
             .post("/organizations/jenkins/pipelines/")
             .data(ImmutableMap.of(
                 "name","pipeline1",
@@ -65,6 +67,7 @@ public class BitbucketPipelineCreateRequestTest extends BbServerWireMock {
 
         Assert.assertNotNull(SCMTrait.find(traits, CleanAfterCheckoutTrait.class));
         Assert.assertNotNull(SCMTrait.find(traits, CleanBeforeCheckoutTrait.class));
+        Assert.assertNotNull(SCMTrait.find(traits, LocalBranchTrait.class));
 
         BranchDiscoveryTrait branchDiscoveryTrait = SCMTrait.find(traits, BranchDiscoveryTrait.class);
         Assert.assertNotNull(branchDiscoveryTrait);
@@ -89,6 +92,7 @@ public class BitbucketPipelineCreateRequestTest extends BbServerWireMock {
         Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
+                .crumb( crumb )
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of(
                     "name","pipeline1",
@@ -114,6 +118,7 @@ public class BitbucketPipelineCreateRequestTest extends BbServerWireMock {
         Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
             .status(201)
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
+            .crumb( crumb )
             .post("/organizations/jenkins/pipelines/")
             .data(ImmutableMap.of(
                 "name","pipeline1",

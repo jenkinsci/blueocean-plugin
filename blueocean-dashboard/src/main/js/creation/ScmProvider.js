@@ -3,11 +3,10 @@
  */
 
 /**
- * Models a SCM Provider (e.g. Git, Github, Github Enterprise) used in 'Create Pipeline' flow.
+ * Models a SCM Provider (e.g. Git, Github, GitHub Enterprise) used in 'Create Pipeline' flow.
  * Extend this class and implement methods to provide an implementation.
  */
 export default class ScmProvider {
-
     /**
      * Return a React element (button) that when selected will start the "creation flow"
      * Call props.onSelect to initiate the creation flow.
@@ -30,5 +29,4 @@ export default class ScmProvider {
     destroyFlowManager() {
         throw new Error('must implement destroyFlowManager');
     }
-
 }

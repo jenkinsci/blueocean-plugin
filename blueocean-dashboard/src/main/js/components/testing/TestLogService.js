@@ -9,45 +9,50 @@ class Item {
 }
 
 export default class TestLogService extends BunkerService {
-
     loadStdOut(test) {
         if (this.hasItem(test)) return;
-        Fetch.fetch(test._links.stdout.href)
-            .then(res => res.text(), (e) => {
-                if (e.response.status === 404) {
-                    this.setItem(new Item(test, null, true));
+        Fetch.fetch(test._links.stdOut.href)
+            .then(
+                res => res.text(),
+                e => {
+                    if (e.response.status === 404) {
+                        this.setItem(new Item(test, null, true));
+                    }
                 }
-            })
-            .then((data) => {
+            )
+            .then(data => {
                 this.setItem(new Item(test, data, true));
             });
     }
 
     loadStdErr(test) {
         if (this.hasItem(test)) return;
-        Fetch.fetch(test._links.stderr.href)
-            .then(res => res.text(), (e) => {
-                if (e.response.status === 404) {
-                    this.setItem(new Item(test, null, false));
+        Fetch.fetch(test._links.stdErr.href)
+            .then(
+                res => res.text(),
+                e => {
+                    if (e.response.status === 404) {
+                        this.setItem(new Item(test, null, false));
+                    }
                 }
-            })
-            .then((data) => {
+            )
+            .then(data => {
                 this.setItem(new Item(test, data, false));
             });
     }
 
     getStdOut(test) {
-        const item = this.getItem(test._links.stdout.href);
+        const item = this.getItem(test._links.stdOut.href);
         return item && item.value;
     }
 
     getStdErr(test) {
-        const item = this.getItem(test._links.stderr.href);
+        const item = this.getItem(test._links.stdErr.href);
         return item && item.value;
     }
 
     bunkerKey(data) {
         const links = data.value.test._links;
-        return data.value.isStdOut ? links.stdout.href : links.stderr.href;
+        return data.value.isStdOut ? links.stdOut.href : links.stdErr.href;
     }
 }

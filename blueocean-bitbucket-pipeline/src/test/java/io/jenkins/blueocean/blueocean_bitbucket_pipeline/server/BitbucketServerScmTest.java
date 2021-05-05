@@ -2,8 +2,8 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
 import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import io.jenkins.blueocean.commons.DigestUtils;
 import io.jenkins.blueocean.util.HttpRequest;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
 import org.junit.Test;
 

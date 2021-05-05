@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.Functions;
 import hudson.Util;
@@ -30,8 +31,10 @@ import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.BlueTrendContainer;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.util.Disabler;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
@@ -42,7 +45,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -91,8 +94,21 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public BlueRun getLatestRun() {
-        Iterator<BlueRun> iterator = getRuns().iterator();
-        return iterator.hasNext() ? iterator.next() : null;
+        Run run = job.getLastBuild();
+        if (run != null) {
+            return new AbstractRunImpl<Run>(run, AbstractPipelineImpl.this, organization) {
+                @Override
+                public Collection<BlueActionProxy> getActions() {
+                    return Collections.emptyList();
+                }
+
+                @Override
+                public BlueTestSummary getTestSummary() {
+                    return null;
+                }
+            };
+        }
+        return null;
     }
 
     @Override
@@ -148,6 +164,26 @@ public class AbstractPipelineImpl extends BluePipeline {
         return getFullDisplayName(organization, job);
     }
 
+    @Override
+    @SuppressFBWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "isDisabled will return null if the job type doesn't support it")
+    public Boolean getDisabled() {
+        return Disabler.isDisabled(job);
+    }
+
+    @Override
+    public void enable() throws IOException {
+        if (getPermissions(job).getOrDefault(BluePipeline.CONFIGURE_PERMISSION, Boolean.FALSE)) {
+            Disabler.makeDisabled(job, false);
+        }
+    }
+
+    @Override
+    public void disable() throws IOException {
+        if (getPermissions(job).getOrDefault(BluePipeline.CONFIGURE_PERMISSION, Boolean.FALSE)) {
+            Disabler.makeDisabled(job, true);
+        }
+    }
+
     /**
      * Returns full display name relative to the <code>BlueOrganization</code> base. Each display name is separated by
      * '/' and each display name is url encoded
@@ -161,16 +197,16 @@ public class AbstractPipelineImpl extends BluePipeline {
         ItemGroup<?> group = getBaseGroup(org);
         String[] displayNames = Functions.getRelativeDisplayNameFrom(item, group).split(" » ");
 
-        StringBuilder encondedDisplayName=new StringBuilder();
+        StringBuilder encodedDisplayName=new StringBuilder();
         for(int i=0;i<displayNames.length;i++) {
             if(i!=0) {
-                encondedDisplayName.append(String.format("/%s", Util.rawEncode(displayNames[i])));
+                encodedDisplayName.append(String.format("/%s", Util.rawEncode(displayNames[i])));
             }else {
-                encondedDisplayName.append(String.format("%s", Util.rawEncode(displayNames[i])));
+                encodedDisplayName.append(String.format("%s", Util.rawEncode(displayNames[i])));
             }
         }
 
-        return encondedDisplayName.toString();
+        return encodedDisplayName.toString();
     }
 
     /**

@@ -11,12 +11,12 @@ import { getAddIconGroup, getDeleteIconGroup } from './common';
 import focusOnElement from './focusOnElement';
 import InputText from './InputText';
 import { ValidationMessageList } from './ValidationMessageList';
-import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 const t = i18nTranslator('blueocean-pipeline-editor');
 
 type Props = {
-    node: PipelineInfo|StageInfo,
+    node: PipelineInfo | StageInfo,
     onChange: (environment: Object[]) => any,
 };
 
@@ -28,35 +28,33 @@ type DefaultProps = typeof EnvironmentConfiguration.defaultProps;
 
 const iconRadius = 10;
 function addIcon() {
-    return (<svg width={iconRadius*2} height={iconRadius*2}>
-        <g transform={`translate(${iconRadius},${iconRadius})`}>
-            {getAddIconGroup(iconRadius)}
-        </g>
-    </svg>);
+    return (
+        <svg width={iconRadius * 2} height={iconRadius * 2}>
+            <g transform={`translate(${iconRadius},${iconRadius})`}>{getAddIconGroup(iconRadius)}</g>
+        </svg>
+    );
 }
 
 function deleteIcon() {
-    return (<svg width={iconRadius*2} height={iconRadius*2}>
-        <g transform={`translate(${iconRadius},${iconRadius})`}>
-            {getDeleteIconGroup(iconRadius)}
-        </g>
-    </svg>);
+    return (
+        <svg width={iconRadius * 2} height={iconRadius * 2}>
+            <g transform={`translate(${iconRadius},${iconRadius})`}>{getDeleteIconGroup(iconRadius)}</g>
+        </svg>
+    );
 }
 
 export class EnvironmentConfiguration extends Component<DefaultProps, Props, State> {
-    props:Props;
-    state:State;
+    props: Props;
+    state: State;
 
-    constructor(props:Props) {
+    constructor(props: Props) {
         super(props);
         this.state = { environments: null, selectedEnvironment: props.node && props.node.environment };
     }
 
-    componentWillMount() {
-    }
+    componentWillMount() {}
 
-    componentDidMount() {
-    }
+    componentDidMount() {}
 
     addEnvironmentEntry() {
         const { node } = this.props;
@@ -72,7 +70,7 @@ export class EnvironmentConfiguration extends Component<DefaultProps, Props, Sta
                 value: {
                     isLiteral: true,
                     value: '',
-                }
+                },
             };
             node.environment.push(envEntry);
             this.setState({ pristine: envEntry.id });
@@ -82,7 +80,7 @@ export class EnvironmentConfiguration extends Component<DefaultProps, Props, Sta
     }
 
     removeEnviromentEntry(entry, idx) {
-        this.props.node.environment.splice(idx,1);
+        this.props.node.environment.splice(idx, 1);
         this.props.onChange();
     }
 
@@ -94,23 +92,58 @@ export class EnvironmentConfiguration extends Component<DefaultProps, Props, Sta
             return null;
         }
 
-        return (<div className="environment-select">
-            <h5>{t('editor.jenkins.environment', {default: 'Environment'})}</h5>
-            <Split>
-                <span>{t('editor.jenkins.environment.name', {default: 'Name'})}</span>
-                <span>{t('editor.jenkins.environment.value', {default: 'Value'})}</span>
-                <button onClick={e => this.addEnvironmentEntry()} title={t('editor.page.common.add', {default: 'Add'})}  className="environment-add-delete-icon add">{addIcon()}</button>
-            </Split>
-            {node.environment && node.environment.map((env, idx) => <div className="environment-entry" key={env.id}>
-                <ValidationMessageList node={env} />
+        return (
+            <div className="environment-select">
+                <h5>{t('editor.jenkins.environment', { default: 'Environment' })}</h5>
                 <Split>
-                    <InputText hasError={pristine !== env.id && !isValidEnvironmentKey(env.key)}
-                        defaultValue={env.key} onChange={val => { env.key = val; this.setState({ pristine: null }); this.props.onChange(); }}
-                        onBlur={e => this.setState({ pristine: null })} />
-                    <TextInput defaultValue={env.value.value} onChange={val => { env.value.value = val; this.props.onChange(); }} />
-                    <button onClick={e => { this.removeEnviromentEntry(env, idx); this.props.onChange(); }} title={t('editor.page.common.remove', {default: 'Remove'})}  className="environment-add-delete-icon delete">{deleteIcon()}</button>
+                    <span>{t('editor.jenkins.environment.name', { default: 'Name' })}</span>
+                    <span>{t('editor.jenkins.environment.value', { default: 'Value' })}</span>
+                    <button
+                        onClick={e => this.addEnvironmentEntry()}
+                        title={t('editor.page.common.add', { default: 'Add' })}
+                        className="environment-add-delete-icon add"
+                    >
+                        {addIcon()}
+                    </button>
                 </Split>
-            </div>)}
-        </div>);
+                {node.environment &&
+                    node.environment.map((env, idx) => (
+                        <div className="environment-entry" key={env.id}>
+                            <ValidationMessageList node={env} />
+                            <Split>
+                                <InputText
+                                    hasError={pristine !== env.id && !isValidEnvironmentKey(env.key)}
+                                    defaultValue={env.key}
+                                    className="env-key"
+                                    onChange={val => {
+                                        env.key = val;
+                                        this.setState({ pristine: null });
+                                        this.props.onChange();
+                                    }}
+                                    onBlur={e => this.setState({ pristine: null })}
+                                />
+                                <TextInput
+                                    defaultValue={env.value.value}
+                                    className="env-value"
+                                    onChange={val => {
+                                        env.value.value = val;
+                                        this.props.onChange();
+                                    }}
+                                />
+                                <button
+                                    onClick={e => {
+                                        this.removeEnviromentEntry(env, idx);
+                                        this.props.onChange();
+                                    }}
+                                    title={t('editor.page.common.remove', { default: 'Remove' })}
+                                    className="environment-add-delete-icon delete"
+                                >
+                                    {deleteIcon()}
+                                </button>
+                            </Split>
+                        </div>
+                    ))}
+            </div>
+        );
     }
 }

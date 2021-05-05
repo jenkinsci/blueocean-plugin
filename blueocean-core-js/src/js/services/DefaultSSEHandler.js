@@ -1,6 +1,4 @@
-
 export class DefaultSSEHandler {
-
     constructor(pipelineService, activityService, pagerService) {
         this.pipelineService = pipelineService;
         this.activityService = activityService;
@@ -8,43 +6,43 @@ export class DefaultSSEHandler {
         this.loggingEnabled = false;
     }
 
-    handleEvents = (event) => {
+    handleEvents = event => {
         switch (event.jenkins_event) {
-        case 'job_run_paused':
-        case 'job_run_unpaused':
-            this.updateJob(event);
-            break;
-        case 'job_crud_created':
-            // Refetch pagers here. This will pull in the newly created pipeline into the bunker.
-            this.pipelineService.refreshPagers();
-            break;
-        case 'job_crud_deleted':
-            // Remove directly from bunker. No need to refresh bunkers as it will just show one less item.
-            this.pipelineService.removeItem(event.blueocean_job_rest_url);
-            break;
-        case 'job_crud_renamed':
-            // TODO: Implement this.
-            // Seems to be that SSE fires an updated event for the old job,
-            // then a rename for the new one. This is somewhat confusing for us.
-            break;
-        case 'job_run_queue_buildable':
-        case 'job_run_queue_enter':
-        case 'job_run_queue_blocked':
-            this.queueEnter(event);
-            break;
-        case 'job_run_queue_left':
-            this.queueLeft(event);
-            break;
-        case 'job_run_started': {
-            this.updateJob(event);
-            break;
-        }
-        case 'job_run_ended': {
-            this.updateJob(event);
-            break;
-        }
-        default :
-        // Else ignore the event.
+            case 'job_run_paused':
+            case 'job_run_unpaused':
+                this.updateJob(event);
+                break;
+            case 'job_crud_created':
+                // Refetch pagers here. This will pull in the newly created pipeline into the bunker.
+                this.pipelineService.refreshPagers();
+                break;
+            case 'job_crud_deleted':
+                // Remove directly from bunker. No need to refresh bunkers as it will just show one less item.
+                this.pipelineService.removeItem(event.blueocean_job_rest_url);
+                break;
+            case 'job_crud_renamed':
+                // TODO: Implement this.
+                // Seems to be that SSE fires an updated event for the old job,
+                // then a rename for the new one. This is somewhat confusing for us.
+                break;
+            case 'job_run_queue_buildable':
+            case 'job_run_queue_enter':
+            case 'job_run_queue_blocked':
+                this.queueEnter(event);
+                break;
+            case 'job_run_queue_left':
+                this.queueLeft(event);
+                break;
+            case 'job_run_started': {
+                this.updateJob(event);
+                break;
+            }
+            case 'job_run_ended': {
+                this.updateJob(event);
+                break;
+            }
+            default:
+            // Else ignore the event.
         }
     };
 
@@ -84,7 +82,9 @@ export class DefaultSSEHandler {
         }
         // If we have a queued item but the branch isn't present, we need to refresh the pager
         // this happens, for example, when you create a new pipeline in a repo that did not have one
-        const pipeline = this.pipelineService.getPipeline(`/blue/rest/organizations/${event.jenkins_org}/pipelines/${encodeURIComponent(event.blueocean_job_pipeline_name)}/`);
+        const pipeline = this.pipelineService.getPipeline(
+            `/blue/rest/organizations/${event.jenkins_org}/pipelines/${encodeURIComponent(event.blueocean_job_pipeline_name)}/`
+        );
         if (pipeline && pipeline.branchNames.indexOf(event.blueocean_job_branch_name) === -1) {
             this.pipelineService.pipelinesPager(event.jenkins_org, event.blueocean_job_pipeline_name).refresh();
         }
@@ -149,15 +149,27 @@ export class DefaultSSEHandler {
 
         this.loggingEnabled && console.log(`fetch ${logMessage}`);
 
-        this.activityService.fetchActivity(href, { useCache: false, disableLoadingIndicator: true }).then((run) => {
-            this.activityService.setItem(run);
+        this.activityService.fetchActivity(href, { useCache: false, disableLoadingIndicator: true }).then(run => {
             for (const key of this.branchPagerKeys(event)) {
                 const pager = this.pagerService.getPager({ key });
                 if (pager && !pager.has(href)) {
                     pager.insert(href);
                 }
             }
-            this.pipelineService.updateLatestRun(run);
+
+            if (run) {
+                this.pipelineService.updateLatestRun(run);
+
+                /*
+                    Check to see if the TestSummary has been loaded and if so then reload it. Otherwise don't because
+                    it's expensive to calculate.
+                 */
+
+                const testResultUrl = run._links.blueTestSummary && run._links.blueTestSummary.href;
+                if (this.activityService.hasItem(testResultUrl)) {
+                    this.activityService.fetchTestSummary(testResultUrl, { useCache: false, disableLoadingIndicator: true });
+                }
+            }
         });
     }
 

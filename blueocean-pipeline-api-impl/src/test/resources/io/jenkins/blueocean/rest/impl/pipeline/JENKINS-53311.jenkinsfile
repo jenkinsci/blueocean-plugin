@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+    stages {
+        stage('Parallel') {
+            parallel {
+                stage('Nested A') {
+                    steps {
+                        echo 'A'
+                    }
+                }
+                stage('Nested B') {
+                    stages {
+                        stage('Nested B-1') {
+                            steps {
+                                sleep time: 10, unit: 'SECONDS'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -25,6 +25,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestExtension;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -38,7 +40,13 @@ import static org.junit.Assert.*;
  * @author Vivek Pandey
  */
 @RunWith(Parameterized.class)
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GitScmTest extends PipelineBaseTest {
+    public static final String HTTPS_GITHUB_NO_JENKINSFILE = "https://github.com/vivek/test-no-jenkins-file.git";
+    public static final String HTTPS_GITHUB_PUBLIC = "https://github.com/cloudbeers/multibranch-demo.git";
+    public static final String HTTPS_GITHUB_PUBLIC_HASH = "996e1f714b08e971ec79e3bea686287e66441f043177999a13dbc546d8fe402a";
+    // ^ is DigestUtils.sha256Hex(normalizedUrl)
+
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
 
@@ -62,6 +70,7 @@ public class GitScmTest extends PipelineBaseTest {
         return new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/credentials/user/")
                 .data(credRequest).build(Map.class);
     }
@@ -96,11 +105,12 @@ public class GitScmTest extends PipelineBaseTest {
         Map r = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", "https://github.com/vivek/test-no-jenkins-file.git",
-                                "credentialId", credentialId)
+                        "scmConfig", ImmutableMap.of("uri", HTTPS_GITHUB_NO_JENKINSFILE,
+                                                     "credentialId", credentialId)
                 )).build(Map.class);
 
         assertEquals("demo", r.get("name"));
@@ -203,6 +213,7 @@ public class GitScmTest extends PipelineBaseTest {
         resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -214,8 +225,8 @@ public class GitScmTest extends PipelineBaseTest {
         List<Map> errors = (List<Map>) resp.get("errors");
 
         assertEquals(1, errors.size());
-        assertEquals("scmConfig.credentialId", errors.get(0).get("field"));
-        assertEquals("INVALID", errors.get(0).get("code"));
+        assertEquals(errors.get(0).toString(), "scmConfig.credentialId", errors.get(0).get("field"));
+        assertEquals(errors.get(0).toString(), "INVALID", errors.get(0).get("code"));
     }
 
     @Test
@@ -224,6 +235,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -277,6 +289,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -301,6 +314,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -314,6 +328,7 @@ public class GitScmTest extends PipelineBaseTest {
         resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
@@ -352,6 +367,141 @@ public class GitScmTest extends PipelineBaseTest {
         assertEquals("scmConfig.credentialId", errors.get(0).get("field"));
         assertEquals("NOT_FOUND", errors.get(0).get("code"));
         assertNull(getOrgRoot().getItem("demo"));
+    }
+
+    @Test
+    public void shouldNotProvideIdForMissingCredentials() throws Exception {
+        User user = login();
+        String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
+        String repoPath = scmPath + "?repositoryUrl=" + HTTPS_GITHUB_PUBLIC;
+
+        Map resp = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
+            .get(repoPath)
+            .build(Map.class);
+
+        assertEquals(null, resp.get("credentialId"));
+    }
+
+    @Test
+    public void shouldBePoliteAboutBadUrl() throws Exception {
+        User user = login();
+        String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
+        // Let's say the user has only started typing a url
+        String repoPath = scmPath + "?repositoryUrl=htt";
+
+        Map resp = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
+            .get(repoPath)
+            .build(Map.class);
+
+        assertEquals(null, resp.get("credentialId"));
+    }
+
+    @Test
+    public void shouldCreateCredentialsWithDefaultId() throws Exception {
+        User user = login();
+
+        String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
+
+        // First create a credential
+        String scmValidatePath = scmPath + "validate";
+
+        // We're relying on github letting you do a git-ls for repos with bad creds so long as they're public
+        Map params = ImmutableMap.of(
+            "userName", "someguy",
+            "password", "password",
+            "repositoryUrl", HTTPS_GITHUB_PUBLIC
+        );
+
+        Map resp = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
+            .data(params)
+            .put(scmValidatePath)
+            .build(Map.class);
+
+        assertEquals("ok", resp.get("status"));
+
+        // Now get the default credentialId
+
+        String repoPath = scmPath + "?repositoryUrl=" + HTTPS_GITHUB_PUBLIC;
+
+        Map resp2 = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
+            .get(repoPath)
+            .build(Map.class);
+
+        assertEquals("git:" + HTTPS_GITHUB_PUBLIC_HASH, resp2.get("credentialId"));
+    }
+
+    /**
+     * Check that we get an error when using an invalid URL
+     * @throws Exception
+     */
+    @Test
+    public void shouldNotCreateCredentialsForBadUrl1() throws Exception {
+        User user = login();
+
+        String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
+
+        // First create a credential
+        String scmValidatePath = scmPath + "validate";
+
+        // We're relying on github letting you do a git-ls for repos with bad creds so long as they're public
+        Map params = ImmutableMap.of(
+            "userName", "someguy",
+            "password", "password",
+            "repositoryUrl", "htt"
+        );
+
+        Map resp = new RequestBuilder(baseUrl)
+            .status(400)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
+            .data(params)
+            .put(scmValidatePath)
+            .build(Map.class);
+
+        assertTrue(resp.get("message").toString().toLowerCase().contains("invalid url"));
+    }
+
+    /**
+     * Check that we get an error when using a valid but non-answering URL
+     * @throws Exception
+     */
+    @Test
+    public void shouldNotCreateCredentialsForBadUrl2() throws Exception {
+        User user = login();
+
+        String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
+
+        // First create a credential
+        String scmValidatePath = scmPath + "validate";
+
+        // We're relying on github letting you do a git-ls for repos with bad creds so long as they're public
+        Map params = ImmutableMap.of(
+            "userName", "someguy",
+            "password", "password",
+            "repositoryUrl", "http://example.org/has/no/repos.git"
+        );
+
+        Map resp = new RequestBuilder(baseUrl)
+            .status(428)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .crumb( crumb )
+            .data(params)
+            .put(scmValidatePath)
+            .build(Map.class);
+
+        assertTrue(resp.get("message").toString().toLowerCase().contains("url unreachable"));
     }
 
     private String createMbp(User user) throws UnirestException {
@@ -395,8 +545,8 @@ public class GitScmTest extends PipelineBaseTest {
         sampleRepo.write("file", "subsequent content1");
         sampleRepo.git("commit", "--all", "--message=tweaked1");
     }
-    
-    
+
+
 
     private String getOrgName() {
         return OrganizationFactory.getInstance().list().iterator().next().getName();
@@ -408,9 +558,9 @@ public class GitScmTest extends PipelineBaseTest {
 
     @TestExtension
     public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
-        
+
         public static String orgRoot;
-        
+
         private OrganizationImpl instance;
 
         public TestOrganizationFactoryImpl() {
@@ -426,7 +576,7 @@ public class GitScmTest extends PipelineBaseTest {
                 } catch (IOException e) {
                     throw new RuntimeException("Test setup failed!", e);
                 }
-                
+
             }
             else {
                 instance = new OrganizationImpl("jenkins", Jenkins.getInstance());

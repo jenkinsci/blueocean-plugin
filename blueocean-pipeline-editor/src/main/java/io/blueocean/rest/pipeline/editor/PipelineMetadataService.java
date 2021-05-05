@@ -7,6 +7,7 @@ import hudson.Launcher;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.security.csrf.CrumbIssuer;
+import hudson.tasks.BuildWrapper;
 import hudson.tasks.Builder;
 import hudson.tasks.Publisher;
 import hudson.tools.ToolDescriptor;
@@ -15,6 +16,7 @@ import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.ApiRoutable;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
+import jenkins.tasks.SimpleBuildWrapper;
 import org.jenkinsci.plugins.pipeline.modeldefinition.agent.DeclarativeAgent;
 import org.jenkinsci.plugins.pipeline.modeldefinition.agent.DeclarativeAgentDescriptor;
 import org.jenkinsci.plugins.pipeline.modeldefinition.model.BuildCondition;
@@ -164,6 +166,7 @@ public class PipelineMetadataService implements ApiRoutable {
         List<Descriptor<?>> metaStepDescriptors = new ArrayList<Descriptor<?>>();
         populateMetaSteps(metaStepDescriptors, Builder.class);
         populateMetaSteps(metaStepDescriptors, Publisher.class);
+        populateMetaSteps(metaStepDescriptors, BuildWrapper.class);
 
         for (Descriptor<?> d : metaStepDescriptors) {
             ExportedPipelineFunction metaStep = getStepMetadata(d);
@@ -198,6 +201,8 @@ public class PipelineMetadataService implements ApiRoutable {
         Jenkins j = Jenkins.getInstance();
         for (Descriptor<?> d : j.getDescriptorList(c)) {
             if (SimpleBuildStep.class.isAssignableFrom(d.clazz) && symbolForObject(d) != null) {
+                r.add(d);
+            } else if (SimpleBuildWrapper.class.isAssignableFrom(d.clazz) && symbolForObject(d) != null) {
                 r.add(d);
             }
         }

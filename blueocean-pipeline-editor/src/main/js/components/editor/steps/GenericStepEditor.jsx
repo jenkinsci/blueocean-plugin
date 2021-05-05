@@ -14,8 +14,7 @@ const allPropertyEditors = [
     require('../../properties/TimeUnitPropertyInput').default,
 ];
 
-const propertyEditorsByName = {
-};
+const propertyEditorsByName = {};
 
 for (let e of allPropertyEditors) {
     for (let t of e.dataTypes) {
@@ -26,7 +25,7 @@ for (let e of allPropertyEditors) {
 type Props = {
     onChange: Function,
     step: any,
-}
+};
 
 type State = {
     stepMetadata: Array<any>,
@@ -35,17 +34,17 @@ type State = {
 type DefaultProps = typeof GenericStepEditorPanel.defaultProps;
 
 export default class GenericStepEditorPanel extends Component<DefaultProps, Props, State> {
-    props:Props;
-    state:State;
+    props: Props;
+    state: State;
 
-    constructor(props:Props) {
+    constructor(props: Props) {
         super(props);
         this.state = { stepMetadata: null };
     }
 
     componentWillMount() {
         pipelineMetadataService.getStepListing(stepMetadata => {
-            this.setState({stepMetadata: stepMetadata});
+            this.setState({ stepMetadata: stepMetadata });
         });
     }
 
@@ -71,8 +70,18 @@ export default class GenericStepEditorPanel extends Component<DefaultProps, Prop
                         return React.createElement(propTypeEditor, { step: step, type: p, propName: p.name, onChange: () => this.updateStepData() });
                     }
                     return (
-                        <FormElement title={p.capitalizedName + (p.isRequired ? '*' : '')} errorMessage={!step.pristine && !getArg(step, p.name).value && (p.capitalizedName + ' is required')}>
-                            <TextInput key={p.name} defaultValue={getArg(step, p.name).value} onChange={val => { setArg(step, p.name, val); this.updateStepData(); }} />
+                        <FormElement
+                            title={p.capitalizedName + (p.isRequired ? '*' : '')}
+                            errorMessage={!step.pristine && !getArg(step, p.name).value && p.capitalizedName + ' is required'}
+                        >
+                            <TextInput
+                                key={p.name}
+                                defaultValue={getArg(step, p.name).value}
+                                onChange={val => {
+                                    setArg(step, p.name, val);
+                                    this.updateStepData();
+                                }}
+                            />
                         </FormElement>
                     );
                 })}

@@ -19,7 +19,7 @@ public abstract class Locate {
      * Convenient when you have a WebElement instance but need to use an API that uses 'By' locator.
      *
      * @param elem
-     * @return elemement wrapped in 'By' locator
+     * @return element wrapped in 'By' locator
      */
     public static By byElem(WebElement elem) {
         return new ByElement(elem);

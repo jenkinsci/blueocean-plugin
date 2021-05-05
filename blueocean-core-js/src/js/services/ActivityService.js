@@ -1,8 +1,8 @@
 import { Pager } from './Pager';
-import RestPaths from '../paths/rest';
+import { RestPaths } from '../paths/rest';
 import { Fetch } from '../fetch';
 import { BunkerService } from './BunkerService';
-import utils from '../utils';
+import { Utils } from '../utils';
 import mobxUtils from 'mobx-utils';
 
 /*
@@ -30,7 +30,7 @@ export class ActivityService extends BunkerService {
      *
      * @param {string} organization Jenkins organization that this pager belongs to.
      * @param {string} pipeline Pipeline that this pager belongs to.
-     * @returns {Pager} Pager for this pipelne.
+     * @returns {Pager} Pager for this pipeline.
      */
     activityPager(organization, pipeline, branch) {
         return this.pagerService.getPager({
@@ -52,6 +52,10 @@ export class ActivityService extends BunkerService {
         return this.getItem(href);
     }
 
+    getTestSummary(href) {
+        return this.getItem(href);
+    }
+
     /**
      * Fetches an activity from rest api.
      *
@@ -66,17 +70,47 @@ export class ActivityService extends BunkerService {
         if (useCache && this.hasItem(href)) {
             return Promise.resolve(this.getItem(href));
         }
+        return Fetch.fetchJSON(href, { disableLoadingIndicator })
+            .then(data => {
+                return this.setItem(data);
+            })
+            .catch(err => {
+                console.log('There has been an error while trying to get the run data.', err);
+            });
+    }
+
+    /**
+     * Fetch a TestSummary for a run
+     *
+     * @param href (eg: myRun._links.testSummary.href )
+     */
+    fetchTestSummary(href, { useCache, disableLoadingIndicator } = {}) {
+        if (useCache && this.hasItem(href)) {
+            return Promise.resolve(this.getItem(href));
+        }
 
         return Fetch.fetchJSON(href, { disableLoadingIndicator })
             .then(data => {
-                // Should really have dedupe on methods like these, but for now
-                // just clone data so that we dont modify other instances.
-                const run = utils.clone(data);
-                return this.setItem(run);
+                return this.setItem(data);
             })
             .catch(err => {
-                console.log('There has been an error while trying to get the data.', err); // FIXME: Ivan what is the way to return an "error" opbject so underlying component are aware of the problem and can react
+                console.log('There has been an error while trying to get the TestSummary data.', err);
             });
+    }
+
+    /**
+     * Fetch a pager for changeSet
+     *
+     * @param href (eg: myRun._links.changeSet.href )
+     */
+    changeSetPager(href) {
+        return this.pagerService.getPager({
+            key: href,
+            /**
+             * Lazily generate the pager incase its needed.
+             */
+            lazyPager: () => new Pager(href, 100, this),
+        });
     }
 
     /**
@@ -91,11 +125,11 @@ export class ActivityService extends BunkerService {
 
     artifactsPager(runHref) {
         return this.pagerService.getPager({
-                key: `${runHref}artifacts/`,
-                /**
-                 * Lazily generate the pager incase its needed.
-                 */
-                lazyPager: () => new Pager(`${runHref}artifacts/`, 100, this),
-    });
+            key: `${runHref}artifacts/`,
+            /**
+             * Lazily generate the pager incase its needed.
+             */
+            lazyPager: () => new Pager(`${runHref}artifacts/`, 100, this),
+        });
     }
 }

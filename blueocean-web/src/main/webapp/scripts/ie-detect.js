@@ -1,4 +1,4 @@
-(function () {
+(function() {
     //
     // IeVersion code from https://github.com/Gavin-Paolucci-Kleinow/ie-truth
     // License: MIT (https://github.com/Gavin-Paolucci-Kleinow/ie-truth/blob/master/LICENSE)
@@ -11,7 +11,7 @@
             EdgeHtmlVersion: 0,
             TrueVersion: 0,
             ActingVersion: 0,
-            CompatibilityMode: false
+            CompatibilityMode: false,
         };
 
         //Try to find the Trident version number
@@ -39,7 +39,7 @@
             value.CompatibilityMode = value.TrueVersion != value.ActingVersion;
         }
 
-        //Try to find Edge and the EdgeHTML vesion number
+        //Try to find Edge and the EdgeHTML version number
         var edge = navigator.userAgent.match(/Edge\/(\d+\.\d+)$/);
         if (edge) {
             value.IsEdge = true;
@@ -57,10 +57,10 @@
     // stuff here.
     //
     var ieVersion = IeVersion();
-    var docHead = window.document.getElementsByTagName("head")[0];
-    var appurl = docHead.getAttribute("data-appurl");
+    var docHead = window.document.getElementsByTagName('head')[0];
+    var appurl = docHead.getAttribute('data-appurl');
     var incompatPageUrl = appurl + '/incompatibleie';
-    var currentlyOnIncompatPage = (window.location.pathname === incompatPageUrl);
+    var currentlyOnIncompatPage = window.location.pathname === incompatPageUrl;
 
     if (ieVersion.ActingVersion < 11 && !ieVersion.IsEdge) {
         if (!currentlyOnIncompatPage) {
@@ -74,4 +74,4 @@
         // back to blue ocean.
         window.location = appurl;
     }
-}());
+})();

@@ -40,7 +40,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Stapler.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
 
     @Test
@@ -146,6 +146,39 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
         fail("Should have failed with PreConditionException");
     }
 
+    @Test
+    public void handleSaveErrorsWithEmptyStatusLine() throws UnirestException, IOException {
+        String credentialId = createCredential(BitbucketServerScm.ID);
+        StaplerRequest staplerRequest = mockStapler();
+        MultiBranchProject mbp = mockMbp(credentialId);
+
+        GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K")
+            .branch("master").message("new commit").owner("TESTP").path("SomeFile").repo("pipeline-demo-test").build();
+
+        when(staplerRequest.bindJSON(Mockito.eq(BitbucketScmSaveFileRequest.class), Mockito.any(JSONObject.class))).thenReturn(new BitbucketScmSaveFileRequest(content));
+
+        String request = "{\n" +
+            "  \"content\" : {\n" +
+            "    \"message\" : \"new commit\",\n" +
+            "    \"path\" : \"SomeFile\",\n" +
+            "    \"branch\" : \"master\",\n" +
+            "    \"repo\" : \"pipeline-demo-test\",\n" +
+            "    \"base64Data\" : " + "\"bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K\"" +
+            "  }\n" +
+            "}";
+
+        when(staplerRequest.getReader()).thenReturn(new BufferedReader(new StringReader(request), request.length()));
+
+        try {
+            // Should get mocked response from:
+            // bitbucket_rest_api_10_projects_testp_repos_pipeline-demo-test_browse_somefile-7269cd83-1af6-4134-9161-82360d678dcc.json
+            new BitbucketServerScmContentProvider().saveContent(staplerRequest, mbp);
+        } catch (ServiceException e) {
+            assertEquals("File editing canceled for 'SomeFile' on 'master'.", e.getMessage());
+            return;
+        }
+        fail("Should have failed with message: File editing canceled for 'SomeFile' on 'master'.");
+    }
 
     @Test
     public void updateContent() throws UnirestException, IOException {

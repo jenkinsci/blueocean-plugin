@@ -37,7 +37,7 @@ export default class ClassMetadataStore {
             // callback cache and then issue the request to
             // the classMetadataProvider.
             callbacks = this.classMetadataOnloadCallbacks[type] = [onload];
-            this.classMetadataProvider(type, (data) => {
+            this.classMetadataProvider(type, data => {
                 classMeta = this.classMetadata[type] = JSON.parse(JSON.stringify(data));
                 classMeta.classes = classMeta.classes || [];
                 // Make sure the type itself is in the list
@@ -64,12 +64,12 @@ export default class ClassMetadataStore {
 
     dataType(dataType) {
         return (extensions, onload) => {
-            if (dataType && typeof(dataType) === 'object'
-                    && '_class' in dataType) { // handle the common API incoming data
+            if (dataType && typeof dataType === 'object' && '_class' in dataType) {
+                // handle the common API incoming data
                 dataType = dataType._class;
             }
 
-            this.getClassMetadata(dataType, (currentTypeInfo) => {
+            this.getClassMetadata(dataType, currentTypeInfo => {
                 // prevent returning extensions for the given type
                 // when a more specific extension is found
                 var matchingExtensions = [];

@@ -2,6 +2,18 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult;
+import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeoutException;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
@@ -20,19 +32,6 @@ import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStepExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Gives steps inside
@@ -58,7 +57,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
 
     private FlowNode currentStage;
 
-    private ArrayDeque<String> stages = new ArrayDeque<>();
+    private ArrayDeque<FlowNode> stages = new ArrayDeque<>();
     private InputAction inputAction;
     private StepEndNode closestEndNode;
     private StepStartNode agentNode = null;
@@ -95,7 +94,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
     public void chunkStart(@Nonnull FlowNode startNode, @CheckForNull FlowNode beforeBlock, @Nonnull ForkScanner scanner) {
         super.chunkStart(startNode, beforeBlock, scanner);
         if(PipelineNodeUtil.isStage(startNode) && !PipelineNodeUtil.isSyntheticStage(startNode)){
-            stages.push(startNode.getId());
+            stages.push(startNode);
         }
     }
 
@@ -104,8 +103,13 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
         super.chunkEnd(endNode, afterChunk, scanner);
         if(endNode instanceof StepEndNode && PipelineNodeUtil.isStage(((StepEndNode)endNode).getStartNode())){
             currentStage = ((StepEndNode)endNode).getStartNode();
+        } else {
+            final String id = endNode.getEnclosingId();
+            currentStage = endNode.getEnclosingBlocks().stream()
+                    .filter((block) -> block.getId().equals(id))
+                    .findFirst()
+                    .orElse(null);
         }
-
         if(node!= null && endNode instanceof StepEndNode && ((StepEndNode)endNode).getStartNode().equals(node)){
             this.stageStepsCollectionCompleted = false;
             this.inStageScope = true;
@@ -133,7 +137,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
             final String cause = PipelineNodeUtil.getCauseOfBlockage(chunk.getFirstNode(), agentNode);
             if(cause != null) {
                 // TODO: This should probably be changed (elsewhere?) to instead just render this directly, not via a fake step.
-                //Now add a step that indicates bloackage cause
+                //Now add a step that indicates blockage cause
                 FlowNode step = new LocalAtomNode(chunk, cause);
 
                 FlowNodeWrapper stepNode = new FlowNodeWrapper(step, new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.QUEUED),new TimingInfo(), run);
@@ -188,9 +192,9 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
 
             FlowNodeWrapper node = new FlowNodeWrapper(atomNode, status, times, inputStep, run);
             if(PipelineNodeUtil.isPreSyntheticStage(currentStage)){
-                preSteps.add(node);
+                preSteps.push(node);
             }else if(PipelineNodeUtil.isPostSyntheticStage(currentStage)){
-                postSteps.add(node);
+                postSteps.push(node);
             }else {
                 if(!steps.contains(node)) {
                     steps.push(node);
@@ -213,18 +217,18 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
             if(PipelineNodeUtil.isSkippedStage(node)){
                 return Collections.emptyList();
             }
-            String first=null;
-            String last=null;
+            FlowNode first=null;
+            FlowNode last=null;
             if(!stages.isEmpty()) {
                 first = stages.getFirst();
                 last = stages.getLast();
             }
 
-            if(first!= null && node.getId().equals(first)){
+            if(first!= null && node.equals(first)){
                 s.addAll(preSteps);
             }
             s.addAll(steps);
-            if(last!= null && node.getId().equals(last)){
+            if(last!= null && (node.equals(last) || PipelineNodeUtil.isSkippedStage(last))){
                 s.addAll(postSteps);
             }
 

@@ -21,11 +21,21 @@ import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
 import jenkins.model.Jenkins;
 import jenkins.model.lazy.LazyBuildMixIn;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Search API for Run
@@ -34,6 +44,9 @@ import java.util.List;
  */
 @Extension
 public class RunSearch extends OmniSearch<BlueRun> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( RunSearch.class );
+
     @Override
     public String getType() {
         return "run";
@@ -79,12 +92,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
             RunList<? extends Run> runList = p.getBuilds();
 
             for (Run r : runList) {
-                BlueRun run = BlueRunFactory.getRun(r, new Reachable() {
-                    @Override
-                    public Link getLink() {
-                        return parent;
-                    }
-                });
+                BlueRun run = BlueRunFactory.getRun(r, () -> parent);
                 if (run != null) {
                     runs.add(run);
                 }
@@ -120,7 +128,19 @@ public class RunSearch extends OmniSearch<BlueRun> {
         return runs;
     }
 
+    public static final String COLLECT_THREADS_KEY = "blueocean.collectRuns.threads";
+
+    private static final int COLLECT_THREADS = Integer.getInteger( COLLECT_THREADS_KEY, 0 );
+
     private static List<BlueRun> collectRuns(Iterator<? extends Run> runIterator, final Link parent, int start, int limit){
+        if (COLLECT_THREADS > 1) {
+            LOGGER.debug( "collectRunsParallel {}", COLLECT_THREADS );
+            return collectRunsParallel( runIterator, parent, start, limit );
+        }
+        return collectRunsSingleThread( runIterator, parent, start, limit );
+    }
+
+    private static List<BlueRun> collectRunsSingleThread(Iterator<? extends Run> runIterator, final Link parent, int start, int limit){
         List<BlueRun> runs = new ArrayList<>();
         int skipCount = start; // Skip up to the start
         while (runIterator.hasNext()) {
@@ -128,12 +148,8 @@ public class RunSearch extends OmniSearch<BlueRun> {
                 runIterator.next();
                 skipCount--;
             } else {
-                BlueRun run = BlueRunFactory.getRun(runIterator.next(), new Reachable() {
-                    @Override
-                    public Link getLink() {
-                        return parent;
-                    }
-                });
+                Run r = runIterator.next();
+                BlueRun run = BlueRunFactory.getRun(r, () ->  parent);
                 if (run != null) {
                     runs.add(run);
                 }
@@ -142,6 +158,59 @@ public class RunSearch extends OmniSearch<BlueRun> {
                 return runs;
             }
         }
+        return runs;
+    }
+
+
+    private static List<BlueRun> collectRunsParallel(Iterator<? extends Run> runIterator, final Link parent, int start, int limit){
+
+        List<Callable<BlueRun>> callables = new CopyOnWriteArrayList<>();
+
+        int skipCount = start; // Skip up to the start
+        while (runIterator.hasNext()) {
+            if (skipCount > 0) {
+                runIterator.next();
+                skipCount--;
+            } else {
+                Run r = runIterator.next();
+                callables.add(() -> BlueRunFactory.getRun(r, () ->  parent));
+            }
+            if (callables.size() >= limit) {
+                break;
+            }
+        }
+        int n = callables.size();
+        LOGGER.debug( "before submit size:{}", n );
+        if(n<1){
+            return Collections.emptyList();
+        }
+        ExecutorService
+            executorService =  new ThreadPoolExecutor( n < COLLECT_THREADS? n : COLLECT_THREADS,
+                                                       n < COLLECT_THREADS? n : COLLECT_THREADS,
+                                                       60L, TimeUnit.MILLISECONDS,
+                                                       new ArrayBlockingQueue<>( n ));
+        ExecutorCompletionService<BlueRun> ecs = new ExecutorCompletionService( executorService );
+        for(Callable<BlueRun> callable : callables) {
+            ecs.submit( callable );
+        }
+        LOGGER.debug( "submit done size:{}", n );
+        List<BlueRun> runs = new ArrayList<>( n );
+        try
+        {
+            for (int i = 0; i < n; ++i) {
+                BlueRun r = ecs.take().get();
+                if (r != null) {
+                    runs.add( r );
+                }
+            }
+        } catch ( InterruptedException e ) {
+            LOGGER.error( e.getMessage(), e );
+        } catch ( ExecutionException e ) {
+            LOGGER.error( e.getMessage(), e );
+        } finally {
+            executorService.shutdownNow();
+        }
+        LOGGER.debug( "runs found:{}", runs.size() );
         return runs;
     }
 

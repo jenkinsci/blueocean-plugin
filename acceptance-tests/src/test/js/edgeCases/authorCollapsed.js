@@ -17,13 +17,13 @@ const folder = ['committer', '三百', 'ñba', '七'];
 const jobName = 'Sohn';
 // git repo details
 const pathToRepo = path.resolve('./target/test-project-folder1');
-const soureRep = './src/test/resources/multibranch_1';
-// helper to return the project name including a seperator or '/'
-function getProjectName(nameArray, seperator) {
-    if (!seperator) {
-        seperator = '/';
+const sourceRep = './src/test/resources/multibranch_1';
+// helper to return the project name including a separator or '/'
+function getProjectName(nameArray, separator) {
+    if (!separator) {
+        separator = '/';
     }
-    return nameArray.join(seperator) + seperator + jobName;
+    return nameArray.join(separator) + separator + jobName;
 }
 // here we need to escape the real projectName to a urlEncoded string
 const projectName = getProjectName(folder, '%2F');
@@ -33,7 +33,7 @@ module.exports = {
     before: !function (browser, done) {
         browser.waitForJobDeleted('committer', function () {
             // we creating a git repo in target based on the src repo (see above)
-            git.createRepo(soureRep, pathToRepo)
+            git.createRepo(sourceRep, pathToRepo)
                 .then(function () {
                     git.createBranch('feature/1', pathToRepo)
                         .then(done);
@@ -170,7 +170,7 @@ module.exports = {
            blueRunDetailPage.validateNotEmptyChanges();
            // make sure the windows is small
            browser.resizeWindow(1000, 600);
-           // test now whether the authors are not listed but condendes
+           // test now whether the authors are not listed but condensed
            blueRunDetailPage.authorsIsCondensed();
            // make the browser big again
            browser.resizeWindow(1680, 1050);

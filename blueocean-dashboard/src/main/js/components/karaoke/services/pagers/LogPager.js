@@ -53,7 +53,8 @@ export class LogPager {
         this.bunker = bunker;
         this.augmenter = augmenter;
         this.step = step;
-        if (step.isFocused && !step.isInputStep) { // we do not want to fetch when we have an input step
+        if (step.isFocused && !step.isInputStep) {
+            // we do not want to fetch when we have an input step
             this.fetchLog({
                 followAlong: augmenter.karaoke,
                 url: step.logUrl,
@@ -88,27 +89,32 @@ export class LogPager {
                 logData.newStart = newStart;
                 return response.text();
             })
-            .then(action('Process pager data', text => {
-                if (text && text.trim) {
-                    logData.data = text.trim().split('\n');
-                    // Store item in bunker.
-                    this.bunker.setItem(logData);
-                    logger.debug('saved data', url, logData.newStart, followAlong);
-                }
-                this.currentLogUrl = url;
-                this.pending = false;
-                this.used = true;
-                if (Number(logData.newStart) > 0 && followAlong) {
-                    // kill current  timeout if any
-                    clearTimeout(this.timeout);
-                    // we need to get more input from the log stream
-                    this.timeout = setTimeout(() => {
-                        this.followLog(logData);
-                    }, 1000);
-                }
-            })).catch(err => {
+            .then(
+                action('Process pager data', text => {
+                    if (text && text.trim) {
+                        logData.data = text.trim().split('\n');
+                        // Store item in bunker.
+                        this.bunker.setItem(logData);
+                        logger.debug('saved data', url, logData.newStart, followAlong);
+                    }
+                    this.currentLogUrl = url;
+                    this.pending = false;
+                    this.used = true;
+                    if (Number(logData.newStart) > 0 && followAlong) {
+                        // kill current  timeout if any
+                        clearTimeout(this.timeout);
+                        // we need to get more input from the log stream
+                        this.timeout = setTimeout(() => {
+                            this.followLog(logData);
+                        }, 1000);
+                    }
+                })
+            )
+            .catch(err => {
                 logger.error('Error fetching page - fetch log', err);
-                action('set error', () => { this.error = err; });
+                action('set error', () => {
+                    this.error = err;
+                });
             });
     }
 
@@ -122,33 +128,39 @@ export class LogPager {
         clearTimeout(this.timeout);
         const logData = { ...logDataOrg };
         return KaraokeApi.getGeneralLog(logData._links.self.href, { start: logData.newStart })
-            .then(action('Process pager data following 1', response => {
-                const { newStart, hasMore } = response;
-                logger.debug('newstart and hasmore', { newStart, hasMore });
-                logData.newStart = response.newStart;
-                return response.text();
-            }))
-            .then(action('Process pager data following 2', text => {
-                if (text && text.trim) {
-                    const items = text.trim().split('\n');
-                    logData.data = logData.data.concat(items);
-                    // Store item in bunker.
-                    this.bunker.setItem(logData);
-                    logger.debug('saved data', logData._links.self.href, logData.newStart);
-                }
-                if (logData.newStart !== null) {
-                    // kill current  timeout if any
-                    // we need to get mpre input from the log stream
-                    this.timeout = setTimeout(() => {
-                        this.followLog(logData);
-                    }, 1000);
-                }
-            })).catch(err => {
+            .then(
+                action('Process pager data following 1', response => {
+                    const { newStart, hasMore } = response;
+                    logger.debug('newstart and hasmore', { newStart, hasMore });
+                    logData.newStart = response.newStart;
+                    return response.text();
+                })
+            )
+            .then(
+                action('Process pager data following 2', text => {
+                    if (text && text.trim) {
+                        const items = text.trim().split('\n');
+                        logData.data = logData.data.concat(items);
+                        // Store item in bunker.
+                        this.bunker.setItem(logData);
+                        logger.debug('saved data', logData._links.self.href, logData.newStart);
+                    }
+                    if (logData.newStart !== null) {
+                        // kill current  timeout if any
+                        // we need to get mpre input from the log stream
+                        this.timeout = setTimeout(() => {
+                            this.followLog(logData);
+                        }, 1000);
+                    }
+                })
+            )
+            .catch(err => {
                 logger.error('Error fetching page - follow log', err);
-                action('set error', () => { this.error = err; });
+                action('set error', () => {
+                    this.error = err;
+                });
             });
     }
-
 
     clear() {
         clearTimeout(this.timeout);

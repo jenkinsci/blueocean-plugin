@@ -13,8 +13,9 @@ import static org.junit.Assert.*;
  * @author Vivek Pandey
  */
 public class BitbucketCloudScmTest extends BbCloudWireMock {
+
     @Test
-    public void getBitbucketScm() throws IOException, UnirestException {
+    public void getBitbucketScm() throws UnirestException {
         Map r = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
@@ -36,9 +37,9 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
                 .get("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/"+getApiUrlParam()+"&credentialId="+credentialId)
                 .build(List.class);
         assertEquals(2, orgs.size());
-        assertEquals("vivekp7", ((Map)orgs.get(0)).get("key"));
+        assertEquals(BbCloudWireMock.USER_UUID, ((Map)orgs.get(0)).get("key"));
         assertEquals("Vivek Pandey", ((Map)orgs.get(0)).get("name"));
-        assertEquals("vivektestteam", ((Map)orgs.get(1)).get("key"));
+        assertEquals(BbCloudWireMock.TEAM_UUID, ((Map)orgs.get(1)).get("key"));
         assertEquals("Vivek's Team", ((Map)orgs.get(1)).get("name"));
     }
 
@@ -51,9 +52,9 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
             .get("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/"+getApiUrlParam())
             .build(List.class);
         assertEquals(2, orgs.size());
-        assertEquals("vivekp7", ((Map)orgs.get(0)).get("key"));
+        assertEquals(BbCloudWireMock.USER_UUID, ((Map)orgs.get(0)).get("key"));
         assertEquals("Vivek Pandey", ((Map)orgs.get(0)).get("name"));
-        assertEquals("vivektestteam", ((Map)orgs.get(1)).get("key"));
+        assertEquals(BbCloudWireMock.TEAM_UUID, ((Map)orgs.get(1)).get("key"));
         assertEquals("Vivek's Team", ((Map)orgs.get(1)).get("name"));
     }
 
@@ -72,7 +73,7 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
         Map repoResp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-                .get("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/vivektestteam/repositories/"+getApiUrlParam()+"&credentialId="+credentialId)
+                .get("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/" + BbCloudWireMock.TEAM_UUID + "/repositories/"+getApiUrlParam()+"&credentialId="+credentialId)
                 .build(Map.class);
         List repos = (List) ((Map)repoResp.get("repositories")).get("items");
         assertEquals("pipeline-demo-test", ((Map)repos.get(0)).get("name"));
@@ -93,7 +94,7 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
         Map repoResp = new RequestBuilder(baseUrl)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-            .get("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/vivektestteam/repositories/"+getApiUrlParam())
+            .get("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/" + BbCloudWireMock.TEAM_UUID + "/repositories/"+getApiUrlParam())
             .build(Map.class);
         List repos = (List) ((Map)repoResp.get("repositories")).get("items");
         assertEquals("pipeline-demo-test", ((Map)repos.get(0)).get("name"));

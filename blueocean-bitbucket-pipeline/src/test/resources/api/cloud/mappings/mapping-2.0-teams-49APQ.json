@@ -1,32 +1,35 @@
 {
-  "id" : "cde61be3-1825-33a7-a21c-f3a06bd21ac8",
-  "request" : {
-    "url" : "/api/2.0/teams/?role=contributor&page=1&pagelen=100",
-    "method" : "GET"
+  "id": "cde61be3-1825-33a7-a21c-f3a06bd21ac8",
+  "request": {
+    "url": "/api/2.0/teams/?role=contributor&page=1&pagelen=100",
+    "method": "GET"
   },
-  "response" : {
-    "status" : 200,
-    "bodyFileName" : "body-2.0-teams-49APQ.json",
-    "headers" : {
-      "Server" : "nginx",
-      "Vary" : [ "Authorization", "Accept-Encoding" ],
-      "Content-Type" : "application/json; charset=utf-8",
-      "X-OAuth-Scopes" : "webhook, pullrequest:write, project, team, email",
-      "Strict-Transport-Security" : "max-age=31536000; includeSubDomains; preload",
-      "Date" : "Mon, 26 Jun 2017 16:53:36 GMT",
-      "X-Served-By" : "app-141",
-      "Transfer-Encoding" : "chunked",
-      "X-Static-Version" : "18a14bf82c46",
-      "ETag" : "\"a5195a0c1212c33fdb7feaa157ad0fbf\"",
-      "X-Content-Type-Options" : "nosniff",
-      "X-Render-Time" : "0.0353591442108",
-      "X-Credential-Type" : "apppassword",
-      "X-Accepted-OAuth-Scopes" : "team",
-      "Connection" : "keep-alive",
-      "X-Version" : "18a14bf82c46",
-      "X-Request-Count" : "76",
-      "X-Frame-Options" : "SAMEORIGIN"
+  "response": {
+    "status": 200,
+    "bodyFileName": "body-2.0-teams-49APQ.json",
+    "headers": {
+      "Server": "nginx",
+      "Vary": [
+        "Authorization",
+        "Accept-Encoding"
+      ],
+      "Content-Type": "application/json; charset=utf-8",
+      "X-OAuth-Scopes": "webhook, pullrequest:write, project, team, email",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+      "Date": "Mon, 26 Jun 2017 16:53:36 GMT",
+      "X-Served-By": "app-141",
+      "Transfer-Encoding": "chunked",
+      "X-Static-Version": "18a14bf82c46",
+      "ETag": "\"a5195a0c1212c33fdb7feaa157ad0fbf\"",
+      "X-Content-Type-Options": "nosniff",
+      "X-Render-Time": "0.0353591442108",
+      "X-Credential-Type": "apppassword",
+      "X-Accepted-OAuth-Scopes": "team",
+      "Connection": "keep-alive",
+      "X-Version": "18a14bf82c46",
+      "X-Request-Count": "76",
+      "X-Frame-Options": "SAMEORIGIN"
     }
   },
-  "uuid" : "cde61be3-1825-33a7-a21c-f3a06bd21ac8"
+  "uuid": "cde61be3-1825-33a7-a21c-f3a06bd21ac8"
 }

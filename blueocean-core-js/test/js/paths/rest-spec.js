@@ -3,16 +3,16 @@
  */
 import { assert } from 'chai';
 
-import rest from '../../../src/js/paths/rest';
+import { RestPaths } from '../../../src/js/paths/rest';
 
 describe('Rest Paths', () => {
     describe('generates the correct path for - ', () => {
         it('apiRoot', () => {
-            assert.equal(rest.apiRoot(), '/blue/rest');
+            assert.equal(RestPaths.apiRoot(), '/blue/rest');
         });
 
         it('run', () => {
-            const runUrl = rest.run({
+            const runUrl = RestPaths.run({
                 organization: 'jenkins',
                 pipeline: 'some/pipeline in/a_folder',
                 branch: 'feature/2085',

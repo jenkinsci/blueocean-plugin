@@ -64,12 +64,12 @@ public class CredentialApi extends Resource {
 
         String domainName = DOMAIN_NAME;
 
-        if(jsonObject.get("domain") != null && jsonObject.get("domain") instanceof  String){
+        if(jsonObject.get("domain") != null && jsonObject.get("domain") instanceof String){
             domainName = (String) jsonObject.get("domain");
         }
 
         CredentialsUtils.createCredentialsInUserStore(credentials, authenticatedUser, domainName,
-                ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
+                ImmutableList.of(new BlueOceanDomainSpecification()));
 
         CredentialsStoreAction.DomainWrapper domainWrapper = credentialStoreAction.getDomain(domainName);
 
@@ -171,9 +171,9 @@ public class CredentialApi extends Resource {
 
         @Override
         public Credential get(String name) {
-            CredentialsStoreAction.CredentialsWrapper credetialsWrapper = domainWrapper.getCredential(name);
-            if(credetialsWrapper != null) {
-                return new Credential(credetialsWrapper, self);
+            CredentialsStoreAction.CredentialsWrapper credentialsWrapper = domainWrapper.getCredential(name);
+            if(credentialsWrapper != null) {
+                return new Credential(credentialsWrapper, self);
             }
             throw new ServiceException.NotFoundException(String.format("Credential %s not found in domain %s", name,
                     domainWrapper.getFullName()));

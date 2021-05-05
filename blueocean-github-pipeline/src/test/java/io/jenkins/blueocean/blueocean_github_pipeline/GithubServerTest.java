@@ -6,10 +6,12 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.hash.Hashing;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import hudson.Util;
+import hudson.model.Item;
 import hudson.model.User;
+import hudson.security.GlobalMatrixAuthorizationStrategy;
+import hudson.security.HudsonPrivateSecurityRealm;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
+import jenkins.model.Jenkins;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,10 +36,20 @@ public class GithubServerTest extends PipelineBaseTest {
     String token;
 
     @Before
-    public void createUser() throws UnirestException {
-        hudson.model.User user = User.get("alice");
-        user.setFullName("Alice Cooper");
-        token = getJwtToken(j.jenkins, "alice", "alice");
+    public void createUser() throws Exception {
+        HudsonPrivateSecurityRealm realm = new HudsonPrivateSecurityRealm( true);
+        User writeUser = realm.createAccount("write_user", "pale_ale");
+        j.jenkins.setSecurityRealm(realm);
+        GlobalMatrixAuthorizationStrategy as = new GlobalMatrixAuthorizationStrategy();
+        j.jenkins.setAuthorizationStrategy(as);
+        as.add( Jenkins.READ, (String)Jenkins.ANONYMOUS.getPrincipal());
+        {
+            as.add( Item.BUILD, writeUser.getId());
+            as.add(Item.CREATE, writeUser.getId());
+            as.add(Item.CONFIGURE, writeUser.getId());
+        }
+        token = getJwtToken(j.jenkins, "write_user", "pale_ale");
+        this.crumb = getCrumb(j.jenkins);
     }
 
     @Test
@@ -46,6 +58,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = request()
             .status(400)
             .jwtToken(token)
+            .crumb(crumb)
             .data(ImmutableMap.of(
                 "name", "My Server",
                 "apiUrl", getApiUrlCustomPath("/notgithub")
@@ -68,6 +81,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = request()
             .status(400)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of(
                 "name", "My Server",
                 "apiUrl", getApiUrl()
@@ -90,6 +104,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = request()
             .status(400)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of(
                 "name", "My Server",
                 "apiUrl", "http://foobar/"
@@ -111,6 +126,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = request()
             .status(400)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of())
             .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
@@ -131,6 +147,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = request()
             .status(400)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of("name", "foo"))
             .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
@@ -150,6 +167,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = request()
             .status(400)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of("apiUrl", getDefaultApiUrl()))
             .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
@@ -170,6 +188,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map server = request()
             .status(200)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of(
                 "name", "My Server",
                 "apiUrl", getDefaultApiUrl()
@@ -181,6 +200,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = server = request()
             .status(400)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of(
                 "name", "My Server 2",
                 "apiUrl", getDefaultApiUrl()
@@ -200,9 +220,10 @@ public class GithubServerTest extends PipelineBaseTest {
     @Test
     public void avoidDuplicateByName() throws Exception {
         // Create a server
-        Map server = request()
+        request()
             .status(200)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of(
                 "name", "My Server",
                 "apiUrl", getDefaultApiUrl()
@@ -214,6 +235,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map resp = request()
             .status(400)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of(
                 "name", "My Server",
                 "apiUrl", getDefaultApiUrl()
@@ -238,6 +260,7 @@ public class GithubServerTest extends PipelineBaseTest {
         Map server = request()
             .status(200)
             .jwtToken(token)
+            .crumb( crumb )
             .data(ImmutableMap.of(
                 "name", "My Server",
                 "apiUrl", getDefaultApiUrl()

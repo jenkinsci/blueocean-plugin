@@ -9,41 +9,43 @@ export class Sheet extends React.Component {
     }
     render() {
         const child = React.Children.only(this.props.children);
-        return (<div className="sheet">
-            <div className="sheet-header">
-                {child.props.onClose &&
-                    <a className="back-from-sheet" onClick={e => this.onClose()}>
-                        <Icon icon="NavigationArrowBack" />
-                    </a>
-                }
-                {child.getTitle && child.getTitle() || child.props.title}
+        return (
+            <div className={`sheet ${this.props.active ? 'active' : ''}`}>
+                <div className="sheet-header">
+                    {child.props.onClose && (
+                        <a className="back-from-sheet" onClick={e => this.onClose()}>
+                            <Icon icon="NavigationArrowBack" />
+                        </a>
+                    )}
+                    {(child.getTitle && child.getTitle()) || child.props.title}
+                </div>
+                <div className="sheet-body">{child}</div>
             </div>
-            <div className="sheet-body">
-                {child}
-            </div>
-        </div>);
+        );
     }
 }
 export class Sheets extends React.Component {
     componentDidMount() {
-        document.addEventListener('keydown', this.escapeListener = e => {
-            e = e || window.event;
-            if (e.keyCode == 27) {
-                this.popTopSheet();
-            }
-        });
+        document.addEventListener(
+            'keydown',
+            (this.escapeListener = e => {
+                e = e || window.event;
+                if (e.keyCode == 27) {
+                    this.popTopSheet();
+                }
+            })
+        );
     }
     componentWillUnmount() {
         document.removeEventListener('keydown', this.escapeListener);
     }
     getActiveSheets() {
-        const sheetChildren = React.Children.toArray(this.props.children)
-            .filter(c => c);
+        const sheetChildren = React.Children.toArray(this.props.children).filter(c => c);
         return sheetChildren;
     }
     popTopSheet() {
         const sheets = this.getActiveSheets();
-        const lastSheet = sheets[sheets.length-1];
+        const lastSheet = sheets[sheets.length - 1];
         if (lastSheet && lastSheet.props.onClose) {
             lastSheet.props.onClose();
         }
@@ -53,8 +55,12 @@ export class Sheets extends React.Component {
             return;
         }
         const { transitionDuration = 400, transitionClass = 'sheet' } = this.props;
-        const sheetChildren = this.getActiveSheets()
-            .map(c => <Sheet key={c.key}>{c}</Sheet>);
+        const sheets = this.getActiveSheets();
+        const sheetChildren = this.getActiveSheets().map((c, i) => (
+            <Sheet active={i == sheets.length - 1} key={c.key}>
+                {c}
+            </Sheet>
+        ));
         return (
             <div className="sheet-container">
                 <ReactCSSTransitionGroup
@@ -70,6 +76,10 @@ export class Sheets extends React.Component {
         );
     }
 }
+
+Sheet.propTypes = {
+    active: React.PropTypes.bool,
+};
 
 Sheets.propTypes = {
     children: React.PropTypes.any,

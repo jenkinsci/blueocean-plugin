@@ -4,17 +4,23 @@ import { propTypes } from '../commonProptypes';
 import { removeMarkupTags } from '../../stringUtil';
 
 export class String extends Component {
-
     render() {
-        const { defaultParameterValue: { value }, description, name, onChange } = this.props;
+        const {
+            defaultParameterValue: { value },
+            description,
+            name,
+            onChange,
+        } = this.props;
         const cleanDescription = removeMarkupTags(description);
         const cleanName = removeMarkupTags(name);
 
-        return (<FormElement title={ cleanDescription || cleanName }>
-            <div className="String FullWidth">
-                <TextInput {...{ defaultValue: value, name: cleanName, onChange }} />
-            </div>
-        </FormElement>);
+        return (
+            <FormElement title={cleanDescription || cleanName}>
+                <div className="String FullWidth">
+                    <TextInput {...{ defaultValue: value, name: cleanName, onChange }} />
+                </div>
+            </FormElement>
+        );
     }
 }
 

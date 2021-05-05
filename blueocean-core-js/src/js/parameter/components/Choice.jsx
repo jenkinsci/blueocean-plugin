@@ -4,7 +4,6 @@ import { propTypes } from '../commonProptypes';
 import { removeMarkupTags } from '../../stringUtil';
 
 export class Choice extends Component {
-
     /**
      * Choose whether to show a dropdown choice or a radioButtonGroup
      * @param choices - alternatives we can present
@@ -17,7 +16,13 @@ export class Choice extends Component {
     }
 
     render() {
-        const { defaultParameterValue: { value }, description, name, choices, onChange } = this.props;
+        const {
+            defaultParameterValue: { value },
+            description,
+            name,
+            choices,
+            onChange,
+        } = this.props;
         const uxChoice = this.radioOrDropDown(choices);
         const cleanName = removeMarkupTags(name);
         const cleanDescription = removeMarkupTags(description);
@@ -37,9 +42,7 @@ export class Choice extends Component {
         }
         formProperties.className = className;
 
-        return (<FormElement { ...formProperties } >
-            { React.createElement(uxChoice, { ...options }) }
-        </FormElement>);
+        return <FormElement {...formProperties}>{React.createElement(uxChoice, { ...options })}</FormElement>;
     }
 }
 // <Dropdown {...options} />

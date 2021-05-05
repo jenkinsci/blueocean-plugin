@@ -1,5 +1,6 @@
 package io.blueocean.ath;
 
+import com.google.common.base.Strings;
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
@@ -9,23 +10,31 @@ import io.blueocean.ath.factory.BranchPageFactory;
 import io.blueocean.ath.factory.ClassicPipelineFactory;
 import io.blueocean.ath.factory.FreestyleJobFactory;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
+import io.blueocean.ath.factory.PullRequestsPageFactory;
 import io.blueocean.ath.factory.RunDetailsArtifactsPageFactory;
 import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
+import io.blueocean.ath.factory.RunDetailsTestsPageFactory;
 import io.blueocean.ath.model.ClassicPipeline;
 import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
 import io.blueocean.ath.pages.blue.BranchPage;
+import io.blueocean.ath.pages.blue.PullRequestsPage;
 import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
+import io.blueocean.ath.pages.blue.RunDetailsTestsPage;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,6 +46,8 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 public class AthModule extends AbstractModule {
+    private static final Logger logger = LoggerFactory.getLogger(AthModule.class);
+
     @Override
     protected void configure() {
         Config cfg = new Config();
@@ -47,11 +58,11 @@ public class AthModule extends AbstractModule {
         bind(Config.class).toInstance(cfg);
 
         String webDriverType = cfg.getString("webDriverType");
-        DesiredCapabilities capability;
+        MutableCapabilities capability;
         if ("firefox".equals(webDriverType)) {
-            capability = DesiredCapabilities.firefox();
+            capability = new FirefoxOptions();
         } else {
-            capability = DesiredCapabilities.chrome();
+            capability = new ChromeOptions();
         }
 
         LoggingPreferences logPrefs = new LoggingPreferences();
@@ -62,8 +73,22 @@ public class AthModule extends AbstractModule {
         String webDriverBrowserSize = cfg.getString("webDriverBrowserSize");
 
         try {
+            String launchUrl = cfg.getString("jenkinsUrl");
+            if (launchUrl == null) {
+                launchUrl = new String(Files.readAllBytes(Paths.get("runner/.blueocean-ath-jenkins-url")));
+            }
+            capability.setCapability("extendedDebugging", "true");
+            capability.setCapability("initialBrowserUrl", launchUrl);
+            if (!Strings.isNullOrEmpty(cfg.getString("TUNNEL_IDENTIFIER"))) {
+                capability.setCapability("tunnelIdentifier", cfg.getString("TUNNEL_IDENTIFIER"));
+            }
+
             WebDriver driver = new RemoteWebDriver(new URL(webDriverUrl), capability);
             LocalDriver.setCurrent(driver);
+            if (cfg.getBoolean("saucelabs", false)) {
+                LocalDriver.enableSauce();
+                System.out.println("SauceOnDemandSessionID=" + ((RemoteWebDriver) driver).getSessionId().toString());
+            }
 
             driver = new Augmenter().augment(driver);
             if (webDriverBrowserSize == null) {
@@ -75,10 +100,6 @@ public class AthModule extends AbstractModule {
             driver.manage().deleteAllCookies();
             bind(WebDriver.class).toInstance(driver);
 
-            String launchUrl = cfg.getString("jenkinsUrl");
-            if (launchUrl == null) {
-                launchUrl = new String(Files.readAllBytes(Paths.get("runner/.blueocean-ath-jenkins-url")));
-            }
             bindConstant().annotatedWith(BaseUrl.class).to(launchUrl);
             LocalDriver.setUrlBase(launchUrl);
 
@@ -96,7 +117,7 @@ public class AthModule extends AbstractModule {
             if(server.getComputerSet().getTotalExecutors() < 10) {
                 server.runScript(
                     "jenkins.model.Jenkins.getInstance().setNumExecutors(10);\n" +
-                        "jenkins.model.Jenkins.getInstance().save();\n");
+                        "jenkins.model.Jenkins.getInstance().save();\n", true);
             }
 
             Properties properties = new Properties();
@@ -135,9 +156,16 @@ public class AthModule extends AbstractModule {
             .implement(RunDetailsArtifactsPage.class, RunDetailsArtifactsPage.class)
             .build(RunDetailsArtifactsPageFactory.class));
 
+        install(new FactoryModuleBuilder()
+            .implement(RunDetailsTestsPage.class, RunDetailsTestsPage.class)
+            .build(RunDetailsTestsPageFactory.class));
 
         install(new FactoryModuleBuilder()
             .implement(BranchPage.class, BranchPage.class)
             .build(BranchPageFactory.class));
+
+        install(new FactoryModuleBuilder()
+            .implement(PullRequestsPage.class, PullRequestsPage.class)
+            .build(PullRequestsPageFactory.class));
     }
 }

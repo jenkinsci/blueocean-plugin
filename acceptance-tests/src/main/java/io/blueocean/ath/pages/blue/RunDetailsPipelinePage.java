@@ -6,17 +6,19 @@ import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.model.AbstractPipeline;
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
 public class RunDetailsPipelinePage implements WebDriverMixin {
-    private Logger logger = Logger.getLogger(RunDetailsPipelinePage.class);
+    private Logger logger = LoggerFactory.getLogger(RunDetailsPipelinePage.class);
 
     private WebDriver driver;
 
@@ -67,6 +69,7 @@ public class RunDetailsPipelinePage implements WebDriverMixin {
         checkPipeline();
         driver.get(getUrl(branch, runNumber));
         checkUrl(branch, runNumber);
+        wait.untilSSEReady();
         logger.info("Opened RunDetailsPipeline page for " + pipeline.getName());
         return this;
     }
@@ -80,8 +83,13 @@ public class RunDetailsPipelinePage implements WebDriverMixin {
         wait.until(ExpectedConditions.or(
             ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .log-wrapper")),
             ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .Steps .logConsole"))
-        ));
+        ), 30000);
         return this;
     }
 
+    public boolean checkTitle(String title){
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".ResultPageHeader-main")));
+        WebElement element = driver.findElement(By.cssSelector(".ResultPageHeader-main"));
+        return element.getText().contains(title);
+    }
 }

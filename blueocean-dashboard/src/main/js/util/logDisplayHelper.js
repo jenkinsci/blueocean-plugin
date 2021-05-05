@@ -17,22 +17,15 @@ function isRunningNode(item) {
     return item.state === STATES.RUNNING || item.state === STATES.PAUSED;
 }
 
-export const getNodesInformation = (nodes) => {
+export const getNodesInformation = nodes => {
     // calculation of information about stages
-    // nodes in Runing state
-    const runningNodes = nodes
-        .filter((item) => isRunningNode(item) && (!item.edges || item.edges.length < 2))
-        .map((item) => item.id);
+    // nodes in Running state
+    const runningNodes = nodes.filter(item => isRunningNode(item) && (!item.edges || item.edges.length < 2)).map(item => item.id);
     // nodes with error result
-    const errorNodes = nodes
-        .filter((item) => item.result === RESULTS.FAILURE)
-        .map((item) => item.id);
-    const queuedNodes = nodes
-        .filter((item) => item.state === null && item.result === null)
-        .map((item) => item.id);
+    const errorNodes = nodes.filter(item => item.result === RESULTS.FAILURE).map(item => item.id);
+    const queuedNodes = nodes.filter(item => item.state === null && item.result === null).map(item => item.id);
     // nodes without information
-    const hasResultsForSteps = nodes
-            .filter((item) => item.state === null && item.result === null).length !== nodes.length;
+    const hasResultsForSteps = nodes.filter(item => item.state === null && item.result === null).length !== nodes.length;
     // principal model mapper
     let wasFocused = false; // we only want one node to be focused if any
     let parent;
@@ -41,16 +34,13 @@ export const getNodesInformation = (nodes) => {
     const finished = runningNodes.length === 0 && queuedNodes.length !== nodes.length;
     const error = !(errorNodes.length === 0);
     const model = nodes.map((item, index) => {
-        const hasFailingNode = item.edges && item.edges.length >= 2 ? item.edges
-            .filter((itemError) => errorNodes.indexOf(itemError.id) > -1).length > 0 : false;
+        const hasFailingNode = item.edges && item.edges.length >= 2 ? item.edges.filter(itemError => errorNodes.indexOf(itemError.id) > -1).length > 0 : false;
         const isFailingNode = errorNodes.indexOf(item.id) > -1;
         const isRunning = runningNodes.indexOf(item.id) > -1;
 
-
         const isParallel = item.type === 'PARALLEL';
 
-        const logActions = item.actions ? item.actions
-            .filter(action => capable(action, 'org.jenkinsci.plugins.workflow.actions.LogAction')) : [];
+        const logActions = item.actions ? item.actions.filter(action => capable(action, 'org.jenkinsci.plugins.workflow.actions.LogAction')) : [];
         const hasLogs = logActions.length > 0;
         const isCompleted = item.result !== 'UNKNOWN' && item.result !== null;
         const computedResult = isCompleted ? item.result : item.state;
@@ -58,6 +48,7 @@ export const getNodesInformation = (nodes) => {
         const key = index + isRunning + computedResult;
         const title = item.displayDescription ? item.displayName + ': ' + item.displayDescription : item.displayName;
         const modelItem = {
+            actions: item.actions,
             _links: item._links,
             key: key || undefined,
             id: item.id,
@@ -70,10 +61,12 @@ export const getNodesInformation = (nodes) => {
             startTime: item.startTime || undefined,
             result: item.result || undefined,
             state: item.state || undefined,
+            restartable: item.restartable,
             hasLogs,
             logUrl: hasLogs ? logActions[0]._links.self.href : undefined,
             isParallel,
             parent,
+            firstParent: item.firstParent || undefined,
             isRunning,
             isCompleted,
             computedResult,
@@ -96,7 +89,7 @@ export const getNodesInformation = (nodes) => {
         }
         return modelItem;
     });
-    // in case we have all null we will focuse the first node since we assume that this would
+    // in case we have all null we will focus the first node since we assume that this would
     // be the next node to be started
     if (queuedNodes.length === nodes.length && !wasFocused && model[0]) {
         model[0].isFocused = true;

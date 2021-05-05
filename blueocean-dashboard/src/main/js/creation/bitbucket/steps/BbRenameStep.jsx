@@ -13,7 +13,6 @@ let STATE;
  */
 @observer
 export default class BbRenameStep extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -28,9 +27,8 @@ export default class BbRenameStep extends React.Component {
         this._checkPipelineName(name);
     }
 
-    _checkPipelineName = debounce((name) => {
-        this.props.flowManager.checkPipelineNameAvailable(name)
-            .then(available => this._validateName(name, available));
+    _checkPipelineName = debounce(name => {
+        this.props.flowManager.checkPipelineNameAvailable(name).then(available => this._validateName(name, available));
     }, 500);
 
     _validateName(pipelineName, available) {
@@ -62,19 +60,12 @@ export default class BbRenameStep extends React.Component {
         return (
             <FlowStep {...this.props} className="git-step-rename" title={t('creation.git.step2.title')} disabled={disabled}>
                 <FormElement title={headingText}>
-                    <TextInput
-                        className="text-pipeline"
-                        placeholder={t('creation.git.step2.text_name_placeholder')}
-                        onChange={val => this._onChange(val)}
-                    />
+                    <TextInput className="text-pipeline" placeholder={t('creation.git.step2.text_name_placeholder')} onChange={val => this._onChange(val)} />
 
-                    <button disabled={!this.state.isNameValid}
-                            onClick={() => this._onSave()}
-                    >
+                    <button disabled={!this.state.isNameValid} onClick={() => this._onSave()}>
                         {t('creation.git.step2.button_save')}
                     </button>
                 </FormElement>
-
             </FlowStep>
         );
     }

@@ -4,6 +4,8 @@ import { logging } from '@jenkins-cd/blueocean-core-js';
 import { prefixIfNeeded } from '../../urls/prefixIfNeeded';
 import { KaraokeApi } from '../../index';
 
+import { convertJenkinsNodeGraph } from '../../../GraphNodeConverter';
+
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager.Pipeline');
 
 /**
@@ -53,7 +55,7 @@ export class PipelinePager {
      *
      * @param {BunkerService} bunker - Data store
      * @param {object} augmenter augmenter that this pager belongs to.
-     * @param {object} props Properies that this pager belongs to.
+     * @param {object} props Properties that this pager belongs to.
      */
     constructor(bunker, augmenter, props) {
         this.bunker = bunker;
@@ -80,44 +82,65 @@ export class PipelinePager {
         };
         // get api data and further process it
         return KaraokeApi.getNodes(this.augmenter.nodesUrl)
-            .then(action('Process node data', result => {
-                if (result.model.length === 0) {
-                    logger.debug('Seems we do not have any nodes for this run.');
-                    this.currentStepsUrl = this.augmenter.stepsUrl;
-                    // we need now to fetch the steps
-                    return this.fetchCurrentStepUrl();
-                }
-                // get information about the result
-                logData.data = result;
-                // compare whether we really need to
-                // update the bunker
-                const cached = this.bunker.getItem(logData._links.self.href);
-                if (cached !== logData) { // calculate which node we need to focus
-                    logger.debug('objects are different - updating store');
-                    this.bunker.setItem(logData);
-                }
-                const focused = logData.data.model.filter((item) => {
-                    if (node) {
-                        logger.debug('check whether the node we are requesting is same', node, item);
-                        return item.id === node;
+            .then(
+                action('Process node data', result => {
+                    if (result.model.length === 0) {
+                        logger.debug('Seems we do not have any nodes for this run.');
+                        this.currentStepsUrl = this.augmenter.stepsUrl;
+                        // we need now to fetch the steps
+                        return this.fetchCurrentStepUrl();
                     }
-                    return item.isFocused;
-                })[0];
-                // set either the focused node determined by the script or the last node
-                if (focused) {
-                    this.currentNode = focused;
-                } else {
-                    // Actually we should only come here on a not running job
-                    logger.debug('Actually we should only come here on a not running job');
-                    const lastNode = (logData.data.model[logData.data.model.length - 1]);
-                    this.currentNode = lastNode;
-                }
-                this.currentStepsUrl = prefixIfNeeded(this.currentNode._links.steps.href);
-                logger.debug('saved data', logData);
-                return this.fetchCurrentStepUrl();
-            })).catch(err => {
+                    // get information about the result
+                    logData.data = result;
+                    // compare whether we really need to
+                    // update the bunker
+                    const cached = this.bunker.getItem(logData._links.self.href);
+                    if (cached !== logData) {
+                        // calculate which node we need to focus
+                        logger.debug('objects are different - updating store');
+                        this.bunker.setItem(logData);
+                    }
+                    const focused = logData.data.model.filter(item => {
+                        if (node) {
+                            logger.debug('check whether the node we are requesting is same', node, item);
+                            return item.id === node;
+                        }
+                        return item.isFocused;
+                    })[0];
+                    // set either the focused node determined by the script or the last node
+                    if (focused) {
+                        this.currentNode = focused;
+                    } else {
+                        // Actually we should only come here on a not running job
+                        logger.debug('Actually we should only come here on a not running job');
+                        const convertedNodes = convertJenkinsNodeGraph(logData.data.model, result.isFinished, 0);
+                        let lastConvertedNode = convertedNodes[convertedNodes.length - 1];
+
+                        //select the last child if the node has any children
+                        if (lastConvertedNode.children.length) {
+                            lastConvertedNode = lastConvertedNode.children[lastConvertedNode.children.length - 1];
+
+                            //if the node has siblings, select the last sibling
+                            let counter = 0;
+                            while (lastConvertedNode.nextSibling && counter < logData.data.model.length) {
+                                lastConvertedNode = lastConvertedNode.nextSibling;
+                                counter++;
+                            }
+                        }
+
+                        const lastNode = logData.data.model.filter(node => node.id === lastConvertedNode.id)[0];
+                        this.currentNode = lastNode;
+                    }
+                    this.currentStepsUrl = prefixIfNeeded(this.currentNode._links.steps.href);
+                    logger.debug('saved data', logData);
+                    return this.fetchCurrentStepUrl();
+                })
+            )
+            .catch(err => {
                 logger.error('Error fetching page', err);
-                action('set error', () => { this.error = err; });
+                action('set error', () => {
+                    this.error = err;
+                });
             });
     }
     /**
@@ -140,20 +163,26 @@ export class PipelinePager {
         };
         // get api data and further process it
         return KaraokeApi.getNodes(this.augmenter.nodesUrl)
-            .then(action('Process node data', result => {
-                // get information about the result
-                logData.data = result;
-                // compare whether we really need to
-                // update the bunker
-                const cached = this.bunker.getItem(logData._links.self.href);
-                if (cached !== logData) { // calculate which node we need to focus
-                    logger.debug('objects are different - updating store');
-                    this.bunker.setItem(logData);
-                }
-                this.pending = false;
-            })).catch(err => {
+            .then(
+                action('Process node data', result => {
+                    // get information about the result
+                    logData.data = result;
+                    // compare whether we really need to
+                    // update the bunker
+                    const cached = this.bunker.getItem(logData._links.self.href);
+                    if (cached !== logData) {
+                        // calculate which node we need to focus
+                        logger.debug('objects are different - updating store');
+                        this.bunker.setItem(logData);
+                    }
+                    this.pending = false;
+                })
+            )
+            .catch(err => {
                 logger.error('Error fetching page', err);
-                action('set error', () => { this.error = err; });
+                action('set error', () => {
+                    this.error = err;
+                });
             });
     }
     @action
@@ -171,25 +200,31 @@ export class PipelinePager {
         };
         // get api data and further process it
         return KaraokeApi.getSteps(this.currentStepsUrl)
-            .then(action('Process steps data', result => {
-                logData.data = result;
-                const cached = this.bunker.getItem(logData._links.self.href);
-                if (cached !== logData) { // calculate which node we need to focus
-                    logger.debug('objects are different - updating store');
-                    this.bunker.setItem(logData);
-                    logger.debug('saved data');
-                }
-                this.pending = false;
-                // we need to get more input from the log stream
-                if (this.polling) {
-                    logger.debug('follow along polling mode');
-                    this.timeout = setTimeout(() => {
-                        this.fetchCurrentStepUrl();
-                    }, 1000);
-                }
-            })).catch(err => {
+            .then(
+                action('Process steps data', result => {
+                    logData.data = result;
+                    const cached = this.bunker.getItem(logData._links.self.href);
+                    if (cached !== logData) {
+                        // calculate which node we need to focus
+                        logger.debug('objects are different - updating store');
+                        this.bunker.setItem(logData);
+                        logger.debug('saved data');
+                    }
+                    this.pending = false;
+                    // we need to get more input from the log stream
+                    if (this.polling) {
+                        logger.debug('follow along polling mode');
+                        this.timeout = setTimeout(() => {
+                            this.fetchCurrentStepUrl();
+                        }, 1000);
+                    }
+                })
+            )
+            .catch(err => {
                 logger.error('Error fetching page', err);
-                action('set error', () => { this.error = err; });
+                action('set error', () => {
+                    this.error = err;
+                });
             });
     }
     clear() {

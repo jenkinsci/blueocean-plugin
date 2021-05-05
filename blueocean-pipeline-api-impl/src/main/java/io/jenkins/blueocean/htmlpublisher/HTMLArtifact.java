@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.htmlpublisher;
 
-import com.google.common.collect.Lists;
 import htmlpublisher.HtmlPublisherTarget;
 import hudson.Extension;
 import hudson.model.Run;
@@ -11,6 +10,7 @@ import io.jenkins.blueocean.rest.model.BlueArtifact;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HTMLArtifact extends BlueArtifact {
 
@@ -54,11 +54,9 @@ public class HTMLArtifact extends BlueArtifact {
             if (actions.isEmpty()) {
                 return null;
             }
-            List<BlueArtifact> foundArtifacts = Lists.newArrayList();
-            for (HtmlPublisherTarget.HTMLBuildAction action : actions) {
-                foundArtifacts.add(new HTMLArtifact(action, parent.getLink()));
-            }
-            return foundArtifacts;
+            return actions.stream()
+                .map( action -> new HTMLArtifact(action, parent.getLink()))
+                .collect(Collectors.toList());
         }
     }
 }

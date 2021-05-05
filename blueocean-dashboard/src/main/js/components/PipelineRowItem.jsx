@@ -1,8 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { ExpandablePath, WeatherIcon, TableRow, TableCell } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
-import { buildPipelineUrl } from '../util/UrlUtils';
-import { capable, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { capable, UrlConfig, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { MATRIX_PIPELINE } from '../Capabilities';
 import { Icon } from '@jenkins-cd/design-language';
 
@@ -15,7 +14,6 @@ function generateRedirectURL(pipeline) {
 }
 
 export class PipelineRowItem extends Component {
-
     calculateResponse(passing, failing) {
         const { t } = this.props;
         let response = ' - ';
@@ -51,12 +49,11 @@ export class PipelineRowItem extends Component {
             numberOfFailingBranches,
             numberOfSuccessfulPullRequests,
             numberOfFailingPullRequests,
-            } = pipeline;
+        } = pipeline;
 
-        const hasPullRequests = !simple && (
-            numberOfSuccessfulPullRequests || numberOfFailingPullRequests);
-        
-        const baseUrl = buildPipelineUrl(organization, fullName);
+        const hasPullRequests = !simple && (numberOfSuccessfulPullRequests || numberOfFailingPullRequests);
+
+        const baseUrl = UrlBuilder.buildPipelineUrl(organization, fullName);
         const multiBranchURL = `${baseUrl}/branches`;
         const pullRequestsURL = `${baseUrl}/pr`;
         const activitiesURL = `${baseUrl}/activity`;
@@ -87,10 +84,8 @@ export class PipelineRowItem extends Component {
 
         if (!simple) {
             // Labels
-            multiBranchLabel = this.calculateResponse(
-                numberOfSuccessfulBranches, numberOfFailingBranches);
-            pullRequestsLabel = this.calculateResponse(
-                numberOfSuccessfulPullRequests, numberOfFailingPullRequests);
+            multiBranchLabel = this.calculateResponse(numberOfSuccessfulBranches, numberOfFailingBranches);
+            pullRequestsLabel = this.calculateResponse(numberOfSuccessfulPullRequests, numberOfFailingPullRequests);
 
             // Now create links for them if possible, replacing the whole-row "show pipeline" link
             multiBranchLinkProps = { linkTo: multiBranchURL };
@@ -99,28 +94,20 @@ export class PipelineRowItem extends Component {
                 pullRequestsLinkProps = { linkTo: pullRequestsURL };
             }
         }
-        
+
         return (
             <TableRow useRollover data-pipeline={name} data-organization={organization} columns={columns}>
                 <TableCell className="TableCell--pipelineLink" {...linkProps}>
                     <ExpandablePath path={fullDisplayPath} />
-                    { matrixRedirectURL && <Icon size={24} icon="ActionExitToApp" /> }
+                    {matrixRedirectURL && <Icon size={24} icon="ActionExitToApp" />}
                 </TableCell>
                 <TableCell {...linkProps}>
                     <WeatherIcon score={weatherScore} />
                 </TableCell>
-                <TableCell {...multiBranchLinkProps}>
-                    { multiBranchLabel }
-                </TableCell>
-                <TableCell {...pullRequestsLinkProps}>
-                    { pullRequestsLabel}
-                </TableCell>
+                <TableCell {...multiBranchLinkProps}>{multiBranchLabel}</TableCell>
+                <TableCell {...pullRequestsLinkProps}>{pullRequestsLabel}</TableCell>
                 <TableCell className="TableCell--actions">
-                    <Extensions.Renderer
-                      extensionPoint="jenkins.pipeline.list.action"
-                      store={this.context.store}
-                      pipeline={this.props.pipeline}
-                    />
+                    <Extensions.Renderer extensionPoint="jenkins.pipeline.list.action" store={this.context.store} pipeline={this.props.pipeline} />
                 </TableCell>
             </TableRow>
         );

@@ -3,7 +3,7 @@ package io.jenkins.blueocean.listeners;
 import io.jenkins.blueocean.rest.hal.Link;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 public class NodeDownstreamBuildActionTest {
 

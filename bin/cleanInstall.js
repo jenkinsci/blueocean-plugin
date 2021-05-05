@@ -43,8 +43,8 @@ function invokeInstall(err, result) {
                 console.error('Something went wrong! node_modules might now be trashed, sorry.', err);
                 process.exit(1);
             } else {
-                const ellapsed = new Date().getTime() - start;
-                console.log(`Install look good! took ${ellapsed}ms`);
+                const elapsed = new Date().getTime() - start;
+                console.log(`Install look good! took ${elapsed}ms`);
                 process.exit(0);
             }
         }
@@ -111,7 +111,7 @@ function removeAndInstall(pathToProject, lib, version, callback) {
     install(lib + '@' + version, callback);
 }
 
-//remove folder Syncronously
+//remove folder Synchronously
 function deleteFolderRecursive(path) {
     if (fs.existsSync(path)) {
         fs.readdirSync(path).forEach(function (file, index) {

@@ -8,7 +8,7 @@
  */
 node('bluebuild-environment') {
     properties([parameters([
-            choice(choices: 'Vivek Pandey:vivek.pandey@gmail.com\nMichael Neale:mneale@cloudbees.com\nJames Dumay:jdumay@cloudbees.com', description: 'Colon separated Git Username and email.', name: 'GIT_AUTHOR_AND_GIT_EMAIL'),
+            choice(choices: 'Vivek Pandey:vivek.pandey@gmail.com\nMichael Neale:mneale@cloudbees.com\nKeith Zantow:kzantow@gmail.com\nGavin Mogan:gmogan@cloudbees.com\nDavid Lin:dlin@cloudbees.com', description: 'Colon separated Git Username and email.', name: 'GIT_AUTHOR_AND_GIT_EMAIL'),
             [$class: 'CredentialsParameterDefinition', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', defaultValue: '', description: 'Your GitHub credential', name: 'GITHUB_CREDENTIALS', required: true],
             [$class: 'CredentialsParameterDefinition', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', defaultValue: '', description: 'Your Jenkins credential', name: 'JENKINS_CREDENTIALS', required: true],
             string(defaultValue: 'https://github.com/jenkinsci/blueocean-plugin.git', description: 'GIT repo URL', name: 'GIT_REPO_URL'),
@@ -56,12 +56,12 @@ node('bluebuild-environment') {
                 //Prepare for release, release on github (tag)
                 stage('mvn release:prepare') {
                     writeSettingsXmlFile()
-                    sh 'mvn -s settings.xml release:prepare -B -Darguments="-DskipTests" -DautoVersionSubmodules=true -Djacoco.skip=true -Dfinbugs.skip=true -Dusername=$GITHUB_USERNAME -Dpassword=$GITHUB_TOKEN'
+                    sh 'mvn -s settings.xml release:prepare -B -Darguments="-DskipTests" -DautoVersionSubmodules=true -Djacoco.skip=true -Dfindbugs.skip=true -Dusername=$GITHUB_USERNAME -Dpassword=$GITHUB_TOKEN'
                 }
 
                 //Release to maven repo
                 stage('mvn release:perform') {
-                    sh 'mvn -s settings.xml release:perform -Djacoco.skip=true -Dfindbugs.skip=true'
+                    sh 'mvn -s settings.xml release:perform -Darguments="-DskipTests" -Djacoco.skip=true -Dfindbugs.skip=true'
                 }
             } catch (err) {
                 currentBuild.result = "FAILURE"

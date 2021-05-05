@@ -31,7 +31,6 @@ const translate = i18nTranslator('blueocean-web');
  * Backend connection failure component.
  */
 export class BackendConnectFailure extends Component {
-
     componentWillMount() {
         this.state = {
             connectionOkay: true,
@@ -40,9 +39,9 @@ export class BackendConnectFailure extends Component {
 
         // Connection error handling...
         const thisComponent = this;
-        sseConnection.onError((e) => {
+        sseConnection.onError(e => {
             // Check the connection...
-            sseConnection.waitConnectionOk((connectionStatus) => {
+            sseConnection.waitConnectionOk(connectionStatus => {
                 if (connectionStatus.connectError) {
                     // Connection "broken" ...
                     thisComponent.setState({
@@ -82,19 +81,19 @@ export class BackendConnectFailure extends Component {
             cssClass = 'connection-lost';
 
             message = translate('Connection.lost.message', {
-                defaultValue: 'Connection lost'
+                defaultValue: 'Connection lost',
             });
             activity = translate('Connection.lost.activity', {
-                defaultValue: 'waiting'
+                defaultValue: 'waiting',
             });
         } else {
             cssClass = 'connection-ok';
 
             message = translate('Connection.ok.message', {
-                defaultValue: 'Connection ok'
+                defaultValue: 'Connection ok',
             });
             activity = translate('Connection.ok.activity', {
-                defaultValue: 'reloading'
+                defaultValue: 'reloading',
             });
             setTimeout(() => window.location.reload(true), 2500);
         }
@@ -102,7 +101,9 @@ export class BackendConnectFailure extends Component {
         return (
             <Fullscreen className={`blockscreen ${cssClass}`}>
                 <div className="toast">
-                    <div className="text">{message}:<span className="activity">{activity}</span></div>
+                    <div className="text">
+                        {message}:<span className="activity">{activity}</span>
+                    </div>
                 </div>
             </Fullscreen>
         );

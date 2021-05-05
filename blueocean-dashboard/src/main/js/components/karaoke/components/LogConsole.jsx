@@ -36,11 +36,8 @@ class LogLine extends PureComponent {
                         href={`#${prefix || ''}log-${index + 1}`}
                         name={`${prefix}log-${index + 1}`}
                         onClick={this.onClick}
-                    >
-                    </a>
-                    {
-                        React.createElement(Linkify, { className: 'line ansi-color' }, ...lineChunks)
-                    }
+                    />
+                    {React.createElement(Linkify, { className: 'line ansi-color' }, ...lineChunks)}
                 </div>
             </p>
         );
@@ -56,7 +53,6 @@ LogLine.propTypes = {
 };
 
 export class LogConsole extends Component {
-
     constructor(props) {
         super(props);
         this.queuedLines = [];
@@ -76,13 +72,18 @@ export class LogConsole extends Component {
     }
 
     // componentWillReceiveProps does not return anything and return null is an early out, so disable lint complaining
-    componentWillReceiveProps(nextProps) { // eslint-disable-line
+    componentWillReceiveProps(nextProps) {
+        // eslint-disable-line
         logger.debug('newProps isArray', Array.isArray(nextProps.logArray));
+        if (nextProps.logArray === undefined) {
+            return;
+        }
+
         // We need a shallow copy of the ObservableArray to "cast" it down to normal array
-        const newArray = nextProps.logArray !== undefined && nextProps.logArray.slice();
-        const oldArray = this.props.logArray !== undefined && this.props.logArray.slice();
+        const newArray = nextProps.logArray.slice();
+        const oldLength = this.props.logArray && this.props.logArray.length || 0;
         // if have a new logArray, simply add it to the queue and wait for next tick
-        this.queuedLines = this.queuedLines.concat(newArray.slice(oldArray.length));
+        this.queuedLines = this.queuedLines.concat(newArray.slice(oldLength));
         clearTimeout(this.timeouts.render);
         this.timeouts.render = setTimeout(() => {
             this._processNextLines();
@@ -168,34 +169,33 @@ export class LogConsole extends Component {
         }
         logger.debug('render lines length', lines.length);
 
+        return (
+            <div className="log-wrapper">
+                {isLoading && (
+                    <div className="loadingContainer" id={`${prefix}log-${0}`}>
+                        <Progress />
+                    </div>
+                )}
 
-        return (<div className="log-wrapper">
-            {isLoading && <div className="loadingContainer" id={`${prefix}log-${0}`}>
-                <Progress />
-            </div>}
-
-            {!isLoading && <div className="log-body"><pre>
-                {hasMore && <div id={`${prefix}log-${0}`} className="fullLog">
-                    <a className="btn-link inverse"
-                       key={0}
-                       target="_blank"
-                       href={`${currentLogUrl}?start=0`}
-                    >
-                        {t('Show.complete.logs')}
-                    </a>
-                </div>}
-                {!isLoading && lines.map((line, index) => (
-                    <LogLine key={index}
-                             prefix={prefix}
-                             index={index}
-                             line={line}
-                             router={router}
-                             location={location} />
-                ))}
-            </pre>
-            </div>}
-
-        </div>);
+                {!isLoading && (
+                    <div className="log-body">
+                        <pre>
+                            {hasMore && (
+                                <div id={`${prefix}log-${0}`} className="fullLog">
+                                    <a className="btn-link inverse" key={0} target="_blank" href={`${currentLogUrl}?start=0`}>
+                                        {t('Show.complete.logs')}
+                                    </a>
+                                </div>
+                            )}
+                            {!isLoading &&
+                                lines.map((line, index) => (
+                                    <LogLine key={index} prefix={prefix} index={index} line={line} router={router} location={location} />
+                                ))}
+                        </pre>
+                    </div>
+                )}
+            </div>
+        );
     }
 }
 

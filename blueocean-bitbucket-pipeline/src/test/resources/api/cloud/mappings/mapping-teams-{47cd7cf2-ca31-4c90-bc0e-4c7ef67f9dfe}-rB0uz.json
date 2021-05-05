@@ -1,0 +1,34 @@
+{
+  "id": "f910f317-a5b0-3922-b8d1-5e92c20f6790",
+  "request": {
+    "url": "/api/2.0/teams/%7B47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe%7D",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "body-teams-{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}-rB0uz.json",
+    "headers": {
+      "Server": "nginx",
+      "Vary": [
+        "Authorization",
+        "Accept-Encoding"
+      ],
+      "Content-Type": "application/json; charset=utf-8",
+      "X-OAuth-Scopes": "webhook, pullrequest:write, project, team, email",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+      "Date": "Tue, 27 Jun 2017 17:43:30 GMT",
+      "X-Served-By": "app-142",
+      "Transfer-Encoding": "chunked",
+      "X-Static-Version": "dce5f507b47a",
+      "ETag": "\"8050d9458a905d00b2d40459f0babc82\"",
+      "X-Content-Type-Options": "nosniff",
+      "X-Render-Time": "0.0369129180908",
+      "X-Credential-Type": "apppassword",
+      "Connection": "keep-alive",
+      "X-Version": "dce5f507b47a",
+      "X-Request-Count": "240",
+      "X-Frame-Options": "SAMEORIGIN"
+    }
+  },
+  "uuid": "f910f317-a5b0-3922-b8d1-5e92c20f6790"
+}

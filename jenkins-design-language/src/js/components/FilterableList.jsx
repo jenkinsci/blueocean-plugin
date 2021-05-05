@@ -12,9 +12,9 @@ type Props = {
     style: Object,
     data?: Array<Object>,
     labelFunction?: Function,
-    disabled?: bool,
+    disabled?: boolean,
     keyFunction?: Function,
-    defaultStyles?: bool,
+    defaultStyles?: boolean,
     defaultSelection?: Object,
     onItemSelect?: Function,
 
@@ -22,7 +22,7 @@ type Props = {
     filterFunction: Function,
     placeholder: string,
     emptyText: string,
-}
+};
 
 type State = {
     text?: string,
@@ -31,7 +31,6 @@ type State = {
 function defaultFilterFunction(text, item) {
     return item && item.toString().indexOf(text) >= 0;
 }
-
 
 /**
  * Control that displays a List of items and allows for selection.
@@ -55,7 +54,6 @@ function defaultFilterFunction(text, item) {
  * @property {string} emptyText text to display when no matches occur
  */
 export class FilterableList extends React.Component {
-
     props: Props;
     state: State;
 
@@ -64,10 +62,10 @@ export class FilterableList extends React.Component {
         listStyle: {},
         filterFunction: defaultFilterFunction,
         placeholder: 'Search...',
-        emptyText: 'No matches.'
+        emptyText: 'No matches.',
     };
 
-    constructor(props:Props) {
+    constructor(props: Props) {
         super(props);
 
         this.state = {};
@@ -100,28 +98,15 @@ export class FilterableList extends React.Component {
 
         return (
             <div className={`FilterableList ${outerClass}`} style={style}>
-                <TextInput
-                    placeholder={placeholder}
-                    disabled={disabled}
-                    onChange={text => this._onFilterChange(text)}
-                    iconLeft="ActionSearch"
-                />
+                <TextInput placeholder={placeholder} disabled={disabled} onChange={text => this._onFilterChange(text)} iconLeft="ActionSearch" />
 
-                { noMatches && emptyText &&
-                    <div className="FilterableList-empty-text">{emptyText}</div>
-                }
+                {noMatches && emptyText && <div className="FilterableList-empty-text">{emptyText}</div>}
 
-                { !noMatches &&
-                <List
-                    {...listProps}
-                    disabled={disabled}
-                    className="FilterableList-List"
-                    data={filtered}
-                    style={listStyle}
-                >
-                    {this.props.children}
-                </List>
-                }
+                {!noMatches && (
+                    <List {...listProps} disabled={disabled} className="FilterableList-List" data={filtered} style={listStyle}>
+                        {this.props.children}
+                    </List>
+                )}
             </div>
         );
     }

@@ -6,13 +6,12 @@ import Status from './FlowStepStatus';
  * Handles navigating forward through the flow and updating the state of each step.
  */
 export default class MultiStepFlow extends React.Component {
-
     render() {
         const extraClass = this.props.className || '';
 
         return (
             <div className={`multi-step-flow-component ${extraClass}`}>
-                { React.Children.map(this.props.children, (child, index) => {
+                {React.Children.map(this.props.children, (child, index) => {
                     const { activeIndex } = this.props;
                     let status = Status.INCOMPLETE;
 

@@ -8,14 +8,14 @@ import { ExpandablePath, Favorite, ReadableDate } from '@jenkins-cd/design-langu
 import { Icon } from '@jenkins-cd/design-language';
 import moment from 'moment';
 
-const stopProp = (event) => {
+const stopProp = event => {
     event.stopPropagation();
 };
 
 const BRANCH_CAPABILITY = 'io.jenkins.blueocean.rest.model.BlueBranch';
 
 /**
- * Extract elements from a path string deliminted with forward slashes
+ * Extract elements from a path string delimited with forward slashes
  * @param path
  * @param begin
  * @param end
@@ -23,7 +23,10 @@ const BRANCH_CAPABILITY = 'io.jenkins.blueocean.rest.model.BlueBranch';
  */
 function extractPath(path, begin, end) {
     try {
-        return path.split('/').slice(begin, end).join('/');
+        return path
+            .split('/')
+            .slice(begin, end)
+            .join('/');
     } catch (error) {
         return path;
     }
@@ -54,7 +57,9 @@ function extractNames(pipeline, isBranch) {
     }
 
     return {
-        fullName, pipelineName, branchName,
+        fullName,
+        pipelineName,
+        branchName,
     };
 }
 
@@ -66,14 +71,11 @@ function extractNames(pipeline, isBranch) {
  * item: pipeline or branch
  * favorite: whether or not the pipeline is favorited
  * onRunClick: callback invoked when 'Run Again' is clicked
- * onFavoriteToggle: callback invokved when favorite checkbox is toggled.
+ * onFavoriteToggle: callback invoked when favorite checkbox is toggled.
  */
 export class PipelineCard extends Component {
-
     static _getBackgroundClass(status) {
-        return status && status.length > 0 ?
-            `${status.toLowerCase()}-bg-lite` :
-            'unknown-bg-lite';
+        return status && status.length > 0 ? `${status.toLowerCase()}-bg-lite` : 'unknown-bg-lite';
     }
 
     constructor(props) {
@@ -101,7 +103,7 @@ export class PipelineCard extends Component {
     }
 
     _navigateToRunDetails = () => {
-        const runUrl = UrlBuilder.buildRunDetailsUrl(this.props.runnable.latestRun);
+        const runUrl = UrlBuilder.buildRunUrlForDetails(this.props.runnable.latestRun);
 
         this.props.router.push({
             pathname: runUrl,
@@ -128,11 +130,7 @@ export class PipelineCard extends Component {
             return null;
         }
 
-        const {
-            t,
-            locale,
-            runnable,
-        } = this.props;
+        const { t, locale, runnable } = this.props;
 
         // Required props
         if (!t) {
@@ -146,9 +144,12 @@ export class PipelineCard extends Component {
         const names = extractNames(runnable, isBranch);
         const organizationName = runnable.organization;
         const organizationDisplayName = organizationName === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organizationName;
-        const fullDisplayName = isBranch ?
-            runnable.fullDisplayName.split('/').slice(0, -1).join('/') :
-            runnable.fullDisplayName;
+        const fullDisplayName = isBranch
+            ? runnable.fullDisplayName
+                  .split('/')
+                  .slice(0, -1)
+                  .join('/')
+            : runnable.fullDisplayName;
 
         let status;
         let startTime = null;
@@ -166,8 +167,7 @@ export class PipelineCard extends Component {
 
         const commitText = commitId ? commitId.substr(0, 7) : '';
 
-        const activityUrl = `/organizations/${encodeURIComponent(organizationName)}/` +
-        `${encodeURIComponent(names.fullName)}/activity`;
+        const activityUrl = `/organizations/${encodeURIComponent(organizationName)}/` + `${encodeURIComponent(names.fullName)}/activity`;
 
         let displayPath;
         if (AppConfig.showOrg()) {
@@ -187,7 +187,7 @@ export class PipelineCard extends Component {
         let runDateTime = null;
 
         if (latestRun) {
-            // We'll pick the latest time we have. Completion, start, or enque in that order
+            // We'll pick the latest time we have. Completion, start, or enqueue in that order
             const serverTimeISO = latestRun.endTime || latestRun.startTime || latestRun.enQueueTime;
 
             if (serverTimeISO) {
@@ -202,31 +202,24 @@ export class PipelineCard extends Component {
             }
         }
 
-        let timeText = runDateTime && (
-            <ReadableDate
-                date={ runDateTime }
-                liveUpdate
-                locale={ locale }
-                shortFormat={ dateFormatShort }
-                longFormat={ dateFormatLong }
-            />
-        );
+        let timeText = runDateTime && <ReadableDate date={runDateTime} liveUpdate locale={locale} shortFormat={dateFormatShort} longFormat={dateFormatLong} />;
 
         return (
-            <PipelineCardRenderer onClickMain={this._navigateToRunDetails}
-                                  status={status}
-                                  startTime={startTime}
-                                  estimatedDuration={estimatedDuration}
-                                  activityUrl={activityUrl}
-                                  displayPath={displayPath}
-                                  branchText={isBranch && decodeURIComponent(names.branchName)}
-                                  commitText={commitId && commitText}
-                                  timeText={timeText}
-                                  favoriteChecked={this.state.favorite}
-                                  onFavoriteToggle={this._onFavoriteToggle}
-                                  runnableItem={runnable}
-                                  latestRun={latestRun}
-                                  onRunDetails={this._onRunDetails}
+            <PipelineCardRenderer
+                onClickMain={this._navigateToRunDetails}
+                status={status}
+                startTime={startTime}
+                estimatedDuration={estimatedDuration}
+                activityUrl={activityUrl}
+                displayPath={displayPath}
+                branchText={isBranch && decodeURIComponent(names.branchName)}
+                commitText={commitId && commitText}
+                timeText={timeText}
+                favoriteChecked={this.state.favorite}
+                onFavoriteToggle={this._onFavoriteToggle}
+                runnableItem={runnable}
+                latestRun={latestRun}
+                onRunDetails={this._onRunDetails}
             />
         );
     }
@@ -274,13 +267,7 @@ export function PipelineCardRenderer(props) {
 
     return (
         <div className={`pipeline-card ${bgClass}`} data-full-name={fullName} onClick={onClickMain}>
-            <LiveStatusIndicator result={status}
-                                 startTime={startTime}
-                                 estimatedDuration={estimatedDuration}
-                                 width={'20px'}
-                                 height={'20px'}
-                                 noBackground
-            />
+            <LiveStatusIndicator result={status} startTime={startTime} estimatedDuration={estimatedDuration} width={'20px'} height={'20px'} noBackground />
 
             <span className="name">
                 <Link to={activityUrl} onClick={stopProp}>
@@ -288,50 +275,43 @@ export function PipelineCardRenderer(props) {
                 </Link>
             </span>
 
-            { branchText ?
+            {branchText ? (
                 <span className="branch">
-                    <span className="octicon octicon-git-branch"></span>
-                    <span className="branchText" title={branchText}>{branchText}</span>
+                    <span className="octicon octicon-git-branch" />
+                    <span className="branchText" title={branchText}>
+                        {branchText}
+                    </span>
                 </span>
-                :
-                <span className="branch"></span>
-            }
+            ) : (
+                <span className="branch" />
+            )}
 
-            { commitText ?
+            {commitText ? (
                 <span className="commit">
-                    <span className="octicon octicon-git-commit"></span>
+                    <span className="octicon octicon-git-commit" />
                     <pre className="commitId">&#35;{commitText}</pre>
                 </span>
-                :
-                <span className="commit"></span>
-            }
+            ) : (
+                <span className="commit" />
+            )}
 
-            { timeText ?
+            {timeText ? (
                 <span className="time">
-                    <Icon size={ 16 } icon="DeviceAccessTime" />
+                    <Icon size={16} icon="DeviceAccessTime" />
                     <span className="timeText">{timeText}</span>
                 </span>
-                :
-                <span className="time"></span>
-            }
+            ) : (
+                <span className="time" />
+            )}
 
             <span className="actions" onClick={stopProp}>
-                <ReplayButton className="icon-button dark"
-                              runnable={runnableItem}
-                              latestRun={latestRun}
-                              onNavigation={onRunDetails}
-                />
+                <div className="actions-container">
+                    <ReplayButton className="icon-button dark" runnable={runnableItem} latestRun={latestRun} onNavigation={onRunDetails} />
 
-                <RunButton className="icon-button dark"
-                           runnable={runnableItem}
-                           latestRun={latestRun}
-                           onNavigation={onRunDetails}
-                />
+                    <RunButton className="icon-button dark" runnable={runnableItem} latestRun={latestRun} onNavigation={onRunDetails} />
 
-                <Favorite checked={favoriteChecked}
-                          className="dark"
-                          onToggle={onFavoriteToggle}
-                />
+                    <Favorite checked={favoriteChecked} className="dark" onToggle={onFavoriteToggle} />
+                </div>
             </span>
         </div>
     );

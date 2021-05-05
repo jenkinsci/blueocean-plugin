@@ -1,0 +1,27 @@
+pipeline {
+    agent none
+    stages {
+        stage("top") {
+            failFast true
+            parallel {
+                stage("aborts") {
+                    steps {
+                        sleep 5
+                    }
+                }
+                stage("fails") {
+                    steps {
+                        sleep 1
+                        error "stage fails"
+                    }
+                }
+                stage("succeeds") {
+                    steps {
+                        echo "stage succeeds"
+                    }
+                }
+            }
+        }
+    }
+}
+

@@ -1,0 +1,31 @@
+{
+  "id": "35d22972-aa22-3a08-b705-862ab11239da",
+  "request": {
+    "url": "/api/2.0/repositories/%7B47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe%7D/emptyrepo/?fields=mainbranch.*,mainbranch.target.*,mainbranch.target.repository.*,mainbranch.target.repository.mainbranch.name,mainbranch.target.repository.owner.*,mainbranch.target.repository.owner.links.avatar.*",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "body-{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}-emptyrepo-mUAAn.json",
+    "headers": {
+      "Server": "nginx",
+      "Vary": "Authorization",
+      "Content-Type": "application/json; charset=utf-8",
+      "X-OAuth-Scopes": "webhook, pullrequest:write, project, team, email",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+      "Date": "Wed, 28 Jun 2017 04:26:34 GMT",
+      "X-Served-By": "app-141",
+      "ETag": "\"7a343f518f194f13e7705299de6b2a52\"",
+      "X-Static-Version": "dce5f507b47a",
+      "X-Content-Type-Options": "nosniff",
+      "X-Accepted-OAuth-Scopes": "repository",
+      "X-Credential-Type": "apppassword",
+      "X-Render-Time": "0.0477650165558",
+      "Connection": "keep-alive",
+      "X-Request-Count": "423",
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-Version": "dce5f507b47a"
+    }
+  },
+  "uuid": "35d22972-aa22-3a08-b705-862ab11239da"
+}

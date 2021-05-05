@@ -10,9 +10,13 @@ export default class BuildStepEditor extends React.Component {
 
     render() {
         const { step } = this.props;
-        return (<textarea className="editor-step-detail-script"
-                  defaultValue={getArg(this.props.step, 'script').value}
-                  onChange={(e) => this.textChanged(e.target.value)} />);
+        return (
+            <textarea
+                className="editor-step-detail-script"
+                defaultValue={getArg(this.props.step, 'script').value}
+                onChange={e => this.textChanged(e.target.value)}
+            />
+        );
     }
 }
 

@@ -1,0 +1,57 @@
+pipeline {
+  agent any
+  stages {
+    stage('first-solo') {
+      steps {
+        echo('first-solo')
+        sleep(5)
+      }
+    }
+    stage('parent') {
+        parallel {
+            stage('single-stage') {
+              steps {
+                echo ('single-stage')
+                sleep(5)
+              }
+            }
+
+            stage('multiple-stages') {
+                stages {
+                    stage('first-sequential-stage') {
+                      steps {
+                        echo('first-sequential-stage')
+                        sleep(5)
+                      }
+                    }
+                    stage('second-sequential-stage') {
+                      steps {
+                        echo('second-sequential-stage')
+                        sleep(5)
+                      }
+                    }
+                    stage('third-sequential-stage') {
+                      steps {
+                        echo('third-sequential-stage')
+                        sleep(5)
+                      }
+                    }
+                }
+            }
+
+            stage('other-single-stage') {
+              steps {
+                echo('other-single-stage')
+                sleep(5)
+              }
+            }
+        }
+    }
+    stage('second-solo') {
+      steps {
+        echo('second-solo')
+        sleep(5)
+      }
+    }
+  }
+}

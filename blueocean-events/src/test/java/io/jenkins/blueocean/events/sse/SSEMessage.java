@@ -65,6 +65,6 @@ public class SSEMessage {
 
     @Override
     public String toString() {
-        return String.format("SSEMesasge[event=%s,data=%s]",event,data);
+        return String.format("SSEMessage[event=%s,data=%s]",event,data);
     }
 }

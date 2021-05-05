@@ -68,7 +68,7 @@ module.exports = {
         // test whether the expand works
         nodeDetail.clickFirstResultItem();
         // test whether the stage we seeing is highlighted
-        nodeDetail.waitForElementVisible('g.pipeline-node-selected');
+        nodeDetail.waitForElementVisible('g.PWGx-pipeline-node-selected');
         // test whether log lines are navigable
         nodeDetail.validateLogConsole(2);
         // wait for job to finish
