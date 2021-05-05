@@ -2,9 +2,9 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import io.jenkins.blueocean.commons.DigestUtils;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.util.HttpRequest;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({BitbucketServerApi.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class BitbucketServerEndpointTest extends BbServerWireMock {
     private static final String URL = "/organizations/jenkins/scm/bitbucket-server/servers/";
 

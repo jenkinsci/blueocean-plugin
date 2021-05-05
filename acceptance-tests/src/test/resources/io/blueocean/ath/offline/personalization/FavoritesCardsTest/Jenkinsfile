@@ -4,7 +4,7 @@ pipeline {
     stage("First") {
       steps {
         echo "Hello"
-        sleep 10
+        waitUntil { fileExists('%TMPFILENAME%') }
         echo "World"
       }
     }

@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
  * @author Vivek Pandey
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubApiTest extends GithubMockBase {
     @Test
     public void validateGithubToken() throws IOException, UnirestException {
@@ -72,7 +72,7 @@ public class GithubApiTest extends GithubMockBase {
             .get("/organizations/jenkins/scm/github/?apiUrl="+githubApiUrl)
             .build(Map.class);
 
-        assertTrue(r.get("message").toString().equals("Invalid accessToken"));
+        assertEquals("Invalid accessToken", r.get("message").toString());
     }
 
     @Test

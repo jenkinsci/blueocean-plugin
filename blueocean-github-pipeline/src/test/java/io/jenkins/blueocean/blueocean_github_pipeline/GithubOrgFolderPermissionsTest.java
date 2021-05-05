@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 
 
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubOrgFolderPermissionsTest extends GithubMockBase {
 
     @Test
@@ -110,7 +110,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         private OrganizationImpl instance;
 
         public TestOrganizationFactoryImpl() throws IOException {
-            Folder f = Jenkins.getInstance().createProject(Folder.class, "CustomOrg");
+            Folder f = Jenkins.get().createProject(Folder.class, "CustomOrg");
             instance = new OrganizationImpl("custom", f);
         }
 

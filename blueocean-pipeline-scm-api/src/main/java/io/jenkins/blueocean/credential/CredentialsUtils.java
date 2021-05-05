@@ -111,7 +111,7 @@ public class CredentialsUtils {
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider.lookupCredentials(
                         type,
-                        Jenkins.getInstance(),
+                        Jenkins.get(),
                         Jenkins.getAuthentication(),
                         domainRequirements),
                 CredentialsMatchers.allOf(CredentialsMatchers.withId(credentialId))

@@ -1,11 +1,16 @@
 #!groovy
 
 if (JENKINS_URL == 'https://ci.jenkins.io/') {
-    buildPlugin(
-      configurations: buildPlugin.recommendedConfigurations().findAll { it.platform == 'linux' },
-      tests: [skip: true]
-    )
-    return
+  buildPlugin(
+    configurations: [
+      [ platform: "linux", jdk: "8" ],
+      [ platform: "linux", jdk: "11" ]
+    ],
+    // Tests were locking up and timing out on non-aci
+    useAci: true,
+    timeout: 90
+  )
+  return
 }
 
 properties([
@@ -28,7 +33,7 @@ envs = [
   'GIT_AUTHOR_EMAIL=hates@cake.com'
 ]
 
-jenkinsVersions = ['2.150.3']
+jenkinsVersions = ['2.222.4']
 
 if (params.USE_SAUCELABS) {
   credentials.add(usernamePassword(credentialsId: 'saucelabs', passwordVariable: 'SAUCE_ACCESS_KEY', usernameVariable: 'SAUCE_USERNAME'))
@@ -76,20 +81,17 @@ node() {
 
           stage('Building BlueOcean') {
             timeout(time: 90, unit: 'MINUTES') {
-              sh "mvn clean install -V -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
+              sh "mvn clean install -T1C -V -B -DcleanNode --no-transfer-progress -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
             }
 
             junit '**/target/surefire-reports/TEST-*.xml'
             junit '**/target/jest-reports/*.xml'
-            jacoco execPattern: '**/target/jacoco.exec', classPattern : '**/target/classes', sourcePattern: '**/src/main/java', exclusionPattern: 'src/test*'
-            // archive '*/target/code-coverage/**/*'
             archive '*/target/*.hpi'
-            // archive '*/target/jest-coverage/**/*'
           }
 
           jenkinsVersions.each { version ->
             stage("ATH - Jenkins ${version}") {
-              timeout(time: 90, unit: 'MINUTES') {
+              timeout(time: 150, unit: 'MINUTES') {
                 dir('acceptance-tests') {
                   sh "bash -x ./run.sh -v=${version} --host=${ip} --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
                   junit '**/target/surefire-reports/*.xml'

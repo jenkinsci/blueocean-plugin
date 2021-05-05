@@ -83,7 +83,7 @@ public class PipelineApiTest extends PipelineBaseTest {
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
             "   stage ('Build1'); " +
-            "   sh('sleep 60') " +
+            "   sleep(60);" +
             "   stage ('Test1'); " +
             "   echo ('Testing'); " +
             "}"));
@@ -145,7 +145,7 @@ public class PipelineApiTest extends PipelineBaseTest {
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
             "   stage ('Build1'); " +
-            "   sh('sleep 120') " +
+            "   sleep(120);" +
             "   stage ('Test1'); " +
             "   echo ('Testing'); " +
             "}"));
@@ -249,7 +249,7 @@ public class PipelineApiTest extends PipelineBaseTest {
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
             "   stage ('Build1'); " +
-            "   sh('sleep 60') " +
+            "   sleep(60); " +
             "   stage ('Test1'); " +
             "   echo ('Testing'); " +
             "}"));

@@ -15,7 +15,7 @@ export class DisablePipelineButton extends Component {
 
         this.state = {
             disabled: this.props.pipeline.disabled,
-            submitingChange: false,
+            submittingChange: false,
         };
     }
 
@@ -29,7 +29,7 @@ export class DisablePipelineButton extends Component {
         disableJobApi.disable(this.props.pipeline).then(() => {
             this._updateState(true);
             this.props.onChangeDisableState(true);
-            this.setState({ submitingChange: false });
+            this.setState({ submittingChange: false });
         });
     }
 
@@ -37,7 +37,7 @@ export class DisablePipelineButton extends Component {
         disableJobApi.enable(this.props.pipeline).then(() => {
             this._updateState(false);
             this.props.onChangeDisableState(false);
-            this.setState({ submitingChange: false });
+            this.setState({ submittingChange: false });
         });
     }
 
@@ -49,7 +49,7 @@ export class DisablePipelineButton extends Component {
             return false;
         }
 
-        const buttonDisabled = this.state.submitingChange ? true : false;
+        const buttonDisabled = this.state.submittingChange ? true : false;
 
         let buttonLabel;
         let buttonIcon;
@@ -63,8 +63,8 @@ export class DisablePipelineButton extends Component {
         }
 
         const onClick = () => {
-            if (!this.state.submitingChange) {
-                this.setState({ submitingChange: true });
+            if (!this.state.submittingChange) {
+                this.setState({ submittingChange: true });
                 this.state.disabled ? this._onEnableClick() : this._onDisableClick();
             }
         };

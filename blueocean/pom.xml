@@ -106,14 +106,15 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-jira</artifactId>
+            <optional>true</optional>
         </dependency>
 
-        <!-- JENKINS-56773 - Disabled until executor plugin has performance improvements made
+        <!-- TODO remove with next release -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-executor-info</artifactId>
+            <optional>true</optional>
         </dependency>
-        -->
 
         <!-- Bundled plugins for improved out of the box experience -->
         <dependency>
@@ -148,6 +149,12 @@
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
             <scope>test</scope>
+            <exclusions>
+              <exclusion>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>

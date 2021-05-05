@@ -1,21 +1,23 @@
 package io.jenkins.blueocean.auth.jwt.impl;
 
+import static java.util.logging.Level.WARNING;
+
 import hudson.Extension;
 import hudson.Plugin;
 import hudson.model.User;
 import hudson.tasks.Mailer;
-import io.jenkins.blueocean.auth.jwt.JwtAuthenticationService;
-import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStore;
-import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStoreFactory;
-import io.jenkins.blueocean.auth.jwt.JwtToken;
+import io.jenkins.blueocean.auth.jwt.*;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.QueryParameter;
-
 import javax.annotation.Nullable;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+import java.util.logging.Logger;
 import java.util.UUID;
 
 /**
@@ -25,6 +27,7 @@ import java.util.UUID;
  */
 @Extension
 public class JwtAuthenticationServiceImpl extends JwtAuthenticationService {
+    private static final Logger LOGGER = Logger.getLogger(JwtAuthenticationServiceImpl.class.getName());
 
     private static int DEFAULT_EXPIRY_IN_SEC = 1800;
     private static int DEFAULT_MAX_EXPIRY_TIME_IN_MIN = 480;
@@ -90,6 +93,28 @@ public class JwtAuthenticationServiceImpl extends JwtAuthenticationService {
         jwtToken.claim.put("context", context);
 
         return jwtToken;
+    }
+
+    @Override
+    public JSONObject getJwkSet() {
+        JSONObject jwks = new JSONObject();
+        JSONArray keys = new JSONArray();
+
+        // Get a year of potential signing keys
+        for (int i = 0; i <= 12; i++) {
+            String keyId = SigningKeyProviderImpl.DATE_FORMAT.format(Instant.now().minus(ChronoUnit.MONTHS.getDuration().multipliedBy(i)));
+            try {
+                SigningPublicKey signingKey = getJwks(keyId);
+                if (signingKey != null) {
+                    keys.add(signingKey.asJSON());
+                }
+            } catch (ServiceException e) {
+                LOGGER.log(WARNING, String.format("Error reading RSA key for id %s: %s", keyId, e.getMessage()), e);
+            }
+        }
+
+        jwks.put("keys", keys);
+        return jwks;
     }
 
     @Override

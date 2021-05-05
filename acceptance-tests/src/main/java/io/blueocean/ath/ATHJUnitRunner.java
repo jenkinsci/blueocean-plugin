@@ -6,7 +6,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.blueocean.ath.pages.classic.LoginPage;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.internal.runners.model.EachTestNotifier;
 import org.junit.runner.Description;
@@ -21,6 +20,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.ScreenshotException;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +36,7 @@ import java.util.List;
 public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
     private Injector injector;
 
-    private Logger logger = Logger.getLogger(ATHJUnitRunner.class);
+    private Logger logger = LoggerFactory.getLogger(ATHJUnitRunner.class);
 
     public ATHJUnitRunner(Class<?> klass) throws InitializationError {
         super(klass);

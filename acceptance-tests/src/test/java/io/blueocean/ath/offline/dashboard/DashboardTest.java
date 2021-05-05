@@ -34,16 +34,5 @@ public class DashboardTest {
         dashboardPage.open();
         dashboardPage.testJobCountAtLeast(2);
     }
-
-
-    @Test
-    public void checkExecutorPluginLoaded() throws InterruptedException, UnirestException, IOException {
-        jobApi.createFreeStyleJob("freestyle-alpha", "echo alpha");
-        dashboardPage.open();
-        dashboardPage.testJobCountAtLeast(1);
-        executorPluginPage.open();
-        executorPluginPage.checkComputers();
-    }
-
-
+    
 }

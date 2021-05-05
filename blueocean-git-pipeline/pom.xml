@@ -31,10 +31,6 @@
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>git</artifactId>
     </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
 
     <!-- test dependencies -->
     <dependency>
@@ -49,13 +45,6 @@
       <artifactId>git</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
-      <exclusions>
-        <!-- Upper dependency fix: annotation-indexer comes from core, exclude from git -->
-        <exclusion>
-          <groupId>org.jenkins-ci</groupId>
-          <artifactId>annotation-indexer</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -76,7 +65,6 @@
       <artifactId>apache-httpcomponents-client-4-api</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
 </project>

@@ -1,8 +1,5 @@
 package io.blueocean.ath;
 
-
-import com.google.common.collect.Lists;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.junit.JGitTestUtil;
@@ -11,10 +8,13 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Rule;
 import org.junit.rules.ExternalResource;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -42,11 +42,11 @@ public class GitRepositoryRule extends ExternalResource {
         //temporaryFolder.delete();
     }
 
-    private Logger logger = Logger.getLogger(GitRepositoryRule.class);
+    private Logger logger = LoggerFactory.getLogger(GitRepositoryRule.class);
 
     @NotNull
     public List<Ref> createBranches(@NotNull String prefix, int number) throws GitAPIException {
-        List<Ref> refs = Lists.newArrayList();
+        List<Ref> refs = new ArrayList<>();
         for(int i = 1; i < number + 1; i++) {
             Ref ref = client.branchCreate().setName(prefix + i).call();
             refs.add(ref);
@@ -58,7 +58,7 @@ public class GitRepositoryRule extends ExternalResource {
 
     public Ref createBranch(String branch) throws GitAPIException {
         Ref ref = client.branchCreate().setName(branch).call();
-        logger.info("Created branch " + branch);
+        logger.info("Created branch {}", branch);
         return ref;
     }
 
@@ -69,7 +69,7 @@ public class GitRepositoryRule extends ExternalResource {
 
     public void writeFile(String name, String contents) throws IOException {
         JGitTestUtil.writeTrashFile(client.getRepository(), name, contents);
-        logger.info("Wrote " + name +" to git repository");
+        logger.info("Wrote {} to git repository", name);
     }
 
     public RevCommit commit(String message) throws GitAPIException {
