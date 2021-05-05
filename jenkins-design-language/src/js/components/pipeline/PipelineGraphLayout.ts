@@ -2,6 +2,8 @@ import { CompositeConnection, MATRIOSKA_PATHS } from './PipelineGraphModel';
 
 import { NodeColumn, LabelInfo, LayoutInfo, StageInfo, NodeInfo } from './PipelineGraphModel';
 
+export const sequentialStagesLabelOffset = 70;
+
 /**
  * Main process for laying out the graph. Creates and positions markers for each component, but creates no components.
  *
@@ -10,6 +12,8 @@ import { NodeColumn, LabelInfo, LayoutInfo, StageInfo, NodeInfo } from './Pipeli
  *  3. Create all the connections between nodes that need to be rendered
  *  4. Create a bigLabel per column, and a smallLabel for any child nodes
  *  5. Measure the extents of the graph
+ *
+ *  @deprecated Don't use this, the latest version exists in the ux-widgets repo, and Blue Ocean also uses that now
  */
 export function layoutGraph(newStages: Array<StageInfo>, layout: LayoutInfo) {
     const stageNodeColumns = createNodeColumns(newStages);
@@ -163,6 +167,9 @@ function positionNodes(nodeColumns: Array<NodeColumn>, { nodeSpacingH, parallelS
             xp += Math.round((widestRow - row.length) * parallelSpacingH * 0.5);
 
             for (const node of row) {
+                if (!node.isPlaceholder && node.stage && node.stage.seqContainerName) {
+                    xp += sequentialStagesLabelOffset;
+                }
                 maxX = Math.max(maxX, xp);
                 node.x = xp;
                 node.y = yp;

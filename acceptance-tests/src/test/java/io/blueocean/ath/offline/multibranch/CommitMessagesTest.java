@@ -5,17 +5,21 @@ import com.google.common.io.Files;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.BlueOceanAcceptanceTest;
 import io.blueocean.ath.GitRepositoryRule;
+import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
 import io.blueocean.ath.sse.SSEClientRule;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.junit.JGitTestUtil;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -28,7 +32,9 @@ import static org.junit.Assert.assertNotEquals;
 
 @RunWith(ATHJUnitRunner.class)
 public class CommitMessagesTest extends BlueOceanAcceptanceTest {
-    private Logger logger = Logger.getLogger(CommitMessagesTest.class);
+    private Logger logger = LoggerFactory.getLogger(CommitMessagesTest.class);
+
+    @Rule public TestName name = new TestName();
 
     @Rule
     @Inject
@@ -41,12 +47,19 @@ public class CommitMessagesTest extends BlueOceanAcceptanceTest {
     @Inject
     MultiBranchPipelineFactory mbpFactory;
 
+    @Inject
+    ClassicJobApi jobApi;
+
+    @After
+    public void tearDown() throws IOException {
+        jobApi.deletePipeline(this.getClass().getSimpleName() + "_" + name.getMethodName());
+    }
     /**
      * This tests the commit messages are being picked up from git and displayed on the run in activity.
      */
     @Test
     public void commitMessagesTest() throws IOException, GitAPIException {
-        final String pipelineName = "CommitMessagesTest_commitMessagesTest";
+        final String pipelineName = this.getClass().getSimpleName() + "_" + name.getMethodName();
         final String branchName = "master";
 
         URL jenkinsFile = getResourceURL("Jenkinsfile");

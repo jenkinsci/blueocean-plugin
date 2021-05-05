@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.171",
+  "version": "1.10.4",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "types": "dist/js/index.d.ts",
@@ -36,12 +36,12 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.162",
+    "@jenkins-cd/design-language": "1.10.4",
+    "@jenkins-cd/js-extensions": "0.0.44",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/logging": "0.0.6",
     "@jenkins-cd/sse-gateway": "0.0.21",
     "@jenkins-cd/storage": "0.0.6",
-    "@jenkins-cd/js-extensions": "0.0.44",
     "bluebird": "3.5.0",
     "cd": "0.3.3",
     "i18next": "3.5.2",
@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.63",
+    "@jenkins-cd/js-builder": "0.0.64",
     "@jenkins-cd/js-builder-jest": "0.0.4",
     "@kadira/storybook": "2.20.1",
     "@types/bluebird": "3.5.0",

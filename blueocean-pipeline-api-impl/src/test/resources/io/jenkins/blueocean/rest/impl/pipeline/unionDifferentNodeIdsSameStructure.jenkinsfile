@@ -1,0 +1,13 @@
+stage('first') {
+    // Changes the number of nodes in this stage on every build, so any code that
+    // relies on matching Node IDs across builds will break.
+    for (int i = 0; i < currentBuild.number; i++) {
+        echo "${i}"
+    }
+}
+stage('second') {
+    semaphore 'second'
+}
+stage('third') {
+    semaphore 'third'
+}

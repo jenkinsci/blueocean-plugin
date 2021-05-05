@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.Functions;
 import hudson.Util;
@@ -33,18 +34,21 @@ import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.BlueTrendContainer;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.util.Disabler;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
+import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.json.JsonBody;
+import org.kohsuke.stapler.verb.DELETE;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.json.JsonBody;
-import org.kohsuke.stapler.verb.DELETE;
+
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_JOB;
 
 /**
@@ -158,6 +162,26 @@ public class AbstractPipelineImpl extends BluePipeline {
     @Override
     public String getFullDisplayName() {
         return getFullDisplayName(organization, job);
+    }
+
+    @Override
+    @SuppressFBWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "isDisabled will return null if the job type doesn't support it")
+    public Boolean getDisabled() {
+        return Disabler.isDisabled(job);
+    }
+
+    @Override
+    public void enable() throws IOException {
+        if (getPermissions(job).getOrDefault(BluePipeline.CONFIGURE_PERMISSION, Boolean.FALSE)) {
+            Disabler.makeDisabled(job, false);
+        }
+    }
+
+    @Override
+    public void disable() throws IOException {
+        if (getPermissions(job).getOrDefault(BluePipeline.CONFIGURE_PERMISSION, Boolean.FALSE)) {
+            Disabler.makeDisabled(job, true);
+        }
     }
 
     /**

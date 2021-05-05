@@ -1,8 +1,10 @@
 import React, { Component, PropTypes } from 'react';
+import { observer } from 'mobx-react';
 import { CommitId, PlaceholderTable, ReadableDate, JTable, TableHeaderRow, TableRow, TableCell } from '@jenkins-cd/design-language';
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
 import LinkifiedText from './LinkifiedText';
+import { ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 
 function NoChangesPlaceholder(props) {
     const { t } = props;
@@ -30,15 +32,34 @@ NoChangesPlaceholder.propTypes = {
     t: PropTypes.func,
 };
 
+@observer
 export default class RunDetailsChanges extends Component {
-    render() {
-        const { result, t, locale } = this.props;
+    componentWillMount() {
+        this._fetchChangeSet(this.props);
+    }
 
-        if (!result) {
+    componentWillReceiveProps(nextProps) {
+        this._fetchChangeSet(nextProps);
+    }
+
+    _fetchChangeSet(props) {
+        if (props.result && props.result._links && props.result._links && props.result._links.self) {
+            this.pager = this.context.activityService.changeSetPager(`${props.result._links.self.href}changeSet/`);
+        }
+    }
+
+    render() {
+        const { t, locale } = this.props;
+
+        if (!this.pager) {
             return null;
         }
 
-        const { changeSet } = result;
+        if (this.pager.pendingD) {
+            return <NoChangesPlaceholder t={t} />;
+        }
+
+        const changeSet = this.pager.data;
 
         if (!changeSet || !changeSet.length) {
             return <NoChangesPlaceholder t={t} />;
@@ -56,38 +77,57 @@ export default class RunDetailsChanges extends Component {
             JTable.column(100, dateLabel),
         ];
 
+        const changeSetSplitBySource = [];
+        changeSet.map(commit => {
+            if (changeSetSplitBySource[commit.checkoutCount] === undefined) {
+                changeSetSplitBySource[commit.checkoutCount] = [];
+            }
+            changeSetSplitBySource[commit.checkoutCount].push(commit);
+        });
+
         return (
-            <JTable columns={columns} className="changeset-table">
-                <TableHeaderRow />
-                {changeSet.map(commit => (
-                    <TableRow key={commit.commitId}>
-                        <TableCell>
-                            <CommitId commitId={commit.commitId} url={commit.url} />
-                        </TableCell>
-                        <TableCell>{commit.author.fullName}</TableCell>
-                        <TableCell className="multipleLines">
-                            <LinkifiedText text={commit.msg} partialTextLinks={commit.issues} />
-                        </TableCell>
-                        <TableCell>
-                            <ReadableDate
-                                date={commit.timestamp}
-                                liveUpdate
-                                locale={locale}
-                                shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
-                                longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
-                            />
-                        </TableCell>
-                    </TableRow>
+            <div>
+                {changeSetSplitBySource.map((changeSet, changeSetIdx) => (
+                    <JTable columns={columns} className="changeset-table" key={changeSetIdx}>
+                        <TableHeaderRow />
+                        {changeSet.map(commit => (
+                            <TableRow key={commit.commitId}>
+                                <TableCell>
+                                    <CommitId commitId={commit.commitId} url={commit.url} />
+                                </TableCell>
+                                <TableCell>{commit.author.fullName}</TableCell>
+                                <TableCell className="multipleLines">
+                                    <LinkifiedText text={commit.msg} partialTextLinks={commit.issues} />
+                                </TableCell>
+                                <TableCell>
+                                    <ReadableDate
+                                        date={commit.timestamp}
+                                        liveUpdate
+                                        locale={locale}
+                                        shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                                        longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </JTable>
                 ))}
-            </JTable>
+                <ShowMoreButton pager={this.pager} />
+            </div>
         );
     }
 }
 
-const { func, object, string } = PropTypes;
-
 RunDetailsChanges.propTypes = {
-    result: object,
-    locale: string,
-    t: func,
+    result: PropTypes.object,
+    locale: PropTypes.string,
+    t: PropTypes.func,
+    params: PropTypes.any,
+    pipeline: PropTypes.object,
+    results: PropTypes.object,
+};
+
+RunDetailsChanges.contextTypes = {
+    params: PropTypes.object.isRequired,
+    activityService: PropTypes.object.isRequired,
 };

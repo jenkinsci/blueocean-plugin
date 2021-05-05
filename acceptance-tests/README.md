@@ -32,8 +32,7 @@ mvn clean install -DskipTests -DcleanNode
 ./run.sh
 ```
 
-This is mainly for CI servers. It starts the selenium docker container and runs all
-nightwatch and java ATH tests in one shot.
+This is mainly for CI servers. It starts the selenium docker container and runs all java ATH tests in one shot.
 
 ### Run tests against a local instance
 
@@ -94,25 +93,6 @@ Running tests via the IDE works as expected as long as the standalone part of th
 To start a test in IntelliJ the easiest way is to right click on the test class or method and click Run test.
 
 NOTE: if you have a `~/.blueocean-ath-config` it will be used when running tests this way.
-
-#### JavaScript [nightwatch] tests.
-
-Nightwatch tests can be run via the nightwatch npm package (`npm install -g nightwatch`). It is
-possible to specify specific test files, or whole directories which it will recursively find tests in.
-
-```bash
-nightwatch src/test/js/
-nightwatch src/test/js/edgeCases/
-nightwatch src/test/js/edgeCases/folder.js
-```
-
-When running in `--dev` mode, it can be useful to turn on client code log output. To do this, simply set
-the `LOG_CONFIG` env variable e.g. to turn on SSE logging:
-
-```bash
-export LOG_CONFIG=sse
-nightwatch src/test/js/
-```
 
 ## Writing Tests
 
@@ -224,7 +204,7 @@ public class MySecondATHTest{
 
        // This waits for any builds that have been queued to finish.
        sseClient.untilEvents(SSEEvents.activityComplete(pipelineName));
-       // Clear all events so far so that when wait is called again it doesnt see the old events.
+       // Clear all events so far so that when wait is called again it doesn't see the old events.
        sseClient.clear();
 
        // ... some more run stuff
@@ -314,6 +294,3 @@ public class MySecondATHTest{
     }
 }
 ```
-
-###
-[nightwatch]: http://nightwatchjs.org/

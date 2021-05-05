@@ -38,6 +38,8 @@ type Props = {
  * Multi-line label that will truncate with ellipses
  *
  * Use with a set width + height (or maxWidth / maxHeight) to get any use from it :D
+ *
+ * @deprecated Don't use this, the latest version exists in the ux-widgets repo alongside the updated PipelineGraph
  */
 export class TruncatingLabel extends Component {
     //--------------------------------------
@@ -105,7 +107,7 @@ export class TruncatingLabel extends Component {
         }
 
         return (
-            <div style={mergedStyle} className={'TruncatingLabel ' + className}>
+            <div style={mergedStyle} className={'TruncatingLabel ' + className} title={this.innerText}>
                 {this.innerText}
             </div>
         );

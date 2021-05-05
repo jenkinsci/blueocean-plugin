@@ -1,7 +1,10 @@
 import React, { PropTypes } from 'react';
 import Extensions from '@jenkins-cd/js-extensions';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import FlowStep from '../../flow2/FlowStep';
+
+const t = i18nTranslator('blueocean-dashboard');
 
 export default class GithubCredentialsStep extends React.Component {
     constructor(props) {
@@ -35,7 +38,7 @@ export default class GithubCredentialsStep extends React.Component {
         const scmId = this.props.flowManager.getScmId();
         const loading = this.state.loading;
         const disabled = this.state.complete;
-        const title = loading ? 'Loading...' : 'Connect to GitHub';
+        const title = loading ? t('common.pager.loading', { defaultValue: 'Loading...' }) : 'Connect to GitHub';
 
         const githubConfig = {
             scmId,

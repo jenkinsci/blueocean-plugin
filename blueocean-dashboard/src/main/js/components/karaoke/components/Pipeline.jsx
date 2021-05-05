@@ -46,6 +46,15 @@ export default class Pipeline extends Component {
         this.updateOnFinish = KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value;
         this.stopOnClick = KaraokeConfig.getPreference('runDetails.pipeline.stopKaraokeOnAnyNodeClick').value === 'always';
         this.state = { tailLogs: false };
+
+        this.debounceFetchNodes = debounce((karaokeOut) => {
+            logger.debug('sse fetch it', this.karaoke);
+            if (karaokeOut) {
+                this.pager.fetchNodesOnly({});
+            } else {
+                this.pager.fetchNodes({});
+            }
+        }, 200);
     }
 
     // These are normally on the context, but have to be sent into this component as props because context
@@ -207,14 +216,7 @@ export default class Pipeline extends Component {
                 case 'pipeline_block_end':
                 case 'pipeline_stage': {
                     logger.debug('sse event block starts refetchNodes', jenkinsEvent);
-                    debounce(() => {
-                        logger.debug('sse fetch it', this.karaoke);
-                        if (karaokeOut) {
-                            this.pager.fetchNodesOnly({});
-                        } else {
-                            this.pager.fetchNodes({});
-                        }
-                    }, 200)();
+                    this.debounceFetchNodes(karaokeOut);
                     // prevent flashing of stages and nodes
                     this.showPending = false;
                     break;
@@ -270,14 +272,11 @@ export default class Pipeline extends Component {
                 pathArray.shift();
                 nextPath = `/${pathArray.join('/')}`;
             }
-            // check whether we have a parallel node
-            const isParallel = nextNode.isParallel;
-            // see whether we need to update the state
-            if (nextNode.state === 'FINISHED' || isParallel) {
-                nextPath = `${nextPath}/${id}`; // only allow node param in finished nodes
-            }
+
+            nextPath = `${nextPath}/${id}`;
+
             // see whether we need to update the karaoke mode
-            if ((nextNode.state === 'FINISHED' || isParallel) && this.karaoke) {
+            if (nextNode.state === 'FINISHED' && this.karaoke) {
                 logger.debug('turning off karaoke since we do not need it anymore because focus is on a finished node.');
                 this.stopKaraoke();
             }

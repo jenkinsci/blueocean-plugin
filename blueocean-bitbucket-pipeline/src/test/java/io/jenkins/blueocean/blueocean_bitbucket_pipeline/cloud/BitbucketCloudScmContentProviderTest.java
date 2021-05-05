@@ -40,8 +40,8 @@ import static org.powermock.api.mockito.PowerMockito.*;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Stapler.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*","javax.net.SocketFactory"})
-public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock{
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
+public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock {
     @Test
     public void getContent() throws UnirestException, IOException {
         String credentialId = createCredential(BitbucketCloudScm.ID);
@@ -52,7 +52,7 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock{
         assertEquals("Jenkinsfile", content.getContent().getName());
         assertEquals("04553981a05754d4bffef56a59d9d996d500301c", content.getContent().getCommitId());
         assertEquals("demo1", content.getContent().getRepo());
-        assertEquals("vivekp7", content.getContent().getOwner());
+        assertEquals(BbCloudWireMock.USER_UUID, content.getContent().getOwner());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock{
         try {
             //Bob trying to access content but his credential is not setup so should fail
             new BitbucketCloudScmContentProvider().getContent(staplerRequest, mbp);
-        }catch (ServiceException.PreconditionRequired e){
+        } catch (ServiceException.PreconditionRequired e) {
             assertEquals("Can't access content from Bitbucket: no credential found", e.getMessage());
             return;
         }
@@ -85,7 +85,7 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock{
         MultiBranchProject mbp = mockMbp(credentialId);
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("VGhpcyBpcyB0ZXN0IGNvbnRlbnQgaW4gbmV3IGZpbGUK")
-                .branch("master").message("new commit").owner("vivekp7").path("foo").repo("demo1").build();
+                .branch("master").message("new commit").owner(BbCloudWireMock.USER_UUID).path("foo").repo("demo1").build();
 
         when(staplerRequest.bindJSON(Mockito.eq(BitbucketScmSaveFileRequest.class), Mockito.any(JSONObject.class))).thenReturn(new BitbucketScmSaveFileRequest(content));
 
@@ -95,7 +95,7 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock{
                 "    \"path\" : \"foo\",\n" +
                 "    \"branch\" : \"master\",\n" +
                 "    \"repo\" : \"demo1\",\n" +
-                "    \"base64Data\" : "+"\"VGhpcyBpcyB0ZXN0IGNvbnRlbnQgaW4gbmV3IGZpbGUK\""+
+                "    \"base64Data\" : " + "\"VGhpcyBpcyB0ZXN0IGNvbnRlbnQgaW4gbmV3IGZpbGUK\"" +
                 "  }\n" +
                 "}";
 
@@ -105,7 +105,7 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock{
         assertEquals("foo", respContent.getContent().getName());
         assertEquals(respContent.getContent().getCommitId(), respContent.getContent().getCommitId());
         assertEquals("demo1", respContent.getContent().getRepo());
-        assertEquals("vivekp7", respContent.getContent().getOwner());
+        assertEquals(BbCloudWireMock.USER_UUID, respContent.getContent().getOwner());
         assertEquals("master", respContent.getContent().getBranch());
     }
 
@@ -147,7 +147,7 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock{
                 "    \"path\" : \"README.md\",\n" +
                 "    \"branch\" : \"master\",\n" +
                 "    \"repo\" : \"pipeline-demo-test\",\n" +
-                "    \"base64Data\" : "+"\"bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K\""+
+                "    \"base64Data\" : " + "\"bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K\"" +
                 "  }\n" +
                 "}";
 
@@ -155,13 +155,14 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock{
 
         try {
             new BitbucketCloudScmContentProvider().saveContent(staplerRequest, mbp);
-        }catch (ServiceException.PreconditionRequired e){
+        } catch (ServiceException.PreconditionRequired e) {
             assertEquals("Can't access content from Bitbucket: no credential found", e.getMessage());
             return;
         }
         fail("Should have failed with PreConditionException");
     }
-    private StaplerRequest mockStapler(){
+
+    private StaplerRequest mockStapler() {
         mockStatic(Stapler.class);
         StaplerRequest staplerRequest = mock(StaplerRequest.class);
         when(Stapler.getCurrentRequest()).thenReturn(staplerRequest);
@@ -172,24 +173,24 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock{
         return staplerRequest;
     }
 
-    private MultiBranchProject mockMbp(String credentialId){
+    private MultiBranchProject mockMbp(String credentialId) {
         return mockMbp(credentialId, authenticatedUser);
     }
 
-    private MultiBranchProject mockMbp(String credentialId, User user){
+    private MultiBranchProject mockMbp(String credentialId, User user) {
         MultiBranchProject mbp = mock(MultiBranchProject.class);
         when(mbp.getName()).thenReturn("pipeline1");
         when(mbp.getParent()).thenReturn(j.jenkins);
         BitbucketSCMSource scmSource = mock(BitbucketSCMSource.class);
         when(scmSource.getServerUrl()).thenReturn(apiUrl);
         when(scmSource.getCredentialsId()).thenReturn(credentialId);
-        when(scmSource.getRepoOwner()).thenReturn("vivekp7");
+        when(scmSource.getRepoOwner()).thenReturn(USER_UUID);
         when(scmSource.getRepository()).thenReturn("demo1");
         when(mbp.getSCMSources()).thenReturn(Lists.<SCMSource>newArrayList(scmSource));
 
         //mock blueocean credential provider stuff
         BlueOceanCredentialsProvider.FolderPropertyImpl folderProperty = mock(BlueOceanCredentialsProvider.FolderPropertyImpl.class);
-        DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> properties = new DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor>(mbp);
+        DescribableList<AbstractFolderProperty<?>, AbstractFolderPropertyDescriptor> properties = new DescribableList<AbstractFolderProperty<?>, AbstractFolderPropertyDescriptor>(mbp);
         properties.add(new BlueOceanCredentialsProvider.FolderPropertyImpl(
                 user.getId(), credentialId,
                 BlueOceanCredentialsProvider.createDomain(apiUrl)

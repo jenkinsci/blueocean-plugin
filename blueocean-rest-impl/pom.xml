@@ -5,14 +5,14 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.10.0-beta-1-SNAPSHOT</version>
+        <version>${revision}${changelist}</version>
     </parent>
 
     <artifactId>blueocean-rest-impl</artifactId>
     <packaging>hpi</packaging>
 
     <name>REST Implementation for Blue Ocean</name>
-    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+    <url>https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean/doc/BlueOcean.adoc</url>
 
     <properties>
         <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
@@ -92,13 +92,14 @@
         </dependency>
 
         <dependency>
-            <groupId>ua_parser</groupId>
-            <artifactId>ua-parser</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
+            <groupId>com.github.ua-parser</groupId>
+            <artifactId>uap-java</artifactId>
+            <exclusions>
+              <exclusion> <!-- from io.jenkins.plugins:snakeyaml-api -->
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -117,7 +118,6 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-cps</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -136,7 +136,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-standalone</artifactId>
+            <artifactId>wiremock-jre8-standalone</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -146,7 +146,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.1.2</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

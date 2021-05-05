@@ -12,9 +12,7 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbSaveContentResp
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.BitbucketServerScm;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
-import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.AbstractScmContentProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmContentProviderParams;
@@ -24,7 +22,6 @@ import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMSource;
 import net.sf.json.JSONObject;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
@@ -33,7 +30,8 @@ import org.kohsuke.stapler.StaplerRequest;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -63,29 +61,27 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
         }
 
         String content = api.getContent(request.getOwner(), request.getRepo(), request.getPath(), branch.getLatestCommit());
-        try {
-            final GitContent gitContent =  new GitContent.Builder()
-                    .base64Data(Base64.encodeBase64String(content.getBytes("UTF-8")))
-                    .branch(request.getBranch())
-                    .size(content.length())
-                    .path(request.getPath())
-                    .owner(request.getOwner())
-                    .repo(request.getRepo())
-                    .name(request.getPath())
-                    //we use commitId as sha value - bitbucket doesn't use content sha to detect collision
-                    .sha(branch.getLatestCommit())
-                    .commitId(branch.getLatestCommit())
-                    .build();
 
-            return new ScmFile<GitContent>() {
-                @Override
-                public GitContent getContent() {
-                    return gitContent;
-                }
-            };
-        } catch (UnsupportedEncodingException e) {
-            throw new ServiceException.UnexpectedErrorException("Failed to base64 encode content: "+e.getMessage(), e);
-        }
+        final GitContent gitContent =  new GitContent.Builder()
+                .base64Data(Base64.getEncoder().encodeToString(content.getBytes( StandardCharsets.UTF_8)))
+                .branch(request.getBranch())
+                .size(content.length())
+                .path(request.getPath())
+                .owner(request.getOwner())
+                .repo(request.getRepo())
+                .name(request.getPath())
+                //we use commitId as sha value - bitbucket doesn't use content sha to detect collision
+                .sha(branch.getLatestCommit())
+                .commitId(branch.getLatestCommit())
+                .build();
+
+        return new ScmFile<GitContent>() {
+            @Override
+            public GitContent getContent() {
+                return gitContent;
+            }
+        };
+
     }
 
     @Override
@@ -112,12 +108,8 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
         String commitId = StringUtils.isNotBlank(gitContent.getCommitId()) ? gitContent.getCommitId() : gitContent.getSha();
         BitbucketApi api = BitbucketServerScm.getApi(scmParamsFromItem.getApiUrl(), this.getScmId(), scmParamsFromItem.getCredentials());
 
-        String content;
-        try {
-            content = new String(Base64.decodeBase64(gitContent.getBase64Data()), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new ServiceException.UnexpectedErrorException(e.getMessage(), e);
-        }
+        String content = new String(Base64.getDecoder().decode(gitContent.getBase64Data()), StandardCharsets.UTF_8);
+
         String message = gitContent.getMessage();
         if(message == null){
             message = gitContent.getPath()+" created with BlueOcean";
@@ -215,21 +207,15 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
                     //tests might add scmId to indicate which Scm should be used to find credential
                     //We have to do this because apiUrl might be of WireMock server and not Github
                     || (StringUtils.isNotBlank(scmId) && scmId.equals(BitbucketCloudScm.ID))) {
-                scm = new BitbucketCloudScm(new Reachable() {
-                    @Override
-                    public Link getLink() {
-                        Preconditions.checkNotNull(organization);
-                        return organization.getLink().rel("scm");
-                    }
-                });
+                scm = new BitbucketCloudScm( () -> {
+                    Preconditions.checkNotNull(organization);
+                    return organization.getLink().rel("scm");
+                } );
             }else{ //server
-                scm = new BitbucketServerScm((new Reachable() {
-                    @Override
-                    public Link getLink() {
-                        Preconditions.checkNotNull(organization);
-                        return organization.getLink().rel("scm");
-                    }
-                }));
+                scm = new BitbucketServerScm(( () -> {
+                    Preconditions.checkNotNull(organization);
+                    return organization.getLink().rel("scm");
+                } ));
             }
 
             //pick up github credential from user's store

@@ -3,11 +3,12 @@ package io.blueocean.ath.offline.personalization;
 import io.blueocean.ath.model.ClassicPipeline;
 import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.model.MultiBranchPipeline;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -15,7 +16,7 @@ import java.io.IOException;
  * @author cliffmeyers
  */
 public class FavoritesAddRemoveTest extends AbstractFavoritesTest {
-    private static final Logger logger = Logger.getLogger(FavoritesAddRemoveTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(FavoritesAddRemoveTest.class);
 
     @Override
     protected Logger getLogger() {

@@ -1,0 +1,35 @@
+{
+  "id": "ba174ecb-9006-37a2-a6f5-40de3319d8d5",
+  "request": {
+    "url": "/api/2.0/repositories/%7B47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe%7D?page=1&limit=100",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "body-repositories-{47cd7cf2-ca31-4c90-bc0e-4c7ef67f9dfe}-sgHDR.json",
+    "headers": {
+      "Server": "nginx",
+      "Vary": [
+        "Authorization",
+        "Accept-Encoding"
+      ],
+      "Content-Type": "application/json; charset=utf-8",
+      "X-OAuth-Scopes": "webhook, pullrequest:write, project, team, email",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+      "Date": "Tue, 27 Jun 2017 16:01:46 GMT",
+      "X-Served-By": "app-142",
+      "Transfer-Encoding": "chunked",
+      "X-Static-Version": "dce5f507b47a",
+      "ETag": "\"9c42c7736539c8f6492f593740d55eab\"",
+      "X-Content-Type-Options": "nosniff",
+      "X-Render-Time": "0.0805110931396",
+      "X-Credential-Type": "apppassword",
+      "X-Accepted-OAuth-Scopes": "repository",
+      "Connection": "keep-alive",
+      "X-Version": "dce5f507b47a",
+      "X-Request-Count": "103",
+      "X-Frame-Options": "SAMEORIGIN"
+    }
+  },
+  "uuid": "ba174ecb-9006-37a2-a6f5-40de3319d8d5"
+}

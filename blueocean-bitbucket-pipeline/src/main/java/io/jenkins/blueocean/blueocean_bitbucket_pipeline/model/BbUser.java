@@ -12,12 +12,6 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 @Restricted(NoExternalUse.class)
 public abstract class BbUser {
     /**
-     * @return User name
-     */
-    @JsonProperty("name")
-    public abstract String getName();
-
-    /**
      * @return Displayable name
      */
     @JsonProperty("displayName")

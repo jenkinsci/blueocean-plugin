@@ -8,6 +8,7 @@ import com.cloudbees.jenkins.plugins.bitbucket.OriginPullRequestDiscoveryTrait;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.TaskListener;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -51,6 +52,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
         super(name, scmConfig);
     }
 
+    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
     @Override
     protected SCMSource createSource(@Nonnull MultiBranchProject project, @Nonnull BlueScmConfig scmConfig) {
         /* scmConfig.uri presence is already validated in {@link #validate} but lets check just in case */

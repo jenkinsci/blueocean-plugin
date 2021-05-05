@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Collection;
 
 /**
@@ -34,8 +35,8 @@ import java.util.Collection;
 public class ChangeSetResource extends BlueChangeSetEntry {
     private final ChangeLogSet.Entry changeSet;
     private final Reachable parent;
-
     private final BlueOrganization organization;
+    private int checkoutCount;
 
     public ChangeSetResource(@Nonnull BlueOrganization organization, Entry changeSet, Reachable parent) {
         this.organization = organization;
@@ -52,7 +53,7 @@ public class ChangeSetResource extends BlueChangeSetEntry {
     @Override
     public String getTimestamp(){
         if(changeSet.getTimestamp() > 0) {
-            return AbstractRunImpl.DATE_FORMAT.print(changeSet.getTimestamp());
+            return AbstractRunImpl.DATE_FORMAT.format(Instant.ofEpochMilli(changeSet.getTimestamp()));
         }else{
             return null;
         }
@@ -95,7 +96,18 @@ public class ChangeSetResource extends BlueChangeSetEntry {
     }
 
     @Override
+    public Integer getCheckoutCount() {
+        return this.checkoutCount;
+    }
+
+    @Override
+    public BlueChangeSetEntry setCheckoutCount(int checkoutCount) {
+        this.checkoutCount = checkoutCount;
+        return this;
+    }
+
+    @Override
     public Link getLink() {
-        return parent.getLink().rel("changeset/"+getCommitId());
+        return parent.getLink().rel(getCommitId());
     }
 }

@@ -29,9 +29,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static io.jenkins.blueocean.commons.JsonConverter.om;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -40,11 +44,21 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  * @author Vivek Pandey
  */
 public class BitbucketCloudApi extends BitbucketApi {
+    static Logger LOGGER = Logger.getLogger(BitbucketCloudApi.class.getName());
     private final String baseUrl;
 
     protected BitbucketCloudApi(String apiUrl, StandardUsernamePasswordCredentials credentials) {
         super(apiUrl, credentials);
         this.baseUrl = this.apiUrl+"api/2.0/";
+    }
+
+    private String encodePath(String path) {
+        try {
+            path = URLEncoder.encode(path, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            LOGGER.log(Level.SEVERE, "Error encoding parameter " + e.getMessage(), e);
+        }
+        return path;
     }
 
     @Nonnull
@@ -62,7 +76,7 @@ public class BitbucketCloudApi extends BitbucketApi {
     @Override
     public BbUser getUser(@Nonnull String userName) {
         try {
-            InputStream inputStream = request.get(String.format("%s/%s",baseUrl+"users", userName)).getContent();
+            InputStream inputStream = request.get(String.format("%s/%s",baseUrl+"users", encodePath(userName))).getContent();
             return om.readValue(inputStream, BbCloudUser.class);
         } catch (IOException e) {
             throw handleException(e);
@@ -90,7 +104,7 @@ public class BitbucketCloudApi extends BitbucketApi {
             }
             InputStream inputStream = request.get(String.format("%s&page=%s&pagelen=%s",baseUrl+"teams/?role=contributor",
                     pageNumber,pageSize)).getContent();
-            BbPage<BbOrg> page =  om.readValue(inputStream, new TypeReference<BbCloudPage<BbCloudTeam>>(){});
+            BbPage<BbOrg> page =  om.reader().forType(new TypeReference<BbCloudPage<BbCloudTeam>>(){}).readValue(inputStream);
             if(pageNumber == 1){ //add user org as the first org on first page
                 BbUser user = getUser();
                 if(page instanceof BbCloudPage) {
@@ -120,7 +134,7 @@ public class BitbucketCloudApi extends BitbucketApi {
             if(orgName.equalsIgnoreCase(user.getSlug())){
                 return new BbCloudTeam(user.getSlug(), user.getDisplayName(), user.getAvatar());
             }
-            InputStream inputStream = request.get(String.format("%s/%s",baseUrl+"teams", orgName)).getContent();
+            InputStream inputStream = request.get(String.format("%s/%s",baseUrl+"teams", encodePath(orgName))).getContent();
             return om.readValue(inputStream, BbCloudTeam.class);
         } catch (IOException e) {
             throw handleException(e);
@@ -131,7 +145,7 @@ public class BitbucketCloudApi extends BitbucketApi {
     @Override
     public BbRepo getRepo(@Nonnull String orgId, String repoSlug) {
         try {
-            InputStream inputStream = request.get(String.format("%s/%s",baseUrl+"repositories/"+orgId, repoSlug))
+            InputStream inputStream = request.get(String.format("%s/%s",baseUrl+"repositories/"+encodePath(orgId), repoSlug))
                     .getContent();
             return om.readValue(inputStream, BbCloudRepo.class);
         } catch (IOException e) {
@@ -142,10 +156,10 @@ public class BitbucketCloudApi extends BitbucketApi {
     @Nonnull
     @Override
     public BbPage<BbRepo> getRepos(@Nonnull String orgId, int pageNumber, int pageSize) {
-        try {
-            InputStream inputStream = request.get(String.format("%s?page=%s&limit=%s",baseUrl+"repositories/"+orgId,
-                    pageNumber, pageSize)).getContent();
-            return om.readValue(inputStream, new TypeReference<BbCloudPage<BbCloudRepo>>(){});
+        try (InputStream inputStream = request.get(String.format("%s?page=%s&limit=%s",
+                                                                 baseUrl+"repositories/"+encodePath(orgId),
+                                                                 pageNumber, pageSize)).getContent()){
+            return om.reader().forType(new TypeReference<BbCloudPage<BbCloudRepo>>(){}).readValue( inputStream );
         } catch (IOException e) {
             throw handleException(e);
         }
@@ -155,7 +169,7 @@ public class BitbucketCloudApi extends BitbucketApi {
     @Override
     public String getContent(@Nonnull String orgId, @Nonnull String repoSlug, @Nonnull String path, @Nonnull String commitId) {
         try {
-            InputStream inputStream = request.get(String.format("%s/%s/%s/src/%s/%s",baseUrl+"repositories",orgId,
+            InputStream inputStream = request.get(String.format("%s/%s/%s/src/%s/%s",baseUrl+"repositories",encodePath(orgId),
                     repoSlug, commitId, path)).getContent();
             return IOUtils.toString(inputStream);
         } catch (IOException e) {
@@ -185,7 +199,7 @@ public class BitbucketCloudApi extends BitbucketApi {
             builder.addTextBody("parents", commitId);
         }
         HttpEntity entity = builder.build();
-        HttpResponse response = request.post(String.format("%s/%s/%s/src",baseUrl+"repositories",orgId,repoSlug), entity);
+        HttpResponse response = request.post(String.format("%s/%s/%s/src",baseUrl+"repositories",encodePath(orgId),encodePath(repoSlug)), entity);
         int status = response.getStatus();
         if(status == 201){
             String location = response.getHeader("Location");
@@ -208,9 +222,9 @@ public class BitbucketCloudApi extends BitbucketApi {
     public BbBranch getBranch(@Nonnull String orgId, @Nonnull String repoSlug, @Nonnull String branch) {
         try {
             HttpResponse response = request.get(String.format("%s/%s/refs/branches/%s?fields=target.hash,target.repository.mainbranch.name,target.repository.*,target.repository.owner.*,target.repository.owner.links.avatar.href,name",
-                    baseUrl+"repositories/"+orgId,
-                    repoSlug,
-                    branch));
+                    baseUrl+"repositories/"+encodePath(orgId),
+                    encodePath(repoSlug),
+                    encodePath(branch)));
             if(response.getStatus() == 404){
                 return null;
             }
@@ -230,8 +244,8 @@ public class BitbucketCloudApi extends BitbucketApi {
     public BbBranch getDefaultBranch(@Nonnull String orgId, @Nonnull String repoSlug) {
         try {
             InputStream inputStream = request.get(String.format("%s/%s/?fields=mainbranch.*,mainbranch.target.*,mainbranch.target.repository.*,mainbranch.target.repository.mainbranch.name,mainbranch.target.repository.owner.*,mainbranch.target.repository.owner.links.avatar.*",
-                    baseUrl+"repositories/"+orgId,
-                    repoSlug))
+                    baseUrl+"repositories/"+encodePath(orgId),
+                    encodePath(repoSlug)))
                     .getContent();
             Map<String, BbCloudBranch> resp = om.readValue(inputStream, new TypeReference<Map<String, BbCloudBranch>>() {});
             return resp.get("mainbranch");

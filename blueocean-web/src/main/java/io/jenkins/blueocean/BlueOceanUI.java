@@ -2,7 +2,10 @@ package io.jenkins.blueocean;
 
 import hudson.ExtensionList;
 import hudson.Main;
+import hudson.security.csrf.CrumbIssuer;
 import io.jenkins.blueocean.dev.RunBundleWatches;
+import jenkins.model.Jenkins;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.slf4j.Logger;
@@ -77,6 +80,24 @@ public class BlueOceanUI {
         }
 
         return null;
+    }
+
+    /**
+     * Get the crumb token value
+     * @return the crumb token value or empty String if no {@link CrumbIssuer}
+     */
+    public String getCrumbToken() {
+        CrumbIssuer crumbIssuer = Jenkins.get().getCrumbIssuer();
+        return crumbIssuer == null ? StringUtils.EMPTY : crumbIssuer.getCrumb();
+    }
+
+    /**
+     * Get the crumb request field
+     * @return the crumb request field or empty String if no {@link CrumbIssuer}
+     */
+    public String getCrumbRequestField() {
+        CrumbIssuer crumbIssuer = Jenkins.get().getCrumbIssuer();
+        return crumbIssuer == null ? StringUtils.EMPTY : crumbIssuer.getCrumbRequestField();
     }
 
     public List<BluePageDecorator> getPageDecorators(){

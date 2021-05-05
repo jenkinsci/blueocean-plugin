@@ -24,19 +24,39 @@
 #   e.g. ./run.sh blueocean-plugin.jpi=/Users/tfennelly/projects/blueocean/blueocean-plugin/target/blueocean-plugin.hpi
 #
 # ------------------------------------------------------------------------------------------------------------------
-npm install
 assemble-plugins $AGGREGATOR_DIR
 
 if [ -z "$JENKINS_WAR" ]; then
     # Download the jenkins war
-    download "http://mirrors.jenkins-ci.org/war-stable/${JENKINS_VERSION}/jenkins.war" "bin/jenkins-${JENKINS_VERSION}.war"
+    download-jenkins "${JENKINS_VERSION}" "bin/jenkins-${JENKINS_VERSION}.war"
     export JENKINS_WAR=../bin/jenkins-${JENKINS_VERSION}.war
 fi
 
-if [ "${RUN_SELENIUM}" == "true" ]; then
-    ./runner/scripts/start-selenium.sh
-    ./runner/scripts/start-bitbucket-server.sh
-fi
+function finish() {
+    if [ "${RUN_SELENIUM}" == "true" ]; then
+        if [ ! -z "${SAUCE_ACCESS_KEY}" ]; then
+            ./runner/scripts/stop-sc.sh
+        else
+            ./runner/scripts/stop-selenium.sh
+        fi
+        ./runner/scripts/stop-bitbucket-server.sh
+    fi
+}
+
+function start() {
+    if [ "${RUN_SELENIUM}" == "true" ]; then
+        if [ ! -z "${SAUCE_ACCESS_KEY}" ]; then
+            ./runner/scripts/start-sc.sh
+        else
+            ./runner/scripts/start-selenium.sh
+        fi
+        ./runner/scripts/start-bitbucket-server.sh
+    fi
+}
+
+trap finish EXIT
+start
+
 
 while true; do
     curl -v http://localhost:7990 2>&1 | grep 'Location: http://localhost:7990/dashboard' > /dev/null
@@ -49,7 +69,7 @@ while true; do
 done
 
 
-EXECUTION="env JENKINS_JAVA_OPTS=\"${JENKINS_JAVA_OPTS}\" ${ATH_SERVER_HOST} ${ATH_SERVER_PORT} BROWSER=phantomjs LOCAL_SNAPSHOTS=${LOCAL_SNAPSHOTS} ${PLUGINS} PLUGINS_DIR=../runtime-plugins/runtime-deps/target/plugins-combined PATH=\"./node:./node/npm/bin:./node_modules/.bin:${PATH}\" mvn -Dhudson.model.UsageStatistics.disabled=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -Dmaven.test.failure.ignore ${MAVEN_SETTINGS} test ${PROFILES} ${TEST_TO_RUN}"
+EXECUTION="env JENKINS_JAVA_OPTS=\"${JENKINS_JAVA_OPTS}\" ${ATH_SERVER_HOST} ${ATH_SERVER_PORT} BROWSER=phantomjs LOCAL_SNAPSHOTS=${LOCAL_SNAPSHOTS} ${PLUGINS} PLUGINS_DIR=../runtime-plugins/runtime-deps/target/plugins-combined PATH=\"./target/phantomjs-maven-plugin/phantomjs-2.1.1-linux-x86_64/bin/:${PATH}\" mvn -Dhudson.model.UsageStatistics.disabled=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -Dmaven.test.failure.ignore ${MAVEN_SETTINGS} test ${PROFILES} ${TEST_TO_RUN}"
 
 echo ""
 echo "> ${EXECUTION}"
@@ -65,13 +85,5 @@ if [ $? != 0 ];then
     EXIT_CODE=1
 fi
 popd
-
-
-if [ "${RUN_SELENIUM}" == "true" ]; then
-    ./runner/scripts/stop-selenium.sh
-    ./runner/scripts/stop-bitbucket-server.sh
-
-fi
-
 
 exit $EXIT_CODE

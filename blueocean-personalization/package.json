@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.63",
+    "@jenkins-cd/js-builder": "0.0.64",
     "@jenkins-cd/js-builder-jest": "0.0.4",
     "@kadira/storybook": "2.20.1",
     "babel": "6.5.2",
@@ -47,10 +47,10 @@
     "reactify": "1.1.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.171",
-    "@jenkins-cd/design-language": "0.0.162",
-    "@jenkins-cd/js-modules": "0.0.10",
+    "@jenkins-cd/blueocean-core-js": "1.10.4",
+    "@jenkins-cd/design-language": "1.10.4",
     "@jenkins-cd/js-extensions": "0.0.44",
+    "@jenkins-cd/js-modules": "0.0.10",
     "mobx": "2.6.0",
     "mobx-react": "3.5.7",
     "react": "15.4.2",

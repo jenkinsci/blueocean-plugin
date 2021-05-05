@@ -20,7 +20,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Binds the body payload into POJO via json-lib.
  *
  * <p>
- * On a web-bound <tt>doXyz</tt> method, use this method on a parameter to get the content of the request
+ * On a web-bound {@code doXyz} method, use this method on a parameter to get the content of the request
  * data-bound to a bean through {@link JSONObject#fromObject(Object)} and inject it as a parameter.
  * For example,
  *

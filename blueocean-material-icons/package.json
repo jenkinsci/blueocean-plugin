@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-material-icons",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Material icons for the Jenkins Design Language",
   "main": "dist/js/components/index.js",
   "scripts": {

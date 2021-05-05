@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+    stages {
+        stage ("Stage the first") {
+            steps {
+                echo "This pipeline waits for the downstream builds to finish"
+            }
+        }
+        stage ("Stage the second") {
+            parallel {
+                stage ("downstream1") {
+                    steps {
+                        build 'downstream1'
+                    }
+                }
+                stage ("downstream2") {
+                    steps {
+                        build 'downstream2'
+                    }
+                }
+            }
+        }
+        stage ("Double-downstream") {
+            steps {
+                echo 'start ds1, with wait'
+                build 'downstream1'
+                echo 'start ds2, with wait'
+                build 'downstream2'
+            }
+        }
+    }
+}

@@ -21,6 +21,7 @@ public abstract class BlueChangeSetEntry extends Resource {
     public static final String AFFECTED_PATHS = "affectedPaths";
     public static final String URL = "url";
     public static final String ISSUES = "issues";
+    public static final String CHECKOUT_COUNT = "checkoutCount";
 
     /**
      * Returns a human readable display name of the commit number, revision number, and such thing
@@ -96,4 +97,9 @@ public abstract class BlueChangeSetEntry extends Resource {
      */
     @Exported(name = ISSUES, skipNull = true, inline = true)
     public abstract Collection<BlueIssue> getIssues();
+
+    @Exported(name = CHECKOUT_COUNT)
+    public abstract Integer getCheckoutCount();
+
+    public abstract BlueChangeSetEntry setCheckoutCount(int checkoutCount);
 }

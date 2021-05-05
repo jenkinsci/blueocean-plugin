@@ -1,23 +1,21 @@
 package io.jenkins.blueocean.auth.jwt.impl;
 
+import static java.util.logging.Level.WARNING;
+
+import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
 import hudson.Extension;
 import io.jenkins.blueocean.auth.jwt.JwtSigningKeyProvider;
 import io.jenkins.blueocean.auth.jwt.JwtToken;
 import io.jenkins.blueocean.auth.jwt.SigningKey;
 import io.jenkins.blueocean.auth.jwt.SigningPublicKey;
 import io.jenkins.blueocean.commons.ServiceException;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
-import java.io.IOException;
-import java.security.interfaces.RSAPublicKey;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
-
-import static java.util.logging.Level.*;
 
 /**
  * Default {@link JwtSigningKeyProvider} that rotates a key over time.
@@ -29,13 +27,15 @@ import static java.util.logging.Level.*;
 public class SigningKeyProviderImpl extends JwtSigningKeyProvider {
     private static final Logger LOGGER = Logger.getLogger(SigningKeyProviderImpl.class.getName());
     private static final Pattern YYYYMM = Pattern.compile("[0-9]{6}");
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyyMM");
+
+    public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMM")
+        .withZone(ZoneId.systemDefault());
 
     private final AtomicReference<JwtRsaDigitalSignatureKey> key = new AtomicReference<>();
 
     @Override
     public SigningKey select(JwtToken token) {
-        String id = DATE_FORMAT.print(new Date().getTime());
+        String id = DATE_FORMAT.format(Instant.now());
         JwtRsaDigitalSignatureKey k = key.get();
         if (k==null || !k.getId().equals(id))
             key.set(k=new JwtRsaDigitalSignatureKey(id));

@@ -7,17 +7,21 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import hudson.Extension;
 import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.listeners.ItemListener;
 import io.jenkins.blueocean.rest.factory.BlueIssueFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.Branch;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.PullRequest;
+import jenkins.branch.BranchProjectFactory;
+import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.metadata.ContributorMetadataAction;
 import jenkins.scm.api.metadata.ObjectMetadataAction;
 import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import jenkins.scm.api.mixin.ChangeRequestSCMHead;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
@@ -82,6 +86,7 @@ class Caches {
     static class BranchCacheLoader extends CacheLoader<String, Optional<Branch>> {
         private Jenkins jenkins;
 
+
         BranchCacheLoader(@Nullable Jenkins jenkins) {
             this.jenkins = jenkins;
         }
@@ -95,10 +100,24 @@ class Caches {
             }
             ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
             PrimaryInstanceMetadataAction pima = job.getAction(PrimaryInstanceMetadataAction.class);
-            if (om == null && pima == null) {
+            String url = om != null && om.getObjectUrl() != null ? om.getObjectUrl() : null;
+            if (StringUtils.isEmpty(url)) {
+                /*
+                 * Borrowed from https://github.com/jenkinsci/branch-api-plugin/blob/c4d394415cf25b6890855a08360119313f1330d2/src/main/java/jenkins/branch/BranchNameContributor.java#L63
+                 * for those that don't implement object metadata action
+                 */
+                ItemGroup parent = job.getParent();
+                if (parent instanceof MultiBranchProject) {
+                    BranchProjectFactory projectFactory = ((MultiBranchProject) parent).getProjectFactory();
+                    if (projectFactory.isProject(job)) {
+                        SCMHead head = projectFactory.getBranch(job).getHead();
+                        url = head.getName();
+                    }
+                }
+            }
+            if (StringUtils.isEmpty(url) && pima == null) {
                 return Optional.absent();
             }
-            String url = om != null && om.getObjectUrl() != null ? om.getObjectUrl() : null;
             return Optional.of(new Branch(url, pima != null, BlueIssueFactory.resolve(job)));
         }
     }

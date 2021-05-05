@@ -21,21 +21,25 @@ import io.blueocean.ath.sse.SSEClientRule;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(ATHJUnitRunner.class)
 public class FolderTest extends BlueOceanAcceptanceTest {
-    private Logger logger = Logger.getLogger(FolderTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FolderTest.class);
 
     private static final Folder folder = Folder.folders("a folder", "bfolder", "cfolder");
 
@@ -64,6 +68,17 @@ public class FolderTest extends BlueOceanAcceptanceTest {
     @Inject
     DashboardPage dashboardPage;
 
+    ArrayList<Folder> createdFolders = new ArrayList();
+
+    @After
+    public void tearDown() throws IOException {
+        // wipe out all jobs to avoid causing issues w/ SearchTest
+        for (Folder folder : createdFolders) {
+            jobApi.deleteFolder(folder.get(0));
+        }
+        createdFolders.clear();
+    }
+
     /**
      * Tests that the activity page works when there are multiple layers of folders, and with funky characters.
      *
@@ -90,6 +105,8 @@ public class FolderTest extends BlueOceanAcceptanceTest {
 
         Folder folder = Folder.folders("firstFolder","三百", "ñba","七");
         FolderJob folderJob = jobApi.createFolders(folder, true);
+        createdFolders.add(folder);
+
         jobApi.createFreeStyleJob(folderJob, pipelineName, "echo 'hello world!'");
         driver.get(folderJob.getUrl()+"/job/"+pipelineName+"/");
         driver.findElement(By.xpath("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']")).click();
@@ -114,6 +131,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
     public void anotherFoldersTest() throws IOException, GitAPIException, UnirestException {
         Folder anotherFolder =  Folder.folders("anotherFolder", "三百", "ñba", "七");
         FolderJob folderJob = jobApi.createFolders(anotherFolder, true);
+        createdFolders.add(anotherFolder);
 
         git.writeJenkinsFile(loadJenkinsFile());
         git.writeFile("TEST-failure.TestThisWillFailAbunch.xml", loadResource("/TEST-failure.TestThisWillFailAbunch.xml"));
@@ -183,8 +201,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
         // it should bring the browser to the run details page for the first run
         driver.get(base+"/job/anotherFolder/job/三百/job/ñba/job/七/job/"+pipelineName+"/job/feature%252F1/1/");
         wait.until(By.xpath("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']")).click();
-        assertEquals(driver.getCurrentUrl(), base+getNestedPipelinePath("anotherFolder") +
-                pipelineName+"/detail/feature%2F1/1/");
+        wait.until(ExpectedConditions.urlContains(getNestedPipelinePath("anotherFolder") + pipelineName + "/detail/feature%2F1/1/pipeline"));
         wait.until(ExpectedConditions.or(
                 ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .log-wrapper")),
                 ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .Steps .logConsole"))

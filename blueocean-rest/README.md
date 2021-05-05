@@ -2145,7 +2145,10 @@ curl -v -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins
         "push" : false,
         "pull" : true
       },
-      ...],
+      "private": true,
+      "fullName": "CloudBees-community/bees-cli-router-plugin"
+    },
+    ...],
     "lastPage" : 5,
     "nextPage" : 4,
     "pageSize" : 10

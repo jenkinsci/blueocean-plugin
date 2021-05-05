@@ -2,6 +2,7 @@
 
 @brand-primary:             #4A90E2;
 @brand-primary-dark:        #1C436A;
+@brand-grey:                #4A4A4A;
 
 @action-button:             rgba(53,64,82, 0.25);
 @action-button--hover:      @brand-primary;
@@ -77,5 +78,35 @@
 
     &:hover {
         fill: @action-button--hover;
+    }
+}
+
+.activity-actions-container {
+    &:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    .pipeline-disabled-label {
+        display: inline-block;
+        margin-top: 10px;
+
+        .svg-icon {
+            fill: @brand-grey;
+        }
+    }
+
+    .run-button-component {
+        margin-bottom: 16px;
+    }
+
+    .disable-job-button {
+        float: right;
+        margin-bottom: 16px;
+
+        svg {
+            fill: @brand-primary;
+        }
     }
 }

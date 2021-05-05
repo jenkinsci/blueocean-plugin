@@ -24,11 +24,13 @@
 package io.jenkins.blueocean.commons.stapler.export;
 
 import com.fasterxml.jackson.core.io.JsonStringEncoder;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
 /**
  * JSON writer.
@@ -109,7 +111,11 @@ class JSONDataWriter implements DataWriter {
         StringBuilder buf = new StringBuilder(v.length());
         buf.append('\"');
         // TODO: remove when JENKINS-45099 has been fixed correctly in upstream stapler
-        jsonEncoder.quoteAsString(v, buf);
+        if (config.isHtmlEncode()) {
+            jsonEncoder.quoteAsString(StringEscapeUtils.escapeHtml(v), buf);
+        } else {
+            jsonEncoder.quoteAsString(v, buf);
+        }
         buf.append('\"');
         data(buf.toString());
     }
@@ -166,7 +172,6 @@ class JSONDataWriter implements DataWriter {
 
     private static final char[] INDENT = new char[32];
     static {
-        for (int i=0; i<INDENT.length; i++)
-            INDENT[i] = ' ';
+        Arrays.fill(INDENT, ' ');
     }
 }

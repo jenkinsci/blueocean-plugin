@@ -2,17 +2,18 @@ package io.blueocean.ath.pages.blue;
 
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.WebDriverMixin;
-import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
 public class DashboardPage implements WebDriverMixin {
-    private Logger logger = Logger.getLogger(DashboardPage.class);
+    private Logger logger = LoggerFactory.getLogger(DashboardPage.class);
 
     @Inject
     public WaitUtil wait;
@@ -20,6 +21,7 @@ public class DashboardPage implements WebDriverMixin {
     public void open() {
         go("/blue/");
         logger.info("Navigated to dashboard page");
+        wait.untilSSEReady();
     }
 
     public static By getSelectorForJob(String job) {
@@ -66,7 +68,7 @@ public class DashboardPage implements WebDriverMixin {
                 getSelectorForAllJobRows(),
                 numberOfJobs
         ));
-        logger.info("found job count = " + numberOfJobs);
+        logger.info("found job count = {}", numberOfJobs);
     }
 
     public void testJobCountAtLeast(int numberOfJobs) {
@@ -74,7 +76,7 @@ public class DashboardPage implements WebDriverMixin {
                 getSelectorForAllJobRows(),
                 numberOfJobs - 1
         ));
-        logger.info("found job count >= " + numberOfJobs);
+        logger.info("found job count >= {}", numberOfJobs);
     }
 
     public void enterSearchText(String searchText) {
@@ -82,7 +84,7 @@ public class DashboardPage implements WebDriverMixin {
             ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".search-pipelines-input input"))
         );
         element.sendKeys(searchText);
-        logger.info("entered search text = " + searchText);
+        logger.info("entered search text = {}", searchText);
     }
 
     public void clearSearchText() {

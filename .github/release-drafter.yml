@@ -1,0 +1,6 @@
+# from  https://github.com/jenkinsci/.github/blob/master/.github/release-drafter.yml
+_extends: .github
+name-template: BlueOcean $NEXT_PATCH_VERSION
+tag-template: blueocean-parent-$NEXT_PATCH_VERSION
+exclude-labels:
+  - skip-changelog

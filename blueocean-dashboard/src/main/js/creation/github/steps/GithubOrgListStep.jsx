@@ -1,8 +1,11 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 import { List, Icon } from '@jenkins-cd/design-language';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import FlowStep from '../../flow2/FlowStep';
+
+const t = i18nTranslator('blueocean-dashboard');
 
 function OrgRenderer(props) {
     const { listItem } = props;
@@ -29,7 +32,7 @@ export default class GithubOrgListStep extends React.Component {
 
     render() {
         const { flowManager } = this.props;
-        const title = 'Which organization does the repository belong to?';
+        const title = t('creation.core.repository.title', { defaultValue: 'Which organization does the repository belong to?' });
         const disabled = flowManager.stepsDisabled;
 
         return (

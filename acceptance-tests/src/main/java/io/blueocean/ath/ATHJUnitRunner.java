@@ -6,7 +6,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.blueocean.ath.pages.classic.LoginPage;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.internal.runners.model.EachTestNotifier;
 import org.junit.runner.Description;
@@ -15,11 +14,14 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
+import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.ScreenshotException;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.logging.LogEntry;
-import org.openqa.selenium.remote.ScreenshotException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +36,7 @@ import java.util.List;
 public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
     private Injector injector;
 
-    private Logger logger = Logger.getLogger(ATHJUnitRunner.class);
+    private Logger logger = LoggerFactory.getLogger(ATHJUnitRunner.class);
 
     public ATHJUnitRunner(Class<?> klass) throws InitializationError {
         super(klass);
@@ -87,9 +89,15 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
                 }
 
                 try {
+                    if (LocalDriver.isSauceLabsMode()) {
+                        logger.info("SauceOnDemandSessionID=" + ((RemoteWebDriver) LocalDriver.getDriver()).getSessionId().toString());
+                    }
+
                     next.evaluate();
                     outputConsoleLogs();
+                    LocalDriver.executeSauce("job-result=passed");
                 } catch (Exception e) {
+                    LocalDriver.executeSauce("job-result=failed");
                     writeScreenShotCause(e, test, method);
                     outputConsoleLogs();
                     throw e;
@@ -97,7 +105,7 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
 
                 WebDriver driver = injector.getInstance(WebDriver.class);
                 driver.close();
-               // driver.quit();
+                driver.quit();
             }
         };
     }
@@ -151,11 +159,27 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
     private void runTest(Statement statement, Description description,
                                  RunNotifier notifier, Retry retry) {
         logger.info(String.format("Running test: '%s'", description.getMethodName()));
+        if (LocalDriver.isSauceLabsMode()) {
+            logger.info("SauceOnDemandSessionID=" + ((RemoteWebDriver) LocalDriver.getDriver()).getSessionId().toString());
+        }
+        String buildName = System.getenv("BUILD_TAG");
+        if (buildName == null || buildName == "") {
+            buildName = System.getenv("SAUCE_BUILD_NAME");
+        }
+        if (buildName == null || buildName == "") {
+            buildName = System.getenv("BUILD_TAG");
+        }
+        // https://wiki.saucelabs.com/display/DOCS/Annotating+Tests+with+Selenium%27s+JavaScript+Executor
+        if (buildName != null && buildName != "") {
+            LocalDriver.executeSauce(String.format("job-build=%s", buildName));
+        }
+        LocalDriver.executeSauce(String.format("job-name=%s", description.getMethodName()));
+
         EachTestNotifier eachNotifier = new EachTestNotifier(notifier, description);
         eachNotifier.fireTestStarted();
+        List<Throwable> failures = Lists.newArrayList();
         try {
             int n = retry == null ? 1 : retry.value();
-            List<Throwable> failures = Lists.newArrayList();
 
             for (int i = 0; i < n; i++) {
                 try {

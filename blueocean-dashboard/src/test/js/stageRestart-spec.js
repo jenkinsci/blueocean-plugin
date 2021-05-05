@@ -41,4 +41,14 @@ describe('Stage Restart', () => {
         //check that the link text gets rendered in the expected markup
         assert.equal(wrapper.find('a.restart-stage span').text(), 'Restart Stage Title');
     });
+
+    it("don't render stage restart link when user doesn't have permission", () => {
+        const { permissions } = pipeline;
+        permissions.start = false;
+
+        const wrapper = shallow(<StageRestartLink t={t} title={'Stage Title'} run={run} pipeline={pipeline} onNavigation={switchRunDetails} />);
+
+        //make sure that the link is not rendered
+        assert.equal(wrapper.find('a.restart-stage').length, 0);
+    });
 });

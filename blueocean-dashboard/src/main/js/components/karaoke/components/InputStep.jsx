@@ -88,9 +88,13 @@ export default class InputStep extends Component {
         const parameters = this.parameterService.parametersToSubmitArray();
 
         parameterApi.submitInputParameter(href, id, parameters).catch(error => {
-            if (error.responseBody.message) {
+            if (error.responseBody && error.responseBody.message) {
                 this.setState({
                     responseErrorMsg: error.responseBody.message,
+                });
+            } else if (error) {
+                this.setState({
+                    responseErrorMsg: error.message,
                 });
             }
         });

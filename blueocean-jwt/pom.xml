@@ -5,14 +5,14 @@
   <parent>
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-parent</artifactId>
-    <version>1.10.0-beta-1-SNAPSHOT</version>
+    <version>${revision}${changelist}</version>
   </parent>
 
   <artifactId>blueocean-jwt</artifactId>
   <packaging>hpi</packaging>
 
   <name>JWT for Blue Ocean</name>
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+  <url>https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean/doc/BlueOcean.adoc</url>
 
   <dependencies>
       <dependency>
@@ -27,11 +27,6 @@
       <dependency>
           <groupId>org.jenkins-ci.plugins</groupId>
           <artifactId>mailer</artifactId>
-      </dependency>
-
-      <dependency>
-          <groupId>joda-time</groupId>
-          <artifactId>joda-time</artifactId>
       </dependency>
   </dependencies>
 </project>

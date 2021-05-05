@@ -191,7 +191,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
     @Test
     public void testRepositoryCallbackToFSFunctionAdapter() throws IOException, InterruptedException {
         final boolean[] called = { false };
-        new GitCacheCloneReadSaveRequest.RepositoryCallbackToFSFunctionAdapter<>(new GitSCMFileSystem.FSFunction<Object>() {
+        new GitBareRepoReadSaveRequest.RepositoryCallbackToFSFunctionAdapter<>(new GitSCMFileSystem.FSFunction<Object>() {
             @Override
             public Object invoke(Repository repository) throws IOException, InterruptedException {
                 called[0] = true;
@@ -199,18 +199,6 @@ public class GitReadSaveTest extends PipelineBaseTest {
             }
         }).invoke(null, null);
         Assert.assertTrue(called[0]);
-    }
-
-    @Test
-    public void testGitCloneReadWrite() throws Exception {
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CLONE, repoWithJenkinsfiles, masterPipelineScript);
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CLONE, repoNoJenkinsfile, null);
-    }
-
-    @Test
-    public void testGitCacheCloneReadWrite() throws Exception {
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_CLONE, repoWithJenkinsfiles, masterPipelineScript);
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_CLONE, repoNoJenkinsfile, null);
     }
 
     @Test
@@ -233,6 +221,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         // Validate bob via repositoryUrl
         Map r = new RequestBuilder(baseUrl)
             .status(200)
+            .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
             .put("/organizations/" + getOrgName() + "/scm/git/validate/")
             .data(ImmutableMap.of(
@@ -246,6 +235,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         String jobName = "test-token-validation";
         r = new RequestBuilder(baseUrl)
             .status(201)
+            .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
             .post("/organizations/" + getOrgName() + "/pipelines/")
             .data(ImmutableMap.of(
@@ -261,6 +251,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         // Test for existing pipeline/job
         r = new RequestBuilder(baseUrl)
             .status(200)
+            .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
             .put("/organizations/" + getOrgName() + "/scm/git/validate/")
             .data(ImmutableMap.of(
@@ -273,6 +264,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         // Test alice fails
         r = new RequestBuilder(baseUrl)
             .status(428)
+            .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
             .put("/organizations/" + getOrgName() + "/scm/git/validate/")
             .data(ImmutableMap.of(
@@ -282,6 +274,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
 
         r = new RequestBuilder(baseUrl)
             .status(428)
+            .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
             .put("/organizations/" + getOrgName() + "/scm/git/validate/")
             .data(ImmutableMap.of(
@@ -331,6 +324,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         Map r = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of(
                         "name", jobName,
@@ -347,6 +341,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         r = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( crumb )
                 .get(urlJobPrefix + "/scm/content/?branch=master&path=Jenkinsfile&type="+type.name())
                 .build(Map.class);
 
@@ -369,6 +364,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .crumb( crumb )
                 .put(urlJobPrefix + "/scm/content/")
                 .data(ImmutableMap.of("content", content))
                 .build(Map.class);
@@ -382,6 +378,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         // check to make sure we get the same thing from the service
         r = new RequestBuilder(baseUrl)
                 .status(200)
+                .crumb( crumb )
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .get(urlJobPrefix + "/scm/content/?branch=master&path=Jenkinsfile&type="+type.name())
                 .build(Map.class);

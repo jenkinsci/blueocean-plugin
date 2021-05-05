@@ -4,7 +4,7 @@ import { logging } from '@jenkins-cd/blueocean-core-js';
 import { prefixIfNeeded } from '../../urls/prefixIfNeeded';
 import { KaraokeApi } from '../../index';
 
-import { convertJenkinsNodeGraph } from '../../../PipelineRunGraph';
+import { convertJenkinsNodeGraph } from '../../../GraphNodeConverter';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager.Pipeline');
 

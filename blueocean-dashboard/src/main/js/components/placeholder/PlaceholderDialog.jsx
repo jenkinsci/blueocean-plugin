@@ -14,12 +14,11 @@ function createContent(content) {
     // use 'linkElement' as is, or build a link if the text and href were supplied
     const link =
         linkElement ||
-        (linkText &&
-            linkHref && (
-                <a className="btn" target="_blank" href={linkHref}>
-                    {linkText}
-                </a>
-            ));
+        (linkText && linkHref && (
+            <a className="btn" target="_blank" href={linkHref}>
+                {linkText}
+            </a>
+        ));
 
     return [icon && React.cloneElement(icon, { className: 'icon' }), <h1 className="title">{title}</h1>, message && <p className="message">{message}</p>, link];
 }
