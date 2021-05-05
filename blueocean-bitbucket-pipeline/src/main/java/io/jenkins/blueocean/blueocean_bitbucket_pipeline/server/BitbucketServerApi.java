@@ -7,6 +7,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import hudson.Extension;
+import hudson.util.VersionNumber;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApiFactory;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.HttpRequest;
@@ -41,14 +42,13 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import static io.jenkins.blueocean.commons.JsonConverter.om;
 
 /**
  * @author Vivek Pandey
  */
 public class BitbucketServerApi extends BitbucketApi {
-    public static final DefaultArtifactVersion MINIMUM_SUPPORTED_VERSION=new DefaultArtifactVersion("5.2.0");
+    public static final VersionNumber MINIMUM_SUPPORTED_VERSION = new VersionNumber("5.2.0");
     private final String baseUrl;
     private final StandardUsernamePasswordCredentials credentials;
 
@@ -122,7 +122,7 @@ public class BitbucketServerApi extends BitbucketApi {
             InputStream inputStream = request.get(String.format("%s?start=%s&limit=%s",baseUrl+"projects/",
                     toStart(pageNumber, pageSize), pageSize))
                     .getContent();
-            BbPage<BbOrg> page =  om.readValue(inputStream, new TypeReference<BbServerPage<BbServerProject>>(){});
+            BbPage<BbOrg> page =  om.reader().forType(new TypeReference<BbServerPage<BbServerProject>>(){}).readValue(inputStream);
             if(pageNumber == 1){ //add user org as the first org on first page
                 BbServerUser user = getUser(userName);
                 List<BbOrg> teams = new ArrayList<>();
@@ -155,7 +155,7 @@ public class BitbucketServerApi extends BitbucketApi {
         try {
             InputStream inputStream = request.get(String.format("%s?start=%s&limit=%s",baseUrl+"projects/"+projectKey+"/repos/", toStart(pageNumber, pageSize), pageSize))
                     .getContent();
-            return om.readValue(inputStream, new TypeReference<BbServerPage<BbServerRepo>>(){});
+            return om.reader().forType(new TypeReference<BbServerPage<BbServerRepo>>(){}).readValue(inputStream);
         } catch (IOException e) {
             throw handleException(e);
         }
@@ -367,7 +367,7 @@ public class BitbucketServerApi extends BitbucketApi {
      * @see #getVersion(String)
      */
     public static boolean isSupportedVersion(@Nonnull String version){
-        return new DefaultArtifactVersion(version).compareTo(MINIMUM_SUPPORTED_VERSION) >= 0;
+        return new VersionNumber(version).isNewerThanOrEqualTo(MINIMUM_SUPPORTED_VERSION);
     }
 
     @Extension

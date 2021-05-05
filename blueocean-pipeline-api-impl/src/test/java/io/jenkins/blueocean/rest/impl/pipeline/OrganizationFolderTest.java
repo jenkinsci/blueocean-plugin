@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
  * @author Vivek Pandey
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 @PrepareForTest({OrganizationFactory.class, OrganizationFolder.class, StaplerRequest.class})
 public class OrganizationFolderTest{
     @Rule

@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>3.40</version>
+        <version>4.3</version>
         <relativePath />
     </parent>
     <groupId>org.jenkins-ci.plugins.blueocean</groupId>
@@ -41,42 +41,65 @@
     <licenses>
         <license>
             <name>MIT License</name>
-            <url>http://opensource.org/licenses/MIT</url>
+            <url>https://opensource.org/licenses/MIT</url>
         </license>
     </licenses>
     <repositories>
         <repository>
             <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
+            <url>https://repo.jenkins-ci.org/public/</url>
         </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
             <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
+            <url>https://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
     </pluginRepositories>
     <properties>
-        <jenkins.version>2.121.1</jenkins.version>
+        <jenkins.version>2.222.4</jenkins.version>
         <java.level>8</java.level>
+        <spotbugs.failOnError>false</spotbugs.failOnError>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.9</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jenkins.tools.bom</groupId>
+                <artifactId>bom-2.176.x</artifactId>
+                <version>11</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>fake-realm</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>io.jenkins.blueocean</groupId>
-            <artifactId>blueocean-executor-info</artifactId>
-            <version>[1.14.0-SNAPSHOT,)</version>
-        </dependency>
 
         <!-- following are required to run on newer jenkins versions (after 2.7) as it changed how classloading works a bit for plugins -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>structs</artifactId>
-            <version>1.17</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>apache-httpcomponents-client-4-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>mailer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>matrix-project</artifactId>
         </dependency>
     </dependencies>
     <profiles>
@@ -91,7 +114,7 @@
                 <dependency>
                     <groupId>io.jenkins.blueocean</groupId>
                     <artifactId>blueocean</artifactId>
-                    <version>[1.14.0-SNAPSHOT,)</version>
+                    <version>[1.23.0-SNAPSHOT,)</version>
                 </dependency>
             </dependencies>
         </profile>

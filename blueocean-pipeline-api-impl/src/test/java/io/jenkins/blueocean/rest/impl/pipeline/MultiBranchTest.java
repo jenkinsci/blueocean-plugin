@@ -855,8 +855,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         setupParameterizedScm();
 
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
-        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo2.toString(), "", "*", "", false),
-                new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo2.toString(), "", "*", "", false)));
         for (SCMSource source : mp.getSCMSources()) {
             assertEquals(mp, source.getOwner());
         }
@@ -877,10 +876,10 @@ public class MultiBranchTest extends PipelineBaseTest {
                         ImmutableList.of(ImmutableMap.of("name", "param1", "value", "abc"))
                 ), 200);
         Assert.assertEquals(branches[1], resp.get("pipeline"));
-        Thread.sleep(1000);
+        Thread.sleep(5000);
         resp = get("/organizations/jenkins/pipelines/p/branches/"+Util.rawEncode(branches[1])+"/runs/2/");
-        Assert.assertEquals("SUCCESS", resp.get("result"));
-        Assert.assertEquals("FINISHED", resp.get("state"));
+        Assert.assertEquals("Response should be SUCCESS: " + resp.toString(), "SUCCESS", resp.get("result"));
+        Assert.assertEquals("Response should be FINISHED: " + resp.toString(), "FINISHED", resp.get("state"));
     }
 
     @Test
@@ -1083,6 +1082,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
     @Test
     public void testMultiBranchPipelineQueueContainer() throws Exception {
+        j.jenkins.setQuietPeriod(0);
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         sampleRepo1.init();
         sampleRepo1.write("Jenkinsfile", "stage 'build'\n " + "node {echo 'Building'}\n" +

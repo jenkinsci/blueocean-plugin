@@ -12,8 +12,15 @@
     <packaging>hpi</packaging>
 
     <name>Blue Ocean</name>
-    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+    <url>https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean/doc/BlueOcean.adoc</url>
     <description>Blue Ocean is a new project that rethinks the user experience of Jenkins. Designed from the ground up for Jenkins Pipeline and compatible with Freestyle jobs, Blue Ocean reduces clutter and increases clarity for every member of your team.</description>
+
+    <scm>
+        <connection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</connection>
+        <developerConnection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</developerConnection>
+        <url>https://github.com/jenkinsci/blueocean-plugin</url>
+        <tag>${scmTag}</tag>
+    </scm>
 
     <properties>
         <jetty.contextPath>/jenkins</jetty.contextPath>
@@ -99,14 +106,15 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-jira</artifactId>
+            <optional>true</optional>
         </dependency>
 
-        <!-- JENKINS-56773 - Disabled until executor plugin has performance improvements made
+        <!-- TODO remove with next release -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-executor-info</artifactId>
+            <optional>true</optional>
         </dependency>
-        -->
 
         <!-- Bundled plugins for improved out of the box experience -->
         <dependency>
@@ -141,6 +149,12 @@
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
             <scope>test</scope>
+            <exclusions>
+              <exclusion>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>

@@ -79,11 +79,11 @@ public class BlueOceanWebURLBuilderTest {
         String blueOceanURL;
 
         blueOceanURL = urlMapper.getUrl(freestyleProject);
-        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Ffreestyle%20with%20spaces", blueOceanURL);
+        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Ffreestyle%20with%20spaces/", blueOceanURL);
 
         FreeStyleBuild run = freestyleProject.scheduleBuild2(0).get();
         blueOceanURL = urlMapper.getUrl(run);
-        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Ffreestyle%20with%20spaces/detail/freestyle%20with%20spaces/1", blueOceanURL);
+        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Ffreestyle%20with%20spaces/detail/freestyle%20with%20spaces/1/", blueOceanURL);
     }
 
 

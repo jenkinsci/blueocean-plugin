@@ -9,18 +9,19 @@ import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.factory.ActivityPageFactory;
 import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
 import io.blueocean.ath.model.AbstractPipeline;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.annotations.Nullable;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
 public class BranchPage implements WebDriverMixin {
-    private Logger logger = Logger.getLogger(BranchPage.class);
+    private Logger logger = LoggerFactory.getLogger(BranchPage.class);
 
     private WebDriver driver;
     private AbstractPipeline pipeline;
@@ -64,32 +65,32 @@ public class BranchPage implements WebDriverMixin {
 
     public ActivityPage clickHistoryButton(String branch) {
         wait.until(By.cssSelector("div[data-branch='" + branch + "'] a.history-button")).click();
-        logger.info("Clicked history button of branch " + branch);
+        logger.info("Clicked history button of branch {}", branch);
         return activityPageFactory.withPipeline(pipeline).checkUrl(branch);
     }
 
     public BranchPage clickRunButton(String branch) {
         wait.click(By.cssSelector("div[data-branch='" + branch + "'] a.run-button"));
-        logger.info("Clicked run button of branch " + branch);
+        logger.info("Clicked run button of branch {}", branch);
         return this;
     }
 
     public BranchPage clickStopButton(String branch) {
         wait.click(By.cssSelector("div[data-branch='" + branch + "'] a.stop-button"));
-        logger.info("Clicked stop button of branch " + branch);
+        logger.info("Clicked stop button of branch {}", branch);
         return this;
     }
 
     public BranchPage open() {
         driver.get(pipeline.getUrl() + "/branches");
         checkUrl();
-        logger.info("Opened branch page for " + pipeline);
+        logger.info("Opened branch page for {}", pipeline);
         return this;
     }
 
     public EditorPage openEditor(String branch) {
         wait.until(By.cssSelector("div[data-branch='" + branch + "'] a.pipeline-editor-link")).click();
-        logger.info("Clicked Editor button of branch " + branch);
+        logger.info("Clicked Editor button of branch {}", branch);
         return editorPage;
     }
 

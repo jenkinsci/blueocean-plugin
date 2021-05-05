@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.hudson.plugins.folder.AbstractFolderProperty;
+import com.cloudbees.jenkins.GitHubWebHook;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.CredentialsStore;
@@ -46,7 +47,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.TestExtension;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
@@ -60,10 +64,16 @@ import static org.junit.Assert.*;
  * @author Vivek Pandey
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
+@PrepareForTest(GitHubWebHook.class)
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubPipelineCreateRequestTest extends GithubMockBase {
+
     @Test
-    public void createPipeline() throws UnirestException, IOException {
+    public void createPipeline() throws UnirestException {
+        PowerMockito.mockStatic(GitHubWebHook.class);
+        GitHubWebHook gitHubWebHookMock = Mockito.spy(GitHubWebHook.class);
+        PowerMockito.when(GitHubWebHook.get()).thenReturn(gitHubWebHookMock);
+        PowerMockito.when(GitHubWebHook.getJenkinsInstance()).thenReturn(this.j.jenkins);
         String credentialId = createGithubCredential(user);
         Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
                 .status(201)
@@ -100,6 +110,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         Assert.assertNotNull(originPullRequestDiscoveryTrait);
         Assert.assertEquals(1, originPullRequestDiscoveryTrait.getStrategies().size());
         Assert.assertTrue(originPullRequestDiscoveryTrait.getStrategies().contains(ChangeRequestCheckoutStrategy.MERGE));
+        Mockito.verify(gitHubWebHookMock, Mockito.times(1)).registerHookFor(mbp);
     }
 
     @Test
@@ -296,7 +307,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
         store.addCredentials(domain, credential);
 
         //create another credentials with same id in system store with different description
-        for(CredentialsStore s: CredentialsProvider.lookupStores(Jenkins.getInstance())){
+        for(CredentialsStore s: CredentialsProvider.lookupStores(Jenkins.get())){
             s.addCredentials(Domain.global(), new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
                     "github", "System GitHub Access Token", user.getId(), "12345"));
         }

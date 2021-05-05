@@ -1,25 +1,16 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
-import hudson.model.TopLevelItem;
-import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
-import jenkins.model.Jenkins;
-import org.acegisecurity.AccessDeniedException;
 
 import javax.annotation.Nonnull;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -34,7 +25,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
 
     public PipelineContainerImpl(BlueOrganization organization, ItemGroup itemGroup, Reachable parent) {
         super(organization);
-        this.itemGroup = itemGroup instanceof Jenkins ? new PermissionFilteredItemGroup((Jenkins) itemGroup) : itemGroup;
+        this.itemGroup = itemGroup;
         this.self = parent.getLink().rel("pipelines");
     }
     @Override
@@ -69,83 +60,5 @@ public class PipelineContainerImpl extends BluePipelineContainer {
             }
         }
         return pipelines.iterator();
-    }
-
-    /**
-     * Jenkins.getItems will return all items regardless of {@link FullControlOnceLoggedInAuthorizationStrategy#isAllowAnonymousRead()}
-     * This implementation filters out {@link Item}s that do not have {@link Item#READ} which maintains backward compatibility
-     * for versions without a fix for SECURITY-380
-     */
-    static class PermissionFilteredItemGroup implements ItemGroup<TopLevelItem> {
-        private final Jenkins jenkins;
-
-        public PermissionFilteredItemGroup(Jenkins jenkins) {
-            this.jenkins = jenkins;
-        }
-
-        @Override
-        public TopLevelItem getItem(String name) throws AccessDeniedException {
-            return jenkins.getItem(name);
-        }
-
-        @Override
-        public Collection<TopLevelItem> getItems() {
-            return Collections2.filter(this.jenkins.getItems(), new Predicate<TopLevelItem>() {
-                @Override
-                public boolean apply(TopLevelItem input) {
-                    return input.hasPermission(Item.READ);
-                }
-            });
-        }
-
-        @Override
-        public String getFullName() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getFullDisplayName() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getUrl() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getUrlChildPrefix() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public File getRootDirFor(TopLevelItem child) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void onRenamed(TopLevelItem item, String oldName, String newName) throws IOException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void onDeleted(TopLevelItem item) throws IOException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getDisplayName() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public File getRootDir() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void save() throws IOException {
-            throw new UnsupportedOperationException();
-        }
     }
 }

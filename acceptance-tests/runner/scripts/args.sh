@@ -1,8 +1,9 @@
-JENKINS_VERSION=2.121.1
+JENKINS_VERSION=2.222.4
 SELENIUM_VERSION=2.53
 
 MAVEN_SETTINGS=""
 LOCAL_SNAPSHOTS=false
+export LOCAL_DEV=false
 RUN_SELENIUM=true
 ATH_SERVER_HOST=""
 ATH_SERVER_PORT=""
@@ -27,6 +28,9 @@ case $i in
     ;;
     -s|--snaps|--snapshots)
     LOCAL_SNAPSHOTS=true
+    ;;
+    -ld|--local-dev)
+    export LOCAL_DEV=true
     ;;
     --no-selenium)
     RUN_SELENIUM=false
@@ -115,6 +119,7 @@ echo "    --war=${JENKINS_WAR}"
 echo "    --snapshots=${LOCAL_SNAPSHOTS}"
 echo "    --aggregator=${AGGREGATOR_DIR}"
 echo "    --dev=${DEV_JENKINS}"
+echo "    --local-dev=${LOCAL_DEV}"
 
 if [ "${PLUGINS}" == "" ]; then
     echo ""

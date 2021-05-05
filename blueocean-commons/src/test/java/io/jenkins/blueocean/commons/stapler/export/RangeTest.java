@@ -13,7 +13,7 @@ import java.util.Set;
 public class RangeTest extends Assert {
     String[] array = new String[]{"a", "b", "c", "d", "e", "f"};
     List<String> list = Arrays.asList(array);
-    Set<String> set = new LinkedHashSet<String>(list);
+    Set<String> set = new LinkedHashSet<>(list);
 
     @Test
     public void normalRange() {
