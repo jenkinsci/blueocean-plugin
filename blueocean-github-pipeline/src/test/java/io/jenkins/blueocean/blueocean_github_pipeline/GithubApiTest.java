@@ -72,7 +72,7 @@ public class GithubApiTest extends GithubMockBase {
             .get("/organizations/jenkins/scm/github/?apiUrl="+githubApiUrl)
             .build(Map.class);
 
-        assertTrue(r.get("message").toString().equals("Invalid accessToken"));
+        assertEquals("Invalid accessToken", r.get("message").toString());
     }
 
     @Test

@@ -44,6 +44,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Type arithmetic code. Taken from the JAXB RI.
@@ -359,12 +360,8 @@ public class TypeUtil {
                 Type thatRawType = that.getRawType();
 
                 if (false) { // Debugging
-                    boolean ownerEquality = (ownerType == null ?
-                            thatOwner == null :
-                            ownerType.equals(thatOwner));
-                    boolean rawEquality = (rawType == null ?
-                            thatRawType == null :
-                            rawType.equals(thatRawType));
+                    boolean ownerEquality = Objects.equals(ownerType, thatOwner);
+                    boolean rawEquality = Objects.equals(rawType, thatRawType);
 
                     boolean typeArgEquality = Arrays.equals(actualTypeArguments, // avoid clone
                             that.getActualTypeArguments());
@@ -379,12 +376,8 @@ public class TypeUtil {
 
 
                 return
-                        (ownerType == null ?
-                        thatOwner == null :
-                        ownerType.equals(thatOwner)) &&
-                        (rawType == null ?
-                        thatRawType == null :
-                        rawType.equals(thatRawType)) &&
+                        Objects.equals(ownerType, thatOwner) &&
+                        Objects.equals(rawType, thatRawType) &&
                         Arrays.equals(actualTypeArguments, // avoid clone
                                 that.getActualTypeArguments());
             } else

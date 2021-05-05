@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.9</version>
+    <version>4.18</version>
     <relativePath />
   </parent>
 
@@ -25,11 +25,12 @@
   </licenses>
 
   <properties>
-    <revision>1.24.5</revision>
+    <revision>1.24.7</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <java.level>8</java.level>
-    <jenkins.version>2.176.4</jenkins.version> <!-- Should be kept in sync with the version resulting from Dockerfile FROM statement-->
+    <!-- when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions -->
+    <jenkins.version>2.222.4</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.7.5</frontend-version>
     <node.version>10.13.0</node.version>
@@ -38,16 +39,12 @@
     <hamcrest.version>2.2</hamcrest.version>
     <mockito.version>3.3.3</mockito.version>
     <guava.version>18.0</guava.version>
-    <slf4j.version>1.7.30</slf4j.version>
-    <jacoco.version>0.8.5</jacoco.version>
+    <jacoco.version>0.8.6</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
-    <workflow-support.version>3.3</workflow-support.version>
-    <pipeline-model-definition.version>1.6.0</pipeline-model-definition.version>
-    <scm-api-plugin.version>2.6.3</scm-api-plugin.version>
   </properties>
 
   <scm>
@@ -164,6 +161,42 @@
 
   <dependencies>
       <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>log4j-over-slf4j</artifactId>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-jdk14</artifactId>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+          <version>1.15</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>commons-lang</groupId>
+          <artifactId>commons-lang</artifactId>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
           <groupId>org.mockito</groupId>
           <artifactId>mockito-core</artifactId>
           <scope>test</scope>
@@ -190,13 +223,19 @@
       <dependency>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
-          <version>4.13.1</version>
+          <version>4.13.2</version>
           <scope>test</scope>
       </dependency>
       <dependency>
           <groupId>com.mashape.unirest</groupId>
           <artifactId>unirest-java</artifactId>
           <scope>test</scope>
+          <exclusions>
+              <exclusion>
+                  <groupId>org.json</groupId>
+                  <artifactId>json</artifactId>
+              </exclusion>
+          </exclusions>
       </dependency>
 
       <!-- Needed for unirest -->
@@ -229,8 +268,8 @@
 
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
-            <artifactId>bom-2.176.x</artifactId>
-            <version>11</version>
+            <artifactId>bom-2.222.x</artifactId>
+            <version>28</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>
@@ -362,115 +401,8 @@
 
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>ssh-credentials</artifactId>
-            <version>1.17.3</version>
-        </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.jenkins-ci.plugins</groupId>-->
-<!--            <artifactId>trilead-api</artifactId>-->
-<!--            <version>1.0.5</version>-->
-<!--        </dependency>-->
-
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>git</artifactId>
-            <version>4.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>git</artifactId>
-            <version>4.2.2</version>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Pipeline plugins -->
-        <dependency>
-            <groupId>org.jenkinsci.plugins</groupId>
-            <artifactId>pipeline-model-definition</artifactId>
-            <version>${pipeline-model-definition.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jenkins-ci.plugins</groupId>
-                    <artifactId>git-client</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkinsci.plugins</groupId>
-            <artifactId>pipeline-stage-tags-metadata</artifactId>
-            <version>${pipeline-model-definition.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkinsci.plugins</groupId>
-            <artifactId>pipeline-model-api</artifactId>
-            <version>${pipeline-model-definition.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkinsci.plugins</groupId>
-            <artifactId>pipeline-model-extensions</artifactId>
-            <version>${pipeline-model-definition.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-job</artifactId>
-            <version>2.33</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-graph-analysis</artifactId>
             <version>1.10</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-multibranch</artifactId>
-            <version>2.20</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-step-api</artifactId>
-            <version>2.22</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-durable-task-step</artifactId>
-            <version>2.31</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-support</artifactId>
-            <version>${workflow-support.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-support</artifactId>
-            <version>${workflow-support.version}</version>
-            <classifier>tests</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-basic-steps</artifactId>
-            <version>2.18</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-scm-step</artifactId>
-            <version>2.11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>pipeline-stage-step</artifactId>
-            <version>2.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>pipeline-input-step</artifactId>
-            <version>2.8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>pipeline-build-step</artifactId>
-            <version>2.7</version>
         </dependency>
 
         <dependency>
@@ -479,31 +411,7 @@
             <version>1.3.1</version>
         </dependency>
 
-        <!-- scm plugins -->
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>scm-api</artifactId>
-            <version>${scm-api-plugin.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>branch-api</artifactId>
-            <version>2.0.20</version>
-            <exclusions>
-                <!-- Upper dependency fix: annotation-indexer comes from core, exclude from git -->
-                <exclusion>
-                    <groupId>org.jenkins-ci</groupId>
-                    <artifactId>annotation-indexer</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <!-- Other -->
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>docker-workflow</artifactId>
-            <version>1.23</version>
-        </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-branch-source</artifactId>
@@ -529,12 +437,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-autofavorite</artifactId>
-            <version>1.2.3</version>
+            <version>1.2.4</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-display-url</artifactId>
-            <version>2.2.0</version>
+            <version>2.4.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -569,11 +477,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>cloudbees-folder</artifactId>
-            <version>6.9</version>
-        </dependency>
-        <dependency>
             <groupId>org.jenkins-ci.main</groupId>
             <artifactId>jenkins-test-harness-tools</artifactId>
             <version>2.2</version>
@@ -587,11 +490,6 @@
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>structs</artifactId>
-            <version>1.20</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pubsub-light</artifactId>
             <version>1.13</version>
         </dependency>
@@ -600,17 +498,6 @@
             <artifactId>sse-gateway</artifactId>
             <version>1.24</version>
         </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>variant</artifactId>
-            <version>1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>htmlpublisher</artifactId>
-            <version>1.14</version>
-        </dependency>
-
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-api</artifactId>
@@ -627,49 +514,9 @@
             <version>3.12.12</version>
         </dependency>
         <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>jackson2-api</artifactId>
-            <version>2.10.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.6</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.9</version>
+            <version>3.11</version>
         </dependency>
         <dependency>
             <groupId>oro</groupId>
@@ -677,14 +524,9 @@
             <version>2.0.8</version>
         </dependency>
         <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>display-url-api</artifactId>
-            <version>2.3.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.bitbucket.b_c</groupId>
             <artifactId>jose4j</artifactId>
-            <version>0.6.0</version>
+            <version>0.7.6</version>
         </dependency>
         <dependency>
             <groupId>org.jvnet.hudson.plugins</groupId>
@@ -707,7 +549,7 @@
         <dependency>
             <groupId>io.keen</groupId>
             <artifactId>keen-client-api-java</artifactId>
-            <version>5.2.0</version>
+            <version>5.6.0</version>
             <exclusions>
                 <!-- upper bound fix, git plugin pulls in later versions -->
                 <exclusion>
@@ -728,7 +570,7 @@
         <dependency>
             <groupId>com.github.ua-parser</groupId>
             <artifactId>uap-java</artifactId>
-            <version>1.5.0</version>
+            <version>1.5.2</version>
             <exclusions>
               <!-- commons-collections comes from jenkins core -->
               <exclusion>
@@ -738,33 +580,16 @@
             </exclusions>
         </dependency>
 
-        <!-- used in blueocean-rest-impl test -->
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>matrix-auth</artifactId>
-            <version>1.7</version>
-            <scope>test</scope>
-            <exclusions>
-                <!-- upper bound fix: icon-set comes from core, lets ignore the one coming from matrix-auth
-                     PR https://github.com/jenkinsci/plugin-pom/pull/72
-                -->
-                <exclusion>
-                    <groupId>org.jenkins-ci.plugins.icon-shim</groupId>
-                    <artifactId>icon-set</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <!-- used in blueocean-pipeline-editor test -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>sonar</artifactId>
-            <version>2.9</version>
+            <version>2.13.1</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>ant</artifactId>
-            <version>1.9</version>
+            <version>1.11</version>
         </dependency>
 
         <!-- Test dependencies -->
@@ -858,7 +683,7 @@
             -->
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.10.3</version>
+            <version>1.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency> <!-- TODO pending https://github.com/jenkinsci/jenkins-test-harness/pull/2 -->
@@ -867,22 +692,15 @@
             <version>0.1.0</version>
         </dependency>
         <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>scm-api</artifactId>
-            <classifier>tests</classifier>
-            <version>${scm-api-plugin.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.damnhandy</groupId>
             <artifactId>handy-uri-templates</artifactId>
-            <version>2.1.6</version>
+            <version>2.1.8</version>
         </dependency>
         <!-- enforcer RequireUpperBoundDeps -->
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.9.9</version>
+            <version>2.10.2</version>
         </dependency>
     </dependencies>
   </dependencyManagement>
@@ -900,7 +718,7 @@
               <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-javadoc-plugin</artifactId>
-                  <version>3.1.0</version>
+                  <version>3.2.0</version>
               </plugin>
               <plugin>
                   <groupId>org.jacoco</groupId>

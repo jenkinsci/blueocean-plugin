@@ -4,7 +4,7 @@ import hudson.model.JDK;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.hamcrest.Matcher;
-import org.jenkinsci.plugins.docker.workflow.declarative.DockerPipeline;
+import org.jenkinsci.plugins.pipeline.modeldefinition.agent.impl.Label;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -57,7 +57,7 @@ public class PipelineMetadataServiceTest {
         ExportedDescribableModel m = null;
 
         for (ExportedDescribableModel a : agents) {
-            if (a.getType().equals(DockerPipeline.class.getName())) {
+            if (a.getType().endsWith(Label.class.getName())) {
                 m = a;
             }
         }

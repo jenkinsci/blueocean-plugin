@@ -53,9 +53,13 @@ public class HttpResponse {
                             messageBuilder.append(err.getString("message"));
 
                             StringBuilder details = new StringBuilder();
-                            JSONArray errorDetails = err.getJSONArray("details");
-                            for (int detailIdx = 0; detailIdx < errorDetails.size(); detailIdx++) {
-                                details.append(errorDetails.getString(detailIdx)).append("\n");
+                            if (err.has("details")) {
+                                JSONArray errorDetails = err.getJSONArray("details");
+                                for (int detailIdx = 0; detailIdx < errorDetails.size(); detailIdx++) {
+                                    details.append(errorDetails.getString(detailIdx)).append("\n");
+                                }
+                            } else {
+                                details.append("no error details");
                             }
                             errors.add(new ErrorMessage.Error("", err.getString("exceptionName"), details.toString()));
                         }

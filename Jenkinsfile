@@ -33,7 +33,7 @@ envs = [
   'GIT_AUTHOR_EMAIL=hates@cake.com'
 ]
 
-jenkinsVersions = ['2.176.4']
+jenkinsVersions = ['2.222.4']
 
 if (params.USE_SAUCELABS) {
   credentials.add(usernamePassword(credentialsId: 'saucelabs', passwordVariable: 'SAUCE_ACCESS_KEY', usernameVariable: 'SAUCE_USERNAME'))
@@ -81,7 +81,7 @@ node() {
 
           stage('Building BlueOcean') {
             timeout(time: 90, unit: 'MINUTES') {
-              sh "mvn clean install -V -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
+              sh "mvn clean install -T1C -V -B -DcleanNode --no-transfer-progress -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
             }
 
             junit '**/target/surefire-reports/TEST-*.xml'
@@ -91,7 +91,7 @@ node() {
 
           jenkinsVersions.each { version ->
             stage("ATH - Jenkins ${version}") {
-              timeout(time: 90, unit: 'MINUTES') {
+              timeout(time: 150, unit: 'MINUTES') {
                 dir('acceptance-tests') {
                   sh "bash -x ./run.sh -v=${version} --host=${ip} --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
                   junit '**/target/surefire-reports/*.xml'
