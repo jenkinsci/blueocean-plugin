@@ -9,6 +9,9 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * @author Vivek Pandey
  */
@@ -19,6 +22,6 @@ public class TryBlueOceanMenuTest extends BaseTest{
         HtmlPage page = webClient.getPage(j.getInstance());
         HtmlAnchor anchor = page.getAnchorByText(Messages.BlueOceanUrlAction_DisplayName());
         Assert.assertEquals("/jenkins/blue/organizations/jenkins/pipelines/", anchor.getHrefAttribute());
-        Assert.assertEquals("task-link", anchor.getAttribute("class"));
+        assertThat(anchor.getAttribute("class"), containsString("task-link"));
     }
 }

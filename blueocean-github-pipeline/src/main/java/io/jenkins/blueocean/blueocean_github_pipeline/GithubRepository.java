@@ -19,7 +19,7 @@ public class GithubRepository extends ScmRepository {
     private final StandardUsernamePasswordCredentials credentials;
     private final Link self;
 
-    public GithubRepository(GHRepoEx ghRepository, StandardUsernamePasswordCredentials credentials, Reachable parent) {
+    public GithubRepository(GHRepository ghRepository, StandardUsernamePasswordCredentials credentials, Reachable parent) {
         this.ghRepository = ghRepository;
         this.credentials = credentials;
         this.self = parent.getLink().rel(ghRepository.getName());

@@ -1,5 +1,9 @@
 package io.blueocean.ath.offline.personalization;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import com.offbytwo.jenkins.model.Crumb;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.GitRepositoryRule;
@@ -12,16 +16,14 @@ import io.blueocean.ath.factory.FreestyleJobFactory;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.Folder;
 import io.blueocean.ath.pages.blue.FavoritesDashboardPage;
-import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
 
 import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import java.io.IOException;
 
 /**
@@ -59,14 +61,29 @@ abstract public class AbstractFavoritesTest implements WebDriverMixin {
     abstract protected Logger getLogger();
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() throws Exception {
         resources = new ResourceResolver(getClass());
 
         String user = "alice";
-        getLogger().info(String.format("deleting any existing favorites for %s", user));
+        getLogger().info(String.format("deleting any existing favorites for {}", user));
 
-        Client restClient = ClientBuilder.newClient().register(HttpAuthenticationFeature.basic(user, user));
-        restClient.target(base + "/users/" + user + "/favorites/").request().delete();
+        String path = base + "/crumbIssuer/api/json";
+
+        Crumb crumb = Unirest.get(path).
+            basicAuth(user, user).
+            asObject(Crumb.class).
+            getBody();
+
+
+        path = base + "/users/" + user + "/favorites/";
+        HttpResponse<String> response =
+            Unirest.delete(path)
+                .basicAuth(user, user)
+                .header(crumb.getCrumbRequestField(), crumb.getCrumb())
+                .asString();
+
+        getLogger().info("delete favorites, res status: {}", response.getStatus());
+
     }
 
     @After

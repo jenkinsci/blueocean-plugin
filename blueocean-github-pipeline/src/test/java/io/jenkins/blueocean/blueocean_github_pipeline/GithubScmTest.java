@@ -7,12 +7,10 @@ import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
-import com.google.common.collect.Lists;
 import hudson.model.User;
 import hudson.security.SecurityRealm;
 import hudson.tasks.Mailer;
 import hudson.util.Secret;
-import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import jenkins.model.Jenkins;
@@ -29,7 +27,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.verification.VerificationMode;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -38,6 +35,9 @@ import java.io.ByteArrayInputStream;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.scm.Scm.CREDENTIAL_ID;
 import static org.powermock.api.mockito.PowerMockito.*;
@@ -49,7 +49,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({GithubScm.class, Jenkins.class, Authentication.class, User.class, Secret.class,
     CredentialsMatchers.class, CredentialsProvider.class, Stapler.class, HttpRequest.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubScmTest {
 
     @Mock
@@ -65,10 +65,10 @@ public class GithubScmTest {
     public void setup() throws Exception {
         mockStatic(Jenkins.class);
 
-        when(Jenkins.getInstance()).thenReturn(jenkins);
+        when(Jenkins.get()).thenReturn(jenkins);
         when(Jenkins.getInstanceOrNull()).thenReturn(jenkins);
         when(Jenkins.getAuthentication()).thenReturn(authentication);
-        GrantedAuthority[] grantedAuthorities = Lists.newArrayList(SecurityRealm.AUTHENTICATED_AUTHORITY).toArray(new GrantedAuthority[1]);
+        GrantedAuthority[] grantedAuthorities = new GrantedAuthority[]{SecurityRealm.AUTHENTICATED_AUTHORITY};
 
         Mockito.when(authentication.getAuthorities()).thenReturn(grantedAuthorities);
         Mockito.when(authentication.getPrincipal()).thenReturn("joe");
@@ -112,12 +112,7 @@ public class GithubScmTest {
         Mailer.UserProperty userProperty = mock(Mailer.UserProperty.class);
         when(userProperty.getAddress()).thenReturn("joe@example.com");
         JSONObject req = new JSONObject().element("accessToken", accessToken);
-        GithubScm githubScm = new GithubScm(new Reachable() {
-            @Override
-            public Link getLink() {
-                return new Link("/blue/organizations/jenkins/scm/");
-            }
-        });
+        GithubScm githubScm = new GithubScm(() -> new Link( "/blue/organizations/jenkins/scm/"));
 
         mockCredentials("joe", accessToken, githubScm.getId(), GithubScm.DOMAIN_NAME);
 
@@ -143,7 +138,7 @@ public class GithubScmTest {
         StaplerRequest request = mock(StaplerRequest.class);
         when(Stapler.getCurrentRequest()).thenReturn(request);
 
-        when(HttpRequest.getInputStream(httpURLConnectionMock)).thenReturn(new ByteArrayInputStream(guser.getBytes("UTF-8")));
+        when(HttpRequest.getInputStream(httpURLConnectionMock)).thenReturn(new ByteArrayInputStream(guser.getBytes(StandardCharsets.UTF_8)));
 
         githubScm.validateAndCreate(req);
 
@@ -185,9 +180,10 @@ public class GithubScmTest {
 
         when(CredentialsProvider.class, "lookupCredentials",
              StandardUsernamePasswordCredentials.class, jenkins, authentication, blueOceanDomainRequirement)
-            .thenReturn(Lists.newArrayList(credentials));
+            .thenReturn(Collections.singletonList(credentials));
 
-        when(CredentialsMatchers.class, "firstOrNull", Lists.newArrayList(credentials), credentialsMatcher).thenReturn(credentials);
+        when(CredentialsMatchers.class, "firstOrNull",
+             Collections.singletonList(credentials), credentialsMatcher).thenReturn(credentials);
 
         when(CredentialsMatchers.allOf(credentialsMatcher)).thenReturn(credentialsMatcher);
 
@@ -201,8 +197,10 @@ public class GithubScmTest {
         when(credentialsStore.hasPermission(CredentialsProvider.UPDATE)).thenReturn(true);
         when(credentialsStore.getDomainByName(domainName)).thenReturn(domain);
 
-        when(CredentialsProvider.class, "lookupStores", user).thenReturn(Lists.newArrayList(credentialsStore));
+        when(CredentialsProvider.class, "lookupStores", user).
+            thenReturn(Collections.singletonList(credentialsStore));
 
+        when(credentialsStore.addCredentials(domain, credentials)).thenReturn(true);
         when(credentialsStore.updateCredentials(domain, credentials, credentials)).thenReturn(true);
     }
 }

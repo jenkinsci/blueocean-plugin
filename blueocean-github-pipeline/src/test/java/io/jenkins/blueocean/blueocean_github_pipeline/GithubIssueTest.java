@@ -2,7 +2,6 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
@@ -23,14 +22,17 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubIssueTest {
 
     /*
@@ -55,9 +57,9 @@ public class GithubIssueTest {
 
     @Test
     public void findIssueKeys() {
-        Assert.assertEquals("Find single", Lists.newArrayList("123"), GithubIssue.findIssueKeys("Closed #123"));
-        Assert.assertEquals("Find multiple", Lists.newArrayList("123", "143"), GithubIssue.findIssueKeys("Closed #123 and #143"));
-        Assert.assertEquals("Do not find alpha", Lists.newArrayList(), GithubIssue.findIssueKeys("#AAA"));
+        Assert.assertEquals("Find single", Collections.singletonList("123"), GithubIssue.findIssueKeys("Closed #123"));
+        Assert.assertEquals("Find multiple", Arrays.asList("123", "143"), GithubIssue.findIssueKeys( "Closed #123 and #143"));
+        Assert.assertEquals("Do not find alpha", new ArrayList(), GithubIssue.findIssueKeys( "#AAA"));
     }
 
     @Test
@@ -82,19 +84,14 @@ public class GithubIssueTest {
         when(job.getParent()).thenReturn(project);
 
         GitHubSCMSource source = new GitHubSCMSource("foo", null, null, null, "example", "repo");
-        when(project.getSCMSources()).thenReturn(Lists.newArrayList(source));
+        when(project.getSCMSources()).thenReturn(Collections.singletonList(source));
 
         when(entry.getMsg()).thenReturn("Closed #123 #124");
 
         Collection<BlueIssue> resolved = BlueIssueFactory.resolve(entry);
         Assert.assertEquals(2, resolved.size());
 
-        Map<String, BlueIssue> issueMap = Maps.uniqueIndex(resolved, new Function<BlueIssue, String>() {
-            @Override
-            public String apply(BlueIssue input) {
-                return input.getId();
-            }
-        });
+        Map<String, BlueIssue> issueMap = Maps.uniqueIndex( resolved, input -> input.getId() );
 
         BlueIssue issue123 = issueMap.get("#123");
         Assert.assertEquals("https://github.com/example/repo/issues/123", issue123.getURL());
@@ -118,7 +115,7 @@ public class GithubIssueTest {
         when(job.getParent()).thenReturn(project);
 
         when(entry.getMsg()).thenReturn("Closed #123 #124");
-        when(project.getSCMSources()).thenReturn(Lists.newArrayList(new GitSCMSource("http://example.com/repo.git")));
+        when(project.getSCMSources()).thenReturn(Collections.singletonList(new GitSCMSource("http://example.com/repo.git")));
 
         Collection<BlueIssue> resolved = BlueIssueFactory.resolve(entry);
         Assert.assertEquals(0, resolved.size());

@@ -1,6 +1,6 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import org.apache.commons.codec.digest.DigestUtils;
+import io.jenkins.blueocean.commons.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**

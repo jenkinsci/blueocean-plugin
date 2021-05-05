@@ -11,29 +11,22 @@ import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
 import io.blueocean.ath.sse.SSEClientRule;
 import io.blueocean.ath.util.GithubHelper;
-import org.apache.log4j.Logger;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
 import org.openqa.selenium.WebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.Properties;
 
 @Login
 @RunWith(ATHJUnitRunner.class)
 public class GithubEditorTest {
-    private Logger logger = Logger.getLogger(GithubEditorTest.class);
+    private Logger logger = LoggerFactory.getLogger(GithubEditorTest.class);
 
     @Inject
     GithubCreationPage creationPage;
@@ -87,13 +80,13 @@ public class GithubEditorTest {
         creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
         editorPage.simplePipeline();
-        editorPage.saveBranch("master");
+        editorPage.saveBranch("main");
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
         driver.navigate().refresh();
         sseClient.untilEvents(pipeline.buildsFinished);
         sseClient.clear();
         BranchPage branchPage = activityPage.clickBranchTab();
-        branchPage.openEditor("master");
+        branchPage.openEditor("main");
         editorPage.saveBranch("new - branch");
         activityPage.checkUrl();
         activityPage.getRunRowForBranch("new-branch");
@@ -109,12 +102,12 @@ public class GithubEditorTest {
         creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
         editorPage.simplePipeline();
-        editorPage.saveBranch("master");
+        editorPage.saveBranch("main");
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
         sseClient.untilEvents(pipeline.buildsFinished);
         sseClient.clear();
         BranchPage branchPage = activityPage.clickBranchTab();
-        branchPage.openEditor("master");
+        branchPage.openEditor("main");
         editorPage.setAgentLabel("none");
         editorPage.saveBranch(newBranchName);
         activityPage.checkUrl();
@@ -134,12 +127,12 @@ public class GithubEditorTest {
         creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
         editorPage.simplePipeline();
-        editorPage.saveBranch("master");
+        editorPage.saveBranch("main");
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
         sseClient.untilEvents(pipeline.buildsFinished);
         sseClient.clear();
         BranchPage branchPage = activityPage.clickBranchTab();
-        branchPage.openEditor("master");
+        branchPage.openEditor("main");
         editorPage.addStageToPipeline(pipeline, stageToDelete);
         editorPage.saveBranch(firstBranchName);
         activityPage.checkUrl();
@@ -166,12 +159,12 @@ public class GithubEditorTest {
         creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(helper.getActualRepositoryName());
         editorPage.simplePipeline();
-        editorPage.saveBranch("master");
+        editorPage.saveBranch("main");
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
         sseClient.untilEvents(pipeline.buildsFinished);
         sseClient.clear();
         BranchPage branchPage = activityPage.clickBranchTab();
-        branchPage.openEditor("master");
+        branchPage.openEditor("main");
         editorPage.setEnvironmentVariable("NY_NEW_VAR", "MY_NEW_VALUE");
         editorPage.saveBranch(newBranchName);
         activityPage.checkUrl();

@@ -88,10 +88,14 @@ class SaveDialog extends React.Component {
         if (err.responseBody && err.responseBody.errors && err.responseBody.errors.length) {
             errorMessage = (
                 <div>
-                    <div><strong>{errorMessage}</strong></div>
-                    {err.responseBody.errors.map(e =>
-                        <div><em>{e.code}</em>: {e.message}</div>
-                    )}
+                    <div>
+                        <strong>{errorMessage}</strong>
+                    </div>
+                    {err.responseBody.errors.map(e => (
+                        <div>
+                            <em>{e.code}</em>: {e.message}
+                        </div>
+                    ))}
                 </div>
             );
         }
@@ -177,6 +181,7 @@ class PipelineLoader extends React.Component {
         this.contentApi = new ScmContentApi();
 
         this.state = {
+            scriptPath: null,
             scmSource: null,
             credential: null,
             sha: null,
@@ -305,7 +310,6 @@ class PipelineLoader extends React.Component {
 
     loadBranchMetadata() {
         const { organization, pipeline, branch } = this.props.params;
-
         if (!branch) {
             const split = pipeline.split('/');
             const team = split[0];
@@ -313,9 +317,15 @@ class PipelineLoader extends React.Component {
             const { id: scmId, apiUrl } = this.state.scmSource;
             const orgRestUrl = UrlBuilder.buildRestUrl(organization);
             let repositoryUrl = `${orgRestUrl}scm/${scmId}/organizations/${team}/repositories/${repo}/`;
-            if (apiUrl) {
+            // the team is wrong and do match the github org used so get the branch by searching
+            // github repo from the job
+            if (scmId == 'github') {
+                repositoryUrl = `${orgRestUrl}scm/github/repository?jobName=${repo}&apiUrl=${apiUrl}`;
+            } else if (apiUrl) {
                 repositoryUrl += `?apiUrl=${apiUrl}`;
             }
+            // in case of error it's ignored and we use hardcoded master
+            // olamy this could be changed to main which is the new default on github
             return Fetch.fetchJSON(repositoryUrl)
                 .then(({ defaultBranch }) => {
                     this.defaultBranch = defaultBranch || 'master';
@@ -329,6 +339,7 @@ class PipelineLoader extends React.Component {
 
     _savePipelineMetadata(pipeline) {
         this.setState({
+            scriptPath: pipeline.scriptPath,
             scmSource: pipeline.scmSource,
         });
     }
@@ -346,9 +357,9 @@ class PipelineLoader extends React.Component {
     }
 
     loadContent(onComplete) {
-        const { organization, pipeline, branch } = this.props.params;
+        const { organization, pipeline, branch, path = this.state.scriptPath } = this.props.params;
         this.contentApi
-            .loadContent({ organization, pipeline, branch })
+            .loadContent({ organization, pipeline, branch, path })
             .then(({ content }) => {
                 if (!content.base64Data) {
                     throw { type: LoadError.JENKINSFILE_NOT_FOUND };
@@ -611,6 +622,7 @@ class PipelineLoader extends React.Component {
                     targetBranch: saveToBranch || this.defaultBranch,
                     sha: this.state.sha,
                     message: saveMessage,
+                    path: this.state.scriptPath,
                     content: pipelineScript,
                 };
 

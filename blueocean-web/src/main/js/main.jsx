@@ -71,10 +71,6 @@ class App extends Component {
     render() {
         const { location } = this.context;
 
-        const pipeCaption = translate('pipelines', {
-            defaultValue: 'Pipelines',
-        });
-
         const topNavLinks = [
             <Extensions.Renderer extensionPoint="jenkins.blueocean.top.pipelines" />,
             <Extensions.Renderer extensionPoint="jenkins.blueocean.top.links" />,

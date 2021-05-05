@@ -1,0 +1,24 @@
+{
+  "id" : "21f37681-abff-31fc-800a-38c1eb44d6a0",
+  "request" : {
+    "url" : "/rest/api/1.0/projects/TESTP/repos/pipeline-demo-test/branches?start=0&limit=200",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 404,
+    "body" : "{ \"message\": \"No branches found.\" }",
+    "headers" : {
+      "X-AREQUESTID" : "@1M44HP4x856x1961x0",
+      "X-ASEN" : "SEN-L9817337",
+      "X-AUSERID" : "1",
+      "X-AUSERNAME" : "vivek",
+      "Cache-Control" : "no-cache, no-transform",
+      "Vary" : "X-AUSERNAME,Accept-Encoding",
+      "Transfer-Encoding" : "chunked",
+      "X-Content-Type-Options" : "nosniff",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Mon, 12 Jun 2017 14:16:57 GMT"
+    }
+  },
+  "uuid" : "21f37681-abff-31fc-800a-38c1eb44d6a0"
+}

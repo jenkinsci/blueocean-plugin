@@ -1,7 +1,7 @@
 {
   "id" : "95be5f1c-6099-3d8f-a28a-b63da5386da6",
   "request" : {
-    "url" : "/rest/api/1.0/projects/TESTP/repos/pipeline-demo-test/",
+    "url" : "/rest/api/1.0/projects/TESTP/repos/pipeline-demo-test",
     "method" : "GET"
   },
   "response" : {

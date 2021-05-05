@@ -184,7 +184,7 @@ class RunDetailsHeader extends Component {
         );
 
         const cause = run => {
-            const lastCause = (run && run.causes.length > 0 && run.causes[run.causes.length - 1]) || null;
+            const lastCause = (run && run.causes && run.causes.length > 0 && run.causes[run.causes.length - 1]) || null;
             if (lastCause && lastCause.upstreamProject) {
                 const activityUrl = `${UrlConfig.getJenkinsRootURL()}/${lastCause.upstreamUrl}display/redirect?provider=blueocean`;
                 const runUrl = `${UrlConfig.getJenkinsRootURL()}/${lastCause.upstreamUrl}${lastCause.upstreamBuild}/display/redirect?provider=blueocean`;

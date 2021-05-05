@@ -50,8 +50,14 @@ import static org.powermock.api.mockito.PowerMockito.*;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Stapler.class, OrganizationFolder.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public abstract class GithubMockBase extends PipelineBaseTest {
+
+    // By default the wiremock tests will run without proxy
+    // The tests will use only the stubbed data and will fail if requests are made for missing data.
+    // You can use the proxy while writing and debugging tests.
+    private final static boolean useProxy = !System.getProperty("test.wiremock.useProxy", "false").equals("false");
+
     protected String githubApiUrl;
     protected User user;
     protected String accessToken = "12345";
@@ -96,8 +102,13 @@ public abstract class GithubMockBase extends PipelineBaseTest {
         new File("src/test/resources/api/__files").mkdirs();
         githubApi.enableRecordMappings(new SingleRootFileSource("src/test/resources/api/mappings"),
                 new SingleRootFileSource("src/test/resources/api/__files"));
-        githubApi.stubFor(
-                WireMock.get(urlMatching(".*")).atPriority(10).willReturn(aResponse().proxiedFrom("https://api.github.com/")));
+
+        if (useProxy) {
+            githubApi.stubFor(
+                WireMock.get(urlMatching(".*"))
+                    .atPriority(10)
+                    .willReturn(aResponse().proxiedFrom("https://api.github.com/")));
+        }
 
         this.user = login("vivek", "Vivek Pandey", "vivek.pandey@gmail.com");
         this.githubApiUrl = String.format("http://localhost:%s",githubApi.port());
@@ -174,7 +185,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
         when(scmSource.getRepository()).thenReturn("PR-demo");
         when(mbp.getSCMSources()).thenReturn(Lists.<SCMSource>newArrayList(scmSource));
         BlueOceanCredentialsProvider.FolderPropertyImpl folderProperty = mock(BlueOceanCredentialsProvider.FolderPropertyImpl.class);
-        DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> mbpProperties = new DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor>(mbp);
+        DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> mbpProperties = new DescribableList<>(mbp);
         mbpProperties.add(new BlueOceanCredentialsProvider.FolderPropertyImpl(
                 user.getId(), credentialId,
                 BlueOceanCredentialsProvider.createDomain(githubApiUrl)

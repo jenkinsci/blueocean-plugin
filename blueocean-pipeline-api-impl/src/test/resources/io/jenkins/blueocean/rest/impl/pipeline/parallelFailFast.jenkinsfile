@@ -1,0 +1,9 @@
+parallel failFast: true,
+aborts: {
+  sleep 5
+}, fails: {
+  sleep 1
+  error('branch fails')
+}, succeeds: {
+  echo('branch succeeds')
+}

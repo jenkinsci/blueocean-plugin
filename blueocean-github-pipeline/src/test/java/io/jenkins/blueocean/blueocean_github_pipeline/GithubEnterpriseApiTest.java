@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
  */
 
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubEnterpriseApiTest extends GithubMockBase {
 
     @Test
@@ -111,7 +111,7 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
             .get("/organizations/jenkins/scm/github-enterprise/?apiUrl="+githubApiUrl)
             .build(Map.class);
 
-        assertTrue(r.get("message").toString().equals("Invalid accessToken"));
+        assertEquals("Invalid accessToken", r.get("message").toString());
     }
 
     @Test

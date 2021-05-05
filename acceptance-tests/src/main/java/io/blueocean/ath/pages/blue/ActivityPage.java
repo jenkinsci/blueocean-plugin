@@ -7,7 +7,6 @@ import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.factory.BranchPageFactory;
 import io.blueocean.ath.factory.PullRequestsPageFactory;
 import io.blueocean.ath.model.AbstractPipeline;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.annotations.Nullable;
 import org.junit.Assert;
 import org.openqa.selenium.By;
@@ -15,12 +14,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.net.URLEncoder;
 
 public class ActivityPage {
-    private Logger logger = Logger.getLogger(ActivityPage.class);
+    private Logger logger = LoggerFactory.getLogger(ActivityPage.class);
 
     private WebDriver driver;
     private AbstractPipeline pipeline;
@@ -52,7 +53,7 @@ public class ActivityPage {
     @Deprecated
     public void open(String pipeline) {
         driver.get(base + "/blue/organizations/jenkins/" + pipeline + "/activity");
-        logger.info("Opened activity page for " + pipeline);
+        logger.info("Opened activity page for {}", pipeline);
     }
 
     public void checkPipeline() {
@@ -81,7 +82,7 @@ public class ActivityPage {
 
     public void checkForCommitMessage(String message) {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()=\"" + message + "\"]")));
-        logger.info("Found commit message '" + message + "'");
+        logger.info("Found commit message '{}'", message);
     }
 
     public BranchPage clickBranchTab() {
@@ -122,13 +123,13 @@ public class ActivityPage {
         testNumberRunsComplete(atLeast, "success");
         By selector = By.cssSelector("div[data-pipeline='" + pipeline.getName() + "'].JTable-row circle.success");
         wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(selector, atLeast - 1));
-        logger.info("At least " + atLeast + " runs are complete");
+        logger.info("At least {} runs are complete", atLeast);
     }
 
     public void testNumberRunsComplete(int atLeast, String status) {
         By selector = By.cssSelector("div[data-pipeline='" + pipeline.getName() + "'].JTable-row circle."+status);
         wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(selector, atLeast - 1));
-        logger.info("At least " + atLeast + " runs are complete");
+        logger.info("At least {} runs are complete", atLeast);
     }
 
     public void checkBasicDomElements() {

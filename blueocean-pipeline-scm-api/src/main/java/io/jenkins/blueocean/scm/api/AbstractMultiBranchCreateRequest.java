@@ -76,6 +76,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
         assignCredentialToProject(scmConfig, project);
         SCMSource source = createSource(project, scmConfig).withId("blueocean");
         project.setSourcesList(ImmutableList.of(new BranchSource(source)));
+        source.afterSave();
         project.save();
         final boolean hasJenkinsfile = repoHasJenkinsFile(source);
         if(!hasJenkinsfile){

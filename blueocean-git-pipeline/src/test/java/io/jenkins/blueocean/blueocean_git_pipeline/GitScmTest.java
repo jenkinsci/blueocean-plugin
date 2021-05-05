@@ -40,7 +40,7 @@ import static org.junit.Assert.*;
  * @author Vivek Pandey
  */
 @RunWith(Parameterized.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GitScmTest extends PipelineBaseTest {
     public static final String HTTPS_GITHUB_NO_JENKINSFILE = "https://github.com/vivek/test-no-jenkins-file.git";
     public static final String HTTPS_GITHUB_PUBLIC = "https://github.com/cloudbeers/multibranch-demo.git";
@@ -225,8 +225,8 @@ public class GitScmTest extends PipelineBaseTest {
         List<Map> errors = (List<Map>) resp.get("errors");
 
         assertEquals(1, errors.size());
-        assertEquals("scmConfig.credentialId", errors.get(0).get("field"));
-        assertEquals("INVALID", errors.get(0).get("code"));
+        assertEquals(errors.get(0).toString(), "scmConfig.credentialId", errors.get(0).get("field"));
+        assertEquals(errors.get(0).toString(), "INVALID", errors.get(0).get("code"));
     }
 
     @Test

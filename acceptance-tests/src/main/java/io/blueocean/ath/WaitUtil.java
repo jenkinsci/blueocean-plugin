@@ -1,7 +1,6 @@
 package io.blueocean.ath;
 
 import com.google.common.base.Function;
-import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -12,6 +11,8 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -24,7 +25,7 @@ public class WaitUtil {
     public static String DEFAULT_ERROR_MESSAGE = "Error while waiting for something";
     public static final int RETRY_COUNT = 10;
 
-    private Logger logger = Logger.getLogger(WaitUtil.class);
+    private Logger logger = LoggerFactory.getLogger(WaitUtil.class);
 
     private WebDriver driver;
 
@@ -106,7 +107,7 @@ public class WaitUtil {
             } catch (WebDriverException ex) {
                 if (ex.getMessage().contains("is not clickable at point")) {
                     logger.warn(String.format("%s not clickable: will retry clear", by.toString()));
-                    logger.debug("exception: " + ex.getMessage());
+                    logger.debug("exception: {}", ex.getMessage());
                 } else {
                     throw ex;
                 }
@@ -135,7 +136,7 @@ public class WaitUtil {
                 if (ex.getMessage().contains("is not clickable at point")) {
                     logger.warn(String.format("%s not clickable on attempt " + i + ", will sleep and retry ", by.toString()));
                     tinySleep(500);
-                    logger.debug("exception: " + ex.getMessage());
+                    logger.debug("exception: {}", ex.getMessage());
                 } else {
                     throw ex;
                 }
@@ -211,7 +212,7 @@ public class WaitUtil {
     }
 
     /**
-     * Wait until the SSE is fully connected so events will propegate properly
+     * Wait until the SSE is fully connected so events will propagate properly
      */
     public void untilSSEReady() {
         // make sure the variable is defined
