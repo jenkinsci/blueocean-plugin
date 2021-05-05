@@ -1,9 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
-import com.google.common.io.Resources;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
@@ -17,10 +14,12 @@ import hudson.model.User;
 import hudson.security.csrf.CrumbIssuer;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
+import io.jenkins.blueocean.commons.ResourcesUtils;
 import jenkins.model.Jenkins;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.userdetails.UserDetails;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -549,7 +548,7 @@ public abstract class PipelineBaseTest{
                 request.header( crumb.field, crumb.value );
             }
             request.header("Accept-Encoding","");
-            if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){
+            if(StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password)){
                 request.basicAuth(username, password);
             }else{
                 if (token == null) {
@@ -647,8 +646,8 @@ public abstract class PipelineBaseTest{
 
     protected WorkflowJob createWorkflowJobWithJenkinsfile(Class<?> contextClass, String jenkinsFileName) throws java.io.IOException {
         WorkflowJob p = j.createProject(WorkflowJob.class, "project-" + UUID.randomUUID().toString());
-        URL resource = Resources.getResource(contextClass, jenkinsFileName);
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        URL resource = contextClass.getResource(jenkinsFileName);
+        String jenkinsFile = ResourcesUtils.toString(resource);
         p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
         p.save();
         return p;

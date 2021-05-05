@@ -1,8 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableList;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.Item;
@@ -36,13 +33,11 @@ import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
-import io.jenkins.blueocean.service.embedded.util.Disabler;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.BranchProjectFactory;
 import jenkins.branch.MultiBranchProject;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import org.jenkinsci.plugins.workflow.multibranch.AbstractWorkflowBranchProjectFactory;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowBranchProjectFactory;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.kohsuke.stapler.export.Exported;
@@ -53,6 +48,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.PipelineJobFilters.isPullRequest;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_SCM;
@@ -212,12 +209,10 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Override
     public Collection<String> getBranchNames() {
-        return Collections2.transform(ImmutableList.copyOf(this.getBranches().iterator()), new Function<BluePipeline, String>() {
-            @Override
-            public String apply(BluePipeline input) {
-                return input.getName();
-            }
-        });
+        return StreamSupport.stream(this.getBranches().spliterator(), false).
+            map(BluePipeline::getName).
+            collect( Collectors.toList());
+
     }
 
     private int countRunStatus(Result result, boolean pullRequests) {

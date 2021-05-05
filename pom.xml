@@ -450,9 +450,9 @@
             <version>${guava.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-            <version>2.9.0</version>
+            <groupId>io.jenkins.plugins</groupId>
+            <artifactId>caffeine-api</artifactId>
+            <version>2.9.0-17.v79e9099a51e3</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>

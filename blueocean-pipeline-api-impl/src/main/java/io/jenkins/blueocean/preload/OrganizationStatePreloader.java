@@ -4,9 +4,8 @@ import java.io.StringWriter;
 
 import javax.annotation.Nonnull;
 
-import com.google.common.collect.Iterables;
-
 import hudson.Extension;
+import io.jenkins.blueocean.commons.ListsUtils;
 import io.jenkins.blueocean.commons.PageStatePreloader;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
@@ -27,8 +26,8 @@ public class OrganizationStatePreloader extends PageStatePreloader {
 
     @Override
     public String getStateJson() {
-        BlueOrganization organization = Iterables.getFirst(OrganizationFactory.getInstance().list(), null);
-        
+        BlueOrganization organization = ListsUtils.getFirst(OrganizationFactory.getInstance().list(), null);
+
         if(organization != null) {
             String organizationGroup = "/"; //default is root group
             if (organization instanceof AbstractOrganization) {

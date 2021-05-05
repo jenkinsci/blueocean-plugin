@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Predicate;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Item;
@@ -10,6 +9,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.function.Predicate;
 
 /**
  * Simple extension point to allow filtering item types by a specific key
@@ -47,7 +47,7 @@ public abstract class ContainerFilter implements ExtensionPoint {
         Collection<T> out = new LinkedList<>();
         nextItem: for (T item : items) {
             for (Predicate<Item> filter : filters) {
-                if (!filter.apply(item)) {
+                if (!filter.test(item)) {
                     continue nextItem;
                 }
             }
@@ -72,7 +72,7 @@ public abstract class ContainerFilter implements ExtensionPoint {
                 break;
             }
             for (Predicate<Item> filter : filters) {
-                if (!filter.apply(item)) {
+                if (!filter.test(item)) {
                     continue nextItem;
                 }
             }

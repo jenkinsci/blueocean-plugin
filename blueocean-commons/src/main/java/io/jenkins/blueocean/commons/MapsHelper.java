@@ -11,6 +11,11 @@ public class MapsHelper {
     private MapsHelper() {
     }
 
+    public static <K,V> Map<K,V> of(Map<K,V> m) {
+        Map<K,V> map = new HashMap<>(m);
+        return Collections.unmodifiableMap(map);
+    }
+
     public static <K,V> Map<K,V> of(K k1, V v1) {
         Map<K,V> map = new HashMap<>();
         map.put(k1, v1);

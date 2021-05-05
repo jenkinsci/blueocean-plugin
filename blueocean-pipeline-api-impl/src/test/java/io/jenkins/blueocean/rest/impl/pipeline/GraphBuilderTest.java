@@ -1,8 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
 import hudson.model.Result;
+import io.jenkins.blueocean.commons.ResourcesUtils;
 import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -423,7 +422,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
     @Test
     public void unionDifferentNodeIdsSameStructure() throws Exception {
         WorkflowJob p = createJob("unionDifferentNodeIdsSameStructure", "unionDifferentNodeIdsSameStructure.jenkinsfile");
-        // Run the first build, it should complete successfully. We don't care about its structure.   
+        // Run the first build, it should complete successfully. We don't care about its structure.
         WorkflowRun b1 = p.scheduleBuild2(0).waitForStart();
         SemaphoreStep.waitForStart("second/1", b1);
         SemaphoreStep.success("second/1", null);
@@ -545,8 +544,8 @@ public class GraphBuilderTest extends PipelineBaseTest {
     private WorkflowJob createJob(String jobName, String jenkinsFileName) throws java.io.IOException {
         WorkflowJob job = j.createProject(WorkflowJob.class, jobName);
 
-        URL resource = Resources.getResource(getClass(), jenkinsFileName);
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        URL resource = getClass().getResource(jenkinsFileName);
+        String jenkinsFile = ResourcesUtils.toString(resource);
         job.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
         return job;
     }

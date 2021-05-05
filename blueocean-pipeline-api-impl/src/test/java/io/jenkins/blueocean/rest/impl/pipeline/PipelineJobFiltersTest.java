@@ -29,7 +29,7 @@ public class PipelineJobFiltersTest {
     public void testFolderJobFilter(){
         BlueOrganization organization = mockOrganization();
         OrganizationFolder organizationFolder = mockOrgFolder(organization);
-        assertFalse(new PipelineJobFilters.FolderJobFilter().getFilter().apply(organizationFolder));
+        assertFalse(new PipelineJobFilters.FolderJobFilter().getFilter().test(organizationFolder));
     }
 
     @Test
@@ -40,7 +40,7 @@ public class PipelineJobFiltersTest {
         mockStatic(SCMHead.HeadByItem.class);
         when(SCMHead.HeadByItem.findHead(organizationFolder)).thenReturn(changeRequestSCMHead);
         assertTrue(PipelineJobFilters.isPullRequest(organizationFolder));
-        assertFalse(new PipelineJobFilters.OriginFilter().getFilter().apply(organizationFolder));
-        assertTrue(new PipelineJobFilters.PullRequestFilter().getFilter().apply(organizationFolder));
+        assertFalse(new PipelineJobFilters.OriginFilter().getFilter().test(organizationFolder));
+        assertTrue(new PipelineJobFilters.PullRequestFilter().getFilter().test(organizationFolder));
     }
 }

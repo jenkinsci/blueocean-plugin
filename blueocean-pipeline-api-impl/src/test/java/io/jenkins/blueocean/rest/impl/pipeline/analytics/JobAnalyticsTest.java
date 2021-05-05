@@ -1,11 +1,10 @@
 package io.jenkins.blueocean.rest.impl.pipeline.analytics;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
 import hudson.matrix.MatrixProject;
 import hudson.model.CauseAction;
 import hudson.model.Result;
 import io.jenkins.blueocean.analytics.Analytics;
+import io.jenkins.blueocean.commons.ResourcesUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.service.embedded.analytics.AbstractAnalytics;
 import io.jenkins.blueocean.service.embedded.analytics.JobAnalytics;
@@ -41,13 +40,13 @@ public class JobAnalyticsTest extends PipelineBaseTest {
     public void setup() throws Exception {
         sampleRepo.init();
         sampleRepo.git("checkout","master");
-        sampleRepo.write("Jenkinsfile", Resources.toString(Resources.getResource(JobAnalyticsTest.class, "JobAnalyticsTest-scripted.jenkinsfile"), Charsets.UTF_8));
+        sampleRepo.write( "Jenkinsfile", ResourcesUtils.toString(JobAnalyticsTest.class.getResource("JobAnalyticsTest-scripted.jenkinsfile")));
         sampleRepo.git("add", "Jenkinsfile");
         sampleRepo.git("commit", "--all", "--message=Jenkinsfile");
 
         sampleRepo2.init();
         sampleRepo2.git("checkout","master");
-        sampleRepo2.write("Jenkinsfile", Resources.toString(Resources.getResource(JobAnalyticsTest.class, "JobAnalyticsTest-declarative.jenkinsfile"), Charsets.UTF_8));
+        sampleRepo2.write("Jenkinsfile", ResourcesUtils.toString(JobAnalyticsTest.class.getResource("JobAnalyticsTest-declarative.jenkinsfile")));
         sampleRepo2.git("add", "Jenkinsfile");
         sampleRepo2.git("commit", "--all", "--message=Jenkinsfile");
     }

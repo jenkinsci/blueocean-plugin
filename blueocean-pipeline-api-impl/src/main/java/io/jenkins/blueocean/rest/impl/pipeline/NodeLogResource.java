@@ -1,8 +1,8 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.io.CountingOutputStream;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
+import org.apache.commons.io.output.CountingOutputStream;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.kohsuke.stapler.AcceptHeader;
 import org.kohsuke.stapler.Header;
@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Serves logs of steps inside a node in BlueOcean DAG.
@@ -84,7 +85,7 @@ public class NodeLogResource {
 
     private long appendError(String msg, OutputStream w) throws IOException {
         try (CountingOutputStream os = new CountingOutputStream(w)) {
-            os.write(msg.getBytes("UTF-8"));
+            os.write(msg.getBytes(StandardCharsets.UTF_8));
             os.flush();
             return os.getCount();
         }
