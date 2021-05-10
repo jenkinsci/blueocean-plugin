@@ -2293,8 +2293,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("StringParameterDefinition", parameters.get(1).get("type"));
         Assert.assertEquals("string param", parameters.get(1).get("description"));
 
-        VersionNumber versionNumber = Jenkins.getVersion();
-        if (versionNumber.isOlderThan(new VersionNumber("2.281"))) {
+        if (Jenkins.getVersion().isOlderThan(new VersionNumber("2.281"))) {
             Assert.assertNull(((Map) parameters.get(1).get("defaultParameterValue")).get("value"));
         } else {
             Assert.assertEquals("", ((Map) parameters.get(1).get("defaultParameterValue")).get("value"));
