@@ -32,7 +32,7 @@
     <!-- when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions -->
     <jenkins.version>2.222.4</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
-    <frontend-version>1.7.5</frontend-version>
+    <frontend-version>1.11.3</frontend-version>
     <node.version>10.13.0</node.version>
     <npm.version>6.14.4</npm.version>
     <powermock.version>2.0.7</powermock.version>
@@ -526,7 +526,7 @@
         <dependency>
             <groupId>org.bitbucket.b_c</groupId>
             <artifactId>jose4j</artifactId>
-            <version>0.7.6</version>
+            <version>0.7.7</version>
         </dependency>
         <dependency>
             <groupId>org.jvnet.hudson.plugins</groupId>
