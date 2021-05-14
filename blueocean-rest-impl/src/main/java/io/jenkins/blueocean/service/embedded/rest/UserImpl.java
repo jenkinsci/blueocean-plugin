@@ -200,7 +200,7 @@ public class UserImpl extends BlueUser {
     }
 
     private AccessControlled getAccessControllerOrganization() {
-        AccessControlled orgBase = Jenkins.get();
+        AccessControlled orgBase = Jenkins.getInstanceOrNull();
 
         if (organization instanceof AbstractOrganization) {
             ModifiableTopLevelItemGroup group = ((AbstractOrganization) organization).getGroup();
