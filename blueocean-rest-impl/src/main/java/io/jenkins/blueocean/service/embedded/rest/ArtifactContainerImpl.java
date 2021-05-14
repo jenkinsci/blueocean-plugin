@@ -3,6 +3,8 @@ package io.jenkins.blueocean.service.embedded.rest;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import hudson.Functions;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
@@ -11,8 +13,6 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueArtifact;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Iterator;
 
 public class ArtifactContainerImpl extends BlueArtifactContainer {
@@ -44,7 +44,7 @@ public class ArtifactContainerImpl extends BlueArtifactContainer {
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public Iterator<BlueArtifact> iterator() {
         // Check security for artifacts
         if(Functions.isArtifactsPermissionEnabled() && !run.hasPermission(Run.ARTIFACTS)) {

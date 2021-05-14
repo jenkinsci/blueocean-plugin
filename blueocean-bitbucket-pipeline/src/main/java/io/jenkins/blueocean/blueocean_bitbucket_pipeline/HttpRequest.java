@@ -1,6 +1,8 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import hudson.ProxyConfiguration;
 import hudson.util.Secret;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -20,8 +22,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -36,7 +36,7 @@ public class HttpRequest {
     private final HttpClient client;
     private final String authorizationHeader;
 
-    private HttpRequest(@Nonnull String apiUrl, @Nullable StandardUsernamePasswordCredentials credentials, @Nullable String authHeader) {
+    private HttpRequest(@NonNull String apiUrl, @Nullable StandardUsernamePasswordCredentials credentials, @Nullable String authHeader) {
         this.client = getHttpClient(apiUrl);
         try {
             if(StringUtils.isBlank(authHeader) && credentials != null) {
@@ -101,7 +101,7 @@ public class HttpRequest {
     }
 
 
-    private  HttpClient getHttpClient(@Nonnull String apiUrl) {
+    private  HttpClient getHttpClient(@NonNull String apiUrl) {
         HttpClientBuilder clientBuilder = HttpClientBuilder.create().disableAutomaticRetries()
                 .disableRedirectHandling();
         setClientProxyParams(apiUrl, clientBuilder);
@@ -133,7 +133,7 @@ public class HttpRequest {
         private String authHeader;
         private StandardUsernamePasswordCredentials credentials;
 
-        public HttpRequestBuilder(@Nonnull String apiUrl) {
+        public HttpRequestBuilder(@NonNull String apiUrl) {
             this.url = apiUrl;
         }
 

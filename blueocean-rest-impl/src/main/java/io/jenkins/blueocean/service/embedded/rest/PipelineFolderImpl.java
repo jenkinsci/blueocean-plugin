@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.collect.Iterables;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.AbstractItem;
@@ -24,8 +25,6 @@ import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.Disabler;
 import org.kohsuke.stapler.json.JsonBody;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -51,7 +50,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
         return organization.getName();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public BlueOrganization getOrganization() {
         return organization;

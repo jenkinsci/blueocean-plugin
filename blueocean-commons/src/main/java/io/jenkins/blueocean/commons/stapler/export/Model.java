@@ -24,12 +24,12 @@
 package io.jenkins.blueocean.commons.stapler.export;
 
 import com.google.common.base.Predicate;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import io.jenkins.blueocean.commons.stapler.export.TreePruner.ByDepth;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;

@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.ExtensionList;
 import hudson.model.Action;
 import hudson.model.ItemGroup;
@@ -8,7 +9,6 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.OrganizationRoute;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -18,24 +18,10 @@ import io.jenkins.blueocean.rest.model.GenericResource;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.DoNotUse;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-import org.kohsuke.accmod.restrictions.None;
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.DELETE;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Iterables;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 
 /**
  * {@link BlueOrganization} implementation for the embedded use.
@@ -64,7 +50,7 @@ public class OrganizationImpl extends AbstractOrganization{
         return name;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ModifiableTopLevelItemGroup getGroup() {
         return group;

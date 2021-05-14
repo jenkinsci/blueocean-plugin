@@ -23,10 +23,10 @@
 
 package io.jenkins.blueocean.commons.stapler.export;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerResponse;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Type;
 import java.util.Stack;
 import java.io.Writer;
@@ -68,8 +68,8 @@ final class XMLDataWriter implements DataWriter {
         this(bean,rsp.getWriter(),config);
     }
 
-    @Override
-    public @Nonnull ExportConfig getExportConfig() {
+    @Override @NonNull
+    public ExportConfig getExportConfig() {
         return exportConfig;
     }
 

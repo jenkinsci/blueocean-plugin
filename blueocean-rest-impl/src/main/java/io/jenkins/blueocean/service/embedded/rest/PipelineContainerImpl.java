@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -10,7 +11,6 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -20,7 +20,7 @@ import java.util.List;
  * @author Vivek Pandey
  */
 public class PipelineContainerImpl extends BluePipelineContainer {
-    private final @Nonnull ItemGroup itemGroup;
+    private final @NonNull ItemGroup itemGroup;
     private final Link self;
 
     public PipelineContainerImpl(BlueOrganization organization, ItemGroup itemGroup, Reachable parent) {

@@ -1,11 +1,11 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.Job;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 
-import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 /**
@@ -32,7 +32,7 @@ public class QueueContainerImpl extends BlueQueueContainer {
 
 
     @Override
-    @Nonnull
+    @NonNull
     public Iterator<BlueQueueItem> iterator() {
         return QueueUtil.getQueuedItems(pipeline.organization, job).iterator();
     }

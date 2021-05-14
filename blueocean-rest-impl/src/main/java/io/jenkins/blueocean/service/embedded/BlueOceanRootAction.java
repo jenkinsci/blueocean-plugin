@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded;
 import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Module;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
 import io.jenkins.blueocean.BlueOceanUI;
@@ -17,8 +18,6 @@ import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
-
-import javax.annotation.Nonnull;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -101,13 +100,13 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
             return Jenkins.getInstance().getRootUrl();
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public String getUrlBasePrefix() {
             return URL_BASE;
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public String getLandingPagePath() {
             BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(Jenkins.getInstance());

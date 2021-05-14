@@ -4,6 +4,8 @@ import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
 import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.google.common.base.Preconditions;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.Item;
 import hudson.model.User;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.BitbucketCloudScm;
@@ -30,8 +32,6 @@ import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -94,7 +94,7 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
     }
 
     @Override
-    public Object saveContent(@Nonnull StaplerRequest staplerRequest, @Nonnull Item item) {
+    public Object saveContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item) {
         JSONObject body;
         try {
             body = JSONObject.fromObject(IOUtils.toString(staplerRequest.getReader()));
@@ -145,7 +145,7 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
 
     @SuppressWarnings("unchecked")
     @CheckForNull
-    protected BitbucketSCMSource getSourceFromItem(@Nonnull Item item) {
+    protected BitbucketSCMSource getSourceFromItem(@NonNull Item item) {
         if (item instanceof MultiBranchProject) {
             List<SCMSource> sources = ((MultiBranchProject) item).getSCMSources();
             if (!sources.isEmpty() && sources.get(0) instanceof BitbucketSCMSource) {
@@ -161,7 +161,7 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
             super(item);
         }
         @Override
-        protected String owner(@Nonnull SCMSource scmSource) {
+        protected String owner(@NonNull SCMSource scmSource) {
             if (scmSource instanceof BitbucketSCMSource) {
                 BitbucketSCMSource bitbucketSCMSource = (BitbucketSCMSource) scmSource;
                 return bitbucketSCMSource.getRepoOwner();
@@ -170,12 +170,12 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
         }
 
         @Override
-        protected String owner(@Nonnull SCMNavigator scmNavigator) {
+        protected String owner(@NonNull SCMNavigator scmNavigator) {
             return null;
         }
 
         @Override
-        protected String repo(@Nonnull SCMSource scmSource) {
+        protected String repo(@NonNull SCMSource scmSource) {
             if (scmSource instanceof BitbucketSCMSource) {
                 BitbucketSCMSource bitbucketSCMSource = (BitbucketSCMSource) scmSource;
                 return bitbucketSCMSource.getRepository();
@@ -184,7 +184,7 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
         }
 
         @Override
-        protected String apiUrl(@Nonnull SCMSource scmSource) {
+        protected String apiUrl(@NonNull SCMSource scmSource) {
             if (scmSource instanceof BitbucketSCMSource) {
                 return ((BitbucketSCMSource)scmSource).getServerUrl();
             }
@@ -192,13 +192,13 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
         }
 
         @Override
-        protected String apiUrl(@Nonnull SCMNavigator scmNavigator) {
+        protected String apiUrl(@NonNull SCMNavigator scmNavigator) {
             return null;
         }
 
         @Override
-        @Nonnull
-        protected StandardUsernamePasswordCredentials getCredentialForUser(@Nonnull final Item item, @Nonnull String apiUrl){
+        @NonNull
+        protected StandardUsernamePasswordCredentials getCredentialForUser(@NonNull final Item item, @NonNull String apiUrl){
             User user = User.current();
             if(user == null){ //ensure this session has authenticated user
                 throw new ServiceException.UnauthorizedException("No logged in user found");

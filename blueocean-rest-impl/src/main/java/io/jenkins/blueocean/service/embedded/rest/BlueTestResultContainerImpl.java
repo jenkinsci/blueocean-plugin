@@ -4,6 +4,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException.BadRequestException;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
@@ -20,8 +22,6 @@ import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Iterator;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
@@ -55,7 +55,7 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
         return testResult;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Iterator<BlueTestResult> iterator() {
         Result resolved = resolve();

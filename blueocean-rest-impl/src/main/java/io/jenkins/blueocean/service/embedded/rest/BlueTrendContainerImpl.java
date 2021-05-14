@@ -2,17 +2,15 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.factory.BlueTrendFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueTrend;
 import io.jenkins.blueocean.rest.model.BlueTrendContainer;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Iterator;
 
 // TODO: reenable this after refactor
@@ -45,7 +43,7 @@ public class BlueTrendContainerImpl extends BlueTrendContainer {
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public Iterator<BlueTrend> iterator() {
         return BlueTrendFactory.getTrends(pipeline, getLink()).iterator();
     }
