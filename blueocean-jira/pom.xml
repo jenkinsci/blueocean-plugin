@@ -38,10 +38,6 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>apache-httpcomponents-client-4-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
     </dependencies>
 
 </project>

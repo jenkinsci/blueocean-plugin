@@ -13,6 +13,7 @@ import hudson.model.Run;
 import hudson.model.Slave;
 import hudson.model.queue.QueueTaskFuture;
 import hudson.util.RunList;
+import hudson.util.VersionNumber;
 import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
@@ -2291,7 +2292,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("param2", parameters.get(1).get("name"));
         Assert.assertEquals("StringParameterDefinition", parameters.get(1).get("type"));
         Assert.assertEquals("string param", parameters.get(1).get("description"));
-        Assert.assertNull(((Map) parameters.get(1).get("defaultParameterValue")).get("value"));
+        Assert.assertNull(Util.fixEmpty(((Map) parameters.get(1).get("defaultParameterValue")).get("value")));
 
         resp = post("/organizations/jenkins/pipelines/pipeline1/runs/", ImmutableMap.of("parameters",
                                                                                         ImmutableList.of(ImmutableMap.of("name", "param1", "value", "abc"), ImmutableMap.of("name", "param2", "value", "def"))

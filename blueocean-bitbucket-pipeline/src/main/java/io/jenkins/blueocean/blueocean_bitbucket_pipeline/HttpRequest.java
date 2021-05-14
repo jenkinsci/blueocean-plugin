@@ -5,7 +5,6 @@ import hudson.ProxyConfiguration;
 import hudson.util.Secret;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -23,11 +22,11 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * @author Vivek Pandey
@@ -41,7 +40,7 @@ public class HttpRequest {
         this.client = getHttpClient(apiUrl);
         if(StringUtils.isBlank(authHeader) && credentials != null) {
             this.authorizationHeader = String.format("Basic %s",
-                    Base64.encodeBase64String(String.format("%s:%s", credentials.getUsername(),
+                    Base64.getEncoder().encodeToString(String.format("%s:%s", credentials.getUsername(),
                             Secret.toString(credentials.getPassword())).getBytes(StandardCharsets.UTF_8)));
         }else{
             this.authorizationHeader = authHeader;

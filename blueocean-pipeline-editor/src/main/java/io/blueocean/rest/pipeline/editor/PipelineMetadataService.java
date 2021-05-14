@@ -45,7 +45,7 @@ import java.util.Set;
 @Extension
 public class PipelineMetadataService implements ApiRoutable {
 
-    final static List<String> INCLUDED_ADVANCED_STEPS = Collections.unmodifiableList(Arrays.asList("catchError"));
+    final static List<String> INCLUDED_ADVANCED_STEPS = Collections.unmodifiableList(Arrays.asList("catchError", "container"));
 
     @Override
     public String getUrlName() {
