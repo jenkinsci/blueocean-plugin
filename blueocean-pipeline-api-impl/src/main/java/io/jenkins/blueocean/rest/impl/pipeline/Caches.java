@@ -93,7 +93,7 @@ class Caches {
 
         @Override
         public Optional<Branch> load(String key) throws Exception {
-            Jenkins jenkins = Objects.firstNonNull(this.jenkins, Jenkins.get());
+            Jenkins jenkins = Objects.firstNonNull(this.jenkins, Jenkins.getInstanceOrNull());
             Job job = jenkins.getItemByFullName(key, Job.class);
             if (job == null) {
                 return Optional.absent();
@@ -131,7 +131,7 @@ class Caches {
 
         @Override
         public Optional<PullRequest> load(String key) throws Exception {
-            Jenkins jenkins = Objects.firstNonNull(this.jenkins, Jenkins.get());
+            Jenkins jenkins = Objects.firstNonNull(this.jenkins, Jenkins.getInstanceOrNull());
             Job job = jenkins.getItemByFullName(key, Job.class);
             if (job == null) {
                 return Optional.absent();
