@@ -14,6 +14,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.User;
 import hudson.util.HttpResponses;
+import io.jenkins.blueocean.commons.DigestUtils;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
@@ -34,7 +35,6 @@ import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSourceOwner;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.jgit.lib.Repository;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.Stapler;
@@ -81,7 +81,7 @@ public class GitScm extends AbstractScm {
             // Only http(s) urls have a default credential ID keyed to the repo right now
             String scheme = uri.getScheme();
             if (scheme != null && scheme.startsWith("http")) {
-                return String.format("%s:%s", ID, DigestUtils.sha256Hex(normalizedUrl));
+                return String.format( "%s:%s", ID, DigestUtils.sha256Hex(normalizedUrl));
             }
         } catch (URISyntaxException e) {
             // Fall through
