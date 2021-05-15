@@ -141,4 +141,14 @@ public class PipelineMetadataServiceTest {
     private Matcher<? super ExportedPipelineStep> stepWithName(String stepName) {
         return hasProperty("functionName", is(stepName));
     }
+
+    @Test
+    public void assureBuildConditionsAreReturnedAndSorted() {
+        final ExportedBuildCondition[] exportedBuildConditions = new PipelineMetadataService().doBuildConditions();
+        assertThat(exportedBuildConditions.length,is(11));
+        assertThat(exportedBuildConditions[0].getName(),is("aborted"));
+        assertThat(exportedBuildConditions[0].getDescription(),is("Run when the build status is \"Aborted\""));
+        assertThat(exportedBuildConditions[10].getName(),is("unsuccessful"));
+        assertThat(exportedBuildConditions[10].getDescription(),is("Run if the current builds status is \"Aborted\", \"Failure\" or \"Unstable\""));
+    }
 }
