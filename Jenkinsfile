@@ -10,6 +10,11 @@ if (JENKINS_URL == 'https://ci.jenkins.io/') {
     useAci: true,
     timeout: 90
   )
+   post {
+        always {
+            archiveArtifacts artifacts: '**/target/site/jacoco/jacoco.xml', fingerprint: true
+        }
+    }
   return
 }
 
