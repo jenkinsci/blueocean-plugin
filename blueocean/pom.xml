@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.24.7</version>
+        <version>${revision}${changelist}</version>
     </parent>
 
     <artifactId>blueocean</artifactId>
@@ -19,7 +19,7 @@
         <connection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</connection>
         <developerConnection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/blueocean-plugin</url>
-        <tag>blueocean-parent-1.24.7</tag>
+        <tag>${scmTag}</tag>
     </scm>
 
     <properties>
