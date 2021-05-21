@@ -37,7 +37,7 @@
     <npm.version>6.14.4</npm.version>
     <powermock.version>2.0.7</powermock.version>
     <hamcrest.version>2.2</hamcrest.version>
-    <mockito.version>3.3.3</mockito.version>
+    <mockito.version>3.10.0</mockito.version>
     <guava.version>18.0</guava.version>
     <jacoco.version>0.8.6</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
