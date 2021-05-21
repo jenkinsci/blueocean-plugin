@@ -66,5 +66,18 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>io/jenkins/blueocean/blueocean_git_pipeline/**/*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

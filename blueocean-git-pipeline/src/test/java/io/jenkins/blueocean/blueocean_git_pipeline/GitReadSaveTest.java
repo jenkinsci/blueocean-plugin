@@ -40,11 +40,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.sshd.common.util.OsUtils;
 import org.eclipse.jgit.lib.Repository;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import javax.annotation.Nonnull;
@@ -284,6 +280,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
     }
 
     @Test
+    @Ignore
     public void bareRepoReadWriteOverSSH() throws Exception {
         if (!OsUtils.isUNIX()) {
             return; // can't really run this on windows
@@ -295,6 +292,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
     }
 
     @Test
+    @Ignore
     public void bareRepoReadWriteNoEmail() throws Exception {
         if (!OsUtils.isUNIX()) {
             return; // can't really run this on windows

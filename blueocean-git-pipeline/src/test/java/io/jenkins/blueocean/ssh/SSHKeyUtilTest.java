@@ -29,6 +29,9 @@ import com.jcraft.jsch.KeyPair;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.math.BigInteger;
+import java.security.interfaces.RSAPublicKey;
+
 /**
  * Simple tests for RSA key generation
  * @author kzantow
@@ -43,5 +46,36 @@ public class SSHKeyUtilTest {
         KeyPair.load(jsch, privateKey.getBytes(), null );
 
         // can only really verify the key can be loaded
+    }
+
+    @Test
+    public void dummy() {
+        RSAPublicKey key = new RSAPublicKey() {
+            @Override
+            public BigInteger getPublicExponent() {
+                return new BigInteger("222222");
+            }
+
+            @Override
+            public String getAlgorithm() {
+                return null;
+            }
+
+            @Override
+            public String getFormat() {
+                return null;
+            }
+
+            @Override
+            public byte[] getEncoded() {
+                return new byte[0];
+            }
+
+            @Override
+            public BigInteger getModulus() {
+                return new BigInteger("222222");
+            }
+        } ;
+        SSHKeyUtils.encodePublicKey(key);
     }
 }
