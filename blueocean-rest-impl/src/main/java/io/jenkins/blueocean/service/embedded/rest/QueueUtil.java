@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.BuildableItem;
 import hudson.model.Job;
@@ -35,7 +36,7 @@ public class QueueUtil {
      * @param <T> type of run
      * @return the run or null
      */
-    @NonNull
+    @CheckForNull
     @SuppressWarnings("unchecked")
     public static <T extends Run> T getRun(@NonNull Job job, final long queueId) {
         try {
