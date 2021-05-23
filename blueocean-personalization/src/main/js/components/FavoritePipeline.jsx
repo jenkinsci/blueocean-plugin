@@ -7,7 +7,6 @@ import { observer } from 'mobx-react';
 import { Favorite } from '@jenkins-cd/design-language';
 import { capable } from '@jenkins-cd/blueocean-core-js';
 
-import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 import favoriteStore from '../model/FavoriteStore';
 
 /**
