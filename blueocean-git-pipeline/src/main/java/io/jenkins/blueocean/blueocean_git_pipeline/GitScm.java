@@ -10,6 +10,7 @@ import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.User;
 import hudson.util.HttpResponses;
@@ -40,7 +41,6 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.json.JsonBody;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -138,13 +138,13 @@ public class GitScm extends AbstractScm {
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public String getId() {
         return ID;
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public String getUri() {
         return "";
     }
@@ -346,14 +346,14 @@ public class GitScm extends AbstractScm {
     @Extension
     public static class GitScmFactory extends ScmFactory {
         @Override
-        public Scm getScm(@Nonnull String id, @Nonnull Reachable parent) {
+        public Scm getScm(@NonNull String id, @NonNull Reachable parent) {
             if (id.equals(ID)) {
                 return new GitScm(parent);
             }
             return null;
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public Scm getScm(Reachable parent) {
             return new GitScm(parent);

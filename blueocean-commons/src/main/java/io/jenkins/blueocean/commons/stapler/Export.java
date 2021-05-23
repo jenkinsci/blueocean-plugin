@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.commons.stapler;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.ExtensionList;
 import hudson.PluginWrapper;
 import hudson.model.Action;
@@ -22,7 +23,6 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -41,8 +41,8 @@ public class Export {
      * @return The JSON as a {@link String}.
      * @throws IOException Error serializing model object.
      */
-    @Nonnull
-    public static String toJson(@Nonnull Object object) throws IOException {
+    @NonNull
+    public static String toJson(@NonNull Object object) throws IOException {
         return toJson(object, false);
     }
 
@@ -53,8 +53,8 @@ public class Export {
      * @return The JSON as a {@link String}.
      * @throws IOException Error serializing model object.
      */
-    @Nonnull
-    public static String toJson(@Nonnull Object object, boolean htmlEncoded) throws IOException {
+    @NonNull
+    public static String toJson(@NonNull Object object, boolean htmlEncoded) throws IOException {
         try (StringWriter writer = new StringWriter()) {
             toJson(object, writer, htmlEncoded);
             return writer.toString();
@@ -68,7 +68,7 @@ public class Export {
      * @throws IOException Error serializing model object.
      */
     @SuppressWarnings("unchecked")
-    public static void toJson(@Nonnull Object object, @Nonnull Writer writer) throws IOException {
+    public static void toJson(@NonNull Object object, @NonNull Writer writer) throws IOException {
         toJson(object, writer, false);
     }
 
@@ -81,7 +81,7 @@ public class Export {
      * @throws IOException Error serializing model object.
      */
     @SuppressWarnings("unchecked")
-    public static void toJson(@Nonnull Object object, @Nonnull Writer writer, boolean htmlEncoded) throws IOException {
+    public static void toJson(@NonNull Object object, @NonNull Writer writer, boolean htmlEncoded) throws IOException {
         Model model = new ModelBuilder().get(object.getClass());
         ExportConfig exportConfig = createExportConfig();
         if (htmlEncoded) {

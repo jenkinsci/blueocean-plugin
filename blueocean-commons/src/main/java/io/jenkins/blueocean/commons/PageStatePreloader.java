@@ -23,11 +23,10 @@
  */
 package io.jenkins.blueocean.commons;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 
 /**
  * Page state "preloader" extension point.
@@ -44,7 +43,7 @@ public abstract class PageStatePreloader implements ExtensionPoint {
      * Get the JavaScript object graph path at which the state is to be stored.
      * @return The JavaScript object graph path at which the state is to be stored.
      */
-    @Nonnull
+    @NonNull
     public abstract String getStatePropertyPath();
 
     /**

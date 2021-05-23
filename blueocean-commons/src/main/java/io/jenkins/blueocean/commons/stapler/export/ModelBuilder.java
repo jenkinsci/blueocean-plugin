@@ -23,11 +23,11 @@
 
 package io.jenkins.blueocean.commons.stapler.export;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -44,7 +44,7 @@ public class ModelBuilder {
      */
     /*package*/ final Map<Class, Model> models = new ConcurrentHashMap<>();
 
-    @Nonnull
+    @NonNull
     public <T> Model<T> get(Class<T> type) throws NotExportableException {
         return get(type, null, null);
     }
@@ -53,7 +53,7 @@ public class ModelBuilder {
      * @throws NotExportableException if type is not exportable
      * @return model
      */
-    @Nonnull
+    @NonNull
     public <T> Model<T> get(Class<T> type, @CheckForNull Class<?> propertyOwner, @Nullable String property) throws NotExportableException {
         Model<T> model = getOrNull(type, propertyOwner, property);
         if (model == null) {

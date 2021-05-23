@@ -1,13 +1,13 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Predicate;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Item;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -86,7 +86,7 @@ public abstract class ContainerFilter implements ExtensionPoint {
     }
 
     @SuppressWarnings("unchecked")
-    private static Predicate<Item>[] getFilters(@Nonnull String...filterNames){
+    private static Predicate<Item>[] getFilters(@NonNull String...filterNames){
         Predicate<Item>[] filters = new Predicate[filterNames.length];
         if (filterNames.length > 0) {
             for (int i = 0; i < filterNames.length; i++) {

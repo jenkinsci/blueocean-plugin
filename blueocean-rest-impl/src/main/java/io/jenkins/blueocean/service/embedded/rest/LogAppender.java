@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import java.io.IOException;
 import java.io.Reader;
 
@@ -15,11 +16,12 @@ public interface LogAppender {
     /**
      * Gives log that can be appended
      */
-    @Nonnull Reader getLog();
+    @NonNull
+    Reader getLog();
 
     LogAppender DEFAULT = new LogAppender() {
         @Override
-        public @Nonnull Reader getLog() {
+        public @NonNull Reader getLog() {
             return new Reader(){
 
                 @Override

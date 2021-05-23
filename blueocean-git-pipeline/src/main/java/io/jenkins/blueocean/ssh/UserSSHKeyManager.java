@@ -30,11 +30,11 @@ import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.base.Preconditions;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import java.io.IOException;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 
 import jenkins.model.Jenkins;
 import org.kohsuke.accmod.Restricted;
@@ -56,7 +56,7 @@ public class UserSSHKeyManager {
      * @param user owner of the key
      * @return the user's personal private key
      */
-    public static @Nonnull BasicSSHUserPrivateKey getOrCreate(@Nonnull User user) {
+    public static @NonNull BasicSSHUserPrivateKey getOrCreate(@NonNull User user) {
         Preconditions.checkNotNull(user);
 
         CredentialsStore store = getUserStore(user);
@@ -92,7 +92,7 @@ public class UserSSHKeyManager {
      * @param key the private key to use
      * @return a public ssh key
      */
-    public static @Nonnull UserKey getPublicKey(@Nonnull User user, @Nonnull BasicSSHUserPrivateKey key) {
+    public static @NonNull UserKey getPublicKey(@NonNull User user, @NonNull BasicSSHUserPrivateKey key) {
         Preconditions.checkNotNull(user);
         Preconditions.checkNotNull(key);
 
@@ -104,7 +104,7 @@ public class UserSSHKeyManager {
      * Resets the user's generated key by deleting it and creating a new one
      * @param user user to reset a key for
      */
-    public static void reset(@Nonnull User user) {
+    public static void reset(@NonNull User user) {
         Preconditions.checkNotNull(user);
 
         try {

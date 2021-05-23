@@ -23,6 +23,8 @@
  */
 package io.jenkins.blueocean.i18n;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.PluginWrapper;
 import hudson.util.HttpResponses;
@@ -35,8 +37,6 @@ import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -398,7 +398,7 @@ public class BlueI18n implements ApiRoutable {
         }
     }
 
-    private static @Nonnull String urlDecode(@Nonnull String pathToken) {
+    private static @NonNull String urlDecode(@NonNull String pathToken) {
         try {
             return URLDecoder.decode(pathToken, "UTF-8");
         } catch (UnsupportedEncodingException e) {

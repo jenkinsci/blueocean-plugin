@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Item;
@@ -28,7 +29,6 @@ import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -42,7 +42,7 @@ public class RunContainerImpl extends BlueRunContainer {
     private final Job job;
     private final BluePipeline pipeline;
 
-    public RunContainerImpl(@Nonnull BluePipeline pipeline, @Nonnull Job job) {
+    public RunContainerImpl(@NonNull BluePipeline pipeline, @NonNull Job job) {
         this.job = job;
         this.pipeline = pipeline;
     }
@@ -146,7 +146,7 @@ public class RunContainerImpl extends BlueRunContainer {
         }
     }
 
-    private List<ParameterValue> getParameterValue(@Nonnull StaplerRequest request) {
+    private List<ParameterValue> getParameterValue(@NonNull StaplerRequest request) {
         List<ParameterValue> values = new ArrayList<>();
         List<ParameterDefinition> pdsInRequest = new ArrayList<>();
         ParametersDefinitionProperty pp = (ParametersDefinitionProperty) job.getProperty(ParametersDefinitionProperty.class);

@@ -2,22 +2,14 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterators;
 import hudson.Extension;
-import hudson.Functions;
-import hudson.Util;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueArtifactFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueArtifact;
-import org.kohsuke.stapler.Stapler;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 public class ArtifactImpl extends BlueArtifact {
     final private Run run;
