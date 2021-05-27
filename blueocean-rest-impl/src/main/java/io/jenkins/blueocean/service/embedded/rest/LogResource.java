@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.console.AnnotatedLargeText;
 import io.jenkins.blueocean.commons.ServiceException;
 import org.kohsuke.stapler.StaplerRequest;
@@ -7,7 +8,6 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.framework.io.CharSpool;
 import org.kohsuke.stapler.framework.io.LineEndNormalizingWriter;
 
-import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Reader;
@@ -26,7 +26,7 @@ public class LogResource{
         this(log, LogAppender.DEFAULT);
     }
 
-    public LogResource(@Nonnull AnnotatedLargeText log, @Nonnull LogAppender logAppender) {
+    public LogResource(@NonNull AnnotatedLargeText log, @NonNull LogAppender logAppender) {
         this.logText = log;
         this.appenderLogReader = logAppender.getLog();
     }

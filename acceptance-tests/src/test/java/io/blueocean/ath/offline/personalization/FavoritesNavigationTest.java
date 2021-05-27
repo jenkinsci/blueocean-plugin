@@ -88,7 +88,8 @@ public class FavoritesNavigationTest extends AbstractFavoritesTest {
 
         String jobName = "navigation-multibranch";
         MultiBranchPipeline pipeline = multibranchFactory.pipeline(FOLDER, jobName).createPipeline(git);
-        String fullName = pipeline.getFullName();
+        String fullName = FOLDER.getPath() + "/" + jobName;
+        sseClient.untilEvents(SSEEvents.activityComplete(fullName));
 
         // the basics
         addAsFavorite(pipeline);

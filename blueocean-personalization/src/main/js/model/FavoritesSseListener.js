@@ -2,7 +2,6 @@
  * Created by cmeyers on 8/12/16.
  */
 import { SseBus as sseBus } from '@jenkins-cd/blueocean-core-js';
-import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 import favoriteStore from './FavoriteStore';
 
 /**
@@ -39,10 +38,7 @@ class FavoritesSseListener {
     }
 
     _filterJobs(event) {
-        if (!favoriteStore.isFavorite({ fullName: event.job_name })) {
-            return false;
-        }
-        return true;
+        return favoriteStore.isFavorite({fullName: event.job_name});
     }
 }
 

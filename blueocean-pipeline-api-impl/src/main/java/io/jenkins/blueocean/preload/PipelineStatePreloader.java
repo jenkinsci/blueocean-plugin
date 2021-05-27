@@ -23,6 +23,7 @@
  */
 package io.jenkins.blueocean.preload;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.Item;
 import io.jenkins.blueocean.commons.stapler.Export;
@@ -30,7 +31,6 @@ import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import jenkins.model.Jenkins;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,7 +46,7 @@ public class PipelineStatePreloader extends RESTFetchPreloader {
     private static final Logger LOGGER = Logger.getLogger(PipelineStatePreloader.class.getName());
 
     @Override
-    protected FetchData getFetchData(@Nonnull BlueUrlTokenizer blueUrl) {
+    protected FetchData getFetchData(@NonNull BlueUrlTokenizer blueUrl) {
         // e.g. /blue/organizations/jenkins/Pipeline (or a url on that)
         if (!blueUrl.hasPart(BlueUrlTokenizer.UrlPart.PIPELINE)) {
             // Not interested in it

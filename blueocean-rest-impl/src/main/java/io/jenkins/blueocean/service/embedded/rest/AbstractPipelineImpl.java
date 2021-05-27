@@ -2,6 +2,8 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.Functions;
@@ -40,8 +42,6 @@ import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -72,7 +72,7 @@ public class AbstractPipelineImpl extends BluePipeline {
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public BlueOrganization getOrganization() {
         return organization;
     }
@@ -193,7 +193,7 @@ public class AbstractPipelineImpl extends BluePipeline {
      *
      * @return full display name
      */
-    public static String getFullDisplayName(@Nullable BlueOrganization org, @Nonnull Item item) {
+    public static String getFullDisplayName(@Nullable BlueOrganization org, @NonNull Item item) {
         ItemGroup<?> group = getBaseGroup(org);
         String[] displayNames = Functions.getRelativeDisplayNameFrom(item, group).split(" » ");
 
@@ -216,7 +216,7 @@ public class AbstractPipelineImpl extends BluePipeline {
      * @param item to return the full name of
      * @return
      */
-    public static String getFullName(@Nullable BlueOrganization org, @Nonnull Item item) {
+    public static String getFullName(@Nullable BlueOrganization org, @NonNull Item item) {
         ItemGroup<?> group = getBaseGroup(org);
         return Functions.getRelativeNameFrom(item, group);
     }

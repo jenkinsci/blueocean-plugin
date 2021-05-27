@@ -654,4 +654,7 @@ public abstract class PipelineBaseTest{
         return p;
     }
 
+    protected void invalidateBranchMetadataCache () {
+        Caches.BRANCH_METADATA.invalidateAll();
+    }
 }

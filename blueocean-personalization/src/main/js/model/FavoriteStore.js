@@ -7,24 +7,14 @@ import { blueocean } from '@jenkins-cd/blueocean-core-js/dist/js/scopes';
 const t = i18nTranslator('blueocean-personalization');
 const sortHelper = new FavoritesSortHelper();
 
-const defaultBranchName = 'master';
-
-function getItemName(item) {
-    const fullName = item.fullName;
-    if (fullName.indexOf('/') < 0) {
-        return fullName + '/' + defaultBranchName;
-    }
-    return fullName;
-}
-
 class FavoriteStore {
-    @observable _favoritesNames = blueocean.favoritesList;
+    @observable _favoritesList = blueocean.favoritesList;
     @observable _favorites = [];
     _fetched = false;
 
     @action
-    _setFavoritesNames(_favoritesNames) {
-        this._favoritesNames = _favoritesNames;
+    _setFavoritesList(_favoritesNames) {
+        this._favoritesList = _favoritesNames;
     }
 
     @action
@@ -47,21 +37,32 @@ class FavoriteStore {
             body: JSON.stringify({ favorite: favorite }),
         };
 
-        this.fetch(url, fetchOptions).then(() => {
-            const { _favoritesNames: f } = this;
-            const itemName = getItemName(item);
-            if (favorite) {
-                this._setFavoritesNames([...f, itemName]);
-            } else {
-                const idx = f.indexOf(itemName);
-                this._setFavoritesNames([...f.slice(0, idx), ...f.slice(idx + 1)]);
-            }
-            this.clearCache();
-        });
+        this.fetch(url, fetchOptions)
+            .then(data => {
+                if (favorite) {
+                    const f = {
+                        name: data.item.fullName,
+                        primary: !(data.item.branch && !data.item.branch.isPrimary) // if it is a branch honor primary flag, in any other case assume its primary
+                    };
+                    this._setFavoritesList([...this._favoritesList, f]);
+                } else {
+                    const idx = this._favoritesList.findIndex(f => f.name === data.item.fullName);
+                    this._setFavoritesList([...this._favoritesList.slice(0, idx), ...this._favoritesList.slice(idx + 1)]);
+                }
+                this.clearCache();
+            });
     }
 
     isFavorite(item) {
-        return this._favoritesNames && this._favoritesNames.indexOf(getItemName(item)) >= 0;
+        const fullName = item.fullName;
+        if (this._favoritesList) {
+            return this._favoritesList.find(f => {
+                if (f.name === fullName) return true;
+                return item.branch === undefined && f.primary &&
+                    f.name.substr(0, f.name.lastIndexOf("/")) === fullName;
+            }) !== undefined;
+        }
+        return false;
     }
 
     get favorites() {

@@ -24,9 +24,9 @@
 package io.jenkins.blueocean.commons.stapler.export;
 
 import com.fasterxml.jackson.core.io.JsonStringEncoder;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.apache.commons.lang.StringEscapeUtils;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Type;
@@ -54,8 +54,8 @@ class JSONDataWriter implements DataWriter {
         indent = config.isPrettyPrint() ? 0 : -1;
     }
 
-    @Override
-    public @Nonnull ExportConfig getExportConfig() {
+    @Override @NonNull
+    public ExportConfig getExportConfig() {
         return config;
     }
 

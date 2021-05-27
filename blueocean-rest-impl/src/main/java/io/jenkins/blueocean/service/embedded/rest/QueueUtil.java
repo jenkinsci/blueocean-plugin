@@ -1,8 +1,9 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.BuildableItem;
 import hudson.model.Job;
 import hudson.model.Run;
@@ -14,8 +15,6 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import jenkins.model.Jenkins;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -37,9 +36,9 @@ public class QueueUtil {
      * @param <T> type of run
      * @return the run or null
      */
-    @Nullable
+    @CheckForNull
     @SuppressWarnings("unchecked")
-    public static <T extends Run> T getRun(@Nonnull Job job, final long queueId) {
+    public static <T extends Run> T getRun(@NonNull Job job, final long queueId) {
         try {
             return Iterables.find((Iterable<T>) job.getBuilds(), input ->  input != null && input.getQueueId() == queueId);
         } catch ( NoSuchElementException e ) {

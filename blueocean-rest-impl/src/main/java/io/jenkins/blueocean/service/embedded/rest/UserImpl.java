@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.google.common.collect.ImmutableMap;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.ExtensionList;
 import hudson.model.Item;
 import hudson.model.User;
@@ -24,7 +25,6 @@ import jenkins.model.ModifiableTopLevelItemGroup;
 import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Map;
 
@@ -48,14 +48,14 @@ public class UserImpl extends BlueUser {
 
     private final Reachable parent;
 
-    public UserImpl(@Nonnull BlueOrganization organization, @Nonnull User user, Reachable parent) {
+    public UserImpl(@NonNull BlueOrganization organization, @NonNull User user, Reachable parent) {
         this.parent = parent;
         this.user = user;
         this.organization = organization;
         organizationBase = getAccessControllerOrganization();
     }
 
-    public UserImpl(@Nonnull BlueOrganization organization, @Nonnull User user) {
+    public UserImpl(@NonNull BlueOrganization organization, @NonNull User user) {
         this(organization, user, null);
     }
 

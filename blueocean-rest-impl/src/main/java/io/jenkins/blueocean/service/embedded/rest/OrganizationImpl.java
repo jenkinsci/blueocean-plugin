@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.ExtensionList;
 import hudson.model.Action;
 import hudson.model.ItemGroup;
@@ -20,8 +21,6 @@ import jenkins.model.ModifiableTopLevelItemGroup;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.DELETE;
-
-import javax.annotation.Nonnull;
 
 /**
  * {@link BlueOrganization} implementation for the embedded use.
@@ -50,7 +49,7 @@ public class OrganizationImpl extends AbstractOrganization{
         return name;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ModifiableTopLevelItemGroup getGroup() {
         return group;
