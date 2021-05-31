@@ -2,6 +2,7 @@ package io.blueocean.ath.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,7 +40,7 @@ public class Folder {
 
     public Folder append(String ...folders) {
         List<String> newFolders = Stream.concat(this.folders.stream(), Arrays.stream(folders)).collect(Collectors.toList());
-        return new Folder(new ArrayList<>(newFolders));
+        return new Folder( Collections.unmodifiableList(new ArrayList<>( newFolders)));
     }
 
     public String getPath(String pipeline) {
