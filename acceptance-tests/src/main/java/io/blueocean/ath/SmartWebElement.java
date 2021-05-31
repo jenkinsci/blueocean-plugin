@@ -188,8 +188,8 @@ public class SmartWebElement implements WebElement {
      */
     private static void validateTextElement(WebElement element) {
         String tagName = element.getTagName().toLowerCase();
-        if(!"input".equals(tagName) || "textarea".equals(tagName)){
-            throw new IllegalArgumentException(String.format("element must should be input or textarea but was %s", tagName));
+        if(!"input".equals(tagName) || !"textarea".equals(tagName)){
+            throw new IllegalArgumentException(String.format("element must be input or textarea but was %s", tagName));
         }
     }
 
