@@ -39,8 +39,9 @@ public class Folder {
     }
 
     public Folder append(String ...folders) {
-        List<String> newFolders = Stream.concat(this.folders.stream(), Arrays.stream(folders)).collect(Collectors.toList());
-        return new Folder( Collections.unmodifiableList(new ArrayList<>( newFolders)));
+        List<String> newFolders = new ArrayList<>(this.folders);
+        newFolders.addAll(Arrays.asList(folders));
+        return new Folder(newFolders);
     }
 
     public String getPath(String pipeline) {
