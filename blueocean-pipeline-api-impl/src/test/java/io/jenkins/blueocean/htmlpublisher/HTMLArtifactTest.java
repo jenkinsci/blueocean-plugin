@@ -33,7 +33,7 @@ public class HTMLArtifactTest extends PipelineBaseTest {
         BluePipeline  bluePipeline = (BluePipeline) BluePipelineFactory.resolve(p);
         BlueArtifactContainer artifacts = bluePipeline.getLatestRun().getArtifacts();
 
-        Assert.assertEquals( 1, StreamSupport.stream(artifacts.spliterator(), false).count());
+        Assert.assertEquals(1, StreamSupport.stream(artifacts.spliterator(), false).count());
 
         BlueArtifact artifact = artifacts.iterator().next();
         Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/project/runs/1/artifacts/io.jenkins.blueocean.htmlpublisher.HTMLArtifact%253AMy%252520Cool%252520report/", artifact.getLink().getHref());
