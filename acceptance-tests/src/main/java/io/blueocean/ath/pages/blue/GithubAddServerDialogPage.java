@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 @Singleton
 public class GithubAddServerDialogPage implements WebDriverMixin {
-    private Logger logger = LoggerFactory.getLogger( GithubAddServerDialogPage.class);
+    private Logger logger = LoggerFactory.getLogger(GithubAddServerDialogPage.class);
 
     @Inject
     WaitUtil wait;
