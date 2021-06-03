@@ -28,7 +28,7 @@ public abstract class AbstractScm extends Scm {
     }
 
     protected HttpResponse createResponse(final String credentialId) {
-        return ( req, rsp, node ) -> {
+        return (req, rsp, node ) -> {
             rsp.setStatus(200);
             rsp.getWriter().print(JsonConverter.toJson( MapsHelper.of("credentialId", credentialId)));
         };
