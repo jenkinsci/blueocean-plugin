@@ -37,7 +37,7 @@ public class UserContainerImpl extends BlueUserContainer {
 
     @Override
     public BlueUser get(String name) {
-        User user = User.get( name, false, Collections.emptyMap());
+        User user = User.get(name, false, Collections.emptyMap());
         if (user==null)     return null;
         return new UserImpl(organization, user, this);
     }
