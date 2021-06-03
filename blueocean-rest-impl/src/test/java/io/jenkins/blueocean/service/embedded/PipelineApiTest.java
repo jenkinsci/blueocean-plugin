@@ -162,7 +162,7 @@ public class PipelineApiTest extends BaseTest {
         assertNotNull(response);
         assertEquals(0, ((List)response.get("classes")).size());
 
-        response = post( "/classes/", MapsHelper.of("q", Arrays.asList("blah12345", TestPipelineImpl.class.getName())));
+        response = post("/classes/", MapsHelper.of("q", Arrays.asList("blah12345", TestPipelineImpl.class.getName())));
         assertNotNull(response);
         Map cap = (Map) response.get("map");
         assertEquals(2, cap.size());
