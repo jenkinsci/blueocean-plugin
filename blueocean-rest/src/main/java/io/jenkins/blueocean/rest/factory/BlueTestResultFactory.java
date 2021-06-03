@@ -114,7 +114,7 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
     }
 
     public static Result resolve(Run<?,?> run, Reachable parent) {
-        Iterable<BlueTestResult> results = new ArrayList<>(0);//Collections.emptyList();
+        Iterable<BlueTestResult> results = new ArrayList<>(0);
         BlueTestSummary summary = new BlueTestSummary(0, 0, 0, 0, 0, 0, 0, //
                                                       parent == null ? null : parent.getLink());
         for (BlueTestResultFactory factory : allFactories()) {
