@@ -22,7 +22,7 @@ public abstract class BlueTrendFactory implements ExtensionPoint {
 
     public static Iterable<BlueTrend> getTrends(final BluePipeline pipeline, final Link parent) {
 
-        Stream<BlueTrend> stream = ExtensionList.lookup( BlueTrendFactory.class).stream()
+        Stream<BlueTrend> stream = ExtensionList.lookup(BlueTrendFactory.class).stream()
             .map(blueTrendFactory -> blueTrendFactory != null ? blueTrendFactory.getTrend(pipeline, parent) : null)
             .filter(Objects::nonNull);
         return IterableUtils.getIterable(stream);
