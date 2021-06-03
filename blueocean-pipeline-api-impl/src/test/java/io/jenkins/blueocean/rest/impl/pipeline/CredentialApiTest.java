@@ -89,9 +89,8 @@ public class CredentialApiTest extends PipelineBaseTest {
         CredentialsStore systemStore = system.getStore(j.getInstance());
         systemStore.addDomain(new Domain("domain1", null, null));
 
-        Map<String, Object> resp = post( "/organizations/jenkins/credentials/system/domains/domain1/credentials/",
-                                         MapsHelper.of( "credentials",
-                                                        new MapsHelper.Builder<String,Object>()
+        Map<String, Object> resp = post("/organizations/jenkins/credentials/system/domains/domain1/credentials/",
+                  MapsHelper.of("credentials", new MapsHelper.Builder<String,Object>()
                                 .put("privateKeySource", MapsHelper.of(
                                         "privateKey", "abcabc1212",
                                         "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
