@@ -73,7 +73,7 @@ public class ActionProxiesImpl extends BlueActionProxy {
      */
     public static Collection<BlueActionProxy> getActionProxies(List<? extends Action> actions, Reachable parent){
         if(isTreeRequest()){
-            return getActionProxies( actions, action -> false, parent );
+            return getActionProxies(actions, action -> false, parent );
         }
         return Collections.emptyList();
 
