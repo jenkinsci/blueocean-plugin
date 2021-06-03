@@ -15,7 +15,7 @@ import java.util.LinkedHashSet;
 public abstract class BlueIssueFactory implements ExtensionPoint {
 
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( BlueIssueFactory.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(BlueIssueFactory.class.getName());
     /**
      * @see #resolve(Job)
      * @param job job
