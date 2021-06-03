@@ -280,7 +280,7 @@ public class ClassicJobApi {
             }
         }
 
-        Optional<FolderJob> folderJobOptional = jenkins.getFolderJob( job);
+        Optional<FolderJob> folderJobOptional = jenkins.getFolderJob(job);
 
         if(folderJobOptional.isPresent()) {
             for (String s : folderJobOptional.get().getJobs().keySet()) {
@@ -303,4 +303,3 @@ public class ClassicJobApi {
         };
     }
 }
-
