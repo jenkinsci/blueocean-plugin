@@ -125,7 +125,7 @@ public class SSEClientRule extends ExternalResource {
 
         JSONObject req = new JSONObject()
             .put("dispatcherId", clientId)
-            .put("subscribe", new JSONArray( Collections.singletonList(
+            .put("subscribe", new JSONArray(Collections.singletonList(
                 new JSONObject().put("jenkins_org", "jenkins")
                                 .put("jenkins_channel", "job"))))
             .put("unsubscribe", new JSONArray());
