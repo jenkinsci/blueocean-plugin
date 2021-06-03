@@ -70,7 +70,7 @@ public class PipelineScmTest extends PipelineBaseTest {
         mp.setDisplayName("My MBP");
         new RequestBuilder(baseUrl)
                 .status(401)
-                .data( MapsHelper.of("content", MapsHelper.of("data", "Hello World Again!")))
+                .data(MapsHelper.of("content", MapsHelper.of("data", "Hello World Again!")))
                 .put("/organizations/jenkins/pipelines/mbp/scm/content").build(Map.class)
         ;
     }
