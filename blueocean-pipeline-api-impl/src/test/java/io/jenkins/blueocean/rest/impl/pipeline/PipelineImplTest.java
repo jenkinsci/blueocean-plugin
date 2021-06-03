@@ -26,7 +26,7 @@ public class PipelineImplTest extends PipelineBaseTest {
     @Test
     @Issue("JENKINS-55497")
     public void testPipelineRunSummaryHasChangeSet() throws Exception {
-        String jenkinsFile = IOUtils.toString(getClass().getResource( "singleScm.jenkinsfile"), StandardCharsets.UTF_8)
+        String jenkinsFile = IOUtils.toString(getClass().getResource("singleScm.jenkinsfile"), StandardCharsets.UTF_8)
             .replaceAll( "%REPO%", sampleRepo.toString());
 
         WorkflowJob p = j.createProject(WorkflowJob.class, "project");
