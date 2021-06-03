@@ -2185,7 +2185,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         List<Map<String, Object>> params = (List<Map<String, Object>>) input.get("parameters");
 
-        post( "/organizations/jenkins/pipelines/pipeline1/runs/1/steps/7/",
+        post("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/7/",
               MapsHelper.of("id", id,
                              PARAMETERS_ELEMENT,
                              MapsHelper.of(MapsHelper.of("name", params.get(0).get("name"), "value", "master"))
