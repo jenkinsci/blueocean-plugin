@@ -23,7 +23,7 @@ public class FavoritesApiTest extends BaseTest {
         new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/"+jobName+"/favorite/")
             .auth(username, password)
-            .data( Collections.singletonMap("favorite", true))
+            .data(Collections.singletonMap("favorite", true))
             .build(Map.class);
 
         return project;
