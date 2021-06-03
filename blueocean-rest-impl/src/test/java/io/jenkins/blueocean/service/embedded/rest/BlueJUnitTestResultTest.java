@@ -43,7 +43,7 @@ public class BlueJUnitTestResultTest {
 
         BlueRun test = BlueRunFactory.getRun(r, () -> new Link("test"));
 
-        Assert.assertEquals( 3, IterableUtils.size(test.getTests()));
+        Assert.assertEquals(3, IterableUtils.size(test.getTests()));
 
         BluePipelineNode node = mock(BluePipelineNode.class);
         when(node.getId()).thenReturn("6");
