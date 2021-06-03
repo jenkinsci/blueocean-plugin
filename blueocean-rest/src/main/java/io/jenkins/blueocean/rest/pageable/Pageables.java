@@ -9,8 +9,6 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.StreamSupport;
 
-import static io.jenkins.blueocean.rest.Utils.skip;
-
 /**
  * @author Kohsuke Kawaguchi
  */
