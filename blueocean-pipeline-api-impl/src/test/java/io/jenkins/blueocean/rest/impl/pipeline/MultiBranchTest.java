@@ -872,7 +872,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         Assert.assertEquals("xyz", ((Map)parameters.get(0).get("defaultParameterValue")).get("value"));
 
         resp = post("/organizations/jenkins/pipelines/p/branches/"+Util.rawEncode(branches[1])+"/runs/",
-                MapsHelper.of( "parameters",
+                MapsHelper.of("parameters",
                                Arrays.asList(MapsHelper.of( "name", "param1", "value", "abc" ) )
                 ), 200);
         Assert.assertEquals(branches[1], resp.get("pipeline"));
