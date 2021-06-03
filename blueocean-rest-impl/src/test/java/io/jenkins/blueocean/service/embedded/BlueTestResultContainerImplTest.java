@@ -135,7 +135,7 @@ public class BlueTestResultContainerImplTest extends BaseTest {
                 createTestResult(Status.FAILED, State.UNKNOWN, counter, 1),
                 createTestResult(Status.FAILED, State.UNKNOWN, counter, 3)
             );
-            return Result.of(results.stream().limit(testsToReturn).collect( Collectors.toList()));
+            return Result.of(results.stream().limit(testsToReturn).collect(Collectors.toList()));
         }
 
         private BlueTestResult createTestResult(Status status, State state, AtomicInteger counter, Integer age) {
