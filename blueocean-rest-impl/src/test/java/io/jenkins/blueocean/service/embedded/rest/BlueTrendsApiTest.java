@@ -37,7 +37,7 @@ public class BlueTrendsApiTest extends BaseTest {
 
     @Test
     public void getJUnitTrends() throws Exception {
-        URL resource = getClass().getResource( "BlueJUnitTestResultTest.jenkinsfile");
+        URL resource = getClass().getResource("BlueJUnitTestResultTest.jenkinsfile");
         String jenkinsFile = IOUtils.toString(resource, StandardCharsets.UTF_8);
         WorkflowJob p = j.createProject(WorkflowJob.class, "project");
         p.setDefinition(new CpsFlowDefinition(jenkinsFile, false));
