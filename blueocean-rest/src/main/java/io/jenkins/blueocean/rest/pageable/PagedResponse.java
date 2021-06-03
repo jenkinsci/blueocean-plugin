@@ -54,7 +54,7 @@ public @interface PagedResponse {
                     limit = DEFAULT_LIMIT;
                 }
 
-                Object[] page = StreamSupport.stream(Spliterators.spliteratorUnknownSize(resp.iterator( start, limit), Spliterator.SORTED), false)
+                Object[] page = StreamSupport.stream(Spliterators.spliteratorUnknownSize(resp.iterator(start, limit), Spliterator.SORTED), false)
                     .toArray();
                 String url = req.getOriginalRequestURI();
 
