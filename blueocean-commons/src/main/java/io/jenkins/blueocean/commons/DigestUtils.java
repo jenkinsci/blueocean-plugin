@@ -30,7 +30,7 @@ public class DigestUtils
     }
 
     public static String sha256(String original, Charset charset) {
-        sha256(original.getBytes(charset));
+        return sha256(original.getBytes(charset));
     }
 
     public static String sha256Hex(String original) {
