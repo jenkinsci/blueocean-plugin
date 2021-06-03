@@ -30,17 +30,7 @@ public class DigestUtils
     }
 
     public static String sha256(String original, Charset charset) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] encodedhash = digest.digest(original.getBytes(charset));
-            StringBuilder sb = new StringBuilder(2+encodedhash.length);
-            for(byte b:encodedhash){
-                sb.append(b);
-            }
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+        sha256(original.getBytes(charset));
     }
 
     public static String sha256Hex(String original) {
