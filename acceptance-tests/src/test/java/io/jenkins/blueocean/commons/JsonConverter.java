@@ -32,7 +32,7 @@ public class JsonConverter{
     }
 
     public static <T> T toJava(InputStream data, Class<T> type) {
-        return toJava( new InputStreamReader(data, StandardCharsets.UTF_8), type);
+        return toJava(new InputStreamReader(data, StandardCharsets.UTF_8), type);
     }
 
     public static <T> T toJava(Reader data, Class<T> type) {
