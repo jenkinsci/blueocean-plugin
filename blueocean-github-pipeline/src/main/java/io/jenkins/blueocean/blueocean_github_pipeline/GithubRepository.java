@@ -54,8 +54,8 @@ public class GithubRepository extends ScmRepository {
     @Override
     public Map<String, Boolean> getPermissions() {
         return MapsHelper.of("admin", ghRepository.hasAdminAccess(),
-                             "push", ghRepository.hasPushAccess(),
-                             "pull", ghRepository.hasPullAccess());
+                "push", ghRepository.hasPushAccess(),
+                "pull", ghRepository.hasPullAccess());
     }
 
     @Override
