@@ -30,7 +30,7 @@
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <java.level>8</java.level>
     <!-- when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions -->
-    <jenkins.version>2.222.4</jenkins.version>
+    <jenkins.version>2.277</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.12.0</frontend-version>
     <node.version>10.13.0</node.version>
@@ -491,7 +491,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pubsub-light</artifactId>
-            <version>1.13</version>
+            <version>1.14</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -837,30 +837,6 @@
             </activation>
             <build>
                 <plugins>
-
-                    <plugin>
-                        <groupId>io.jenkins.blueocean</groupId>
-                        <artifactId>blueocean-maven-plugin</artifactId>
-                        <version>0.0.2</version>
-                        <executions>
-                            <execution>
-                                <!-- unpack package.json + JS into node_modules for any deps with JS files -->
-                                <!-- NOTE: must use 'initialize' and be declared before frontend-plugin so this occurs before npm install -->
-                                <id>upstream-dependencies</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>process-node-dependencies</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>package</id>
-                                <goals>
-                                    <goal>package-blueocean-resources</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
