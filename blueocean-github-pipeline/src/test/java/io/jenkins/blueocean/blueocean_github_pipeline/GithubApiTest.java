@@ -48,7 +48,7 @@ public class GithubApiTest extends GithubMockBase {
 
         //now try validating again, it should return the same credentialId
         r = new RequestBuilder(baseUrl)
-                .data( MapsHelper.of("accessToken", accessToken))
+                .data(MapsHelper.of("accessToken", accessToken))
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .put("/organizations/jenkins/scm/github/validate/?apiUrl="+githubApiUrl)
