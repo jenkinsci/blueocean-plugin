@@ -152,7 +152,7 @@ public class GitScmTest extends PipelineBaseTest {
         User user = login();
         this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
-        Map resp = createCredentials( user, MapsHelper.of( "credentials", new MapsHelper.Builder<String,Object>()
+        Map resp = createCredentials(user, MapsHelper.of( "credentials", new MapsHelper.Builder<String,Object>()
                 .put("password", "abcd")
                 .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
                 .put("scope", "USER")
