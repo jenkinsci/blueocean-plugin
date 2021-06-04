@@ -89,10 +89,10 @@ public abstract class AbstractPipeline {
     }
 
     public String getUrl() {
-        return String.join( "",
-                            baseUrl,
-                            "/blue/organizations/jenkins/",
-                            UrlEscapers.urlFragmentEscaper().escape( getUrlPart()).replaceAll( "/", "%2F")
+        return String.join("",
+            baseUrl,
+            "/blue/organizations/jenkins/",
+            UrlEscapers.urlFragmentEscaper().escape(getUrlPart()).replaceAll("/", "%2F")
         );
     }
 
