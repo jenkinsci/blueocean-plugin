@@ -580,6 +580,20 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.10.9</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion> <!-- this system artifact is causing issue with Jenkins > 2.230, see JENKINS-61937 -->
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
         <!-- used in blueocean-pipeline-editor test -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
