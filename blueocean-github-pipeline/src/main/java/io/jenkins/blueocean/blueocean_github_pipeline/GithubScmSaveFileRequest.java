@@ -169,7 +169,7 @@ public class GithubScmSaveFileRequest{
                     repoName))
                     .withAuthorizationToken(accessToken)
                     .withBody(MapsHelper.of("ref", "refs/heads/" + content.getBranch(),
-                                             "sha", branch.commit.sha))
+                            "sha", branch.commit.sha))
                     .to(Map.class);
 
             //5. If request doesn't have sha get one from github

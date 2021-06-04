@@ -68,7 +68,7 @@ public class CredentialApi extends Resource {
         }
 
         CredentialsUtils.createCredentialsInUserStore(credentials, authenticatedUser, domainName,
-                                                      Collections.singletonList(new BlueOceanDomainSpecification()));
+                Collections.singletonList(new BlueOceanDomainSpecification()));
 
         CredentialsStoreAction.DomainWrapper domainWrapper = credentialStoreAction.getDomain(domainName);
 

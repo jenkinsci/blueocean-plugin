@@ -69,11 +69,10 @@ public class StageDurationTrend extends BlueTrend {
             }
 
             @Override
-            public Iterator<BlueTableRow> iterator()
-            {
+            public Iterator<BlueTableRow> iterator() {
                 return blueRunContainer == null
                     ? null
-                    : StreamSupport.stream( blueRunContainer.spliterator(), false ).
+                    : StreamSupport.stream(blueRunContainer.spliterator(), false ).
                         map(blueRun -> (BlueTableRow)new StageDurationTrendRow(blueRun)).iterator();
             }
         };

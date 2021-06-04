@@ -231,7 +231,7 @@ public class FlowNodeWrapper {
     }
 
     boolean isLoggable() {
-        return PipelineNodeUtil.isLoggable.test( node );
+        return PipelineNodeUtil.isLoggable.test(node);
     }
 
     public void setBlockErrorAction(ErrorAction blockErrorAction) {

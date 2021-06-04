@@ -59,7 +59,7 @@ public class GithubServerTest extends PipelineBaseTest {
             .status(400)
             .jwtToken(token)
             .crumb(crumb)
-            .data( MapsHelper.of(
+            .data(MapsHelper.of(
                 "name", "My Server",
                 "apiUrl", getApiUrlCustomPath("/notgithub")
             ))
@@ -282,7 +282,7 @@ public class GithubServerTest extends PipelineBaseTest {
         // Load the server entry
         server = request()
             .status(200)
-            .get( "/organizations/jenkins/scm/github-enterprise/servers/" +
+            .get("/organizations/jenkins/scm/github-enterprise/servers/" +
                       DigestUtils.sha256(getDefaultApiUrl()) + "/")
             .build(Map.class);
         Assert.assertEquals("My Server", server.get("name"));

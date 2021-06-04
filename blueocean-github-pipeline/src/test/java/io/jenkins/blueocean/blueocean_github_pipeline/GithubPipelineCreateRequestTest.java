@@ -91,7 +91,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
                 .crumb( this.crumb )
                 .post("/organizations/jenkins/pipelines/")
                 .data(MapsHelper.of("name", "pipeline1", "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
-                                      "scmConfig", MapsHelper.of("id", GithubScm.ID, "uri", githubApiUrl, "credentialId", credentialId,
+                        "scmConfig", MapsHelper.of("id", GithubScm.ID, "uri", githubApiUrl, "credentialId", credentialId,
                                 "config", MapsHelper.of("repoOwner", "cloudbeers", "repository", "PR-demo"))))
                 .build(Map.class);
         assertNotNull(r);

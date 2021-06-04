@@ -91,7 +91,7 @@ public class GithubIssueTest {
         Assert.assertEquals(2, resolved.size());
 
         Map<String, BlueIssue> issueMap = resolved.stream()
-            .collect( Collectors.toMap(BlueIssue::getId,blueIssue -> blueIssue));
+            .collect(Collectors.toMap(BlueIssue::getId,blueIssue -> blueIssue));
 
         BlueIssue issue123 = issueMap.get("#123");
         Assert.assertEquals("https://github.com/example/repo/issues/123", issue123.getURL());
