@@ -63,7 +63,7 @@ public class CommitMessagesTest extends BlueOceanAcceptanceTest {
         final String branchName = "master";
 
         URL jenkinsFile = getResourceURL("Jenkinsfile");
-        Files.copy( Paths.get(jenkinsFile.getFile()), new File(git.gitDirectory, "Jenkinsfile").toPath());
+        Files.copy(Paths.get(jenkinsFile.getFile()), new File(git.gitDirectory, "Jenkinsfile").toPath());
         git.addAll();
         git.commit("initial commit");
         logger.info("Committed Jenkinsfile");

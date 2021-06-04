@@ -210,8 +210,8 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
         try {
             if (bbCredentials == null) {
                 CredentialsUtils.createCredentialsInUserStore(
-                    credential, authenticatedUser, getDomainId(),
-                    Collections.singletonList(new BlueOceanDomainSpecification()));
+                        credential, authenticatedUser, getDomainId(),
+                        Collections.singletonList(new BlueOceanDomainSpecification()));
             } else {
                 CredentialsUtils.updateCredentialsInUserStore(
                         bbCredentials, credential, authenticatedUser, getDomainId(),

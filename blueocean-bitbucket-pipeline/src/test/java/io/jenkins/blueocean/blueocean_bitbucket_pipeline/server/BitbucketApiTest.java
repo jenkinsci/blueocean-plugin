@@ -183,10 +183,10 @@ public class BitbucketApiTest extends BbServerWireMock {
     @Test
     public void testCreateNewBranchOnExistingRepo(){
         BbBranch branch = api.getDefaultBranch("TESTP","pipeline-demo-test");
-        BbBranch newBranch = api.createBranch( "TESTP", "pipeline-demo-test",
-                                               MapsHelper.of( "name", "feature1",
-                                                              "startPoint", branch.getLatestCommit(),
-                                                              "message", "new branch"));
+        BbBranch newBranch = api.createBranch("TESTP", "pipeline-demo-test",
+                       MapsHelper.of("name", "feature1",
+                               "startPoint", branch.getLatestCommit(),
+                               "message", "new branch"));
         assertEquals("feature1", newBranch.getDisplayId());
         assertEquals(branch.getLatestCommit(), newBranch.getLatestCommit());
     }

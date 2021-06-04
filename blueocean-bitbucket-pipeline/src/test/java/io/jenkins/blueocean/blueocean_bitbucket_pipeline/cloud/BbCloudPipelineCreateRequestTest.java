@@ -23,9 +23,9 @@ public class BbCloudPipelineCreateRequestTest extends BbCloudWireMock {
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
                 .crumb( crumb )
                 .post("/organizations/jenkins/pipelines/")
-                .data( MapsHelper.of( "name", "pipeline1",
-                                      "$class", "io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest",
-                                      "scmConfig", MapsHelper.of( "id", BitbucketCloudScm.ID, "uri", apiUrl,
+                .data(MapsHelper.of("name", "pipeline1",
+                        "$class", "io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest",
+                        "scmConfig", MapsHelper.of( "id", BitbucketCloudScm.ID, "uri", apiUrl,
                                                                   "config", MapsHelper.of( "repoOwner", "vivektestteam", "repository", "pipeline-demo-test"))))
                 .build(Map.class);
         assertNotNull(r);

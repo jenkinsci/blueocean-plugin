@@ -48,7 +48,7 @@ public class RestartStageTest extends BlueOceanAcceptanceTest {
         final String pipelineName = "RestartStageTest";
         final String branchName = "master";
         URL jenkinsFile = RestartStageTest.class.getResource("RestartStageTest/Jenkinsfile");
-        Files.copy(new File( jenkinsFile.getFile()).toPath(), new File(git.gitDirectory, "Jenkinsfile").toPath());
+        Files.copy(new File(jenkinsFile.getFile()).toPath(), new File(git.gitDirectory, "Jenkinsfile").toPath());
 
         git.addAll();
         git.commit("Initial commit for " + pipelineName);

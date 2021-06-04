@@ -49,7 +49,7 @@ public class BitbucketServerEndpointSecuredTest
     public void createAndListFailAnonymous() throws Exception {
         HttpResponse<String> response = request()
             .crumb( crumb )
-            .data( MapsHelper.of(
+            .data(MapsHelper.of(
                 "name", "My Server",
                 "apiUrl", "https://foo.com/git/"
             ))
@@ -64,7 +64,7 @@ public class BitbucketServerEndpointSecuredTest
         HttpResponse<String> response = request()
             .crumb( crumb )
             .jwtToken( getJwtToken( j.jenkins, readUser.getId(), "pacific_ale") )
-            .data( MapsHelper.of(
+            .data(MapsHelper.of(
                 "name", "My Server",
                 "apiUrl", "https://foo.com/git/"
             ))
@@ -82,7 +82,7 @@ public class BitbucketServerEndpointSecuredTest
             .crumb( crumb )
             .jwtToken( getJwtToken( j.jenkins, writeUser.getId(), "pale_ale") )
             //.auth("read_user", "readonlymate")
-            .data( MapsHelper.of(
+            .data(MapsHelper.of(
                 "name", "",
                 "apiUrl", "https://foo.com/git/"
             ))

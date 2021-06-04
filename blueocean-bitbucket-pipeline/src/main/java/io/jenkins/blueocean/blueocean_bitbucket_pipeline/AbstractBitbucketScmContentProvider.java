@@ -90,7 +90,7 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
     }
 
     @Override
-    public Object saveContent( @NonNull StaplerRequest staplerRequest, @NonNull Item item) {
+    public Object saveContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item) {
         JSONObject body;
         try {
             body = JSONObject.fromObject(IOUtils.toString(staplerRequest.getReader()));

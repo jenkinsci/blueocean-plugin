@@ -45,8 +45,8 @@ public class StartStopTest extends BlueOceanAcceptanceTest {
         final String secondBranch = "second-branch";
 
         URL navTestJenkinsfile = ParallelNavigationTest.class.getResource("StartStopTest/Jenkinsfile");
-        Files.copy( new File(navTestJenkinsfile.getFile()).toPath(),
-                    new File(git.gitDirectory, "Jenkinsfile").toPath());
+        Files.copy(new File(navTestJenkinsfile.getFile()).toPath(),
+                new File(git.gitDirectory, "Jenkinsfile").toPath());
         git.addAll();
         git.commit("Initial commit of Jenkinsfile");
         logger.info("Committed Jenkinsfile");

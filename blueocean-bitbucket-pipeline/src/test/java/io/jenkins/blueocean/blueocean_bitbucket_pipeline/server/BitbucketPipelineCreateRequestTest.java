@@ -37,7 +37,7 @@ public class BitbucketPipelineCreateRequestTest extends BbServerWireMock {
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
             .crumb( crumb )
             .post("/organizations/jenkins/pipelines/")
-            .data( MapsHelper.of(
+            .data(MapsHelper.of(
                 "name", "pipeline1",
                 "$class", "io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest",
                 "scmConfig", MapsHelper.of(
@@ -87,7 +87,7 @@ public class BitbucketPipelineCreateRequestTest extends BbServerWireMock {
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
                 .crumb( crumb )
                 .post("/organizations/jenkins/pipelines/")
-                .data( MapsHelper.of(
+                .data(MapsHelper.of(
                     "name", "pipeline1",
                     "$class", "io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest",
                     "scmConfig", MapsHelper.of(
@@ -113,7 +113,7 @@ public class BitbucketPipelineCreateRequestTest extends BbServerWireMock {
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
             .crumb( crumb )
             .post("/organizations/jenkins/pipelines/")
-            .data( MapsHelper.of(
+            .data(MapsHelper.of(
                 "name", "pipeline1",
                 "$class", "io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest",
                 "scmConfig", MapsHelper.of(

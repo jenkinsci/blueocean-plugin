@@ -72,9 +72,9 @@ public abstract class BitbucketWireMockBase extends PipelineBaseTest{
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .put("/organizations/jenkins/scm/"+ scmId+"/validate/")
-                .data( MapsHelper.of( "apiUrl", apiUrl,
-                                      "userName", getUserName(),
-                                      "password", getPassword()));
+                .data(MapsHelper.of("apiUrl", apiUrl,
+                        "userName", getUserName(),
+                        "password", getPassword()));
 
         Map r = builder.build(Map.class);
 
