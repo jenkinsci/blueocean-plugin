@@ -144,7 +144,7 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
     @Override
     public GithubServer get(final String encodedApiUrl) {
         Endpoint endpoint = IterableUtils.find( GitHubConfiguration.get().getEndpoints(), input ->
-            input != null && encodedApiUrl.equals( DigestUtils.sha256(input.getApiUri())), null);
+            input != null && encodedApiUrl.equals(DigestUtils.sha256(input.getApiUri())), null);
         if (endpoint == null) {
             throw new ServiceException.NotFoundException("not found");
         }
