@@ -137,11 +137,11 @@ public class GitScmTest extends PipelineBaseTest {
         String credentialId = (String) resp.get("id");
         Assert.assertNotNull(credentialId);
 
-        post( "/organizations/" + getOrgName() + "/pipelines/",
-              MapsHelper.of( "name", "demo",
-                             "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                             "scmConfig", MapsHelper.of("uri", "git@github.com:vivek/capability-annotation.git",
-                                                         "credentialId", credentialId)
+        post("/organizations/" + getOrgName() + "/pipelines/",
+              MapsHelper.of("name", "demo",
+                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                         "scmConfig", MapsHelper.of("uri", "git@github.com:vivek/capability-annotation.git",
+                                 "credentialId", credentialId)
                 ), 400);
 
     }
