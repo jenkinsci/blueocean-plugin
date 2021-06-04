@@ -119,7 +119,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
     @After
     public void tearDown() {
         if (!perTestStubMappings.isEmpty()) {
-            perTestStubMappings.forEach( mapping -> githubApi.removeStub( mapping));
+            perTestStubMappings.forEach( mapping -> githubApi.removeStub(mapping));
             perTestStubMappings.clear();
         }
         githubApi.resetAll();
