@@ -164,7 +164,7 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
             logger.info("SauceOnDemandSessionID=" + ((RemoteWebDriver) LocalDriver.getDriver()).getSessionId().toString());
         }
         String buildName = System.getenv("BUILD_TAG");
-        if ( StringUtils.isEmpty( buildName)) {
+        if (StringUtils.isEmpty(buildName)) {
             buildName = System.getenv("SAUCE_BUILD_NAME");
         }
         if (StringUtils.isEmpty(buildName)) {
