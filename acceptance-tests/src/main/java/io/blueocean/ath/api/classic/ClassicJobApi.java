@@ -91,7 +91,7 @@ public class ClassicJobApi {
     public void createFreeStyleJob(FolderJob folder, String jobName, String command) throws IOException {
         deletePipeline(folder, jobName);
         URL url = this.getClass().getResource("freestyle.xml");
-        jenkins.createJob( folder, jobName, IOUtils.toString( url, StandardCharsets.UTF_8).replace( "{{command}}", command), true);
+        jenkins.createJob(folder, jobName, IOUtils.toString(url, StandardCharsets.UTF_8).replace( "{{command}}", command), true);
         LOGGER.info( "Created freestyle job "+ jobName);
     }
 
