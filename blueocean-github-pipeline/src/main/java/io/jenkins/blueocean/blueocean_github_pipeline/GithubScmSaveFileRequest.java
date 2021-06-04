@@ -168,7 +168,7 @@ public class GithubScmSaveFileRequest{
                     owner,
                     repoName))
                     .withAuthorizationToken(accessToken)
-                    .withBody( MapsHelper.of("ref", "refs/heads/" + content.getBranch(),
+                    .withBody(MapsHelper.of("ref", "refs/heads/" + content.getBranch(),
                                              "sha", branch.commit.sha))
                     .to(Map.class);
 
