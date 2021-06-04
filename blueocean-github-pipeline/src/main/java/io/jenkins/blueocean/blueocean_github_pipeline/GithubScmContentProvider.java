@@ -139,7 +139,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
     public boolean support(@Nonnull Item item) {
         if (isItemUsingGithubScm(item)) {
             String apiUrl = getApiUrl(item);
-            return apiUrl == null || apiUrl.startsWith( GitHubSCMSource.GITHUB_URL );
+            return apiUrl == null || apiUrl.startsWith(GitHubSCMSource.GITHUB_URL );
         }
         return false;
     }
@@ -240,4 +240,3 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
         }
     }
 }
-
