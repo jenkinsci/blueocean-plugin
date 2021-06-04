@@ -141,7 +141,7 @@ public class GitScmTest extends PipelineBaseTest {
               MapsHelper.of("name", "demo",
                 "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                 "scmConfig", MapsHelper.of("uri", "git@github.com:vivek/capability-annotation.git",
-                                 "credentialId", credentialId)
+                                          "credentialId", credentialId)
                 ), 400);
 
     }
@@ -169,7 +169,7 @@ public class GitScmTest extends PipelineBaseTest {
               MapsHelper.of("name", "demo",
                     "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                     "scmConfig", MapsHelper.of("uri", "git@github.com:vivek/capability-annotation.git",
-                                            "credentialId", credentialId)
+                               "credentialId", credentialId)
                 ), 400);
 
     }
@@ -182,8 +182,8 @@ public class GitScmTest extends PipelineBaseTest {
 
         post("/organizations/" + getOrgName() + "/pipelines/",
               MapsHelper.of("name", "demo",
-                            "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                            "scmConfig", MapsHelper.of("uri", "/sdsd/sdsd/sdsd")
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", MapsHelper.of("uri", "/sdsd/sdsd/sdsd")
                 ), 400);
 
     }
@@ -192,8 +192,8 @@ public class GitScmTest extends PipelineBaseTest {
     @Test
     public void shouldFailForBadCredentialIdOnCreate() throws IOException, UnirestException {
         User user = login();
-        Map resp = createCredentials(user, MapsHelper.of( "credentials",
-                    new MapsHelper.Builder<String,Object>()
+        Map resp = createCredentials(user, MapsHelper.of("credentials",
+                new MapsHelper.Builder<String,Object>()
                         .put("privateKeySource", MapsHelper.of(
                             "privateKey", "abcabc1212",
                             "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
@@ -316,7 +316,7 @@ public class GitScmTest extends PipelineBaseTest {
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data( MapsHelper.of( "name", "demo",
                                       "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                                      "scmConfig", MapsHelper.of( "uri", sampleRepo.fileUrl())
+                                      "scmConfig", MapsHelper.of("uri", sampleRepo.fileUrl())
                 ))
                 .build(Map.class);
 
@@ -358,7 +358,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map<String,Object> resp = post("/organizations/" + getOrgName() + "/pipelines/",
                                         MapsHelper.of("name", "demo",
                                                       "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                                                      "scmConfig", MapsHelper.of( "uri", sampleRepo.fileUrl(), "credentialId", "sdsdsd")
+                                                      "scmConfig", MapsHelper.of("uri", sampleRepo.fileUrl(), "credentialId", "sdsdsd")
                 ), 400);
         List<Map<String,String>> errors = (List<Map<String,String>>) resp.get("errors");
 
