@@ -121,11 +121,11 @@ public class GitScmTest extends PipelineBaseTest {
         User user = login();
         this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
-        Map resp = createCredentials( user, MapsHelper.of("credentials",
-                                                           new MapsHelper.Builder<String,Object>()
+        Map resp = createCredentials(user, MapsHelper.of("credentials",
+                new MapsHelper.Builder<String,Object>()
                         .put( "privateKeySource", MapsHelper.of(
-                            "privateKey", "abcabc1212",
-                            "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
+                                "privateKey", "abcabc1212",
+                                "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
                         .put("passphrase", "ssh2")
                         .put("scope", "USER")
                         .put("domain","blueocean-git-domain")
