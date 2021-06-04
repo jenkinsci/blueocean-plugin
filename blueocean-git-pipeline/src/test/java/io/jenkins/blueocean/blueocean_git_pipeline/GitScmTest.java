@@ -314,7 +314,7 @@ public class GitScmTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
                 .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
-                .data( MapsHelper.of( "name", "demo",
+                .data(MapsHelper.of( "name", "demo",
                                       "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                                       "scmConfig", MapsHelper.of("uri", sampleRepo.fileUrl())
                 ))
@@ -507,9 +507,9 @@ public class GitScmTest extends PipelineBaseTest {
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/" + getOrgName() + "/pipelines/")
-                .data(MapsHelper.of( "name", "demo",
-                                     "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                                     "scmConfig", MapsHelper.of("uri", sampleRepo.fileUrl()))).build(Map.class);
+                .data(MapsHelper.of("name", "demo",
+                                    "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                                    "scmConfig", MapsHelper.of("uri", sampleRepo.fileUrl()))).build(Map.class);
 
         assertEquals("demo", resp.get("name"));
         Item item = getOrgRoot().getItem("demo");
