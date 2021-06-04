@@ -141,7 +141,7 @@ public class GitScmTest extends PipelineBaseTest {
                 MapsHelper.of("name", "demo",
                     "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                     "scmConfig", MapsHelper.of("uri", "git@github.com:vivek/capability-annotation.git",
-                            "\$class""credentialId", credentialId)
+                            "credentialId", credentialId)
                 ), 400);
 
     }
