@@ -106,10 +106,10 @@ public class GitScmTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
-                .data(MapsHelper.of("name","demo",
-                                     "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                                     "scmConfig", MapsHelper.of("uri", HTTPS_GITHUB_NO_JENKINSFILE,
-                                                                  "credentialId", credentialId)
+                .data(MapsHelper.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", MapsHelper.of("uri", HTTPS_GITHUB_NO_JENKINSFILE,
+                                "credentialId", credentialId)
                 )).build(Map.class);
 
         assertEquals("demo", r.get("name"));
