@@ -33,4 +33,17 @@ public class IterableUtils
         }
         return stream::iterator;
     }
+
+    public static <T> int size(Iterable<? extends T> iterable) {
+        if (iterable == null) {
+            return 0;
+        }
+        return (int)StreamSupport.stream(iterable.spliterator(), false).count();
+    }
+
+    public static <T> Iterable<T> chainedIterable(Iterable<? extends T> iterable1, Iterable<? extends T> iterable2) {
+        return getIterable(Stream.concat(
+            StreamSupport.stream(iterable1.spliterator(), false),
+            StreamSupport.stream(iterable2.spliterator(), false)));
+    }
 }

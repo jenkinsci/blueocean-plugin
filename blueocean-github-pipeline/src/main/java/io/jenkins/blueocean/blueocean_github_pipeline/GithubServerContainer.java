@@ -13,8 +13,6 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.apache.commons.collections4.ComparatorUtils;
-import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
 import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
@@ -25,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -154,8 +153,9 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
     @Override
     public Iterator<ScmServerEndpoint> iterator() {
         List<Endpoint> copy = new ArrayList<>(GitHubConfiguration.get().getEndpoints());
-        copy.sort((o1, o2) -> ComparatorUtils.NATURAL_COMPARATOR.compare(o1.getName(), o2.getName()));
-        return copy.stream().map(endpoint -> (ScmServerEndpoint)new GithubServer(endpoint, getLink())).iterator();
+        return copy.stream()
+            .sorted((o1, o2) -> Comparator.<String>naturalOrder().compare(o1.getName(), o2.getName()))
+            .map(endpoint -> (ScmServerEndpoint)new GithubServer(endpoint, getLink())).iterator();
     }
 
     private String discardQueryString(String apiUrl) {
@@ -166,6 +166,8 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
     }
 
     private GithubServer findByName(final String name) {
-        return (GithubServer)IteratorUtils.find(iterator(), scmServerEndpoint -> scmServerEndpoint.getName().equals( name));
+        return (GithubServer)IterableUtils.find(this,
+            scmServerEndpoint -> scmServerEndpoint.getName().equals(name),
+            null);
     }
 }

@@ -4,11 +4,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Run;
+import io.jenkins.blueocean.commons.IterableUtils;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
-import org.apache.commons.collections4.IterableUtils;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

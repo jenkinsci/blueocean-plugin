@@ -1,11 +1,11 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.Run;
+import io.jenkins.blueocean.commons.IterableUtils;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;

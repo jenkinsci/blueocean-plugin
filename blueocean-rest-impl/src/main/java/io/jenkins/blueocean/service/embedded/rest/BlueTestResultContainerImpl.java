@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import hudson.model.Run;
+import io.jenkins.blueocean.commons.IterableUtils;
 import io.jenkins.blueocean.commons.ServiceException.BadRequestException;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.rest.Reachable;
@@ -12,7 +13,6 @@ import io.jenkins.blueocean.rest.model.BlueTestResult;
 import io.jenkins.blueocean.rest.model.BlueTestResult.State;
 import io.jenkins.blueocean.rest.model.BlueTestResult.Status;
 import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
-import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -42,8 +42,9 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
         if (resolved.summary == null || resolved.results == null) {
             throw new NotFoundException("no tests");
         }
-        BlueTestResult testResult = IterableUtils.find(resolved.results, //
-                                                       blueTestResult -> blueTestResult != null && blueTestResult.getId().equals(name));
+        BlueTestResult testResult = IterableUtils.find(resolved.results,
+             blueTestResult -> blueTestResult != null && blueTestResult.getId().equals(name),
+            null);
         if (testResult == null) {
             throw new NotFoundException("not found");
         }

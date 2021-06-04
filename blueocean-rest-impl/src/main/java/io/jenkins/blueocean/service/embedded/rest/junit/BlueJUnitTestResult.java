@@ -9,13 +9,13 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
-import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
@@ -144,8 +144,9 @@ public class BlueJUnitTestResult extends BlueTestResult {
             testsToTransform.addAll(action.getPassedTests());
 
             return
-                Result.of(IterableUtils.transformedIterable(testsToTransform,
-                                                            caseResult -> new BlueJUnitTestResult(caseResult, parent.getLink())));
+                Result.of(testsToTransform.stream()
+                    .map(caseResult -> new BlueJUnitTestResult(caseResult, parent.getLink()))
+                    .collect(Collectors.toList()));
         }
     }
 

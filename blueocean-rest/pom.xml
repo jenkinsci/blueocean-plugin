@@ -23,10 +23,6 @@
           <groupId>io.jenkins.blueocean.rest.annotation</groupId>
           <artifactId>capability-annotation</artifactId>
       </dependency>
-      <dependency>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-collections4</artifactId>
-      </dependency>
   </dependencies>
 
     <build>
