@@ -38,7 +38,7 @@ public class MultiBranchPipeline extends AbstractPipeline {
     }
 
 
-    public Predicate<List<JSONObject>> buildsFinished = list -> SSEEvents.activityComplete(getFolder().getPath( getName())).test(list);
+    public Predicate<List<JSONObject>> buildsFinished = list -> SSEEvents.activityComplete(getFolder().getPath(getName())).test(list);
 
     public MultiBranchPipeline buildBranch(String branch) throws IOException {
         jobApi.buildBranch(getFolder(), getName(), branch);
