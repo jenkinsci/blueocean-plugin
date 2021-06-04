@@ -38,7 +38,6 @@
     <powermock.version>2.0.7</powermock.version>
     <hamcrest.version>2.2</hamcrest.version>
     <mockito.version>3.10.0</mockito.version>
-    <guava.version>18.0</guava.version>
     <jacoco.version>0.8.6</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
@@ -443,11 +442,6 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-display-url</artifactId>
             <version>2.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>io.jenkins.plugins</groupId>
