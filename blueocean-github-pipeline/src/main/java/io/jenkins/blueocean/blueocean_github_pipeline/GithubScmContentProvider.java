@@ -130,7 +130,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
         String owner = scmParamsFromItem.getOwner();
         String repo = scmParamsFromItem.getRepo();
         String accessToken = scmParamsFromItem.getCredentials().getPassword().getPlainText();
-        Objects.requireNonNull(scmParamsFromItem.getApiUrl(), String.format( "Project %s is not setup with Github api URL", item.getFullName()));
+        Objects.requireNonNull(scmParamsFromItem.getApiUrl(), String.format("Project %s is not setup with Github api URL", item.getFullName()));
         return githubRequest.save(scmParamsFromItem.getApiUrl(), owner, repo, accessToken);
     }
 
