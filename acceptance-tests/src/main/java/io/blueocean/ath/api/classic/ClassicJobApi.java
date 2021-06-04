@@ -18,7 +18,7 @@ import io.blueocean.ath.JenkinsUser;
 import io.blueocean.ath.model.AbstractPipeline;
 import io.blueocean.ath.model.Folder;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpResponseException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
