@@ -43,7 +43,7 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
     @Test
     public void validateGithubTokenApiUrlRequired() throws UnirestException {
         Map r = new RequestBuilder(baseUrl)
-            .data( MapsHelper.of("accessToken", accessToken))
+            .data(MapsHelper.of("accessToken", accessToken))
             .status(400)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
             .put("/organizations/jenkins/scm/github-enterprise/validate")
