@@ -79,7 +79,7 @@ public class AthModule extends AbstractModule {
             }
             capability.setCapability("extendedDebugging", "true");
             capability.setCapability("initialBrowserUrl", launchUrl);
-            if (StringUtils.isBlank(cfg.getString("TUNNEL_IDENTIFIER"))) {
+            if (!StringUtils.isBlank(cfg.getString("TUNNEL_IDENTIFIER"))) {
                 capability.setCapability("tunnelIdentifier", cfg.getString("TUNNEL_IDENTIFIER"));
             }
 
