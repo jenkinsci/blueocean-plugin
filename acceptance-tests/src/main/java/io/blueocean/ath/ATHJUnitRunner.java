@@ -123,7 +123,7 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
 
                 byte[] screenshot =  Base64.getMimeDecoder().decode(se.getBase64EncodedScreenshot());
 
-                Files.createDirectories(file.toPath());
+                Files.createDirectories(file.getParentFile().toPath());
                 Files.write(file.toPath(), screenshot);
                 logger.info("Wrote screenshot to " + file.getAbsolutePath());
                 fromException = true;
