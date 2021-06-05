@@ -38,6 +38,14 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>apache-httpcomponents-client-4-api</artifactId>
         </dependency>
+
+        <!-- FIXME removed once Guava has been removed from Jira plugin -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.1.1-jre</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
