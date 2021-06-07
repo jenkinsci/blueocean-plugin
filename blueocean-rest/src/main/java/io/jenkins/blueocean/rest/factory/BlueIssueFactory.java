@@ -1,26 +1,21 @@
 package io.jenkins.blueocean.rest.factory;
 
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Job;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.rest.model.BlueIssue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class BlueIssueFactory implements ExtensionPoint {
 
 
-    private static final Logger LOGGER = Logger.getLogger(BlueIssueFactory.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(BlueIssueFactory.class.getName());
     /**
      * @see #resolve(Job)
      * @param job job
@@ -44,7 +39,7 @@ public abstract class BlueIssueFactory implements ExtensionPoint {
      * @return issues representing this job
      */
     public static Collection<BlueIssue> resolve(Job job) {
-        LinkedHashSet<BlueIssue> allIssues = Sets.newLinkedHashSet();
+        LinkedHashSet<BlueIssue> allIssues = new LinkedHashSet();
         for (BlueIssueFactory factory : ExtensionList.lookup(BlueIssueFactory.class)) {
             try {
                 Collection<BlueIssue> issues = factory.getIssues(job);
@@ -53,7 +48,7 @@ public abstract class BlueIssueFactory implements ExtensionPoint {
                 }
                 allIssues.addAll(issues);
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING,"Unable to fetch issues for job " + e.getMessage(), e);
+                LOGGER.warn("Unable to fetch issues for job " + e.getMessage(), e);
             }
         }
         return allIssues;
@@ -66,7 +61,7 @@ public abstract class BlueIssueFactory implements ExtensionPoint {
      * @return issues representing the change
      */
     public static Collection<BlueIssue> resolve(ChangeLogSet.Entry changeSetEntry) {
-        LinkedHashSet<BlueIssue> allIssues = Sets.newLinkedHashSet();
+        LinkedHashSet<BlueIssue> allIssues = new LinkedHashSet();
         for (BlueIssueFactory factory : ExtensionList.lookup(BlueIssueFactory.class)) {
             try {
                 Collection<BlueIssue> issues = factory.getIssues(changeSetEntry);
@@ -75,7 +70,7 @@ public abstract class BlueIssueFactory implements ExtensionPoint {
                 }
                 allIssues.addAll(issues);
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING,"Unable to fetch issues for changeSetEntry " + e.getMessage(), e);
+                LOGGER.warn("Unable to fetch issues for changeSetEntry " + e.getMessage(), e);
             }
         }
         return allIssues;

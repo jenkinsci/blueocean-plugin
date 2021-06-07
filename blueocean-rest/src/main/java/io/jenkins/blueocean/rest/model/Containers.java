@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.model;
 
-import com.google.common.collect.ImmutableMap;
 import hudson.util.AdaptedIterator;
 import io.jenkins.blueocean.rest.hal.Link;
 
@@ -39,7 +38,7 @@ public class Containers {
             @Override
             public Iterator<T> iterator(int start, int limit) {
                 if (start >= base.size()) {
-                    return Collections.<T>emptyList().iterator();
+                    return Collections.emptyIterator();
                 }
                 int end = start+limit;
                 if (end > base.size()) {
@@ -117,9 +116,7 @@ public class Containers {
 
             @Override
             public T get(String name) {
-                T u = base.get(name);
-                if (u==null)    return null;
-                return u;
+                return base.get(name);
             }
 
             @Override
@@ -130,6 +127,6 @@ public class Containers {
     }
 
     public static <T extends Resource> Container<T> empty(Link self) {
-        return Containers.fromResourceMap(self, ImmutableMap.<String, T>of());
+        return Containers.fromResourceMap(self, Collections.emptyMap());
     }
 }

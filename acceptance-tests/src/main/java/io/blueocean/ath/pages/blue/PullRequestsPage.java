@@ -7,7 +7,6 @@ import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.factory.ActivityPageFactory;
 import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
 import io.blueocean.ath.model.AbstractPipeline;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.annotations.Nullable;
 import org.junit.Assert;
 import org.openqa.selenium.By;
@@ -15,11 +14,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import javax.inject.Inject;
 
 public class PullRequestsPage implements WebDriverMixin {
-    private Logger logger = Logger.getLogger(PullRequestsPage.class);
+    private Logger logger = LoggerFactory.getLogger(PullRequestsPage.class);
 
     private WebDriver driver;
     private AbstractPipeline pipeline;

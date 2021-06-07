@@ -1,8 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.AfterClass;
@@ -14,6 +13,7 @@ import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -36,8 +36,8 @@ public class RunMultiThreadLoadTest
     @Test
     public void load_runs_multi_threaded() throws Exception {
 
-        URL resource = Resources.getResource( getClass(), "RunMultiThreadLoadTest.jenkinsfile");
-        String jenkinsFile = Resources.toString( resource, Charsets.UTF_8);
+        URL resource = getClass().getResource("RunMultiThreadLoadTest.jenkinsfile");
+        String jenkinsFile = IOUtils.toString(resource, StandardCharsets.UTF_8);
         WorkflowJob p = j.createProject( WorkflowJob.class, "project1");
         p.setDefinition(new CpsFlowDefinition( jenkinsFile, false));
         p.save();
@@ -56,8 +56,8 @@ public class RunMultiThreadLoadTest
     @Issue( "JENKINS-52101" )
     public void load_runs_multi_threaded_no_runs() throws Exception {
 
-        URL resource = Resources.getResource( getClass(), "RunMultiThreadLoadTest.jenkinsfile");
-        String jenkinsFile = Resources.toString( resource, Charsets.UTF_8);
+        URL resource = getClass().getResource("RunMultiThreadLoadTest.jenkinsfile");
+        String jenkinsFile = IOUtils.toString(resource, StandardCharsets.UTF_8);
         WorkflowJob p = j.createProject( WorkflowJob.class, "project2");
         p.setDefinition(new CpsFlowDefinition( jenkinsFile, false));
         p.save();

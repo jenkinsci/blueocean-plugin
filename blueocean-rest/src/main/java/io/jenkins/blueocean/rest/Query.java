@@ -1,9 +1,9 @@
 package io.jenkins.blueocean.rest;
 
-import com.google.common.collect.ImmutableMap;
 import io.jenkins.blueocean.commons.ServiceException;
 import org.apache.commons.beanutils.Converter;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +27,7 @@ public class Query {
 
     private Query(String type, Map<String, String> values) {
         this.type = type;
-        this.params = (values == null) ? ImmutableMap.<String, String>of() : ImmutableMap.copyOf(values);
+        this.params = (values == null) ? Collections.emptyMap() : Collections.unmodifiableMap(new HashMap<>(values));
     }
 
     public String param(String key){

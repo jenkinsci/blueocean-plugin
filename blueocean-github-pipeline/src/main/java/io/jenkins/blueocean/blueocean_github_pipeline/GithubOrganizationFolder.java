@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import com.google.common.collect.Iterables;
 import hudson.Extension;
+import io.jenkins.blueocean.commons.IterableUtils;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.OrganizationFolderPipelineImpl;
@@ -64,7 +64,7 @@ public class GithubOrganizationFolder  extends OrganizationFolderPipelineImpl {
     public static class OrganizationFolderFactoryImpl extends OrganizationFolderFactory {
         @Override
         protected OrganizationFolderPipelineImpl getFolder(jenkins.branch.OrganizationFolder folder, Reachable parent, BlueOrganization organization) {
-            SCMNavigator navigator = Iterables.getFirst(folder.getNavigators(), null);
+            SCMNavigator navigator = IterableUtils.getFirst(folder.getNavigators(), null);
             return GitHubSCMNavigator.class.isInstance(navigator) ? new GithubOrganizationFolder(organization, folder, parent.getLink()) : null;
         }
     }

@@ -4,19 +4,17 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Date;
-import java.util.concurrent.ExecutionException;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.apache.commons.lang.BooleanUtils;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.export.Exported;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 import hudson.model.Action;
 import hudson.model.CauseAction;
@@ -55,7 +53,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
     private static final Logger LOGGER = LoggerFactory.getLogger( AbstractRunImpl.class.getName());
 
     private static final long TEST_SUMMARY_CACHE_MAX_SIZE = Long.getLong("TEST_SUMMARY_CACHE_MAX_SIZE", 10000);
-    private static final Cache<String, Optional<BlueTestSummary>> TEST_SUMMARY = CacheBuilder.newBuilder()
+    private static final Cache<String, BlueTestSummary> TEST_SUMMARY = Caffeine.newBuilder()
         .maximumSize(TEST_SUMMARY_CACHE_MAX_SIZE)
         .expireAfterAccess(1, TimeUnit.DAYS)
         .build();
@@ -237,20 +235,16 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueTestSummary getBlueTestSummary() {
-        BlueTestSummary blueTestSummary = null;
-        if (getStateObj() == BlueRunState.FINISHED) {
-            try {
-                blueTestSummary =  TEST_SUMMARY.get(run.getExternalizableId(),  () -> {
-                                            LOGGER.debug( "load test summary {} thread {}", //
-                                                          run.getExternalizableId(), //
-                                                          Thread.currentThread().getName() );
-                                            BlueTestSummary summary = BlueTestResultFactory.resolve(run, parent).summary;
-                                            return summary == null ? Optional.absent() : Optional.of(summary);
-                                        }
-                ).orNull();
-            } catch (ExecutionException e) {
-                LOGGER.error("Could not load test summary from cache", e);
-            }
+        BlueTestSummary blueTestSummary;
+        if (getStateObj() == BlueRunState.FINISHED && run != null) {
+            blueTestSummary = TEST_SUMMARY.get(run.getExternalizableId(), s -> {
+                                        LOGGER.debug( "load test summary {} thread {}", //
+                                                      run.getExternalizableId(), //
+                                                      Thread.currentThread().getName() );
+                                        BlueTestSummary summary = BlueTestResultFactory.resolve(run, parent).summary;
+                                        return summary;
+                                    }
+            );
         } else {
             blueTestSummary =  BlueTestResultFactory.resolve(run, this).summary;
         }
@@ -262,7 +256,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
             return new BlueTestSummary(0,0,0,0,0,0,0,this.getLink());
         }
         Link link = this.getLink().rel("blueTestSummary");
-        blueTestSummary.setLink( link );
+        blueTestSummary.setLink(link);
         return blueTestSummary;
     }
 
@@ -389,7 +383,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
         }
 
         static Collection<BlueCause> getCauses(Collection<hudson.model.Cause> causes) {
-            return causes.stream().map( input -> new BlueCauseImpl(input)).collect(Collectors.toList());
+            return causes.stream().map(BlueCauseImpl::new).collect(Collectors.toList());
         }
     }
 }

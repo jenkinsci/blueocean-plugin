@@ -5,17 +5,18 @@ import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.Login;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.pages.blue.DashboardPage;
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import javax.inject.Inject;
 import java.io.IOException;
+
 @Login
 @RunWith(ATHJUnitRunner.class)
 public class FavoritesTest {
-    private Logger logger = Logger.getLogger(FavoritesTest.class);
+    private Logger logger = LoggerFactory.getLogger(FavoritesTest.class);
     @Inject
     DashboardPage dashboardPage;
 

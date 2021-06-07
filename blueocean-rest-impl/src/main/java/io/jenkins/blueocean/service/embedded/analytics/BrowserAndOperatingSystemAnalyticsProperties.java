@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.analytics;
 
-import com.google.common.collect.Maps;
 import hudson.Extension;
 import io.jenkins.blueocean.analytics.AdditionalAnalyticsProperties;
 import io.jenkins.blueocean.analytics.Analytics.TrackRequest;
@@ -9,10 +8,8 @@ import org.kohsuke.stapler.StaplerRequest;
 import ua_parser.Client;
 import ua_parser.Parser;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
@@ -24,7 +21,7 @@ public class BrowserAndOperatingSystemAnalyticsProperties extends AdditionalAnal
     @Override
     public Map<String, Object> properties(TrackRequest req) {
         StaplerRequest httpReq = Stapler.getCurrentRequest();
-        if (PARSER == null || httpReq == null) {
+        if (httpReq == null) {
             return null;
         }
         String userAgent = httpReq.getHeader("User-Agent");
@@ -37,7 +34,7 @@ public class BrowserAndOperatingSystemAnalyticsProperties extends AdditionalAnal
         if (browserFamily == null) {
             return null;
         }
-        Map<String, Object> props = Maps.newHashMap();
+        Map<String, Object> props = new HashMap<>();
         props.put("browserFamily", browserFamily);
         String browserVersionMajor = client.userAgent.major;
         // Versions are useful if they are available

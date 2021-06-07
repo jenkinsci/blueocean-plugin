@@ -1,6 +1,5 @@
 package io.blueocean.ath;
 
-import com.google.common.base.Strings;
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
@@ -23,6 +22,7 @@ import io.blueocean.ath.pages.blue.PullRequestsPage;
 import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import io.blueocean.ath.pages.blue.RunDetailsTestsPage;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
@@ -79,7 +79,7 @@ public class AthModule extends AbstractModule {
             }
             capability.setCapability("extendedDebugging", "true");
             capability.setCapability("initialBrowserUrl", launchUrl);
-            if (!Strings.isNullOrEmpty(cfg.getString("TUNNEL_IDENTIFIER"))) {
+            if (!StringUtils.isBlank(cfg.getString("TUNNEL_IDENTIFIER"))) {
                 capability.setCapability("tunnelIdentifier", cfg.getString("TUNNEL_IDENTIFIER"));
             }
 

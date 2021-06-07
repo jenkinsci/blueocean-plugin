@@ -2,18 +2,19 @@ package io.blueocean.ath.pages.blue;
 
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
-import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
 public class ExecutorPluginPage {
-    private Logger logger = Logger.getLogger(DashboardPage.class);
+    private Logger logger = LoggerFactory.getLogger(DashboardPage.class);
 
     @Inject
     @BaseUrl

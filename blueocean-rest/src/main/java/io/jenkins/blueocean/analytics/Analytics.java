@@ -2,14 +2,10 @@ package io.jenkins.blueocean.analytics;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
-import org.kohsuke.stapler.DataBoundConstructor;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -43,7 +39,11 @@ public abstract class Analytics implements ExtensionPoint {
      */
     @CheckForNull
     public static Analytics get() {
-        return ExtensionList.lookup(Analytics.class).stream().filter(input -> input != null && input.isEnabled()).findFirst().orElseGet(() -> null);
+        return ExtensionList.lookup(Analytics.class)
+            .stream()
+            .filter(input -> input != null && input.isEnabled())
+            .findFirst()
+            .orElse(null);
     }
 
     /** Is analytics enabled on Jenkins or not **/

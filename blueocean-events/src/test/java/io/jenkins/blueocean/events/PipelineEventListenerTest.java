@@ -1,9 +1,10 @@
 package io.jenkins.blueocean.events;
 
-import com.google.common.collect.Lists;
 import hudson.model.Result;
 import io.jenkins.blueocean.rest.impl.pipeline.NodeGraphBuilder;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
+
+import java.util.Arrays;
 import java.util.List;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -39,7 +40,7 @@ public class PipelineEventListenerTest extends PipelineBaseTest{
         Assert.assertEquals("10", parallels.get(0).getId());
         Assert.assertEquals("Branch: branch1", parallels.get(0).getDisplayName());
 
-        Assert.assertEquals(Lists.newArrayList("2","3","4","5","6","8"),
+        Assert.assertEquals( Arrays.asList("2", "3", "4", "5", "6", "8"),
                 new PipelineEventListener().getBranch(parallels.get(0)));
     }
 }

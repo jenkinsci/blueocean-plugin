@@ -16,8 +16,6 @@ import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 import org.acegisecurity.Authentication;
 
-import com.google.common.base.Objects;
-
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
@@ -37,7 +35,7 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
     protected @Nonnull TopLevelItem createProject(String name, String descriptorName, Class<? extends TopLevelItemDescriptor> descriptorClass, BlueOrganization organization) throws IOException {
         ModifiableTopLevelItemGroup p = getParent(organization);
 
-        final ACL acl = (p instanceof AccessControlled) ? ((AccessControlled) p).getACL() : Jenkins.getInstance().getACL();
+        final ACL acl = (p instanceof AccessControlled) ? ((AccessControlled) p).getACL() : Jenkins.get().getACL();
         Authentication a = Jenkins.getAuthentication();
         if(!acl.hasPermission(a, Item.CREATE)){
             throw new ServiceException.ForbiddenException(
@@ -67,7 +65,7 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
             throw new ServiceException.UnauthorizedException("Must be logged in to create a pipeline");
         }
         Authentication authentication = Jenkins.getAuthentication();
-        ACL acl = (p instanceof AccessControlled) ? ((AccessControlled) p).getACL() : Jenkins.getInstance().getACL();
+        ACL acl = (p instanceof AccessControlled) ? ((AccessControlled) p).getACL() : Jenkins.get().getACL();
         if(!acl.hasPermission(authentication, Item.CREATE)){
             throw new ServiceException.ForbiddenException(
                 String.format("User %s doesn't have Job create permission", authenticatedUser.getId()));
@@ -78,6 +76,7 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
     protected abstract String computeCredentialId(BlueScmConfig scmConfig);
 
     protected ModifiableTopLevelItemGroup getParent(BlueOrganization organization) {
-        return Objects.firstNonNull(OrganizationFactory.getItemGroup(organization), Jenkins.getInstance());
+        ModifiableTopLevelItemGroup m = OrganizationFactory.getItemGroup(organization);
+        return m!=null? m:Jenkins.get();
     }
 }

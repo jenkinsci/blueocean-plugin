@@ -1,7 +1,5 @@
 package io.blueocean.ath.model;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Predicate;
 import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import io.blueocean.ath.BaseUrl;
@@ -16,9 +14,12 @@ import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import io.blueocean.ath.pages.blue.RunDetailsTestsPage;
 import io.blueocean.ath.sse.SSEEvents;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public abstract class AbstractPipeline {
     private Folder folder;
@@ -88,7 +89,7 @@ public abstract class AbstractPipeline {
     }
 
     public String getUrl() {
-        return Joiner.on("").join(
+        return String.join("",
             baseUrl,
             "/blue/organizations/jenkins/",
             UrlEscapers.urlFragmentEscaper().escape(getUrlPart()).replaceAll("/", "%2F")
@@ -115,6 +116,6 @@ public abstract class AbstractPipeline {
         return runDetailsTestsPageFactory.withPipeline(this);
     }
 
-    public Predicate<List<JSONObject>> buildsFinished = list -> SSEEvents.activityComplete(getFolder().getPath(getName())).apply(list);
+    public Predicate<List<JSONObject>> buildsFinished = list -> SSEEvents.activityComplete(getFolder().getPath(getName())).test(list);
 
 }

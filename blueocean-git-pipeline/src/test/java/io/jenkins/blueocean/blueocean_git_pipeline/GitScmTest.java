@@ -1,10 +1,10 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
-import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.User;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
@@ -26,7 +26,6 @@ import org.junit.runners.Parameterized.Parameters;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestExtension;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -87,7 +86,7 @@ public class GitScmTest extends PipelineBaseTest {
         User user = login();
         this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
-        Map resp = createCredentials(user, ImmutableMap.of("credentials", new ImmutableMap.Builder<String,Object>()
+        Map resp = createCredentials(user, MapsHelper.of("credentials", new MapsHelper.Builder<String,Object>()
                 .put("password", accessToken)
                 .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
                 .put("scope", "USER")
@@ -107,10 +106,10 @@ public class GitScmTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
-                .data(ImmutableMap.of("name", "demo",
+                .data(MapsHelper.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", HTTPS_GITHUB_NO_JENKINSFILE,
-                                                     "credentialId", credentialId)
+                        "scmConfig", MapsHelper.of("uri", HTTPS_GITHUB_NO_JENKINSFILE,
+                                                   "credentialId", credentialId)
                 )).build(Map.class);
 
         assertEquals("demo", r.get("name"));
@@ -122,9 +121,9 @@ public class GitScmTest extends PipelineBaseTest {
         User user = login();
         this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
-        Map resp = createCredentials(user, ImmutableMap.of("credentials",
-                new ImmutableMap.Builder<String,Object>()
-                        .put("privateKeySource", ImmutableMap.of(
+        Map resp = createCredentials(user, MapsHelper.of("credentials",
+                new MapsHelper.Builder<String,Object>()
+                        .put("privateKeySource", MapsHelper.of(
                                 "privateKey", "abcabc1212",
                                 "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
                         .put("passphrase", "ssh2")
@@ -139,10 +138,10 @@ public class GitScmTest extends PipelineBaseTest {
         Assert.assertNotNull(credentialId);
 
         post("/organizations/" + getOrgName() + "/pipelines/",
-                ImmutableMap.of("name", "demo",
-                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
-                                "credentialId", credentialId)
+                MapsHelper.of("name", "demo",
+                    "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                    "scmConfig", MapsHelper.of("uri", "git@github.com:vivek/capability-annotation.git",
+                            "credentialId", credentialId)
                 ), 400);
 
     }
@@ -153,7 +152,7 @@ public class GitScmTest extends PipelineBaseTest {
         User user = login();
         this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
-        Map resp = createCredentials(user, ImmutableMap.of("credentials", new ImmutableMap.Builder<String,Object>()
+        Map resp = createCredentials(user, MapsHelper.of("credentials", new MapsHelper.Builder<String,Object>()
                 .put("password", "abcd")
                 .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
                 .put("scope", "USER")
@@ -167,9 +166,9 @@ public class GitScmTest extends PipelineBaseTest {
         Assert.assertNotNull(credentialId);
 
         post("/organizations/" + getOrgName() + "/pipelines/",
-                ImmutableMap.of("name", "demo",
+                MapsHelper.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
+                        "scmConfig", MapsHelper.of("uri", "git@github.com:vivek/capability-annotation.git",
                                 "credentialId", credentialId)
                 ), 400);
 
@@ -182,9 +181,9 @@ public class GitScmTest extends PipelineBaseTest {
         this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
         post("/organizations/" + getOrgName() + "/pipelines/",
-                ImmutableMap.of("name", "demo",
+              MapsHelper.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", "/sdsd/sdsd/sdsd")
+                        "scmConfig", MapsHelper.of("uri", "/sdsd/sdsd/sdsd")
                 ), 400);
 
     }
@@ -193,9 +192,9 @@ public class GitScmTest extends PipelineBaseTest {
     @Test
     public void shouldFailForBadCredentialIdOnCreate() throws IOException, UnirestException {
         User user = login();
-        Map resp = createCredentials(user, ImmutableMap.of("credentials",
-                new ImmutableMap.Builder<String,Object>()
-                        .put("privateKeySource", ImmutableMap.of(
+        Map resp = createCredentials(user, MapsHelper.of("credentials",
+                new MapsHelper.Builder<String,Object>()
+                        .put("privateKeySource", MapsHelper.of(
                                 "privateKey", "abcabc1212",
                                 "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
                         .put("passphrase", "ssh2")
@@ -215,9 +214,9 @@ public class GitScmTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
-                .data(ImmutableMap.of("name", "demo",
+                .data(MapsHelper.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
+                        "scmConfig", MapsHelper.of("uri", "git@github.com:vivek/capability-annotation.git",
                                 "credentialId", credentialId))).build(Map.class);
 
         assertEquals(resp.get("code"), 400);
@@ -237,9 +236,9 @@ public class GitScmTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
                 .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
-                .data(ImmutableMap.of("name", "demo",
+                .data(MapsHelper.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
+                        "scmConfig", MapsHelper.of("uri", sampleRepo.fileUrl())
                 ))
                 .build(Map.class);
 
@@ -249,8 +248,7 @@ public class GitScmTest extends PipelineBaseTest {
     @Test
     public void shouldFailOnValidation1(){
         Map<String,Object> resp = post("/organizations/" + getOrgName() + "/pipelines/",
-                ImmutableMap.of(
-                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
+                                        MapsHelper.of("scmConfig", MapsHelper.of("uri", sampleRepo.fileUrl())
                 ), 400);
 
         assertEquals(resp.get("code"), 400);
@@ -270,7 +268,7 @@ public class GitScmTest extends PipelineBaseTest {
         this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
         Map<String,Object> resp = post("/organizations/" + getOrgName() + "/pipelines/",
-                ImmutableMap.of("name", "demo",
+                MapsHelper.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest"
                 ), 400);
 
@@ -291,9 +289,9 @@ public class GitScmTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
                 .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
-                .data(ImmutableMap.of("name", "demo",
+                .data(MapsHelper.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of()))
+                        "scmConfig", Collections.emptyMap()))
                 .build(Map.class);
 
         assertEquals(resp.get("code"), 400);
@@ -316,9 +314,9 @@ public class GitScmTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
                 .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
-                .data(ImmutableMap.of("name", "demo",
+                .data(MapsHelper.of( "name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
+                        "scmConfig", MapsHelper.of("uri", sampleRepo.fileUrl())
                 ))
                 .build(Map.class);
 
@@ -330,9 +328,9 @@ public class GitScmTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
                 .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
-                .data(ImmutableMap.of("name", "demo",
+                .data(MapsHelper.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl(),
+                        "scmConfig", MapsHelper.of("uri", sampleRepo.fileUrl(),
                                 "credentialId", "sdsdsd"))).build(Map.class);
         List<Map<String,String>> errors = (List<Map<String,String>>) resp.get("errors");
 
@@ -358,9 +356,9 @@ public class GitScmTest extends PipelineBaseTest {
         this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
         Map<String,Object> resp = post("/organizations/" + getOrgName() + "/pipelines/",
-                ImmutableMap.of("name", "demo",
+                MapsHelper.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl(), "credentialId", "sdsdsd")
+                        "scmConfig", MapsHelper.of("uri", sampleRepo.fileUrl(), "credentialId", "sdsdsd")
                 ), 400);
         List<Map<String,String>> errors = (List<Map<String,String>>) resp.get("errors");
 
@@ -412,7 +410,7 @@ public class GitScmTest extends PipelineBaseTest {
         String scmValidatePath = scmPath + "validate";
 
         // We're relying on github letting you do a git-ls for repos with bad creds so long as they're public
-        Map params = ImmutableMap.of(
+        Map params = MapsHelper.of(
             "userName", "someguy",
             "password", "password",
             "repositoryUrl", HTTPS_GITHUB_PUBLIC
@@ -456,7 +454,7 @@ public class GitScmTest extends PipelineBaseTest {
         String scmValidatePath = scmPath + "validate";
 
         // We're relying on github letting you do a git-ls for repos with bad creds so long as they're public
-        Map params = ImmutableMap.of(
+        Map params = MapsHelper.of(
             "userName", "someguy",
             "password", "password",
             "repositoryUrl", "htt"
@@ -487,7 +485,7 @@ public class GitScmTest extends PipelineBaseTest {
         String scmValidatePath = scmPath + "validate";
 
         // We're relying on github letting you do a git-ls for repos with bad creds so long as they're public
-        Map params = ImmutableMap.of(
+        Map params = MapsHelper.of(
             "userName", "someguy",
             "password", "password",
             "repositoryUrl", "http://example.org/has/no/repos.git"
@@ -509,9 +507,9 @@ public class GitScmTest extends PipelineBaseTest {
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/" + getOrgName() + "/pipelines/")
-                .data(ImmutableMap.of("name", "demo",
+                .data(MapsHelper.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl()))).build(Map.class);
+                        "scmConfig", MapsHelper.of("uri", sampleRepo.fileUrl()))).build(Map.class);
 
         assertEquals("demo", resp.get("name"));
         Item item = getOrgRoot().getItem("demo");

@@ -1,7 +1,5 @@
 package io.blueocean.ath.offline.multibranch;
 
-import com.google.common.io.Files;
-import com.google.common.io.Resources;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.GitRepositoryRule;
 import io.blueocean.ath.Retry;
@@ -22,6 +20,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 
 @RunWith(ATHJUnitRunner.class)
 public class ParallelNavigationTest {
@@ -68,8 +67,8 @@ public class ParallelNavigationTest {
     public void parallelNavigationTest() throws IOException, GitAPIException, InterruptedException {
         // Create navTest
         logger.info("Creating pipeline {}", navTest);
-        URL navTestJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile");
-        Files.copy(new File(navTestJenkinsfile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
+        URL navTestJenkinsfile = ParallelNavigationTest.class.getResource("ParallelNavigationTest/Jenkinsfile");
+        Files.copy(new File(navTestJenkinsfile.getFile()).toPath(), new File(git.gitDirectory, "Jenkinsfile").toPath());
         git.addAll();
         git.commit("Initial commit for " + navTest);
         logger.info("Committed Jenkinsfile for {}", navTest);
@@ -97,8 +96,8 @@ public class ParallelNavigationTest {
     public void parallelNavigationTestInput() throws IOException, GitAPIException, InterruptedException {
         // Create navTestWithInput
         logger.info("Creating pipeline {}", navTestWithInput);
-        URL navTestInputJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.input");
-        Files.copy(new File(navTestInputJenkinsfile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
+        URL navTestInputJenkinsfile = ParallelNavigationTest.class.getResource("ParallelNavigationTest/Jenkinsfile.input");
+        Files.copy(new File(navTestInputJenkinsfile.getFile()).toPath(), new File(git.gitDirectory, "Jenkinsfile").toPath());
         git.addAll();
         git.commit("Initial commit for " + navTestWithInput);
         logger.info("Committed Jenkinsfile for " + navTestWithInput);
@@ -129,10 +128,10 @@ public class ParallelNavigationTest {
         {
             // Create navTestWithFailedInputStep
             logger.info("Creating pipeline {}", navTestWithFailedInputStep);
-            URL navTestWithFailedInputStepJenkinsfile = Resources.getResource(ParallelNavigationTest.class,
-                                                                               "ParallelNavigationTest/Jenkinsfile.failed.input");
-            Files.copy(new File( navTestWithFailedInputStepJenkinsfile.getFile()),
-                        new File(git.gitDirectory, "Jenkinsfile"));
+            URL navTestWithFailedInputStepJenkinsfile = ParallelNavigationTest.class
+                .getResource("ParallelNavigationTest/Jenkinsfile.failed.input");
+            Files.copy(new File( navTestWithFailedInputStepJenkinsfile.getFile()).toPath(),
+                        new File(git.gitDirectory, "Jenkinsfile").toPath());
             git.addAll();
             git.commit("Initial commit for " + navTestWithFailedInputStep);
             logger.info("Committed Jenkinsfile for {}", navTestWithFailedInputStep);
@@ -161,8 +160,9 @@ public class ParallelNavigationTest {
     public void testLogVisibilityWhenNoStepsOrStages() throws IOException, GitAPIException, InterruptedException {
         // Create navTestWithNoStepsNoStages
         logger.info("Creating pipeline " + navTestWithNoStepsNoStages);
-        URL navTestWithNoStepsNoStagesJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.nosteps.nostages");
-        Files.copy(new File(navTestWithNoStepsNoStagesJenkinsfile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
+        URL navTestWithNoStepsNoStagesJenkinsfile = ParallelNavigationTest.class.getResource("ParallelNavigationTest/Jenkinsfile.nosteps.nostages");
+        Files.copy(new File(navTestWithNoStepsNoStagesJenkinsfile.getFile()).toPath(),
+                   new File(git.gitDirectory, "Jenkinsfile").toPath());
         git.addAll();
         git.commit("Initial commit for " + navTestWithNoStepsNoStages);
         logger.info("Committed Jenkinsfile for " + navTestWithNoStepsNoStages);
@@ -183,8 +183,10 @@ public class ParallelNavigationTest {
     public void testInputParamGoToClassicLink() throws IOException, GitAPIException, InterruptedException {
         // Create navTestInputParamGoToClassicLink
         logger.info("Creating pipeline " + navTestInputParamGoToClassicLink);
-        URL navTestInputParamGoToClassicLinkJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.input.param.classic.link");
-        Files.copy(new File(navTestInputParamGoToClassicLinkJenkinsfile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
+        URL navTestInputParamGoToClassicLinkJenkinsfile = ParallelNavigationTest.class
+            .getResource("ParallelNavigationTest/Jenkinsfile.input.param.classic.link");
+        Files.copy(new File(navTestInputParamGoToClassicLinkJenkinsfile.getFile()).toPath(),
+                   new File(git.gitDirectory, "Jenkinsfile").toPath());
         git.addAll();
         git.commit("Initial commit for " + navTestInputParamGoToClassicLink);
         logger.info("Committed Jenkinsfile for " + navTestInputParamGoToClassicLink);

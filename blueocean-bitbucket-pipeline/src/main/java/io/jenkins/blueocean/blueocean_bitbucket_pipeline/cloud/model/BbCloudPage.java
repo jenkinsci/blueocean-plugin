@@ -1,11 +1,12 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.collect.ImmutableList;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbPage;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,16 +28,13 @@ public class BbCloudPage<T> extends BbPage<T> {
         this.page = page;
         this.size = size;
         this.next = next;
-        this.values = ImmutableList.copyOf(values);
+        this.values = Collections.unmodifiableList(new ArrayList<>(values));
     }
 
     @Override
     public int getStart() {
         int start = pageLength*(page-1);
-        if(start < 0){
-            return 0;
-        }
-        return start;
+        return Math.max( start, 0 );
     }
 
     @Override

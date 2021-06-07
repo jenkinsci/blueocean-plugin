@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded;
 
-import com.google.common.collect.ImmutableList;
 import hudson.Extension;
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
@@ -10,6 +9,7 @@ import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Default implementation of {@link OrganizationFactory} for a master is to have everything in
@@ -32,7 +32,7 @@ public class OrganizationFactoryImpl extends OrganizationFactory {
     }
 
     public OrganizationFactoryImpl(String name) {
-        this.instance = new OrganizationImpl(name, Jenkins.getInstance());
+        this.instance = new OrganizationImpl(name, Jenkins.get());
     }
 
     @Override
@@ -45,7 +45,7 @@ public class OrganizationFactoryImpl extends OrganizationFactory {
 
     @Override
     public Collection<BlueOrganization> list() {
-        return ImmutableList.<BlueOrganization>of(instance);
+        return Collections.singletonList(instance);
     }
 
     @Override

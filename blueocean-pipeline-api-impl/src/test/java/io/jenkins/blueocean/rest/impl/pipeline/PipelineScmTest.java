@@ -1,10 +1,10 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.Item;
 import hudson.model.User;
 import hudson.tasks.Mailer;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmContent;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFile;
 import jenkins.branch.MultiBranchProject;
@@ -21,7 +21,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,7 +42,7 @@ public class PipelineScmTest extends PipelineBaseTest {
     }
 
     @Test
-    public void unauthenticatedUserContentAccessShouldFail() throws IOException, ExecutionException, InterruptedException {
+    public void unauthenticatedUserContentAccessShouldFail() throws IOException {
         WorkflowMultiBranchProject mp = j.createProject(WorkflowMultiBranchProject.class, "mbp");
         mp.setDisplayName("My MBP");
         new RequestBuilder(baseUrl)
@@ -53,7 +52,7 @@ public class PipelineScmTest extends PipelineBaseTest {
     }
 
     @Test
-    public void AuthorizedUserContentAccessShouldSucceed() throws IOException, ExecutionException, InterruptedException, UnirestException {
+    public void AuthorizedUserContentAccessShouldSucceed() throws IOException, UnirestException {
         WorkflowMultiBranchProject mp = j.createProject(WorkflowMultiBranchProject.class, "mbp");
         mp.setDisplayName("My MBP");
 
@@ -66,24 +65,24 @@ public class PipelineScmTest extends PipelineBaseTest {
     }
 
     @Test
-    public void unauthenticatedUserContentUpdateShouldFail() throws IOException, ExecutionException, InterruptedException {
+    public void unauthenticatedUserContentUpdateShouldFail() throws IOException {
         WorkflowMultiBranchProject mp = j.createProject(WorkflowMultiBranchProject.class, "mbp");
         mp.setDisplayName("My MBP");
         new RequestBuilder(baseUrl)
                 .status(401)
-                .data(ImmutableMap.of("content",ImmutableMap.of("data","Hello World Again!")))
+                .data(MapsHelper.of("content", MapsHelper.of("data", "Hello World Again!")))
                 .put("/organizations/jenkins/pipelines/mbp/scm/content").build(Map.class)
         ;
     }
 
     @Test
-    public void authorizedUserContentUpdateShouldSucceed() throws IOException, ExecutionException, InterruptedException, UnirestException {
+    public void authorizedUserContentUpdateShouldSucceed() throws IOException, UnirestException {
         WorkflowMultiBranchProject mp = j.createProject(WorkflowMultiBranchProject.class, "mbp");
         mp.setDisplayName("My MBP");
         Map content = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
-                .data(ImmutableMap.of("content",ImmutableMap.of("data","Hello World Again!")))
+                .data(MapsHelper.of("content", MapsHelper.of("data","Hello World Again!")))
                 .put("/organizations/jenkins/pipelines/mbp/scm/content").build(Map.class);
 
         assertNotNull(content);

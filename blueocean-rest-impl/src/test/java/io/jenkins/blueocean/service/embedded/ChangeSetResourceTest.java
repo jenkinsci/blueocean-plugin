@@ -7,9 +7,11 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
+import org.jvnet.hudson.test.JenkinsRule;
 
 import java.util.Collections;
 
@@ -21,6 +23,9 @@ import static org.mockito.Mockito.when;
  * @author Vivek Pandey
  */
 public class ChangeSetResourceTest {
+
+    @Rule
+    public JenkinsRule j = new JenkinsRule();
 
     @Test
     public void testChangeSet(){

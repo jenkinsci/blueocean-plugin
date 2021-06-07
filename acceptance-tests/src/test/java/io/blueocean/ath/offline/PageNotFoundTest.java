@@ -4,19 +4,19 @@ import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.BlueOceanAcceptanceTest;
 import io.blueocean.ath.WaitUtil;
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import javax.inject.Inject;
 
 @RunWith(ATHJUnitRunner.class)
 public class PageNotFoundTest extends BlueOceanAcceptanceTest {
     //const urls = ['/blue/gibtEsNicht', '/blue/organizations/jenkins/gibtEsNicht/activity/', '/blue/organizations/gibtEsNicht/gibtEsNicht/detail/gibtEsNicht/'];
 
-    private Logger logger = Logger.getLogger(PageNotFoundTest.class);
+    private Logger logger = LoggerFactory.getLogger(PageNotFoundTest.class);
 
     @Inject
     WebDriver driver;
