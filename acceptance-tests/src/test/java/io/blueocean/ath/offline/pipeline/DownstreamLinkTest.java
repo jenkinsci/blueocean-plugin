@@ -8,8 +8,12 @@ import io.blueocean.ath.factory.ClassicPipelineFactory;
 import io.blueocean.ath.factory.FreestyleJobFactory;
 import io.blueocean.ath.model.ClassicPipeline;
 import io.blueocean.ath.sse.SSEClientRule;
+import java.io.IOException;
+import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 
 @RunWith(ATHJUnitRunner.class)
@@ -25,12 +29,13 @@ public class DownstreamLinkTest extends BlueOceanAcceptanceTest implements WebDr
     @Rule
     public SSEClientRule sseClient;
 
+    @Rule
+    public TestName testName = new TestName();
+
     @Test
     public void downstreamJobLinkAppearsInRunResult() throws Exception {
 
-        final String upstreamJobScript = "stage ('stageName') { build 'downstreamJob' }";
-        ClassicPipeline upstreamJob = pipelineFactory.pipeline("upstreamJob").createPipeline(upstreamJobScript);
-
+        ClassicPipeline upstreamJob = pipelineFactory.pipeline("upstreamJob").createPipeline(getJobScript("upstream"));
         freestyleJobFactory.pipeline("downstreamJob").create("echo blah");
 
         upstreamJob.build();
@@ -41,5 +46,30 @@ public class DownstreamLinkTest extends BlueOceanAcceptanceTest implements WebDr
 
         find("//*[contains(text(),'Triggered Builds')]").isVisible(); // Heading for table of builds
         find("//*[contains(text(),'downstreamJob')]").isVisible(); // row pointing to downstream build
+    }
+
+    @Test
+    @Ignore("Work in progress")
+    public void sequentialStages() throws Exception {
+
+        ClassicPipeline upstreamJob = pipelineFactory.pipeline("upstreamJob").createPipeline(getJobScript("upstream"));
+        freestyleJobFactory.pipeline("downstreamJob").create("echo blah");
+
+        upstreamJob.build();
+        upstreamJob.build();
+        upstreamJob.build();
+        sseClient.untilEvents(upstreamJob.buildsFinished);
+        sseClient.clear();
+
+        upstreamJob.getRunDetailsPipelinePage().open(1);
+        upstreamJob.getRunDetailsPipelinePage().open(2);
+        upstreamJob.getRunDetailsPipelinePage().open(3);
+
+        find("//*[contains(text(),'Triggered Builds')]").isVisible(); // Heading for table of builds
+        find("//*[contains(text(),'downstreamJob')]").isVisible(); // row pointing to downstream build
+    }
+
+    private String getJobScript(String name) throws IOException {
+        return new String(IOUtils.toByteArray(getClass().getResource(DownstreamLinkTest.class.getName() + "/" + testName.getMethodName() + "." + name + ".groovy")));
     }
 }
