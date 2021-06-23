@@ -819,7 +819,7 @@
                     <plugin>
                         <groupId>io.jenkins.blueocean</groupId>
                         <artifactId>blueocean-maven-plugin</artifactId>
-                        <version>0.0.2</version>
+                        <version>0.0.3</version>
                         <executions>
                             <execution>
                                 <!-- unpack package.json + JS into node_modules for any deps with JS files -->
