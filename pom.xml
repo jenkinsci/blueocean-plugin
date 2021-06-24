@@ -29,7 +29,10 @@
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <java.level>8</java.level>
-    <!-- when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions -->
+    <!--
+        when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions
+        and  acceptance-tests/runner/scripts/args.sh
+    -->
     <jenkins.version>2.277.4</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.12.0</frontend-version>
