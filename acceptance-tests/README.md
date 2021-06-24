@@ -40,7 +40,8 @@ ATH looks for a properties file at `~/.blueocean-ath-config` (or any combination
 These options will allow you to run a local [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/),
  for example, and execute the ATH against a local development instance
 that you can debug/etc.. Currently these properties are supported and/or necessary:
-```webDriverType=chrome
+```
+webDriverType=chrome
 webDriverUrl=http://localhost:9515
 webDriverBrowserSize=1024x768
 jenkinsUrl=http://localhost:8080/jenkins
