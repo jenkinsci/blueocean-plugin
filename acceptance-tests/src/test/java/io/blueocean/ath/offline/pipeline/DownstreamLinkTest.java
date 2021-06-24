@@ -9,6 +9,8 @@ import io.blueocean.ath.factory.FreestyleJobFactory;
 import io.blueocean.ath.model.ClassicPipeline;
 import io.blueocean.ath.sse.SSEClientRule;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -70,6 +72,7 @@ public class DownstreamLinkTest extends BlueOceanAcceptanceTest implements WebDr
     }
 
     private String getJobScript(String name) throws IOException {
-        return new String(IOUtils.toByteArray(getClass().getResource(DownstreamLinkTest.class.getName() + "/" + testName.getMethodName() + "." + name + ".groovy")));
+        return IOUtils.toString(getClass().getResource(DownstreamLinkTest.class.getSimpleName() + "/" + testName.getMethodName() + "." + name + ".groovy"),
+                                StandardCharsets.UTF_8);
     }
 }
