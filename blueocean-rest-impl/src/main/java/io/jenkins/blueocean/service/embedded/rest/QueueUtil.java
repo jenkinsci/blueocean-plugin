@@ -1,7 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.BuildableItem;
@@ -14,9 +12,9 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import jenkins.model.Jenkins;
-
+import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.stream.StreamSupport;
 
 public class QueueUtil {
 
@@ -39,12 +37,9 @@ public class QueueUtil {
     @CheckForNull
     @SuppressWarnings("unchecked")
     public static <T extends Run> T getRun(@NonNull Job job, final long queueId) {
-        try {
-            return Iterables.find((Iterable<T>) job.getBuilds(), input ->  input != null && input.getQueueId() == queueId);
-        } catch ( NoSuchElementException e ) {
-            // ignore as maybe we do not have builds
-        }
-        return null;
+        return (T)StreamSupport.stream( job.getBuilds().stream().spliterator(), false)
+                .filter( input ->  input != null && ((T)input).getQueueId() == queueId)
+                .findFirst().orElse(null);
     }
 
     /**
@@ -60,7 +55,7 @@ public class QueueUtil {
         if(job instanceof BuildableItem && pipeline != null) {
             BuildableItem task = (BuildableItem)job;
             List<hudson.model.Queue.Item> items = Jenkins.get().getQueue().getItems(task);
-            List<BlueQueueItem> items2 = Lists.newArrayList();
+            List<BlueQueueItem> items2 = new ArrayList<>();
             for (int i = 0; i < items.size(); i++) {
                 Link self = pipeline.getLink().rel("queue").rel(Long.toString(items.get(i).getId()));
                 QueueItemImpl queueItem = new QueueItemImpl(

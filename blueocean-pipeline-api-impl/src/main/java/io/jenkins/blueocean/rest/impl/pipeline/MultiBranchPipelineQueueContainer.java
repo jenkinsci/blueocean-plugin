@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.Lists;
 import hudson.model.Job;
 import hudson.model.Queue;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -12,12 +11,10 @@ import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import jenkins.model.Jenkins;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-
-import static io.jenkins.blueocean.rest.impl.pipeline.MultibranchPipelineRunContainer.sortBranchesByLatestRun;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Vivek Pandey
@@ -55,7 +52,7 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
 
     @Override
     public Iterator<BlueQueueItem> iterator() {
-        List<BlueQueueItem> queueItems = Lists.newArrayList();
+        List<BlueQueueItem> queueItems = new ArrayList<>();
         for(Object o: multiBranchPipeline.mbp.getItems()) {
             if(o instanceof Job) {
                 queueItems.addAll(QueueUtil.getQueuedItems(multiBranchPipeline.getOrganization(), (Job)o));
@@ -66,14 +63,14 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
 
     @Override
     public Iterator<BlueQueueItem> iterator(int start, int limit) {
-        List<BluePipeline> branches = Lists.newArrayList(multiBranchPipeline.getBranches().list());
-        sortBranchesByLatestRun(branches);
-
+        List<BluePipeline> branches = StreamSupport.stream(multiBranchPipeline.getBranches().spliterator(), false)
+            .sorted(( o1, o2 ) -> PipelineRunImpl.LATEST_RUN_START_TIME_COMPARATOR.compare(o1.getLatestRun(), o2.getLatestRun()))
+            .collect(Collectors.toList());
         int l = branches.size() > 0 && limit/branches.size() > 0 ? limit/branches.size() : 1;
 
         int s=0;
         if(start > 0) {
-            s = start - l > 0 ? start - l : 0;
+            s = Math.max(start - l, 0);
         }
 
         List<BlueQueueItem> c = new ArrayList<>();
@@ -90,7 +87,7 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
             retry++;
         }
 
-        Collections.sort(c, ( o1, o2 ) ->  o2.getQueuedTime().compareTo(o1.getQueuedTime()));
+        c.sort(( o1, o2 ) -> o2.getQueuedTime().compareTo(o1.getQueuedTime()));
         return c.iterator();
     }
 

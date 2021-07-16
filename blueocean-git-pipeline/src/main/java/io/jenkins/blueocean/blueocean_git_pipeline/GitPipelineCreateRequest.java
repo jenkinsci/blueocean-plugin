@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
-import com.google.common.collect.Lists;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ErrorMessage.Error;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
@@ -19,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,7 +45,7 @@ public class GitPipelineCreateRequest extends AbstractMultiBranchCreateRequest {
 
     @Override
     protected List<Error> validate(String name, BlueScmConfig scmConfig) {
-        List<Error> errors = Lists.newArrayList();
+        List<Error> errors = new ArrayList<>();
         if (scmConfig.getUri() == null) {
             errors.add(new ErrorMessage.Error("scmConfig.uri", ErrorMessage.Error.ErrorCodes.MISSING.toString(), "uri is required"));
         }else {

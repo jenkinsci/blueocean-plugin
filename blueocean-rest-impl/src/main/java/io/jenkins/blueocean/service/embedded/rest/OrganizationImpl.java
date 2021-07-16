@@ -125,7 +125,7 @@ public class OrganizationImpl extends AbstractOrganization{
         }
     }
 
-    private boolean isExportedBean(Class clz){
+    private boolean isExportedBean(Class<?> clz){
         return clz.getAnnotation(ExportedBean.class) != null;
     }
 }

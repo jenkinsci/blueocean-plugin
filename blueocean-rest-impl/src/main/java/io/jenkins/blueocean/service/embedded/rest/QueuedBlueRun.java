@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.collect.ImmutableList;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
@@ -17,6 +16,7 @@ import io.jenkins.blueocean.rest.model.Containers;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 
 public class QueuedBlueRun extends BlueRun {
@@ -154,7 +154,7 @@ public class QueuedBlueRun extends BlueRun {
 
     @Override
     public Collection<BlueActionProxy> getActions() {
-        return ImmutableList.of();
+        return Collections.emptyList();
     }
 
     @Override

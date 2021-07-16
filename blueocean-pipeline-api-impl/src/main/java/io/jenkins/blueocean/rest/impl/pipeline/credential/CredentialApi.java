@@ -3,8 +3,6 @@ package io.jenkins.blueocean.rest.impl.pipeline.credential;
 import com.cloudbees.plugins.credentials.CredentialsStoreAction;
 import com.cloudbees.plugins.credentials.common.IdCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
-import com.cloudbees.plugins.credentials.domains.DomainSpecification;
-import com.google.common.collect.ImmutableList;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
@@ -22,6 +20,7 @@ import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.POST;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -69,7 +68,7 @@ public class CredentialApi extends Resource {
         }
 
         CredentialsUtils.createCredentialsInUserStore(credentials, authenticatedUser, domainName,
-                ImmutableList.of(new BlueOceanDomainSpecification()));
+                Collections.singletonList(new BlueOceanDomainSpecification()));
 
         CredentialsStoreAction.DomainWrapper domainWrapper = credentialStoreAction.getDomain(domainName);
 

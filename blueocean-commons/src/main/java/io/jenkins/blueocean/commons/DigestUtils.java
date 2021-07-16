@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.commons;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -9,6 +10,28 @@ import java.security.NoSuchAlgorithmException;
  */
 public class DigestUtils
 {
+
+    public static String sha256(byte[] original) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encodedhash = digest.digest(original);
+            StringBuilder sb = new StringBuilder(2+encodedhash.length);
+            for(byte b:encodedhash){
+                sb.append(b);
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public static String sha256(String original) {
+        return sha256(original, StandardCharsets.UTF_8);
+    }
+
+    public static String sha256(String original, Charset charset) {
+        return sha256(original.getBytes(charset));
+    }
 
     public static String sha256Hex(String original) {
         try {

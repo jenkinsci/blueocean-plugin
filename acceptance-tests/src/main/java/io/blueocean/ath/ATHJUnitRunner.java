@@ -1,11 +1,10 @@
 package io.blueocean.ath;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.blueocean.ath.pages.classic.LoginPage;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.internal.runners.model.EachTestNotifier;
 import org.junit.runner.Description;
@@ -25,6 +24,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -122,8 +123,8 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
 
                 byte[] screenshot =  Base64.getMimeDecoder().decode(se.getBase64EncodedScreenshot());
 
-                Files.createParentDirs(file);
-                Files.write(screenshot, file);
+                Files.createDirectories(file.getParentFile().toPath());
+                Files.write(file.toPath(), screenshot);
                 logger.info("Wrote screenshot to " + file.getAbsolutePath());
                 fromException = true;
                 break;
@@ -163,21 +164,21 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
             logger.info("SauceOnDemandSessionID=" + ((RemoteWebDriver) LocalDriver.getDriver()).getSessionId().toString());
         }
         String buildName = System.getenv("BUILD_TAG");
-        if (buildName == null || buildName == "") {
+        if (StringUtils.isEmpty(buildName)) {
             buildName = System.getenv("SAUCE_BUILD_NAME");
         }
-        if (buildName == null || buildName == "") {
+        if (StringUtils.isEmpty(buildName)) {
             buildName = System.getenv("BUILD_TAG");
         }
         // https://wiki.saucelabs.com/display/DOCS/Annotating+Tests+with+Selenium%27s+JavaScript+Executor
-        if (buildName != null && buildName != "") {
+        if (StringUtils.isNotEmpty(buildName)) {
             LocalDriver.executeSauce(String.format("job-build=%s", buildName));
         }
         LocalDriver.executeSauce(String.format("job-name=%s", description.getMethodName()));
 
         EachTestNotifier eachNotifier = new EachTestNotifier(notifier, description);
         eachNotifier.fireTestStarted();
-        List<Throwable> failures = Lists.newArrayList();
+        List<Throwable> failures = new ArrayList<>();
         try {
             int n = retry == null ? 1 : retry.value();
 
@@ -210,7 +211,7 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
         }
     }
 
-    public class RetryThrowable extends Throwable {
+    public static class RetryThrowable extends Throwable {
         public RetryThrowable(int n, Throwable cause) {
             super("Retry " + n, cause);
         }

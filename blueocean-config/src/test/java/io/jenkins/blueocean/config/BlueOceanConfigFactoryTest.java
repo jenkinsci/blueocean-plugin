@@ -9,6 +9,8 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Collections;
+
 import static org.hamcrest.Matchers.*;
 
 public class BlueOceanConfigFactoryTest {
@@ -52,7 +54,7 @@ public class BlueOceanConfigFactoryTest {
             return new BlueOceanConfig() {
                 @Override
                 public Iterable<String> keys() {
-                    return ImmutableSet.of(BlueOceanConfig.ORGANIZATION_ENABLED);
+                    return Collections.singleton(BlueOceanConfig.ORGANIZATION_ENABLED);
                 }
 
                 @Override

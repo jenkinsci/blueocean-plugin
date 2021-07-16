@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest.junit;
 
-import com.google.common.collect.Iterables;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.tasks.junit.CaseResult;
@@ -16,6 +15,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
@@ -142,8 +142,11 @@ public class BlueJUnitTestResult extends BlueTestResult {
             testsToTransform.addAll(action.getFailedTests());
             testsToTransform.addAll(action.getSkippedTests());
             testsToTransform.addAll(action.getPassedTests());
-            return Result.of(Iterables.transform(testsToTransform, //
-                                                 input ->  new BlueJUnitTestResult(input, parent.getLink())));
+
+            return
+                Result.of(testsToTransform.stream()
+                    .map(caseResult -> new BlueJUnitTestResult(caseResult, parent.getLink()))
+                    .collect(Collectors.toList()));
         }
     }
 

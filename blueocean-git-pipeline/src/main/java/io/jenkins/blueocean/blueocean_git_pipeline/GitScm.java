@@ -7,8 +7,6 @@ import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.User;
@@ -34,7 +32,6 @@ import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSourceOwner;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
-import org.eclipse.jgit.lib.Repository;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -43,8 +40,10 @@ import org.kohsuke.stapler.json.JsonBody;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class GitScm extends AbstractScm {
 
@@ -150,7 +149,7 @@ public class GitScm extends AbstractScm {
 
     protected StaplerRequest getStaplerRequest() {
         StaplerRequest request = Stapler.getCurrentRequest();
-        Preconditions.checkNotNull(request, "Must be called in HTTP request context");
+        Objects.requireNonNull(request, "Must be called in HTTP request context");
         return request;
     }
 
@@ -279,13 +278,10 @@ public class GitScm extends AbstractScm {
                     ((GitSCMSource) scmSource).setCredentialsId(credentialId);
                 }
                 new GitBareRepoReadSaveRequest(scmSource, branch, null, branch, null, null)
-                    .invokeOnScm(new GitSCMFileSystem.FSFunction<Void>() {
-                        @Override
-                        public Void invoke(Repository repository) {
-                            GitUtils.validatePushAccess(repository, repositoryUrl, creds);
-                            return null;
-                        }
-                    });
+                    .invokeOnScm( (GitSCMFileSystem.FSFunction<Void>) repository -> {
+                        GitUtils.validatePushAccess(repository, repositoryUrl, creds);
+                        return null;
+                    } );
             } else {
                 List<ErrorMessage.Error> errors = GitUtils.validateCredentials(repositoryUrl, creds);
                 if (!errors.isEmpty()) {
@@ -326,16 +322,16 @@ public class GitScm extends AbstractScm {
 
         try {
             if (existingCredential == null) {
-                CredentialsUtils.createCredentialsInUserStore(newCredential,
-                                                              user,
-                                                              CREDENTIAL_DOMAIN_NAME,
-                                                              ImmutableList.of(new BlueOceanDomainSpecification()));
+                CredentialsUtils.createCredentialsInUserStore( newCredential,
+                                                               user,
+                                                               CREDENTIAL_DOMAIN_NAME,
+                                                               Collections.singletonList(new BlueOceanDomainSpecification()));
             } else {
                 CredentialsUtils.updateCredentialsInUserStore(existingCredential,
                                                               newCredential,
                                                               user,
                                                               CREDENTIAL_DOMAIN_NAME,
-                                                              ImmutableList.of(new BlueOceanDomainSpecification()));
+                                                              Collections.singletonList(new BlueOceanDomainSpecification()));
             }
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException("Could not persist credential", e);

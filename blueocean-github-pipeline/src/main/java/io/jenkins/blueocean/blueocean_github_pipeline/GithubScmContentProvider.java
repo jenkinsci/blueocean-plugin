@@ -1,15 +1,12 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import com.google.common.base.Preconditions;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
-import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import io.jenkins.blueocean.rest.impl.pipeline.ScmContentProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.AbstractScmContentProvider;
@@ -31,6 +28,7 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Vivek Pandey
@@ -132,7 +130,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
         String owner = scmParamsFromItem.getOwner();
         String repo = scmParamsFromItem.getRepo();
         String accessToken = scmParamsFromItem.getCredentials().getPassword().getPlainText();
-        Preconditions.checkNotNull(scmParamsFromItem.getApiUrl(), String.format("Project %s is not setup with Github api URL", item.getFullName()));
+        Objects.requireNonNull(scmParamsFromItem.getApiUrl(), String.format("Project %s is not setup with Github api URL", item.getFullName()));
         return githubRequest.save(scmParamsFromItem.getApiUrl(), owner, repo, accessToken);
     }
 
@@ -141,12 +139,8 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
     public boolean support(@Nonnull Item item) {
         if (isItemUsingGithubScm(item)) {
             String apiUrl = getApiUrl(item);
-
-            if (apiUrl == null || apiUrl.startsWith(GitHubSCMSource.GITHUB_URL)) {
-                return true;
-            }
+            return apiUrl == null || apiUrl.startsWith(GitHubSCMSource.GITHUB_URL );
         }
-
         return false;
     }
 
@@ -227,12 +221,12 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
                     //We have to do this because apiUrl might be of WireMock server and not Github
                     || (StringUtils.isNotBlank(scmId) && scmId.equals(GithubScm.ID))) {
                 scm = new GithubScm( () -> {
-                    Preconditions.checkNotNull(organization);
+                    Objects.requireNonNull(organization);
                     return organization.getLink().rel("scm");
                 } );
             }else{ //GHE
                 scm = new GithubEnterpriseScm(( () -> {
-                    Preconditions.checkNotNull(organization);
+                    Objects.requireNonNull(organization);
                     return organization.getLink().rel("scm");
                 } ));
             }
@@ -246,4 +240,3 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
         }
     }
 }
-

@@ -1,15 +1,9 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
-import hudson.model.Queue;
 import hudson.model.Result;
 import hudson.model.Run;
-import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.rest.model.BlueRun;
 import jenkins.plugins.git.GitSampleRepoRule;
+import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -17,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,7 +30,9 @@ public class PipelineRunImplTest extends PipelineBaseTest {
     @Test
     @Issue("JENKINS-53019")
     public void testMultipleRepoChangeSet() throws Exception {
-        String jenkinsFile = Resources.toString(Resources.getResource(getClass(), "mulitpleScms.jenkinsfile"), Charsets.UTF_8).replaceAll("%REPO1%", sampleRepo1.toString()).replaceAll("%REPO2%", sampleRepo2.toString());
+        String jenkinsFile = IOUtils.toString(getClass().getResource( "mulitpleScms.jenkinsfile"), StandardCharsets.UTF_8)
+            .replaceAll( "%REPO1%", sampleRepo1.toString())
+            .replaceAll( "%REPO2%", sampleRepo2.toString());
 
         WorkflowJob p = j.createProject(WorkflowJob.class, "project");
         p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
@@ -76,7 +73,9 @@ public class PipelineRunImplTest extends PipelineBaseTest {
     @Test
     @Issue("JENKINS-53019")
     public void changelogFromReplayDeleted() throws Exception {
-        String jenkinsFile = Resources.toString(Resources.getResource(getClass(), "mulitpleScms.jenkinsfile"), Charsets.UTF_8).replaceAll("%REPO1%", sampleRepo1.toString()).replaceAll("%REPO2%", sampleRepo2.toString());
+        String jenkinsFile = IOUtils.toString(getClass().getResource("mulitpleScms.jenkinsfile"), StandardCharsets.UTF_8)
+            .replaceAll("%REPO1%", sampleRepo1.toString())
+            .replaceAll("%REPO2%", sampleRepo2.toString());
 
         WorkflowJob p = j.createProject(WorkflowJob.class, "project");
         p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));

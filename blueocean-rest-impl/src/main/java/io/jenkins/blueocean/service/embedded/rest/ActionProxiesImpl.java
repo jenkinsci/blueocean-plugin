@@ -1,8 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Iterables;
 import hudson.model.Action;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -13,10 +10,11 @@ import org.kohsuke.stapler.export.ExportedBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @author Vivek Pandey
@@ -75,7 +73,7 @@ public class ActionProxiesImpl extends BlueActionProxy {
      */
     public static Collection<BlueActionProxy> getActionProxies(List<? extends Action> actions, Reachable parent){
         if(isTreeRequest()){
-            return getActionProxies(actions, Predicates.<Action>alwaysFalse(), parent);
+            return getActionProxies(actions, action -> false, parent );
         }
         return Collections.emptyList();
 
@@ -89,17 +87,10 @@ public class ActionProxiesImpl extends BlueActionProxy {
      * @return actionProxies
      */
     public static Collection<BlueActionProxy> getActionProxies(Collection<? extends Action> actions, final Predicate<Action> alwaysAllowAction, Reachable parent){
-        List<BlueActionProxy> actionProxies = new ArrayList<>();
-        for(Action action : Iterables.filter(actions, new Predicate<Action>() {
-            @Override
-            public boolean apply(Action action) {
-                return action != null
-                    && (action.getClass().getAnnotation(ExportedBean.class) != null || alwaysAllowAction.apply(action));
-            }
-        })){
-            actionProxies.add(new ActionProxiesImpl(action, parent));
-        }
-        return actionProxies;
+        return actions.stream().filter( (Predicate<Action>) action -> action != null
+            && (action.getClass().getAnnotation(ExportedBean.class) != null || alwaysAllowAction.test(action))).
+            map(action1 -> new ActionProxiesImpl(action1, parent)).
+            collect(Collectors.toList());
 
     }
 

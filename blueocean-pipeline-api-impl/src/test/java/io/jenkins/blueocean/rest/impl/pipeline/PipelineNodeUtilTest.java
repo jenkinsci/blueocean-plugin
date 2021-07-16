@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.ImmutableList;
 import hudson.model.Queue;
 import hudson.model.queue.CauseOfBlockage;
 import org.jenkinsci.plugins.workflow.actions.QueueItemAction;
@@ -11,6 +10,8 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
+
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -38,11 +39,11 @@ public class PipelineNodeUtilTest {
         cause = PipelineNodeUtil.getCauseOfBlockage(stage, null);
         assertNull(cause);
 
-        when(nodeBlock.getParents()).thenReturn(ImmutableList.of());
+        when(nodeBlock.getParents()).thenReturn(Collections.emptyList());
         cause = PipelineNodeUtil.getCauseOfBlockage(stage, null);
         assertNull(cause);
 
-        when(nodeBlock.getParents()).thenReturn(ImmutableList.of(stage));
+        when(nodeBlock.getParents()).thenReturn(Collections.singletonList(stage));
         when(QueueItemAction.getQueueItem(nodeBlock)).thenReturn(null);
         cause = PipelineNodeUtil.getCauseOfBlockage(stage, null);
         assertNull(cause);

@@ -1,30 +1,28 @@
 package io.blueocean.ath.offline.multibranch;
 
-import com.google.common.io.Files;
-import com.google.common.io.Resources;
-
 import io.blueocean.ath.*;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
 import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.sse.SSEClientRule;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.junit.JGitTestUtil;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 
 @Login
 @RunWith(ATHJUnitRunner.class)
 public class StartStopTest extends BlueOceanAcceptanceTest {
-    private Logger logger = Logger.getLogger(CommitMessagesTest.class);
+    private Logger logger = LoggerFactory.getLogger(CommitMessagesTest.class);
 
     @Rule
     @Inject
@@ -46,8 +44,9 @@ public class StartStopTest extends BlueOceanAcceptanceTest {
         final String firstBranch = "master";
         final String secondBranch = "second-branch";
 
-        URL navTestJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "StartStopTest/Jenkinsfile");
-        Files.copy(new File(navTestJenkinsfile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
+        URL navTestJenkinsfile = ParallelNavigationTest.class.getResource("StartStopTest/Jenkinsfile");
+        Files.copy(new File(navTestJenkinsfile.getFile()).toPath(),
+                new File(git.gitDirectory, "Jenkinsfile").toPath());
         git.addAll();
         git.commit("Initial commit of Jenkinsfile");
         logger.info("Committed Jenkinsfile");

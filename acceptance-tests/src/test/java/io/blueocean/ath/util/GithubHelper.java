@@ -1,23 +1,22 @@
 package io.blueocean.ath.util;
 
-import com.google.common.base.Preconditions;
-import org.apache.log4j.Logger;
 import org.kohsuke.github.GHCreateRepositoryBuilder;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
-
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Objects;
 import java.util.Properties;
-
 
 public class GithubHelper {
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    private Logger logger = Logger.getLogger(GithubHelper.class);
+    private Logger logger = LoggerFactory.getLogger(GithubHelper.class);
 
     private GitHub githubInstance;
     private GHRepository githubRepository;
@@ -47,9 +46,9 @@ public class GithubHelper {
             logger.error("could not load properties: " + e.getMessage());
         }
 
-        Preconditions.checkNotNull(repositoryName, "github.repo is required");
-        Preconditions.checkNotNull(organizationOrUsername, "github.org is required");
-        Preconditions.checkNotNull(accessToken, "github.token is required");
+        Objects.requireNonNull(repositoryName, "github.repo is required");
+        Objects.requireNonNull(organizationOrUsername, "github.org is required");
+        Objects.requireNonNull(accessToken, "github.token is required");
     }
 
     public String createEmptyRepository() throws IOException {
@@ -97,7 +96,7 @@ public class GithubHelper {
     private GitHub getGitHub() throws IOException {
         if (githubInstance == null) {
             githubInstance = GitHub.connectUsingOAuth(accessToken);
-            Preconditions.checkArgument(githubInstance.isCredentialValid(), "invalid GitHub access token");
+            if (!githubInstance.isCredentialValid()) throw new IllegalArgumentException("invalid GitHub access token");
             logger.info("GitHub initialized w/ valid credentials");
         }
 

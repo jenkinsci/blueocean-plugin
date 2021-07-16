@@ -25,7 +25,7 @@
   </licenses>
 
   <properties>
-    <revision>1.24.8</revision>
+    <revision>1.25.0-alpha-2</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <java.level>8</java.level>
@@ -35,10 +35,9 @@
     <frontend-version>1.12.0</frontend-version>
     <node.version>10.13.0</node.version>
     <npm.version>6.14.4</npm.version>
-    <powermock.version>2.0.7</powermock.version>
+    <powermock.version>2.0.9</powermock.version>
     <hamcrest.version>2.2</hamcrest.version>
     <mockito.version>3.10.0</mockito.version>
-    <guava.version>18.0</guava.version>
     <jacoco.version>0.8.6</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
@@ -445,9 +444,9 @@
             <version>2.4.1</version>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
+            <groupId>io.jenkins.plugins</groupId>
+            <artifactId>caffeine-api</artifactId>
+            <version>2.9.0-17.v79e9099a51e3</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -666,7 +665,7 @@
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8-standalone</artifactId>
-            <version>2.26.3</version>
+            <version>2.28.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -701,6 +700,11 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>2.10.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_annotations</artifactId>
+            <version>2.5.1</version>
         </dependency>
     </dependencies>
   </dependencyManagement>
@@ -753,32 +757,6 @@
                           <goals>
                               <goal>report</goal>
                           </goals>
-                      </execution>
-
-                      <execution>
-                          <id>jacoco-check</id>
-                          <goals>
-                              <goal>check</goal>
-                          </goals>
-                          <configuration>
-                              <rules>
-                                  <rule>
-                                      <element>BUNDLE</element>
-                                      <limits>
-                                          <limit>
-                                              <counter>LINE</counter>
-                                              <value>COVEREDRATIO</value>
-                                              <minimum>${jacoco.line.coverage}</minimum>
-                                          </limit>
-                                          <limit>
-                                              <counter>CLASS</counter>
-                                              <value>MISSEDCOUNT</value>
-                                              <maximum>${jacoco.missedclass.coverage}</maximum>
-                                          </limit>
-                                      </limits>
-                                  </rule>
-                              </rules>
-                          </configuration>
                       </execution>
                   </executions>
               </plugin>
@@ -841,7 +819,7 @@
                     <plugin>
                         <groupId>io.jenkins.blueocean</groupId>
                         <artifactId>blueocean-maven-plugin</artifactId>
-                        <version>0.0.2</version>
+                        <version>0.0.3</version>
                         <executions>
                             <execution>
                                 <!-- unpack package.json + JS into node_modules for any deps with JS files -->
@@ -922,6 +900,12 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>ath-build</id>
+            <modules>
+                <module>acceptance-tests</module>
+            </modules>
         </profile>
     </profiles>
 </project>

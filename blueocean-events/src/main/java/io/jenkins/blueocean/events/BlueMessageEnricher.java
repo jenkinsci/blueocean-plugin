@@ -70,7 +70,6 @@ public class BlueMessageEnricher extends MessageEnricher {
             maybeEnrichMessage(message);
         } catch (Exception e) {
             LOGGER.log(WARNING, "Unable to enrich message: " + e.getMessage(), e);
-            return;
         }
     }
 

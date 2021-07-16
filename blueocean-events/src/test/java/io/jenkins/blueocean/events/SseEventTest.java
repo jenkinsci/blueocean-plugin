@@ -66,25 +66,22 @@ public class SseEventTest {
         final OneShotEvent success = new OneShotEvent();
 
         final AssertionHelper assertionHelper = new AssertionHelper();
-        SSEConnection con = new SSEConnection(j.getURL(), "me", new ChannelSubscriber() {
-            @Override
-            public void onMessage(@Nonnull Message message) {
-                System.out.println(message);
-                assertionHelper.isEquals("job_crud_created", message.get(jenkins_event));
-                assertionHelper.isEquals("/blue/rest/organizations/jenkins/pipelines/test1/", message.get(blueocean_job_rest_url));
-                assertionHelper.isEquals("test1", message.get(blueocean_job_pipeline_name));
-                assertionHelper.isEquals("test1", message.get(job_name));
-                assertionHelper.isEquals("job", message.get(jenkins_channel));
-                assertionHelper.isNull(message.get(job_ismultibranch));
-                assertionHelper.isNull(message.get(job_multibranch_indexing_result));
-                assertionHelper.isNull(message.get(job_multibranch_indexing_status));
-                assertionHelper.isNull(message.get(Job.job_run_queueId));
-                assertionHelper.isNull(message.get(Job.job_run_status));
+        SSEConnection con = new SSEConnection( j.getURL(), "me", message -> {
+            System.out.println(message);
+            assertionHelper.isEquals("job_crud_created", message.get(jenkins_event));
+            assertionHelper.isEquals("/blue/rest/organizations/jenkins/pipelines/test1/", message.get(blueocean_job_rest_url));
+            assertionHelper.isEquals("test1", message.get(blueocean_job_pipeline_name));
+            assertionHelper.isEquals("test1", message.get(job_name));
+            assertionHelper.isEquals("job", message.get(jenkins_channel));
+            assertionHelper.isNull(message.get(job_ismultibranch));
+            assertionHelper.isNull(message.get(job_multibranch_indexing_result));
+            assertionHelper.isNull(message.get(job_multibranch_indexing_status));
+            assertionHelper.isNull(message.get(Job.job_run_queueId));
+            assertionHelper.isNull(message.get(Job.job_run_status));
 
-                if ("job_crud_created".equals(message.get(jenkins_event)))
-                    success.signal();
-            }
-        });
+            if ("job_crud_created".equals(message.get(jenkins_event)))
+                success.signal();
+        } );
 
         con.subscribe("job");
 
@@ -105,29 +102,26 @@ public class SseEventTest {
 
         final FreeStyleProject p = j.createFreeStyleProject("test1");
         final AssertionHelper assertionHelper = new AssertionHelper();
-        SSEConnection con = new SSEConnection(j.getURL(), "me", new ChannelSubscriber() {
-            @Override
-            public void onMessage(@Nonnull Message message) {
-                System.out.println(message);
-                assertionHelper.isEquals("/blue/rest/organizations/jenkins/pipelines/test1/", message.get(blueocean_job_rest_url));
-                assertionHelper.isEquals(p.getName(), message.get(blueocean_job_pipeline_name));
-                if(message.get(jenkins_event).equals(Events.JobChannel.job_run_queue_left.name())) {
-                    assertionHelper.isEquals("1", message.get(blueocean_queue_item_expected_build_number));
-                }
-                assertionHelper.isEquals(p.getName(), message.get(job_name));
-                assertionHelper.isEquals("job", message.get(jenkins_channel));
-                assertionHelper.isEquals("jenkins", message.get(jenkins_org));
-                assertionHelper.isNull(message.get(job_ismultibranch));
-                assertionHelper.isNull(message.get(job_multibranch_indexing_result));
-                assertionHelper.isNull(message.get(job_multibranch_indexing_status));
-                assertionHelper.isNotNull(message.get(Job.job_run_queueId));
-                assertionHelper.isNotNull(message.get(Job.job_run_status));
-
-                if ("SUCCESS".equals(message.get(Job.job_run_status))
-                        && "job_run_ended".equals(message.get(jenkins_event)))
-                    success.signal();
+        SSEConnection con = new SSEConnection( j.getURL(), "me", message -> {
+            System.out.println(message);
+            assertionHelper.isEquals("/blue/rest/organizations/jenkins/pipelines/test1/", message.get(blueocean_job_rest_url));
+            assertionHelper.isEquals(p.getName(), message.get(blueocean_job_pipeline_name));
+            if(message.get(jenkins_event).equals(Events.JobChannel.job_run_queue_left.name())) {
+                assertionHelper.isEquals("1", message.get(blueocean_queue_item_expected_build_number));
             }
-        });
+            assertionHelper.isEquals(p.getName(), message.get(job_name));
+            assertionHelper.isEquals("job", message.get(jenkins_channel));
+            assertionHelper.isEquals("jenkins", message.get(jenkins_org));
+            assertionHelper.isNull(message.get(job_ismultibranch));
+            assertionHelper.isNull(message.get(job_multibranch_indexing_result));
+            assertionHelper.isNull(message.get(job_multibranch_indexing_status));
+            assertionHelper.isNotNull(message.get(Job.job_run_queueId));
+            assertionHelper.isNotNull(message.get(Job.job_run_status));
+
+            if ("SUCCESS".equals(message.get(Job.job_run_status))
+                    && "job_run_ended".equals(message.get(jenkins_event)))
+                success.signal();
+        } );
         con.subscribe("job");
         p.scheduleBuild2(0).get();
 
@@ -154,43 +148,40 @@ public class SseEventTest {
         final boolean[] wasPaused = {false};
         final boolean[] wasUnPaused = {false};
         final AssertionHelper assertionHelper = new AssertionHelper();
-        SSEConnection con = new SSEConnection(j.getURL(), "me", new ChannelSubscriber() {
-            @Override
-            public void onMessage(@Nonnull Message message) {
-                System.out.println(message);
-                if("job".equals(message.get(jenkins_channel))) {
-                    assertionHelper.isEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/", message.get(blueocean_job_rest_url));
-                    assertionHelper.isEquals("pipeline1", message.get(blueocean_job_pipeline_name));
-                    if(message.get(jenkins_event).equals(Events.JobChannel.job_run_queue_left.name())) {
-                        assertionHelper.isEquals("1", message.get(blueocean_queue_item_expected_build_number));
-                        assertionHelper.isNotNull(message.get(Job.job_run_queueId));
-                        assertionHelper.isNotNull(message.get(Job.job_run_status));
-                    }
-                    assertionHelper.isEquals("pipeline1", message.get(job_name));
-                    assertionHelper.isEquals("job", message.get(jenkins_channel));
-                    assertionHelper.isEquals("jenkins", message.get(jenkins_org));
-                    assertionHelper.isNull(message.get(job_ismultibranch));
-                    assertionHelper.isNull(message.get(job_multibranch_indexing_result));
-                    assertionHelper.isNull(message.get(job_multibranch_indexing_status));
-
-                    if("job_run_unpaused".equals(message.get(jenkins_event))){
-                        wasUnPaused[0] = true;
-                    }
-                }else if("pipeline".equals(message.get(jenkins_channel))){
-                    assertionHelper.isEquals("1", message.get(pipeline_run_id));
-                    if(message.get(jenkins_event).equals(pipeline_stage.name())) {
-                        assertionHelper.isEquals("build", message.get(pipeline_step_stage_name));
-                    }
-                    if("input".equals(message.get(pipeline_step_name))){
-                        wasPaused[0] = true;
-                        assertionHelper.isEquals("true", message.get(pipeline_step_is_paused));
-                    }
+        SSEConnection con = new SSEConnection( j.getURL(), "me", message -> {
+            System.out.println(message);
+            if("job".equals(message.get(jenkins_channel))) {
+                assertionHelper.isEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/", message.get(blueocean_job_rest_url));
+                assertionHelper.isEquals("pipeline1", message.get(blueocean_job_pipeline_name));
+                if(message.get(jenkins_event).equals(Events.JobChannel.job_run_queue_left.name())) {
+                    assertionHelper.isEquals("1", message.get(blueocean_queue_item_expected_build_number));
+                    assertionHelper.isNotNull(message.get(Job.job_run_queueId));
+                    assertionHelper.isNotNull(message.get(Job.job_run_status));
                 }
-                if(wasPaused[0] && wasUnPaused[0]){ // signal finish only when both conditions are met
-                    success.signal();
+                assertionHelper.isEquals("pipeline1", message.get(job_name));
+                assertionHelper.isEquals("job", message.get(jenkins_channel));
+                assertionHelper.isEquals("jenkins", message.get(jenkins_org));
+                assertionHelper.isNull(message.get(job_ismultibranch));
+                assertionHelper.isNull(message.get(job_multibranch_indexing_result));
+                assertionHelper.isNull(message.get(job_multibranch_indexing_status));
+
+                if("job_run_unpaused".equals(message.get(jenkins_event))){
+                    wasUnPaused[0] = true;
+                }
+            }else if("pipeline".equals(message.get(jenkins_channel))){
+                assertionHelper.isEquals("1", message.get(pipeline_run_id));
+                if(message.get(jenkins_event).equals(pipeline_stage.name())) {
+                    assertionHelper.isEquals("build", message.get(pipeline_step_stage_name));
+                }
+                if("input".equals(message.get(pipeline_step_name))){
+                    wasPaused[0] = true;
+                    assertionHelper.isEquals("true", message.get(pipeline_step_is_paused));
                 }
             }
-        });
+            if(wasPaused[0] && wasUnPaused[0]){ // signal finish only when both conditions are met
+                success.signal();
+            }
+        } );
 
         con.subscribe("pipeline");
         con.subscribe("job");
@@ -247,124 +238,121 @@ public class SseEventTest {
 
         final AssertionHelper assertionHelper = new AssertionHelper();
 
-        SSEConnection con = new SSEConnection(j.getURL(), "me", new ChannelSubscriber() {
-            @Override
-            public void onMessage(@Nonnull Message message) {
-                System.out.println(message);
-                if("job".equals(message.get(jenkins_channel))) {
-                    if ("org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject".equals(message.get(jenkins_object_type))) {
-                        assertionHelper.isEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/", message.get(blueocean_job_rest_url));
+        SSEConnection con = new SSEConnection( j.getURL(), "me", message -> {
+            System.out.println(message);
+            if("job".equals(message.get(jenkins_channel))) {
+                if ("org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject".equals(message.get(jenkins_object_type))) {
+                    assertionHelper.isEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/", message.get(blueocean_job_rest_url));
 
-                        //assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/", message.get(blueocean_job_rest_url));
-                        assertionHelper.isEquals("pipeline1", message.get(blueocean_job_pipeline_name));
-                        assertionHelper.isEquals("job", message.get(jenkins_channel));
-                        assertionHelper.isEquals("jenkins", message.get(jenkins_org));
-                        assertionHelper.isEquals("true", message.get(job_ismultibranch));
-                        assertionHelper.isEquals("pipeline1", message.get(job_name));
-                        assertionHelper.isNull(message.get(job_orgfolder_indexing_status));
-                        assertionHelper.isNull(message.get(job_orgfolder_indexing_result));
+                    //assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/", message.get(blueocean_job_rest_url));
+                    assertionHelper.isEquals("pipeline1", message.get(blueocean_job_pipeline_name));
+                    assertionHelper.isEquals("job", message.get(jenkins_channel));
+                    assertionHelper.isEquals("jenkins", message.get(jenkins_org));
+                    assertionHelper.isEquals("true", message.get(job_ismultibranch));
+                    assertionHelper.isEquals("pipeline1", message.get(job_name));
+                    assertionHelper.isNull(message.get(job_orgfolder_indexing_status));
+                    assertionHelper.isNull(message.get(job_orgfolder_indexing_result));
+                    if ("QUEUED".equals(message.get(job_run_status))) {
+                        mbpStatus[0] = true; // queued
+                    }
+                    if ("ALLOCATED".equals(message.get(job_run_status))) {
+                        mbpStatus[1] = true; // allocated or left queue
+                    }
+                    if ("INDEXING".equals(message.get(job_multibranch_indexing_status))) {
+                        mbpStatus[2] = true; // indexing started
+                        assertionHelper.isNotNull(message.get(job_run_queueId));
+                    }
+
+                    if ("SUCCESS".equals(message.get(job_multibranch_indexing_result)) ||
+                            ("COMPLETED".equals(message.get(job_multibranch_indexing_status))
+                                    && "job_run_queue_task_complete".equals(message.get(jenkins_event)))
+                            ) {
+                        mbpStatus[3] = true; // indexing completed
+                    }
+                } else if ("org.jenkinsci.plugins.workflow.job.WorkflowJob".equals(message.get(jenkins_object_type))) {
+                    assertionHelper.isEquals("pipeline1", message.get(blueocean_job_pipeline_name));
+                    if ("pipeline1/master".equals(message.get(job_name))) {
+                        System.out.println("job_run_status::::: " + message.get(job_run_status));
+                        assertionHelper.isEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/master/", message.get(blueocean_job_rest_url));
+                        assertionHelper.isEquals("master", message.get(blueocean_job_branch_name));
+                        if ("job_crud_created".equals(message.get(jenkins_event))) {
+                            masterBranchStatus[0] = true;
+                        }
                         if ("QUEUED".equals(message.get(job_run_status))) {
-                            mbpStatus[0] = true; // queued
-                        }
-                        if ("ALLOCATED".equals(message.get(job_run_status))) {
-                            mbpStatus[1] = true; // allocated or left queue
-                        }
-                        if ("INDEXING".equals(message.get(job_multibranch_indexing_status))) {
-                            mbpStatus[2] = true; // indexing started
-                            assertionHelper.isNotNull(message.get(job_run_queueId));
+                            masterBranchStatus[1] = true;
+                        } else if ("ALLOCATED".equals(message.get(job_run_status))) {
+                            masterBranchStatus[2] = true;
+                        } else if ("RUNNING".equals(message.get(job_run_status))) {
+                            System.out.println("in master running.....");
+                            assertionHelper.isEquals("1", message.get(blueocean_queue_item_expected_build_number));
+                            masterBranchStatus[3] = true;
                         }
 
-                        if ("SUCCESS".equals(message.get(job_multibranch_indexing_result)) ||
-                                ("COMPLETED".equals(message.get(job_multibranch_indexing_status))
-                                        && "job_run_queue_task_complete".equals(message.get(jenkins_event)))
-                                ) {
-                            mbpStatus[3] = true; // indexing completed
+                        if ("SUCCESS".equals(message.get(job_run_status))
+                                || "job_run_queue_task_complete".equals(message.get(jenkins_event))) {
+                            masterBranchStatus[4] = true;
                         }
-                    } else if ("org.jenkinsci.plugins.workflow.job.WorkflowJob".equals(message.get(jenkins_object_type))) {
-                        assertionHelper.isEquals("pipeline1", message.get(blueocean_job_pipeline_name));
-                        if ("pipeline1/master".equals(message.get(job_name))) {
-                            System.out.println("job_run_status::::: " + message.get(job_run_status));
-                            assertionHelper.isEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/master/", message.get(blueocean_job_rest_url));
-                            assertionHelper.isEquals("master", message.get(blueocean_job_branch_name));
-                            if ("job_crud_created".equals(message.get(jenkins_event))) {
-                                masterBranchStatus[0] = true;
-                            }
-                            if ("QUEUED".equals(message.get(job_run_status))) {
-                                masterBranchStatus[1] = true;
-                            } else if ("ALLOCATED".equals(message.get(job_run_status))) {
-                                masterBranchStatus[2] = true;
-                            } else if ("RUNNING".equals(message.get(job_run_status))) {
-                                System.out.println("in master running.....");
-                                assertionHelper.isEquals("1", message.get(blueocean_queue_item_expected_build_number));
-                                masterBranchStatus[3] = true;
-                            }
+                    } else if ("pipeline1/feature%2Fux-1".equals(message.get(job_name))) {
+                        assertionHelper.isEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/feature%252Fux-1/", message.get(blueocean_job_rest_url));
+                        assertionHelper.isEquals("feature%2Fux-1", message.get(blueocean_job_branch_name));
+                        if ("job_crud_created".equals(message.get(jenkins_event))) {
+                            feature1BranchStatus[0] = true;
+                        }
+                        System.out.println("job_run_status::::: " + message.get(job_run_status));
+                        if ("QUEUED".equals(message.get(job_run_status))) {
+                            feature1BranchStatus[1] = true;
+                        } else if ("ALLOCATED".equals(message.get(job_run_status))) {
+                            feature1BranchStatus[2] = true;
+                        }
 
-                            if ("SUCCESS".equals(message.get(job_run_status))
-                                    || "job_run_queue_task_complete".equals(message.get(jenkins_event))) {
-                                masterBranchStatus[4] = true;
-                            }
-                        } else if ("pipeline1/feature%2Fux-1".equals(message.get(job_name))) {
-                            assertionHelper.isEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/feature%252Fux-1/", message.get(blueocean_job_rest_url));
-                            assertionHelper.isEquals("feature%2Fux-1", message.get(blueocean_job_branch_name));
-                            if ("job_crud_created".equals(message.get(jenkins_event))) {
-                                feature1BranchStatus[0] = true;
-                            }
-                            System.out.println("job_run_status::::: " + message.get(job_run_status));
-                            if ("QUEUED".equals(message.get(job_run_status))) {
-                                feature1BranchStatus[1] = true;
-                            } else if ("ALLOCATED".equals(message.get(job_run_status))) {
-                                feature1BranchStatus[2] = true;
-                            }
-
-                            if ("SUCCESS".equals(message.get(job_run_status))
-                                    || "job_run_queue_task_complete".equals(message.get(jenkins_event))) {
-                                feature1BranchStatus[4] = true;
-                            }
-                        }
-                    } else if ("org.jenkinsci.plugins.workflow.job.WorkflowRun".equals(message.get(jenkins_object_type))) {
-                        if ("pipeline1/master".equals(message.get(job_name))) {
-                            if ("RUNNING".equals(message.get(job_run_status))) {
-                                assertionHelper.isEquals("1", message.get(blueocean_queue_item_expected_build_number));
-                                masterBranchStatus[3] = true;
-                            }
-                        } else if ("pipeline1/feature%2Fux-1".equals(message.get(job_name))) {
-                            if ("RUNNING".equals(message.get(job_run_status))) {
-                                assertionHelper.isEquals("1", message.get(blueocean_queue_item_expected_build_number));
-                                feature1BranchStatus[3] = true;
-                            }
+                        if ("SUCCESS".equals(message.get(job_run_status))
+                                || "job_run_queue_task_complete".equals(message.get(jenkins_event))) {
+                            feature1BranchStatus[4] = true;
                         }
                     }
-                    //all completed
-                    if (mbpStatus[3] && masterBranchStatus[4] && feature1BranchStatus[4]) {
-                        success.signal();
-                    }
-                }else if("pipeline".equals(message.get(jenkins_channel))){
-                    if("pipeline1/master".equals(message.get(pipeline_job_name))){
-                        assertionHelper.isEquals("1", message.get(pipeline_run_id));
-                        masterBranchPipelineEvent[0]=true;
-                        if ("pipeline_step".equals(message.get(jenkins_event)) &&
-                            "node".equals(message.get(pipeline_step_name))) {
-                            masterBranchNodeBlockEvent[0] = true;
+                } else if ("org.jenkinsci.plugins.workflow.job.WorkflowRun".equals(message.get(jenkins_object_type))) {
+                    if ("pipeline1/master".equals(message.get(job_name))) {
+                        if ("RUNNING".equals(message.get(job_run_status))) {
+                            assertionHelper.isEquals("1", message.get(blueocean_queue_item_expected_build_number));
+                            masterBranchStatus[3] = true;
                         }
-                    } else if("pipeline1/feature%2Fux-1".equals(message.get(pipeline_job_name))){
-                        feature1BranchPipelineEvent[0]=true;
-                        assertionHelper.isEquals("1", message.get(pipeline_run_id));
-                        if ("pipeline_step".equals(message.get(jenkins_event)) &&
-                            "node".equals(message.get(pipeline_step_name))) {
-                            feature1BranchNodeBlockEvent[0] = true;
+                    } else if ("pipeline1/feature%2Fux-1".equals(message.get(job_name))) {
+                        if ("RUNNING".equals(message.get(job_run_status))) {
+                            assertionHelper.isEquals("1", message.get(blueocean_queue_item_expected_build_number));
+                            feature1BranchStatus[3] = true;
                         }
-                    }
-                    if("pipeline_stage".equals(message.get(jenkins_event))){
-                        assertionHelper.isNotNull(message.get(pipeline_step_stage_name));
-                        assertionHelper.isEquals("build", message.get(pipeline_step_stage_name));
-                        assertionHelper.isNotNull(message.get(pipeline_step_flownode_id));
-                    }else if("pipeline_step".equals(message.get(jenkins_event))){
-                        assertionHelper.isNotNull(message.get(pipeline_step_flownode_id));
-                        assertionHelper.isEquals("false", message.get(pipeline_step_is_paused));
                     }
                 }
+                //all completed
+                if (mbpStatus[3] && masterBranchStatus[4] && feature1BranchStatus[4]) {
+                    success.signal();
+                }
+            }else if("pipeline".equals(message.get(jenkins_channel))){
+                if("pipeline1/master".equals(message.get(pipeline_job_name))){
+                    assertionHelper.isEquals("1", message.get(pipeline_run_id));
+                    masterBranchPipelineEvent[0]=true;
+                    if ("pipeline_step".equals(message.get(jenkins_event)) &&
+                        "node".equals(message.get(pipeline_step_name))) {
+                        masterBranchNodeBlockEvent[0] = true;
+                    }
+                } else if("pipeline1/feature%2Fux-1".equals(message.get(pipeline_job_name))){
+                    feature1BranchPipelineEvent[0]=true;
+                    assertionHelper.isEquals("1", message.get(pipeline_run_id));
+                    if ("pipeline_step".equals(message.get(jenkins_event)) &&
+                        "node".equals(message.get(pipeline_step_name))) {
+                        feature1BranchNodeBlockEvent[0] = true;
+                    }
+                }
+                if("pipeline_stage".equals(message.get(jenkins_event))){
+                    assertionHelper.isNotNull(message.get(pipeline_step_stage_name));
+                    assertionHelper.isEquals("build", message.get(pipeline_step_stage_name));
+                    assertionHelper.isNotNull(message.get(pipeline_step_flownode_id));
+                }else if("pipeline_step".equals(message.get(jenkins_event))){
+                    assertionHelper.isNotNull(message.get(pipeline_step_flownode_id));
+                    assertionHelper.isEquals("false", message.get(pipeline_step_is_paused));
+                }
             }
-        });
+        } );
         con.subscribe("pipeline");
         con.subscribe("job");
 

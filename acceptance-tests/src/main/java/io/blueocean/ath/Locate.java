@@ -1,10 +1,10 @@
 package io.blueocean.ath;
 
-import com.google.common.collect.ImmutableList;
 import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,7 +39,7 @@ public abstract class Locate {
 
         @Override
         public List<WebElement> findElements(SearchContext context) {
-            return ImmutableList.of(elem);
+            return Collections.singletonList(elem);
         }
     }
 }

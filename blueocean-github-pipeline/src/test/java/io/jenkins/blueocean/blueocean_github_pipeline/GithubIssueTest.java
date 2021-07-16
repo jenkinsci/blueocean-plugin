@@ -1,8 +1,6 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.Run;
@@ -27,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -91,7 +90,8 @@ public class GithubIssueTest {
         Collection<BlueIssue> resolved = BlueIssueFactory.resolve(entry);
         Assert.assertEquals(2, resolved.size());
 
-        Map<String, BlueIssue> issueMap = Maps.uniqueIndex( resolved, input -> input.getId() );
+        Map<String, BlueIssue> issueMap = resolved.stream()
+            .collect(Collectors.toMap(BlueIssue::getId,blueIssue -> blueIssue));
 
         BlueIssue issue123 = issueMap.get("#123");
         Assert.assertEquals("https://github.com/example/repo/issues/123", issue123.getURL());

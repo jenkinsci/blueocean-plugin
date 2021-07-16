@@ -1,11 +1,10 @@
 package io.jenkins.blueocean.service.embedded.analytics;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import hudson.model.UsageStatistics;
 import hudson.model.User;
 import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.analytics.Analytics.TrackRequest;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
 import org.junit.Assert;
@@ -14,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class AnalyticsTest {
@@ -47,7 +47,7 @@ public class AnalyticsTest {
 
     @Test
     public void track() {
-        ImmutableMap<String, Object> props = ImmutableMap.<String, Object>of(
+        Map<String, Object> props = MapsHelper.of(
             "prop1", "value1",
             "prop2", 2,
             "jenkinsVersion", j.jenkins.getVersion().toString(),
@@ -55,7 +55,7 @@ public class AnalyticsTest {
         );
         analytics.track(new TrackRequest("test", props));
 
-        Map<String, Object> expectedProps = Maps.newHashMap(props);
+        Map<String, Object> expectedProps = new HashMap<>(props);
         expectedProps.put("jenkins", analytics.getServer());
 
         Assert.assertEquals("test", analytics.lastName);
@@ -69,7 +69,7 @@ public class AnalyticsTest {
     public void trackWithoutProps() {
         analytics.track(new TrackRequest("test", null));
 
-        Map<String, Object> expectedProps = Maps.newHashMap();
+        Map<String, Object> expectedProps = new HashMap();
         expectedProps.put("jenkins", analytics.getServer());
         expectedProps.put("jenkinsVersion", j.jenkins.getVersion().toString());
         expectedProps.put("blueoceanVersion", Jenkins.get().getPlugin("blueocean-commons").getWrapper().getVersion());

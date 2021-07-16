@@ -47,7 +47,6 @@
             <groupId>oro</groupId>
             <artifactId>oro</artifactId>
         </dependency>
-
         <!-- Test plugins -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>

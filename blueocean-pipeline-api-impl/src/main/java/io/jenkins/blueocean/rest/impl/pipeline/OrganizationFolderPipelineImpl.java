@@ -1,7 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Item;
 import hudson.model.Queue;
@@ -41,13 +39,13 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_SCM;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_ORGANIZATION_FOLDER;
@@ -140,15 +138,9 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
 
     @Override
     public Iterable<String> getPipelineFolderNames() {
-        return Iterables.transform(folder.getItems(), new Function<Item, String>() {
-            @Override
-            public String apply(@Nullable Item input) {
-                if(input instanceof WorkflowMultiBranchProject){
-                    return input.getName();
-                }
-                return null;
-            }
-        });
+        return folder.getItems().stream()
+            .map(multiBranchProject -> (multiBranchProject instanceof WorkflowMultiBranchProject)?multiBranchProject.getName():null)
+            .collect(Collectors.toList());
     }
 
     @Override

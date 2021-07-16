@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.service.embedded;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.Strings;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
@@ -20,6 +19,7 @@ import net.sf.json.JSONObject;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.userdetails.UserDetails;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -440,7 +440,7 @@ public abstract class BaseTest {
                 request.header("Accept-Encoding","");
 
                 request.header("Content-Type", contentType);
-                if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){
+                if(!StringUtils.isBlank(username) && !StringUtils.isBlank(password)){
                     request.basicAuth(username, password);
                 }
 

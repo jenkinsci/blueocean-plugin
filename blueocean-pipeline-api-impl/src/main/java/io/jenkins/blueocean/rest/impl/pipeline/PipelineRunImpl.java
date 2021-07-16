@@ -21,7 +21,6 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
-import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMRevisionAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
@@ -153,12 +152,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
     @Override
     public BlueRun stop(@QueryParameter("blocking") Boolean blocking, @QueryParameter("timeOutInSecs") Integer timeOutInSecs){
-        return stop(blocking, timeOutInSecs, new StoppableRun() {
-            @Override
-            public void stop() {
-                run.doStop();
-            }
-        });
+        return stop(blocking, timeOutInSecs, run::doStop);
     }
 
 
@@ -215,7 +209,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         }
     }
 
-    static final Comparator<BlueRun> LATEST_RUN_START_TIME_COMPARATOR = (o1, o2) -> {
+    public static final Comparator<BlueRun> LATEST_RUN_START_TIME_COMPARATOR = (o1, o2) -> {
             Long t1 = (o1 != null  && o1.getStartTime() != null) ? o1.getStartTime().getTime() : 0;
             Long t2 = (o2 != null  && o2.getStartTime() != null) ? o2.getStartTime().getTime() : 0;
             return t2.compareTo(t1);

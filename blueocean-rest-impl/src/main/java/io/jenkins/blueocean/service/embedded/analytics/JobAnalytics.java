@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.analytics;
 
-import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.AsyncPeriodicWork;
@@ -59,8 +58,7 @@ public final class JobAnalytics extends AsyncPeriodicWork {
             }
         });
         analytics.track(new TrackRequest(
-            JOB_STATS_EVENT_NAME,
-            ImmutableMap.copyOf(tally.get())
+            JOB_STATS_EVENT_NAME, tally.get()
         ));
     }
 

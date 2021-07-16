@@ -1,8 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Ordering;
 import hudson.model.Job;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
@@ -169,19 +166,19 @@ public class BranchContainerImpl extends BluePipelineContainer {
             throw new ServiceException.UnexpectedErrorException("Could not find organization for " + pipeline.mbp.getFullName());
         }
         final Link link = getLink();
+
         // Filter will decide if the requester wants branches or pull requests
-        Collection allJobsMatchinFilter = ContainerFilter.filter(pipeline.mbp.getAllJobs());
-        // Transform all of these to branches (these represent branches or pull requests)
-        Iterable<BluePipeline> branches = Iterables.transform(allJobsMatchinFilter, new Function<Job, BluePipeline>() {
-            @Override
-            public BluePipeline apply(Job input) {
-                return new BranchImpl(organization, input, link);
-            }
-        });
-        // Order them using the comparator
-        branches = Ordering.from(BRANCH_COMPARATOR).sortedCopy(branches);
-        // Return the page requested by the client
-        return Iterables.limit(Iterables.skip(branches, start), limit).iterator();
+        Collection<Job> allJobsMatchinFilter = ContainerFilter.filter(pipeline.mbp.getAllJobs());
+
+        return allJobsMatchinFilter.stream()
+            // Transform all of these to branches (these represent branches or pull requests)
+            .map( job -> (BluePipeline) new BranchImpl(organization, job, link) )
+            // Order them using the comparator
+            .sorted(BRANCH_COMPARATOR)
+            // Return the page requested by the client
+            .skip(start)
+            .limit(limit)
+            .iterator();
     }
 
     @Override

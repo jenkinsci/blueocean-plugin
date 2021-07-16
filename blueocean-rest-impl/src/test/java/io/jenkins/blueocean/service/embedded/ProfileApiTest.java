@@ -1,8 +1,5 @@
 package io.jenkins.blueocean.service.embedded;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.FreeStyleProject;
 import hudson.model.Hudson;
@@ -12,6 +9,7 @@ import hudson.security.GlobalMatrixAuthorizationStrategy;
 import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.tasks.Mailer;
 import hudson.tasks.UserAvatarResolver;
+import io.jenkins.blueocean.commons.IterableUtils;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.service.embedded.rest.UserImpl;
 import jenkins.model.Jenkins;
@@ -25,6 +23,7 @@ import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestExtension;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -206,7 +205,7 @@ public class ProfileApiTest extends BaseTest{
         Map map = new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/pipeline1/favorite")
             .authAlice()
-            .data(ImmutableMap.of("favorite", true))
+            .data(Collections.singletonMap("favorite", true))
             .build(Map.class);
 
         validatePipeline(p, (Map) map.get("item"));
@@ -225,7 +224,7 @@ public class ProfileApiTest extends BaseTest{
         map = new RequestBuilder(baseUrl)
             .put(href.substring("/blue/rest".length()))
             .authAlice()
-            .data(ImmutableMap.of("favorite", false))
+            .data(Collections.singletonMap("favorite", false))
             .build(Map.class);
 
         validatePipeline(p, (Map) map.get("item"));
@@ -259,7 +258,7 @@ public class ProfileApiTest extends BaseTest{
         Map map = new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/folder1/pipelines/pipeline1/favorite/")
             .authAlice()
-            .data(ImmutableMap.of("favorite", true))
+            .data(Collections.singletonMap("favorite", true))
             .build(Map.class);
 
         validatePipeline(p, (Map) map.get("item"));
@@ -280,7 +279,7 @@ public class ProfileApiTest extends BaseTest{
         map = new RequestBuilder(baseUrl)
             .put(href.substring("/blue/rest".length()))
             .authAlice()
-            .data(ImmutableMap.of("favorite", false))
+            .data(Collections.singletonMap("favorite", false))
             .build(Map.class);
 
         validatePipeline(p, (Map) map.get("item"));
@@ -296,14 +295,14 @@ public class ProfileApiTest extends BaseTest{
         new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/folder1/favorite/")
             .authAlice()
-            .data(ImmutableMap.of("favorite", true))
+            .data(Collections.singletonMap("favorite", true))
             .status(405)
             .build(Map.class);
 
         new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/folder1/favorite/")
             .authAlice()
-            .data(ImmutableMap.of("favorite", false))
+            .data(Collections.singletonMap("favorite", false))
             .status(405)
             .build(Map.class);
 
@@ -325,7 +324,7 @@ public class ProfileApiTest extends BaseTest{
 
     @Test
     public void FindUsersTest() throws Exception {
-        List<String> names = ImmutableList.of("alice", "bob");
+        List<String> names = Arrays.asList("alice", "bob");
         User.get(names.get(0));
         User.get(names.get(1));
 
@@ -393,7 +392,7 @@ public class ProfileApiTest extends BaseTest{
 
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(bob.getId(), bob.getId(), d.getAuthorities()));
 
-        Assert.assertNull(new UserImpl(Iterables.getFirst(OrganizationFactory.getInstance().list(), null), alice).getPermission());
+        Assert.assertNull(new UserImpl(IterableUtils.getFirst(OrganizationFactory.getInstance().list(), null), alice).getPermission());
     }
 
     @Test

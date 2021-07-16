@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.util;
 
 import com.damnhandy.uri.template.UriTemplate;
-import com.google.common.base.Preconditions;
 import io.jenkins.blueocean.commons.JsonConverter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
@@ -13,7 +12,8 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -58,10 +58,10 @@ import static io.jenkins.blueocean.util.HttpRequest.Method.GET;
  */
 public class HttpRequest {
 
-    private static final Logger logger = Logger.getLogger(HttpRequest.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpRequest.class);
     private static final String JSON = "application/json";
 
-    enum Method { GET, POST, PUT, PATCH, DELETE };
+    enum Method { GET, POST, PUT, PATCH, DELETE }
 
     final private Map<String, String> headers = new HashMap<>();
     final private Map<String, Object> urlParts = new HashMap<>();
@@ -82,7 +82,7 @@ public class HttpRequest {
      * @param baseUrl
      */
     public HttpRequest(@Nonnull String baseUrl) {
-        Preconditions.checkState(StringUtils.isNotBlank(baseUrl), "baseUrl is required");
+        if (StringUtils.isBlank(baseUrl)) throw new IllegalArgumentException("baseUrl is required");
         this.baseUrl = baseUrl;
     }
 

@@ -16,8 +16,6 @@ import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 import org.acegisecurity.Authentication;
 
-import com.google.common.base.Objects;
-
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
@@ -78,6 +76,7 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
     protected abstract String computeCredentialId(BlueScmConfig scmConfig);
 
     protected ModifiableTopLevelItemGroup getParent(BlueOrganization organization) {
-        return Objects.firstNonNull(OrganizationFactory.getItemGroup(organization), Jenkins.get());
+        ModifiableTopLevelItemGroup m = OrganizationFactory.getItemGroup(organization);
+        return m!=null? m:Jenkins.get();
     }
 }

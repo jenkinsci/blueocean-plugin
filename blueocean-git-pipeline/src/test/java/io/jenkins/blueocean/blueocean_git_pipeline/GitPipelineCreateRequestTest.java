@@ -1,8 +1,8 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
-import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import jenkins.branch.MultiBranchProject;
 import jenkins.plugins.git.GitSCMSource;
@@ -47,9 +47,10 @@ public class GitPipelineCreateRequestTest extends PipelineBaseTest {
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
             .crumb( crumb )
             .post("/organizations/jenkins/pipelines/")
-            .data(ImmutableMap.of("name", "pipeline1",
-                "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                "scmConfig", ImmutableMap.of("id", GitScm.ID, "uri", sampleRepo.toString())))
+            .data( MapsHelper.of("name", "pipeline1",
+                                 "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                                 "scmConfig",
+                                 MapsHelper.of("id", GitScm.ID, "uri", sampleRepo.toString())))
             .build(Map.class);
         assertNotNull(r);
         assertEquals("pipeline1", r.get("name"));

@@ -1,11 +1,11 @@
 package io.jenkins.blueocean.auth.jwt;
 
-import com.google.common.collect.ImmutableList;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.WebMethod;
 
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
+import java.util.Collections;
 
 /**
  * Public key counterpart of {@link SigningKey}
@@ -47,7 +47,7 @@ public class SigningPublicKey {
         jwk.put("alg","RS256");
         jwk.put("kid",kid);
         jwk.put("use", "sig");
-        jwk.put("key_ops", ImmutableList.of("verify"));
+        jwk.put("key_ops", Collections.singleton("verify"));
         jwk.put("n", Base64.getUrlEncoder().withoutPadding().encodeToString(key.getModulus().toByteArray()));
         jwk.put("e", Base64.getUrlEncoder().withoutPadding().encodeToString(key.getPublicExponent().toByteArray()));
         return jwk;

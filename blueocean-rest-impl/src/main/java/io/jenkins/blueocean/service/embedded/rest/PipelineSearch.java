@@ -107,12 +107,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
         final List<BluePipeline> pipelines = new ArrayList<>();
         String pipeline = q.param(getType());
         if(pipeline == null) {
-            return Pageables.wrap(new Iterable<BluePipeline>() {
-                @Override
-                public Iterator<BluePipeline> iterator() {
-                    return pipelineIterator;
-                }
-            });
+            return Pageables.wrap(() -> pipelineIterator);
         }else{
             GlobMatcher matcher = pipeline.contains("*") ? new GlobMatcher(pipeline) : null;
             if (matcher != null) {
