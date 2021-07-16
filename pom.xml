@@ -33,8 +33,8 @@
     <jenkins.version>2.222.4</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.12.0</frontend-version>
-    <node.version>10.13.0</node.version>
-    <npm.version>6.14.4</npm.version>
+    <node.version>14.17.3</node.version>
+    <npm.version>7.20.0</npm.version>
     <powermock.version>2.0.9</powermock.version>
     <hamcrest.version>2.2</hamcrest.version>
     <mockito.version>3.10.0</mockito.version>
