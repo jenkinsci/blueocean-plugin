@@ -111,7 +111,7 @@ class GitBareRepoReadSaveRequest extends GitReadSaveRequest {
     void save() throws IOException {
         invokeOnScm(new GitSCMFileSystem.FSFunction<Void>() {
             @Override
-            public Void invoke(Repository repo) throws IOException, InterruptedException {
+            public Void invoke(Repository repo) throws IOException {
                 String localBranchRef = LOCAL_REF_BASE + sourceBranch;
 
                 ObjectId branchHead = repo.resolve(localBranchRef);

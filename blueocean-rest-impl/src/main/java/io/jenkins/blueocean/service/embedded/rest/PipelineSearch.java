@@ -69,7 +69,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
                 } catch (ClassNotFoundException e) {
                     try {
                         //TODO: There should be better ways to find a class from a plugin.
-                        Plugin p = Jenkins.getInstance().getPlugin("blueocean-pipeline-api-impl");
+                        Plugin p = Jenkins.get().getPlugin("blueocean-pipeline-api-impl");
                         if(p != null){
                             c = p.getWrapper().classLoader.loadClass(s1);
                         }else{

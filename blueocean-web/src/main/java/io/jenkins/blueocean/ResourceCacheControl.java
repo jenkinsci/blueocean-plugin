@@ -83,7 +83,7 @@ public final class ResourceCacheControl implements Filter {
                 // Add paths to resources that we want to set the
                 // cache-control header.
                 INSTANCE.addPath(Jenkins.RESOURCE_PATH); // "/static/VERSION" resources - e.g. JDL assets (fonts etc)
-                INSTANCE.addPath(Jenkins.getInstance().getAdjuncts("").rootURL);
+                INSTANCE.addPath(Jenkins.get().getAdjuncts("").rootURL);
 
                 PluginServletFilter.addFilter(INSTANCE);
             } catch (Exception e) {

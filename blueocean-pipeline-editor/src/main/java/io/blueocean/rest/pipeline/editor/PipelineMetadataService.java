@@ -54,7 +54,7 @@ public class PipelineMetadataService implements ApiRoutable {
 
     @GET
     public String doCrumbInfo() {
-        CrumbIssuer crumbIssuer = Jenkins.getInstance().getCrumbIssuer();
+        CrumbIssuer crumbIssuer = Jenkins.get().getCrumbIssuer();
         if (crumbIssuer != null) {
             return crumbIssuer.getCrumbRequestField()  + "=" + crumbIssuer.getCrumb();
         }
@@ -198,7 +198,7 @@ public class PipelineMetadataService implements ApiRoutable {
     }
 
     private <T extends Describable<T>,D extends Descriptor<T>> void populateMetaSteps(List<Descriptor<?>> r, Class<T> c) {
-        Jenkins j = Jenkins.getInstance();
+        Jenkins j = Jenkins.get();
         for (Descriptor<?> d : j.getDescriptorList(c)) {
             if (SimpleBuildStep.class.isAssignableFrom(d.clazz) && symbolForObject(d) != null) {
                 r.add(d);

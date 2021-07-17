@@ -96,7 +96,7 @@ public class JenkinsJSExtensions {
     }
 
     private static void refreshCacheIfNeeded(){
-        List<PluginWrapper> latestPlugins = Jenkins.getInstance().getPluginManager().getPlugins();
+        List<PluginWrapper> latestPlugins = Jenkins.get().getPluginManager().getPlugins();
         if(!latestPlugins.equals(pluginCache)){
             refreshCache(latestPlugins);
         }
@@ -150,7 +150,7 @@ public class JenkinsJSExtensions {
                                     String type = (String) extension.get("type");
                                     if (type != null) {
                                         BlueExtensionClassContainer extensionClassContainer
-                                            = Jenkins.getInstance().getExtensionList(BlueExtensionClassContainer.class).get(0);
+                                            = Jenkins.get().getExtensionList(BlueExtensionClassContainer.class).get(0);
                                         Map classInfo = (Map) mergeObjects(extensionClassContainer.get(type));
                                         List classInfoClasses = (List) classInfo.get("_classes");
                                         classInfoClasses.add(0, type);

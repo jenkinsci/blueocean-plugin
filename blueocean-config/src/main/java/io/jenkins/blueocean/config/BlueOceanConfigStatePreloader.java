@@ -2,7 +2,6 @@ package io.jenkins.blueocean.config;
 
 import hudson.Extension;
 import hudson.Plugin;
-import hudson.model.UsageStatistics;
 import hudson.security.AuthorizationStrategy;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import hudson.security.SecurityRealm;
@@ -41,7 +40,7 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
     @Override
     public String getStateJson() {
         StringWriter writer = new StringWriter();
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         VersionNumber versionNumber = Jenkins.getVersion();
         String version = versionNumber != null ? versionNumber.toString() : Jenkins.VERSION;
 
@@ -51,7 +50,7 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
             allowAnonymousRead = ((FullControlOnceLoggedInAuthorizationStrategy) authorizationStrategy).isAllowAnonymousRead();
         }
 
-        String jwtTokenEndpointHostUrl = Jenkins.getInstance().getRootUrl();
+        String jwtTokenEndpointHostUrl = Jenkins.get().getRootUrl();
         JwtTokenServiceEndpoint jwtTokenServiceEndpoint = JwtTokenServiceEndpoint.first();
         if(jwtTokenServiceEndpoint != null){
             jwtTokenEndpointHostUrl = jwtTokenServiceEndpoint.getHostUrl();
@@ -98,7 +97,7 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
 
     /** gives Blueocean plugin version. blueocean-web being core module is looked at to determine the version */
     private String getBlueOceanPluginVersion(){
-        Plugin plugin = Jenkins.getInstance().getPlugin("blueocean-web");
+        Plugin plugin = Jenkins.get().getPlugin("blueocean-web");
         if(plugin == null) {
             return null;
         }

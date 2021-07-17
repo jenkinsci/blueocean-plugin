@@ -71,6 +71,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -252,17 +253,13 @@ class GitUtils {
                 JSch jsch = new JSch();
                 configureJSch(jsch);
                 // TODO: might need this: jsch.setHostKeyRepository(new KnownHosts(this));
-                try {
-                    KeyPair pair = KeyPair.load(jsch, privateKey.getPrivateKey().getBytes("utf-8"), null);
-                    byte[] passphrase = new byte[0];
-                    jsch.addIdentity(privateKey.getUsername(),
-                        pair.forSSHAgent(),
-                        null,
-                        passphrase);
-                    return jsch;
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
-                }
+                KeyPair pair = KeyPair.load(jsch, privateKey.getPrivateKey().getBytes(StandardCharsets.UTF_8), null);
+                byte[] passphrase = new byte[0];
+                jsch.addIdentity(privateKey.getUsername(),
+                    pair.forSSHAgent(),
+                    null,
+                    passphrase);
+                return jsch;
             }
         };
         return new TransportConfigCallback() {

@@ -2144,11 +2144,11 @@ public class PipelineNodeTest extends PipelineBaseTest {
     private boolean waitForItemToAppearInQueue(long timeout) throws InterruptedException {
         long start = System.currentTimeMillis();
         long diff = 0;
-        while (Jenkins.getInstance().getQueue().getItems().length <= 0 && diff < timeout) {
+        while (Jenkins.get().getQueue().getItems().length <= 0 && diff < timeout) {
             diff = System.currentTimeMillis() - start;
             Thread.sleep(100);
         }
-        return Jenkins.getInstance().getQueue().getItems().length > 0;
+        return Jenkins.get().getQueue().getItems().length > 0;
     }
 
     @Test

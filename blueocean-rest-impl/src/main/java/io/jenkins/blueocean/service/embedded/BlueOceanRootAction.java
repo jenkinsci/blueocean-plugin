@@ -109,7 +109,7 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
         @NonNull
         @Override
         public String getLandingPagePath() {
-            BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(Jenkins.getInstance());
+            BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(Jenkins.get());
             String orgName = organization != null ? organization.getName() : "jenkins";
             return String.format("/organizations/%s/pipelines/", orgName);
         }
