@@ -29,8 +29,11 @@
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <java.level>8</java.level>
-    <!-- when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions -->
-    <jenkins.version>2.222.4</jenkins.version>
+    <!--
+        when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions
+        and  acceptance-tests/runner/scripts/args.sh
+    -->
+    <jenkins.version>2.277.4</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.12.0</frontend-version>
     <node.version>10.13.0</node.version>
@@ -268,7 +271,7 @@
 
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
-            <artifactId>bom-2.222.x</artifactId>
+            <artifactId>bom-2.277.x</artifactId>
             <version>28</version>
             <scope>import</scope>
             <type>pom</type>
@@ -491,7 +494,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pubsub-light</artifactId>
-            <version>1.13</version>
+            <version>1.16</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>

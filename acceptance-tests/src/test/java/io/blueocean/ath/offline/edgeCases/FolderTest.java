@@ -109,7 +109,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
 
         jobApi.createFreeStyleJob(folderJob, pipelineName, "echo 'hello world!'");
         driver.get(folderJob.getUrl()+"/job/"+pipelineName+"/");
-        driver.findElement(By.xpath("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']")).click();
+        driver.findElement(By.xpath("//a[contains(@class, 'task-link') and @title='Open Blue Ocean']")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".PlaceholderContent.NoRuns")));
         String activityPage = driver.getCurrentUrl();
         assertTrue(activityPage.endsWith(getNestedPipelinePath("firstFolder") +
@@ -119,7 +119,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
         wait.until(By.cssSelector("nav a.pr"));
         wait.until(By.cssSelector("a.main_exit_to_app"));
         driver.findElement(By.cssSelector("a.main_exit_to_app")).click();
-        wait.until(By.xpath("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']"));
+        wait.until(By.xpath("//a[contains(@class, 'task-link') and @title='Open Blue Ocean']"));
         assertEquals(base+"/job/firstFolder/job/"+
                 URLEncoder.encode("三百", "UTF-8")
                 +"/job/"+URLEncoder.encode("ñba", "UTF-8")
@@ -200,7 +200,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
         // make sure the open blue ocean button works. In this case,
         // it should bring the browser to the run details page for the first run
         driver.get(base+"/job/anotherFolder/job/三百/job/ñba/job/七/job/"+pipelineName+"/job/feature%252F1/1/");
-        wait.until(By.xpath("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']")).click();
+        wait.until(By.xpath("//a[contains(@class, 'task-link') and @title='Open Blue Ocean']")).click();
         wait.until(ExpectedConditions.urlContains(getNestedPipelinePath("anotherFolder") + pipelineName + "/detail/feature%2F1/1/pipeline"));
         wait.until(ExpectedConditions.or(
                 ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .log-wrapper")),
@@ -211,7 +211,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
         // it should bring the browser to the main top-level pipelines page.
         // See https://issues.jenkins-ci.org/browse/JENKINS-39842
         driver.get(base+"/job/anotherFolder/job/三百/job/ñba");
-        wait.until(By.xpath("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']")).click();
+        wait.until(By.xpath("//a[contains(@class, 'task-link') and @title='Open Blue Ocean']")).click();
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".Header-topNav nav a[href=\"/blue/pipelines\"]")));
         driver.findElement(By.cssSelector(".pipelines-table"));
