@@ -1,6 +1,6 @@
 package io.blueocean.ath.util;
 
-import com.google.common.base.Preconditions;
+import java.util.Objects;
 
 /**
  * Config options used when creating Github-based pipeline.
@@ -46,9 +46,9 @@ public class GithubConfig {
         }
 
         public GithubConfig build() {
-            Preconditions.checkNotNull(config.accessToken, "accessToken required");
-            Preconditions.checkNotNull(config.organization, "organization required");
-            Preconditions.checkNotNull(config.repository, "repository required");
+            Objects.requireNonNull(config.accessToken, "accessToken required");
+            Objects.requireNonNull(config.organization, "organization required");
+            Objects.requireNonNull(config.repository, "repository required");
             return config;
         }
     }

@@ -34,18 +34,24 @@ mvn clean install -DskipTests -DcleanNode
 
 This is mainly for CI servers. It starts the selenium docker container and runs all java ATH tests in one shot.
 
+If Docker cannot start the bitbucket test, you can try this option
+ ```bash
+./run.sh -ld
+```
+
 ### Run tests against a local instance
 
 ATH looks for a properties file at `~/.blueocean-ath-config` (or any combination of similar command line options).
 These options will allow you to run a local [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/),
  for example, and execute the ATH against a local development instance
 that you can debug/etc.. Currently these properties are supported and/or necessary:
-```webDriverType=chrome
+```
+webDriverType=chrome
 webDriverUrl=http://localhost:9515
-webDriverBrowserSize=1024x768
-jenkinsUrl=http://localhost:8080/jenkins
-adminUsername=admin
-adminPassword=admin
+webDriverBrowserSize=1024x768 (optional)
+jenkinsUrl=http://localhost:8080/jenkins (optional)
+adminUsername=admin (optional)
+adminPassword=admin (optional)
 ```
 
 ### Run tests in DEV mode
@@ -56,7 +62,7 @@ writing ATH tests much easier.
 
 First, start the server:
 ```bash
-./run.sh --dev
+./run.sh --dev (-ld)
 ```
 
 Next run the desired tests

@@ -1,8 +1,8 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
-import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.jenkins.blueocean.commons.DigestUtils;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.util.HttpRequest;
 import org.junit.Assert;
@@ -15,6 +15,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +50,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(400)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(ImmutableMap.of(
+                .data(MapsHelper.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
                 ))
@@ -72,7 +73,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(400)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(ImmutableMap.of(
+                .data(MapsHelper.of(
                         "name", "My Server",
                         "apiUrl", "http://foobar/"
                 ))
@@ -94,7 +95,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(400)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(ImmutableMap.of())
+                .data(new HashMap())
                 .post(URL)
                 .build(Map.class);
         Assert.assertNotNull(resp);
@@ -115,7 +116,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(400)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(ImmutableMap.of("name", "foo"))
+                .data(MapsHelper.of( "name", "foo"))
                 .post(URL)
                 .build(Map.class);
         Assert.assertNotNull(resp);
@@ -135,7 +136,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(400)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(ImmutableMap.of("apiUrl", apiUrl))
+                .data(MapsHelper.of( "apiUrl", apiUrl))
                 .post(URL)
                 .build(Map.class);
         Assert.assertNotNull(resp);
@@ -156,7 +157,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(200)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(ImmutableMap.of(
+                .data(MapsHelper.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
                 ))
@@ -169,7 +170,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(400)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(ImmutableMap.of(
+                .data(MapsHelper.of(
                         "name", "My Server 2",
                         "apiUrl", apiUrl
                 ))
@@ -194,7 +195,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(200)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(ImmutableMap.of(
+                .data(MapsHelper.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
                 ))
@@ -244,7 +245,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(400)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(ImmutableMap.of(
+                .data(MapsHelper.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
                 ))
@@ -268,7 +269,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .status(200)
                 .jwtToken(token)
                 .crumb( crumb )
-                .data(ImmutableMap.of(
+                .data(MapsHelper.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
                 ))
@@ -305,7 +306,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
 
         httpRequest().Post(URL)
             .header( crumb.field, crumb.value )
-            .bodyJson(ImmutableMap.of(
+            .bodyJson(MapsHelper.of(
                 "name", "My Server",
                 "apiUrl", apiUrl
             ))

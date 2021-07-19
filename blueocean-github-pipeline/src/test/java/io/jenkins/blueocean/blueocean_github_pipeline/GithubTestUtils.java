@@ -1,6 +1,6 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import com.google.common.collect.ImmutableMap;
+import io.jenkins.blueocean.commons.MapsHelper;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
@@ -11,14 +11,14 @@ import java.util.Map;
 public class GithubTestUtils {
 
     static Map buildRequestBody(String scmId, String credentialId, String apiUrl, String repoOwner, String repoName) {
-        return ImmutableMap.of(
+        return MapsHelper.of(
             "name", repoOwner,
             "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
-            "scmConfig", ImmutableMap.of(
+            "scmConfig", MapsHelper.of(
                 "id", scmId,
                 "credentialId", StringUtils.defaultIfBlank(credentialId, ""),
                 "uri", apiUrl,
-                "config", ImmutableMap.of(
+                "config", MapsHelper.of(
                     "repoOwner", repoOwner,
                     "repository", repoName
                 )

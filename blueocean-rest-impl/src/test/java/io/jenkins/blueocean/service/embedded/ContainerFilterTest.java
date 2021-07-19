@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded;
 
-import com.google.common.base.Predicate;
 import hudson.model.FreeStyleProject;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
@@ -20,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -70,12 +70,7 @@ public class ContainerFilterTest extends BaseTest{
     @TestExtension
     public static class ItemGroupFilter extends ContainerFilter {
 
-        private final Predicate<Item> filter = new Predicate<Item>() {
-            @Override
-            public boolean apply(Item job) {
-                return (job instanceof ItemGroup);
-            }
-        };
+        private final Predicate<Item> filter = job -> (job instanceof ItemGroup);
         @Override
         public String getName() {
             return "itemgroup-only";

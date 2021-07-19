@@ -1,8 +1,6 @@
 package io.jenkins.blueocean.scm.api;
 
 import com.cloudbees.plugins.credentials.domains.Domain;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import hudson.model.Cause;
 import hudson.model.Failure;
 import hudson.model.TaskListener;
@@ -45,7 +43,10 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -75,7 +76,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
         MultiBranchProject project = createMultiBranchProject(organization);
         assignCredentialToProject(scmConfig, project);
         SCMSource source = createSource(project, scmConfig).withId("blueocean");
-        project.setSourcesList(ImmutableList.of(new BranchSource(source)));
+        project.setSourcesList(Collections.singletonList(new BranchSource(source)));
         source.afterSave();
         project.save();
         final boolean hasJenkinsfile = repoHasJenkinsFile(source);
@@ -163,12 +164,8 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
     }
 
     private void sendMultibranchIndexingCompleteEvent(final MultiBranchProject mbp, final int iterations) {
-        Executors.newScheduledThreadPool(1).schedule(new Runnable() {
-            @Override
-            public void run() {
-                _sendMultibranchIndexingCompleteEvent(mbp, iterations);
-            }
-        }, 1, TimeUnit.SECONDS);
+        Executors.newScheduledThreadPool(1)
+            .schedule( () -> _sendMultibranchIndexingCompleteEvent(mbp, iterations), 1, TimeUnit.SECONDS);
     }
 
     private void _sendMultibranchIndexingCompleteEvent(MultiBranchProject mbp, int iterations) {
@@ -247,11 +244,11 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
             throw fail(new Error(ERROR_FIELD_SCM_CONFIG_NAME, ErrorCodes.MISSING.toString(), ERROR_FIELD_SCM_CONFIG_NAME + " is required"));
         }
 
-        List<Error> errors = Lists.newLinkedList(validate(name, scmConfig));
+        List<Error> errors = new ArrayList<>(new LinkedList( validate( name, scmConfig)));
 
         // Validate that name matches rules
         try {
-            Jenkins.getInstance().getProjectNamingStrategy().checkName(getName());
+            Jenkins.get().getProjectNamingStrategy().checkName(getName());
             Jenkins.checkGoodName(name);
         }catch (Failure f){
             errors.add(new Error(ERROR_FIELD_SCM_CONFIG_NAME, Error.ErrorCodes.INVALID.toString(),  getName() + " in not a valid name"));

@@ -1,7 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Item;
@@ -19,9 +17,10 @@ import org.kohsuke.stapler.StaplerRequest;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl.LATEST_RUN_START_TIME_COMPARATOR;
 
@@ -81,7 +80,8 @@ public class MultibranchPipelineRunContainer extends BlueRunContainer{
                 branches = Collections.emptyList();
             }
         } else {
-            branches = Lists.newArrayList(blueMbPipeline.getBranches().list());
+            branches = StreamSupport.stream(blueMbPipeline.getBranches().spliterator(), false)
+                .collect( Collectors.toList());
             sortBranchesByLatestRun(branches);
         }
 
@@ -98,66 +98,13 @@ public class MultibranchPipelineRunContainer extends BlueRunContainer{
             }
         }
 
-        Collections.sort(c, LATEST_RUN_START_TIME_COMPARATOR);
+        c.sort(LATEST_RUN_START_TIME_COMPARATOR);
 
-        return Iterators.limit(c.iterator(), limit);
+        return c.stream().limit(limit).iterator();
     }
 
     static void sortBranchesByLatestRun(List<BluePipeline> branches) {
-        Collections.sort(branches, ( o1, o2 ) ->
-            LATEST_RUN_START_TIME_COMPARATOR.compare(o1.getLatestRun(), o2.getLatestRun()));
-    }
-
-    private boolean retry(boolean[] retries) {
-        //if at least one of the branch needs retry we will retry it
-        for (boolean r : retries) {
-            if (r) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private int computeLimit(boolean[] retries, int limit) {
-        //if at least one of the branch needs retry we will retry it
-        int count = 0;
-        for (boolean r : retries) {
-            if (r) {
-                count++;
-            }
-        }
-        if (count == 0) {
-            return 0;
-        }
-        return limit / count > 0 ? limit / count : 1;
-    }
-
-    private int collectRuns(List<BluePipeline> branches, List<BlueRun> runs,
-                            boolean[] retries, int remainingCount, int[] startIndexes, int[] limits) {
-        int count = 0;
-        for (int i = 0; i < branches.size(); i++) {
-            BluePipeline b = branches.get(i);
-            if (!retries[i]) {
-                continue;
-            }
-            BlueRunContainer blueRunContainer = b.getRuns();
-            if(blueRunContainer==null){
-                continue;
-            }
-            Iterator<BlueRun> it = blueRunContainer.iterator(startIndexes[i], limits[i]);
-            int lcount = 0;
-            while (it.hasNext() && count < remainingCount) {
-                lcount++;
-                count++;
-                runs.add(it.next());
-            }
-            if (lcount < limits[i]) { //if its less than l
-                retries[i] = false; //iterator already exhausted so lets not retry next time
-            } else {
-                startIndexes[i] = startIndexes[i] + lcount; //set the new start index for next time
-            }
-        }
-        return count;
+        branches.sort(( o1, o2 ) -> LATEST_RUN_START_TIME_COMPARATOR.compare(o1.getLatestRun(), o2.getLatestRun()));
     }
 
     @Override

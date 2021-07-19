@@ -33,7 +33,7 @@ envs = [
   'GIT_AUTHOR_EMAIL=hates@cake.com'
 ]
 
-jenkinsVersions = ['2.222.4']
+jenkinsVersions = ['2.277.4']
 
 if (params.USE_SAUCELABS) {
   credentials.add(usernamePassword(credentialsId: 'saucelabs', passwordVariable: 'SAUCE_ACCESS_KEY', usernameVariable: 'SAUCE_USERNAME'))
@@ -81,12 +81,14 @@ node() {
 
           stage('Building BlueOcean') {
             timeout(time: 90, unit: 'MINUTES') {
-              sh "mvn clean install -T1C -V -B -DcleanNode --no-transfer-progress -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
+              try {
+                sh "mvn clean install -T1C -V -B -DcleanNode --no-transfer-progress -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
+              } finally {
+                junit testResults: '**/target/surefire-reports/TEST-*.xml', allowEmptyResults: true
+                junit testResults: '**/target/jest-reports/*.xml', allowEmptyResults: true
+                archiveArtifacts artifacts: '*/target/*.hpi',allowEmptyArchive: true
+              }
             }
-
-            junit '**/target/surefire-reports/TEST-*.xml'
-            junit '**/target/jest-reports/*.xml'
-            archive '*/target/*.hpi'
           }
 
           jenkinsVersions.each { version ->

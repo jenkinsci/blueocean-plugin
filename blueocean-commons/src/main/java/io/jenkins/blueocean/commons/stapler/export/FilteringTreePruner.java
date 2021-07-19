@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.commons.stapler.export;
 
-import com.google.common.base.Predicate;
+
+import java.util.function.Predicate;
 
 /**
  * Decorates a base {@link TreePruner} by refusing additional properties
@@ -19,7 +20,7 @@ class FilteringTreePruner extends TreePruner {
 
     @Override
     public TreePruner accept(Object node, Property prop) {
-        if (predicate.apply(prop.name))
+        if (predicate.test(prop.name))
             return null;
         TreePruner child = base.accept(node, prop);
 

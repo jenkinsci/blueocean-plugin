@@ -7,15 +7,16 @@ import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.model.AbstractPipeline;
 import java.net.URLEncoder;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 public class  RunDetailsArtifactsPage {
-    private Logger logger = Logger.getLogger(RunDetailsArtifactsPage.class);
+    private Logger logger = LoggerFactory.getLogger( RunDetailsArtifactsPage.class);
 
     private WebDriver driver;
 

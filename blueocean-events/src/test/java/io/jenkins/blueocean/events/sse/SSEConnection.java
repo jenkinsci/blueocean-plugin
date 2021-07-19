@@ -86,17 +86,13 @@ public class SSEConnection implements Closeable {
                 .addHeader("Accept", "text/event-stream")
                 .addHeader("Cache-Control", "no-cache")
                 .execute(new AsyncSSEHandler(new SSEMessageListener()))
-                .addListener(new Runnable() {
-                                 @Override
-                                 public void run() {
-                                    try {
-                                        listen();
-                                    } catch (IOException e) {
-                                        LOGGER.warn("Failed to reconnect SSE connection, giving up", e);
-                                    }
-                                 }
-                             }, SyncExecutor.INSTANCE
-
+                .addListener( () -> {
+                       try {
+                           listen();
+                       } catch (IOException e) {
+                           LOGGER.warn("Failed to reconnect SSE connection, giving up", e);
+                       }
+                    }, SyncExecutor.INSTANCE
                 );
     }
 
@@ -109,7 +105,7 @@ public class SSEConnection implements Closeable {
                     // TODO: do we need to do anything about these?
                     break;
                 default:
-                    Message event = new SimpleMessage();
+                    Message<SimpleMessage> event = new SimpleMessage();
                     event.putAll(msg.asJSON(Map.class));
                     listener.onMessage(event);
                     break;
@@ -130,7 +126,7 @@ public class SSEConnection implements Closeable {
         JSONObject o = new JSONObject();
         o.put("jenkins_channel", channel);
         EventFilter f = (EventFilter) o.toBean(EventFilter.class);
-        configure(Collections.singletonList(f),Collections.<EventFilter>emptyList());
+        configure(Collections.singletonList(f),Collections.emptyList());
     }
 
     /**

@@ -6,7 +6,6 @@ import com.cloudbees.jenkins.plugins.bitbucket.BranchDiscoveryTrait;
 import com.cloudbees.jenkins.plugins.bitbucket.ForkPullRequestDiscoveryTrait;
 import com.cloudbees.jenkins.plugins.bitbucket.OriginPullRequestDiscoveryTrait;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.TaskListener;
@@ -37,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -79,7 +79,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
         if(jenkinsLocationConfiguration != null) {
             String url = jenkinsLocationConfiguration.getUrl();
             if (url == null) {
-                url = Jenkins.getInstance().getRootUrl();
+                url = Jenkins.get().getRootUrl();
                 if (url != null) {
                     jenkinsLocationConfiguration.setUrl(url);
                 }
@@ -111,7 +111,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
         try {
             scmSource.fetch(criteria, new SCMHeadObserver() {
                 @Override
-                public void observe(@Nonnull SCMHead head, @Nonnull SCMRevision revision) throws IOException, InterruptedException {
+                public void observe(@Nonnull SCMHead head, @Nonnull SCMRevision revision) {
                     //do nothing
                 }
 
@@ -131,7 +131,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
 
     @Override
     protected List<ErrorMessage.Error> validate(String name, BlueScmConfig scmConfig) {
-        List<ErrorMessage.Error> errors = Lists.newArrayList();
+        List<ErrorMessage.Error> errors = new ArrayList<>();
         StandardUsernamePasswordCredentials credentials = null;
         String credentialId = computeCredentialId(scmConfig);
         if(credentialId != null){

@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.google.common.collect.ImmutableMap;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.ExtensionList;
 import hudson.model.Item;
@@ -9,6 +8,7 @@ import hudson.model.User;
 import hudson.security.AccessControlled;
 import hudson.tasks.Mailer;
 import hudson.tasks.UserAvatarResolver;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.commons.ServiceException.ForbiddenException;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Reachable;
@@ -172,11 +172,11 @@ public class UserImpl extends BlueUser {
     }
 
     private boolean isAdmin(){
-        return Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER);
+        return Jenkins.get().hasPermission(Jenkins.ADMINISTER);
     }
 
     private Map<String, Boolean> getPipelinePermissions(){
-        return ImmutableMap.of(
+        return MapsHelper.of(
                                BluePipeline.CREATE_PERMISSION, organizationBase.hasPermission(Item.CREATE),
                                BluePipeline.READ_PERMISSION, organizationBase.hasPermission(Item.READ),
                                BluePipeline.START_PERMISSION, organizationBase.hasPermission(Item.BUILD),
@@ -186,7 +186,7 @@ public class UserImpl extends BlueUser {
     }
 
     private Map<String, Boolean> getCredentialPermissions(){
-        return ImmutableMap.of(
+        return MapsHelper.of(
                                CREDENTIAL_CREATE_PERMISSION, organizationBase.hasPermission(CredentialsProvider.CREATE),
                                CREDENTIAL_VIEW_PERMISSION, organizationBase.hasPermission(CredentialsProvider.VIEW),
                                CREDENTIAL_DELETE_PERMISSION, organizationBase.hasPermission(CredentialsProvider.DELETE),
@@ -200,7 +200,7 @@ public class UserImpl extends BlueUser {
     }
 
     private AccessControlled getAccessControllerOrganization() {
-        AccessControlled orgBase = Jenkins.getInstance();
+        AccessControlled orgBase = Jenkins.get();
 
         if (organization instanceof AbstractOrganization) {
             ModifiableTopLevelItemGroup group = ((AbstractOrganization) organization).getGroup();

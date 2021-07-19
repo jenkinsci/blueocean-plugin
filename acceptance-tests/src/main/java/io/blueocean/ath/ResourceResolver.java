@@ -1,10 +1,10 @@
 package io.blueocean.ath;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author cliffmeyers
@@ -18,11 +18,11 @@ public class ResourceResolver {
     }
 
     public String loadResource(String path) throws IOException {
-        return Resources.toString(getResourceURL(path), Charsets.UTF_8);
+        return IOUtils.toString(getResourceURL(path), StandardCharsets.UTF_8);
     }
 
     public URL getResourceURL(String path) throws IOException {
-        return Resources.getResource(subject, subject.getSimpleName() + "/" + path);
+        return subject.getResource(subject.getSimpleName() + "/" + path);
     }
     public String loadJenkinsFile() throws IOException {
         return loadResource("Jenkinsfile");

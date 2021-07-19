@@ -69,7 +69,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
                 } catch (ClassNotFoundException e) {
                     try {
                         //TODO: There should be better ways to find a class from a plugin.
-                        Plugin p = Jenkins.getInstance().getPlugin("blueocean-pipeline-api-impl");
+                        Plugin p = Jenkins.get().getPlugin("blueocean-pipeline-api-impl");
                         if(p != null){
                             c = p.getWrapper().classLoader.loadClass(s1);
                         }else{
@@ -107,12 +107,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
         final List<BluePipeline> pipelines = new ArrayList<>();
         String pipeline = q.param(getType());
         if(pipeline == null) {
-            return Pageables.wrap(new Iterable<BluePipeline>() {
-                @Override
-                public Iterator<BluePipeline> iterator() {
-                    return pipelineIterator;
-                }
-            });
+            return Pageables.wrap(() -> pipelineIterator);
         }else{
             GlobMatcher matcher = pipeline.contains("*") ? new GlobMatcher(pipeline) : null;
             if (matcher != null) {
@@ -162,7 +157,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
      */
     private ItemGroup findItemGroup(Query q) {
         String org = q.param(ORGANIZATION_PARAM);
-        if (org==null)  return Jenkins.getInstance();
+        if (org==null)  return Jenkins.get();
         ItemGroup group = OrganizationFactory.getItemGroup(org);
         if (group==null) {
             throw new ServiceException.BadRequestException(

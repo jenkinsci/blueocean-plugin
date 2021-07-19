@@ -25,6 +25,7 @@ package io.jenkins.blueocean.preload;
 
 import hudson.Extension;
 import hudson.model.User;
+import io.jenkins.blueocean.commons.IterableUtils;
 import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
@@ -36,8 +37,6 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import javax.annotation.Nonnull;
-
-import com.google.common.collect.Iterables;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -60,7 +59,7 @@ public class FavoritesStatePreloader extends RESTFetchPreloader {
     protected FetchData getFetchData(@Nonnull BlueUrlTokenizer blueUrl) {
         User jenkinsUser = User.current();
         if (jenkinsUser != null) {
-            BlueOrganization organization = Iterables.getFirst(OrganizationFactory.getInstance().list(), null);
+            BlueOrganization organization = IterableUtils.getFirst(OrganizationFactory.getInstance().list(), null);
             if (organization != null) {
                 String pipelineFullName = blueUrl.getPart(BlueUrlTokenizer.UrlPart.PIPELINE);
 

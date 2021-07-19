@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
+import io.jenkins.blueocean.commons.DigestUtils;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
@@ -17,7 +16,7 @@ public class GithubServer extends ScmServerEndpoint {
 
     @Override
     public String getId() {
-        return Hashing.sha256().hashString(endpoint.getApiUri(), Charsets.UTF_8).toString();
+        return DigestUtils.sha256(endpoint.getApiUri());
     }
 
     @Override

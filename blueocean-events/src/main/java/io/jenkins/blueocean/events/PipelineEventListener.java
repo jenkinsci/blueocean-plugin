@@ -1,18 +1,18 @@
 package io.jenkins.blueocean.events;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineInputStepListener;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeUtil;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
@@ -53,10 +53,10 @@ public class PipelineEventListener implements GraphListener {
 
     private static final Logger LOGGER = Logger.getLogger(PipelineEventListener.class.getName());
 
-    private final Cache<FlowExecution, String> currentStageNameCache = CacheBuilder.newBuilder()
+    private final Cache<FlowExecution, String> currentStageNameCache = Caffeine.newBuilder()
                                                                     .weakKeys()
                                                                     .build();
-    private final Cache<FlowExecution, String> currentStageIdCache = CacheBuilder.newBuilder()
+    private final Cache<FlowExecution, String> currentStageIdCache = Caffeine.newBuilder()
                                                                     .weakKeys()
                                                                     .build();
 
@@ -105,7 +105,9 @@ public class PipelineEventListener implements GraphListener {
     }
 
     /* package: so that we can unit test it */ List<String> getBranch(FlowNode flowNode) {
-        return Lists.reverse(flowNode.getAllEnclosingIds());
+        List<String> reversed = new ArrayList<>(flowNode.getAllEnclosingIds());
+        Collections.reverse(reversed);
+        return reversed;
     }
 
     private String toPath(Collection<String> branch) {
@@ -134,7 +136,7 @@ public class PipelineEventListener implements GraphListener {
         }
     }
 
-    private static Message newMessage(PipelineEventChannel.Event event, FlowExecution exec) {
+    private static Message<SimpleMessage> newMessage(PipelineEventChannel.Event event, FlowExecution exec) {
         SimpleMessage message = new SimpleMessage()
                 .setChannelName(PipelineEventChannel.NAME)
                 .setEventName(event);
@@ -146,8 +148,8 @@ public class PipelineEventListener implements GraphListener {
         return message;
     }
 
-    private Message newMessage(PipelineEventChannel.Event event, FlowNode flowNode, Collection<String> branch) {
-        Message message = newMessage(event, flowNode.getExecution());
+    private Message<SimpleMessage> newMessage(PipelineEventChannel.Event event, FlowNode flowNode, Collection<String> branch) {
+        Message<SimpleMessage> message = newMessage(event, flowNode.getExecution());
 
         message.set(PipelineEventChannel.EventProps.pipeline_step_flownode_id, flowNode.getId());
         message.set(PipelineEventChannel.EventProps.pipeline_context, toPath(branch));
@@ -191,7 +193,7 @@ public class PipelineEventListener implements GraphListener {
         return message;
     }
 
-    private static void publishEvent(Message message) {
+    private static void publishEvent(Message<SimpleMessage> message) {
         try {
             PubsubBus.getBus().publish(message);
         } catch (MessageException e) {

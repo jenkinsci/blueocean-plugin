@@ -45,7 +45,6 @@ public class HttpRequest {
         }else{
             this.authorizationHeader = authHeader;
         }
-
     }
 
     public HttpResponse head(String url) {
@@ -108,7 +107,7 @@ public class HttpRequest {
     private void setClientProxyParams(String apiUrl, HttpClientBuilder clientBuilder) {
         try {
             URL url = new URL(apiUrl);
-            ProxyConfiguration proxyConfig = Jenkins.getInstance().proxy;
+            ProxyConfiguration proxyConfig = Jenkins.get().proxy;
             Proxy proxy = proxyConfig != null ? proxyConfig.createProxy(url.getHost()) : Proxy.NO_PROXY;
             if (!proxy.equals(Proxy.NO_PROXY) && proxyConfig != null) {
                 clientBuilder.setProxy(new HttpHost(proxyConfig.name, proxyConfig.port));

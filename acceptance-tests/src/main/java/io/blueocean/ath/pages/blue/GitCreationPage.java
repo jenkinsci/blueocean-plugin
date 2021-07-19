@@ -7,22 +7,21 @@ import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.sse.SSEClientRule;
 import io.blueocean.ath.sse.SSEEvents;
-import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 
 @Singleton
 public class GitCreationPage {
-    private Logger logger = Logger.getLogger(GitCreationPage.class);
+    private Logger logger = LoggerFactory.getLogger(GitCreationPage.class);
 
     private WebDriver driver;
 

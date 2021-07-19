@@ -22,7 +22,6 @@ import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.DELETE;
 
-
 /**
  * {@link BlueOrganization} implementation for the embedded use.
  *
@@ -109,7 +108,7 @@ public class OrganizationImpl extends AbstractOrganization{
         }
 
         // No OrganizationRoute found, now lookup in available actions from Jenkins instance serving root
-        for(Action action:Jenkins.getInstance().getActions()) {
+        for(Action action:Jenkins.get().getActions()) {
             String urlName = action.getUrlName();
             if (urlName != null && urlName.equals(route)) {
                 return wrap(action);
@@ -126,7 +125,7 @@ public class OrganizationImpl extends AbstractOrganization{
         }
     }
 
-    private boolean isExportedBean(Class clz){
+    private boolean isExportedBean(Class<?> clz){
         return clz.getAnnotation(ExportedBean.class) != null;
     }
 }

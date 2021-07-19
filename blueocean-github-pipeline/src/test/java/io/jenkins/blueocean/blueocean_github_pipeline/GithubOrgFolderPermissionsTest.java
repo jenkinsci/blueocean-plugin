@@ -128,7 +128,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
 
         @Override
         public Collection<BlueOrganization> list() {
-            return Collections.singleton((BlueOrganization) instance);
+            return Collections.singleton(instance);
         }
 
         @Override

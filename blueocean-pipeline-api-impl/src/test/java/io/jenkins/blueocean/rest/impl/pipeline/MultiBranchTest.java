@@ -1,7 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import hudson.Util;
 import hudson.model.FreeStyleProject;
 import hudson.model.Queue;
@@ -11,6 +9,7 @@ import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
 import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.security.LegacyAuthorizationStrategy;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
@@ -41,6 +40,7 @@ import org.jvnet.hudson.test.MockFolder;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -330,7 +330,7 @@ public class MultiBranchTest extends PipelineBaseTest {
                 .post("/organizations/jenkins/pipelines/p/runs/")
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .crumb( getCrumb( j.jenkins ) )
-                .data(ImmutableMap.of())
+                .data(Collections.emptyMap())
                 .status(200)
                 .build(Map.class);
 
@@ -576,7 +576,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         Map m = new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/p/favorite")
             .jwtToken(token)
-            .data(ImmutableMap.of("favorite", true))
+            .data(MapsHelper.of("favorite", true))
             .build(Map.class);
 
         Map branch = (Map) m.get("item");
@@ -605,7 +605,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         m = new RequestBuilder(baseUrl)
             .put(getUrlFromHref(ref))
             .jwtToken(token)
-            .data(ImmutableMap.of("favorite", false))
+            .data(MapsHelper.of("favorite", false))
             .build(Map.class);
 
         branch = (Map) m.get("item");
@@ -651,7 +651,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         Map map = new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/p/branches/feature2/favorite")
             .jwtToken(token)
-            .data(ImmutableMap.of("favorite", true))
+            .data(MapsHelper.of("favorite", true))
             .build(Map.class);
 
 
@@ -679,7 +679,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         map = new RequestBuilder(baseUrl)
             .put(getUrlFromHref(getHrefFromLinks((Map)l.get(0), "self")))
             .jwtToken(token)
-            .data(ImmutableMap.of("favorite", false))
+            .data(MapsHelper.of("favorite", false))
             .build(Map.class);
 
 
@@ -746,7 +746,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         Map m = new RequestBuilder(baseUrl)
             .put(getUrlFromHref(getUrlFromHref(href)))
             .jwtToken(token)
-            .data(ImmutableMap.of("favorite", false))
+            .data(MapsHelper.of("favorite", false))
             .build(Map.class);
 
         branch = (Map) m.get("item");
@@ -872,8 +872,8 @@ public class MultiBranchTest extends PipelineBaseTest {
         Assert.assertEquals("xyz", ((Map)parameters.get(0).get("defaultParameterValue")).get("value"));
 
         resp = post("/organizations/jenkins/pipelines/p/branches/"+Util.rawEncode(branches[1])+"/runs/",
-                ImmutableMap.of("parameters",
-                        ImmutableList.of(ImmutableMap.of("name", "param1", "value", "abc"))
+                MapsHelper.of("parameters",
+                               Arrays.asList(MapsHelper.of( "name", "param1", "value", "abc" ) )
                 ), 200);
         Assert.assertEquals(branches[1], resp.get("pipeline"));
         Thread.sleep(5000);
@@ -1124,7 +1124,7 @@ public class MultiBranchTest extends PipelineBaseTest {
             job.scheduleBuild2(0);
             job.scheduleBuild2(0);
         }
-        Queue.Item[] queueItems = Jenkins.getInstance().getQueue().getItems();
+        Queue.Item[] queueItems = Jenkins.get().getQueue().getItems();
         MultiBranchPipelineQueueContainer mbpQueueContainer =
                 new MultiBranchPipelineQueueContainer((MultiBranchPipelineImpl) r);
         Iterator<BlueQueueItem> blueQueueItems = mbpQueueContainer.iterator(0,100);

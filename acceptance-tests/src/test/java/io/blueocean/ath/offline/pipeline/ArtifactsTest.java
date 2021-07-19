@@ -11,18 +11,19 @@ import io.blueocean.ath.model.ClassicPipeline;
 import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.sse.SSEClientRule;
 import io.blueocean.ath.sse.SSEEvents;
-import org.apache.log4j.Logger;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import java.io.IOException;
 
 @RunWith(ATHJUnitRunner.class)
 public class ArtifactsTest extends BlueOceanAcceptanceTest implements WebDriverMixin {
-    private Logger logger = Logger.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Inject
     ClassicPipelineFactory pipelineFactory;
 

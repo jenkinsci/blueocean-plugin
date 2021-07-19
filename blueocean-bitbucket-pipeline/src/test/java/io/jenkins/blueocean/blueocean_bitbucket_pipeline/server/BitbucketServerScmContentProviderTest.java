@@ -4,7 +4,6 @@ import com.cloudbees.hudson.plugins.folder.AbstractFolderProperty;
 import com.cloudbees.hudson.plugins.folder.AbstractFolderPropertyDescriptor;
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
 import com.cloudbees.plugins.credentials.domains.Domain;
-import com.google.common.collect.Lists;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
 import hudson.tasks.Mailer;
@@ -17,7 +16,6 @@ import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsPr
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFile;
 import jenkins.branch.MultiBranchProject;
-import jenkins.scm.api.SCMSource;
 import net.sf.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +29,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 import static org.powermock.api.mockito.PowerMockito.*;
@@ -249,7 +248,7 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
         when(scmSource.getCredentialsId()).thenReturn(credentialId);
         when(scmSource.getRepoOwner()).thenReturn("TESTP");
         when(scmSource.getRepository()).thenReturn("pipeline-demo-test");
-        when(mbp.getSCMSources()).thenReturn(Lists.<SCMSource>newArrayList(scmSource));
+        when(mbp.getSCMSources()).thenReturn( Collections.singletonList(scmSource));
 
         //mock blueocean credential provider stuff
         BlueOceanCredentialsProvider.FolderPropertyImpl folderProperty = mock(BlueOceanCredentialsProvider.FolderPropertyImpl.class);
