@@ -276,7 +276,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-build-step</artifactId>
-            <version>2.14-rc430.69345dedbb03</version>
+            <version>2.14</version>
         </dependency>
 
         <!-- Module versions -->
