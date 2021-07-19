@@ -388,7 +388,7 @@ public class ProfileApiTest extends BaseTest{
         bob.setFullName("Bob Cooper");
         bob.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
 
-        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
+        UserDetails d = Jenkins.get().getSecurityRealm().loadUserByUsername(bob.getId());
 
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(bob.getId(), bob.getId(), d.getAuthorities()));
 

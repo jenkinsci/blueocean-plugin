@@ -83,7 +83,7 @@ public class QueueItemImpl extends BlueQueueItem {
             throw new ServiceException.ForbiddenException(String.format("Not authorized to stop queue: %s", getId()));
         }
 
-        Jenkins.getInstance().getQueue().cancel(item);
+        Jenkins.get().getQueue().cancel(item);
     }
 
     @Override

@@ -20,7 +20,7 @@ public final class BlueOceanRootActionUrl implements RootAction {
     public String getIconFileName() {
         setBlueOceanUIProvider();
         if(factory != null){
-            return factory.get(Jenkins.getInstance()).getIconUrl();
+            return factory.get(Jenkins.get()).getIconUrl();
         }
         return "/plugin/blueocean-rest-impl/images/48x48/blueocean.png";
     }
@@ -29,7 +29,7 @@ public final class BlueOceanRootActionUrl implements RootAction {
     public String getDisplayName() {
         setBlueOceanUIProvider();
         if(factory != null){
-            return factory.get(Jenkins.getInstance()).getDisplayName();
+            return factory.get(Jenkins.get()).getDisplayName();
         }
         return Messages.BlueOceanUrlAction_DisplayName();
     }
@@ -38,7 +38,7 @@ public final class BlueOceanRootActionUrl implements RootAction {
     public String getUrlName() {
         setBlueOceanUIProvider();
         if(factory != null){
-            return factory.get(Jenkins.getInstance()).getUrl();
+            return factory.get(Jenkins.get()).getUrl();
         }
         return BlueOceanUrlMapperImpl.getLandingPagePath();
     }

@@ -16,6 +16,6 @@ public class JwtTokenServiceEndpointImplTest extends BaseTest{
     public void verify(){
         List<JwtTokenServiceEndpoint>   jwtTokenServiceEndpoints = JwtTokenServiceEndpoint.all();
         assertEquals(1, jwtTokenServiceEndpoints.size());
-        assertEquals(Jenkins.getInstance().getRootUrl(), jwtTokenServiceEndpoints.get(0).getHostUrl());
+        assertEquals(Jenkins.get().getRootUrl(), jwtTokenServiceEndpoints.get(0).getHostUrl());
     }
 }

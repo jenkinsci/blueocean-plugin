@@ -111,7 +111,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
         try {
             scmSource.fetch(criteria, new SCMHeadObserver() {
                 @Override
-                public void observe(@Nonnull SCMHead head, @Nonnull SCMRevision revision) throws IOException, InterruptedException {
+                public void observe(@Nonnull SCMHead head, @Nonnull SCMRevision revision) {
                     //do nothing
                 }
 

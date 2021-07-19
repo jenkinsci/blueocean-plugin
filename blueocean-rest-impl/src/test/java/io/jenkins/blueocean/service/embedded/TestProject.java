@@ -27,7 +27,7 @@ public class TestProject extends Project<TestProject,TestProject.TestBuild> impl
     }
 
     public TestProject.DescriptorImpl getDescriptor() {
-        return (TestProject.DescriptorImpl) Jenkins.getInstance().getDescriptorOrDie(getClass());
+        return (TestProject.DescriptorImpl) Jenkins.get().getDescriptorOrDie(getClass());
     }
 
 

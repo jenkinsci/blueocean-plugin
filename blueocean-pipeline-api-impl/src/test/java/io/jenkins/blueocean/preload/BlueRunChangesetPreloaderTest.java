@@ -8,7 +8,6 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.ChangeSetContainerImpl;
 import io.jenkins.blueocean.service.embedded.rest.FreeStylePipeline;
-import io.jenkins.blueocean.service.embedded.rest.RunSearch;
 import jenkins.model.Jenkins;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +33,7 @@ public class BlueRunChangesetPreloaderTest {
         BlueRun blueRun = freeStylePipeline.getLatestRun();
         assertNotNull(blueRun);
 
-        BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(Jenkins.getInstance());
+        BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(Jenkins.get());
 
         ChangeSetContainerImpl container = new ChangeSetContainerImpl(
                 organization,

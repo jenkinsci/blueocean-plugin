@@ -30,6 +30,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.interfaces.RSAPublicKey;
 
 /**
@@ -49,7 +50,7 @@ public class SSHKeyUtils {
             KeyPair pair = KeyPair.genKeyPair(jsch, KeyPair.RSA, keySize);
             ByteArrayOutputStream keyOut = new ByteArrayOutputStream();
             pair.writePrivateKey(keyOut);
-            return new String(keyOut.toByteArray(), "utf-8");
+            return new String(keyOut.toByteArray(), StandardCharsets.UTF_8);
         } catch(Exception ex) {
             throw ex instanceof RuntimeException ? (RuntimeException)ex : new RuntimeException(ex);
         }
@@ -64,10 +65,10 @@ public class SSHKeyUtils {
     public static String getPublicKey(String privateKey, String comment) {
         try {
             JSch jsch = new JSch();
-            KeyPair pair = KeyPair.load(jsch, privateKey.getBytes("utf-8"), null );
+            KeyPair pair = KeyPair.load(jsch, privateKey.getBytes(StandardCharsets.UTF_8), null );
             ByteArrayOutputStream keyOut = new ByteArrayOutputStream();
             pair.writePublicKey(keyOut, comment);
-            return new String(keyOut.toByteArray(), "utf-8");
+            return new String(keyOut.toByteArray(), StandardCharsets.UTF_8);
         } catch(Exception ex) {
             throw ex instanceof RuntimeException ? (RuntimeException)ex : new RuntimeException(ex);
         }

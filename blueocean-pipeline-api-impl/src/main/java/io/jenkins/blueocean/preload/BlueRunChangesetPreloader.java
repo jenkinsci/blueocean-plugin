@@ -31,16 +31,12 @@ import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
-import io.jenkins.blueocean.rest.model.Resource;
-import io.jenkins.blueocean.rest.pageable.PagedResponse;
-import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -82,7 +78,7 @@ public class BlueRunChangesetPreloader extends RESTFetchPreloader {
 
             for (BlueChangeSetEntry changeSetEntry: containerChangeSets) {
                 changeSetEntries.add(JSONObject.fromObject(Export.toJson(changeSetEntry)));
-            };
+            }
 
             // organizations/jenkins/pipelines/changes/runs/12/changeSet/?start=0&limit=101
             return new FetchData(

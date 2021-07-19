@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -207,7 +208,7 @@ public class BlueI18n implements ApiRoutable {
 
     @CheckForNull
     static PluginWrapper getPlugin(String pluginName) {
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         return jenkins.getPluginManager().getPlugin(pluginName);
     }
 
@@ -339,7 +340,7 @@ public class BlueI18n implements ApiRoutable {
 
     static class JSONObjectResponse implements HttpResponse {
 
-        private static final Charset UTF8 = Charset.forName("UTF-8");
+        private static final Charset UTF8 = StandardCharsets.UTF_8;
 
         private final JSONObject jsonObject = new JSONObject();
         private BundleCacheEntry bundleCacheEntry;
@@ -366,7 +367,7 @@ public class BlueI18n implements ApiRoutable {
          * {@inheritDoc}
          */
         @Override
-        public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
+        public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException {
             rsp.setStatus(statusCode);
             rsp.setContentType("application/json; charset=UTF-8");
             if (bundleCacheEntry != null) {
