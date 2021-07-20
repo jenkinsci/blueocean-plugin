@@ -2425,7 +2425,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         String completeNodeNames = checkConsistencyWhileBuilding("sequential_parallel_stages_long_run_time.jenkinsfile");
 
-        assertEquals("node names", expectedNodeNames, completeNodeNames);
+        assertEquals("node names:" + completeNodeNames, expectedNodeNames, completeNodeNames);
     }
 
     private String checkConsistencyWhileBuilding(String jenkinsFileName) throws Exception {
