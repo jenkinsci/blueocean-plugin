@@ -12,6 +12,8 @@ import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import io.blueocean.ath.sse.SSEClientRule;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -21,7 +23,10 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import static org.junit.Assert.fail;
 
 @RunWith(ATHJUnitRunner.class)
 public class DownstreamLinkTest extends BlueOceanAcceptanceTest implements WebDriverMixin {
@@ -58,7 +63,7 @@ public class DownstreamLinkTest extends BlueOceanAcceptanceTest implements WebDr
     }
 
     @Test
-    @Ignore("TODO we need to have some ID generated on the link to have detail step when clicking the circle")
+    //@Ignore("TODO we need to have some ID generated on the link to have detail step when clicking the circle")
     public void sequentialStages() throws Exception {
 
         ClassicPipeline upstreamJob = pipelineFactory.pipeline(testName.getMethodName() + "-upstream").createPipeline(getJobScript("upstream"));
@@ -70,10 +75,19 @@ public class DownstreamLinkTest extends BlueOceanAcceptanceTest implements WebDr
         sseClient.untilEvents(upstreamJob.buildsFinished);
         sseClient.clear();
 
-        RunDetailsPipelinePage runDetailsPipelinePage = upstreamJob.getRunDetailsPipelinePage().open( 1);
+        upstreamJob.getRunDetailsPipelinePage().open(1);
+        List<WebElement> webElementList = new ArrayList<>();
+        long start = System.currentTimeMillis();
+        // we need to wait all stages done
+        while (webElementList.size()<5) {
+            webElementList = wait.until(webDriver -> webDriver.findElements(By.cssSelector(".PWGx-pipeline-node-hittarget")));
+            if (System.currentTimeMillis()-start > 30000) {
+                fail("cannot find all stages build");
+            }
+
+        }
         for (int i = 1 ; i <= 3 ; i++) {
-            //wait.until(ExpectedConditions.elementToBeClickable(By.partialLinkText("Sequential " + i + " with child in it"))).click();
-            //runDetailsPipelinePage.click(  );
+            webElementList.get(i + 1).click();
             find("//*[contains(text(),'Triggered Builds')]").isVisible(); // Heading for table of builds
             find("//*[contains(text(),'" + testName.getMethodName() + "-downstream" + "')]").isVisible(); // row pointing to downstream build
         }

@@ -16,7 +16,6 @@ pipeline{
         stage('Sequential 3 with child in it using Script'){
           steps{
             build '${NAME}-downstream'
-            sh 'exit 1'
           }
         }
         stage('Sequential 4 w/o childs'){
