@@ -47,6 +47,8 @@
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
+    <!-- override this as memory in parent pom is not big enough -->
+    <argLine>-Xmx2g -Xms2g -Djava.awt.headless=true -XX:+HeapDumpOnOutOfMemoryError -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
   </properties>
 
   <scm>

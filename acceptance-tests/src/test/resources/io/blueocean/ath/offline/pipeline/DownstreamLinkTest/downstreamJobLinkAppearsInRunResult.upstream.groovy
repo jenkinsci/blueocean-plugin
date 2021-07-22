@@ -1,3 +1,3 @@
 stage ('stageName') {
-  build '${NAME}-downstream'
+  build 'downstreamJob'
 }
