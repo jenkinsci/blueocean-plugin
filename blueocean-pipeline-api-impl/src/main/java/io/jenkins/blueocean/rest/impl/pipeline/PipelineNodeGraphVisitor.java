@@ -261,8 +261,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
         stage.setPipelineActions(pipelineActions);
 
-	nodes.push(stage);
-	nodeMap.put(stage.getId(), stage);
+        nodes.push(stage);
+        nodeMap.put(stage.getId(), stage);
         if (!skippedStage && !parallelBranches.isEmpty()) {
             Iterator<FlowNodeWrapper> branches = parallelBranches.descendingIterator();
             while (branches.hasNext()) {
