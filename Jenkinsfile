@@ -16,9 +16,6 @@ if (JENKINS_URL == 'https://ci.jenkins.io/') {
 properties([
   // only 20 builds,
   buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: '20')),
-  parameters([
-    booleanParam(name: 'USE_SAUCELABS', defaultValue: false)
-  ])
 ])
 
 credentials = [
@@ -35,15 +32,6 @@ envs = [
 
 jenkinsVersions = ['2.277.4']
 
-if (params.USE_SAUCELABS) {
-  credentials.add(usernamePassword(credentialsId: 'saucelabs', passwordVariable: 'SAUCE_ACCESS_KEY', usernameVariable: 'SAUCE_USERNAME'))
-  withCredentials([usernamePassword(credentialsId: 'saucelabs', passwordVariable: 'SAUCE_ACCESS_KEY', usernameVariable: 'SAUCE_USERNAME')]) {
-    envs.add("webDriverUrl=https://${env.SAUCE_USERNAME}:${env.SAUCE_ACCESS_KEY}@ondemand.saucelabs.com/wd/hub")
-  }
-  envs.add("saucelabs=true")
-  envs.add("TUNNEL_IDENTIFIER=${env.BUILD_TAG}")
-}
-
 node() {
   withCredentials(credentials) {
     withEnv(envs) {
@@ -57,11 +45,7 @@ node() {
           sh 'mv $MAVEN_SETTINGS settings.xml'
         }
         sh 'mv $BO_ATH_KEY_FILE acceptance-tests/bo-ath.key'
-        if (params.USE_SAUCELABS) {
-          sh "./acceptance-tests/runner/scripts/start-sc.sh"
-        } else {
-          sh "./acceptance-tests/runner/scripts/start-selenium.sh"
-        }
+        sh "./acceptance-tests/runner/scripts/start-selenium.sh"
         sh "./acceptance-tests/runner/scripts/start-bitbucket-server.sh"
       }
 
@@ -106,11 +90,7 @@ node() {
       } finally {
         stage('Cleanup') {
           catchError(message: 'Suppressing error in Stage: Cleanup') {
-            if (params.USE_SAUCELABS) {
-              sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-sc.sh"
-            } else {
-              sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
-            }
+            sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
             sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-bitbucket-server.sh"
             deleteDir()
           }

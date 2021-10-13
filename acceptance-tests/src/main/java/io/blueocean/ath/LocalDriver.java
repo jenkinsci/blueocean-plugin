@@ -16,11 +16,9 @@ import java.util.Set;
  */
 public class LocalDriver implements WebDriver {
     private static ThreadLocal<WebDriver> CURRENT_WEB_DRIVER = new ThreadLocal<>();
-    private static boolean sauceLabsMode;
 
     public static void setCurrent(WebDriver driver) {
         CURRENT_WEB_DRIVER.set(driver);
-        sauceLabsMode = false;
     }
 
     public static WebDriver getDriver() {
@@ -40,9 +38,6 @@ public class LocalDriver implements WebDriver {
 
     public static void executeSauce(String s) {
         WebDriver driver = CURRENT_WEB_DRIVER.get();
-        if (driver != null && sauceLabsMode) {
-            LocalDriver.executeScript("sauce:" + s);
-        }
     }
 
     public static void destroy() {
@@ -65,14 +60,6 @@ public class LocalDriver implements WebDriver {
 
     public static void setUrlBase(String base) {
         urlBase = base;
-    }
-
-    public static void enableSauce() {
-        sauceLabsMode = true;
-    }
-
-    public static boolean isSauceLabsMode() {
-        return sauceLabsMode;
     }
 
     /**
