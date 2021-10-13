@@ -1,6 +1,6 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
-ENV MAVEN_VERSION 3.8.1
+ENV MAVEN_VERSION 3.8.3
 ENV NODE_VERSION 10.13.0
 ENV PHANTOMJS_VERSION 2.1.1
 ARG UID=1000
@@ -16,7 +16,7 @@ RUN apt-get update
 RUN apt-get update -qqy \
   && apt-get -qqy --no-install-recommends install \
     sudo \
-    openjdk-8-jdk \
+    openjdk-11-jdk \
     tar \
     zip xz-utils \
     curl wget \
