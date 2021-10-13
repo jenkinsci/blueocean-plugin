@@ -1,10 +1,11 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
-ENV MAVEN_VERSION 3.8.1
+ENV MAVEN_VERSION 3.8.3
 ENV NODE_VERSION 10.13.0
 ENV PHANTOMJS_VERSION 2.1.1
 ARG UID=1000
 ARG GID=1000
+ENV DEBIAN_FRONTEND=noninteractive
 
 USER root
 
@@ -13,10 +14,10 @@ RUN apt-get update
 #========================
 # Miscellaneous packages
 #========================
-RUN apt-get update -qqy \
-  && apt-get -qqy --no-install-recommends install \
+RUN apt update -qqy \
+  && apt -qqy --no-install-recommends install \
     sudo \
-    openjdk-8-jdk \
+    openjdk-11-jdk \
     tar \
     zip xz-utils \
     curl wget \
@@ -28,7 +29,7 @@ RUN apt-get update -qqy \
     locales \
     libsass-dev \
   && rm -rf /var/lib/apt/lists/* \
-  && sed -i 's/securerandom\.source=file:\/dev\/random/securerandom\.source=file:\/dev\/urandom/' ./usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/java.security
+  && sed -i 's/securerandom\.source=file:\/dev\/random/securerandom\.source=file:\/dev\/urandom/' /usr/lib/jvm/java-11-openjdk-amd64/conf/security/java.security
 
 # Set utf-8 locale
 RUN locale-gen en_US.UTF-8
@@ -54,8 +55,10 @@ RUN mkdir /.npm && chmod 777 /.npm
 #=============================================
 # Misc packages needed by the ATH
 #=============================================
-RUN apt-get update -qqy \
-  && apt-get -qqy --no-install-recommends install \
+
+RUN apt update -qqy \
+  && apt install -y tzdata \
+  && apt -qqy --no-install-recommends install \
     libxml2-utils \
     libssl-dev \
   && rm -rf /var/lib/apt/lists/*
