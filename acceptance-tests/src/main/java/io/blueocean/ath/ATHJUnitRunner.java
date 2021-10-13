@@ -90,10 +90,6 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
                 }
 
                 try {
-                    if (LocalDriver.isSauceLabsMode()) {
-                        logger.info("SauceOnDemandSessionID=" + ((RemoteWebDriver) LocalDriver.getDriver()).getSessionId().toString());
-                    }
-
                     next.evaluate();
                     outputConsoleLogs();
                     LocalDriver.executeSauce("job-result=passed");
@@ -160,13 +156,9 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
     private void runTest(Statement statement, Description description,
                                  RunNotifier notifier, Retry retry) {
         logger.info(String.format("Running test: '%s'", description.getMethodName()));
-        if (LocalDriver.isSauceLabsMode()) {
-            logger.info("SauceOnDemandSessionID=" + ((RemoteWebDriver) LocalDriver.getDriver()).getSessionId().toString());
-        }
+
         String buildName = System.getenv("BUILD_TAG");
-        if (StringUtils.isEmpty(buildName)) {
-            buildName = System.getenv("SAUCE_BUILD_NAME");
-        }
+
         if (StringUtils.isEmpty(buildName)) {
             buildName = System.getenv("BUILD_TAG");
         }
