@@ -5,6 +5,7 @@ ENV NODE_VERSION 10.13.0
 ENV PHANTOMJS_VERSION 2.1.1
 ARG UID=1000
 ARG GID=1000
+ENV DEBIAN_FRONTEND=noninteractive
 
 USER root
 
@@ -13,8 +14,8 @@ RUN apt-get update
 #========================
 # Miscellaneous packages
 #========================
-RUN apt-get update -qqy \
-  && apt-get -qqy --no-install-recommends install \
+RUN apt update -qqy \
+  && apt -qqy --no-install-recommends install \
     sudo \
     openjdk-11-jdk \
     tar \
@@ -54,8 +55,10 @@ RUN mkdir /.npm && chmod 777 /.npm
 #=============================================
 # Misc packages needed by the ATH
 #=============================================
-RUN apt-get update -qqy \
-  && apt-get -qqy --no-install-recommends install \
+
+RUN apt update -qqy \
+  && apt install -y tzdata \
+  && apt -qqy --no-install-recommends install \
     libxml2-utils \
     libssl-dev \
   && rm -rf /var/lib/apt/lists/*
