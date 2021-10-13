@@ -28,7 +28,7 @@ RUN apt-get update -qqy \
     locales \
     libsass-dev \
   && rm -rf /var/lib/apt/lists/* \
-  && sed -i 's/securerandom\.source=file:\/dev\/random/securerandom\.source=file:\/dev\/urandom/' ./usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/java.security
+  && sed -i 's/securerandom\.source=file:\/dev\/random/securerandom\.source=file:\/dev\/urandom/' /usr/lib/jvm/java-11-openjdk-amd64/conf/security/java.security
 
 # Set utf-8 locale
 RUN locale-gen en_US.UTF-8
