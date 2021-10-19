@@ -129,7 +129,8 @@ public class RunSearch extends OmniSearch<BlueRun> {
 
     public static final String COLLECT_THREADS_KEY = "blueocean.collectRuns.threads";
 
-    private static final int COLLECT_THREADS = Integer.getInteger( COLLECT_THREADS_KEY, 0 );
+    private static final int COLLECT_THREADS = Integer.getInteger( COLLECT_THREADS_KEY,
+                                                                   Runtime.getRuntime().availableProcessors() / 2 );
 
     private static List<BlueRun> collectRuns(Iterator<? extends Run> runIterator, final Link parent, int start, int limit){
         if (COLLECT_THREADS > 1) {
