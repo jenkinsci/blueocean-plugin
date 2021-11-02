@@ -49,8 +49,7 @@ public class JiraSCMListener extends SCMListener {
             // Query for JIRA issues
             List<Issue> issues = session.getIssuesFromJqlSearch(jql);
             Set<JiraIssue> issuesFromJqlSearch = issues == null ? Collections.emptySet() :
-                issues.stream().map( input -> new JiraIssue(input) )
-                    .collect( Collectors.toSet() );
+                issues.stream().map( JiraIssue::new ).collect( Collectors.toSet() );
 
             // If there are no JIRA issues, do not update the actions
             if (issuesFromJqlSearch.isEmpty()) {
