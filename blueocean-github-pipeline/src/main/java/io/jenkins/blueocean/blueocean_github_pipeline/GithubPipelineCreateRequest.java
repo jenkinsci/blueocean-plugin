@@ -147,7 +147,7 @@ public class GithubPipelineCreateRequest extends AbstractMultiBranchCreateReques
                 .stream()
                 .filter( input -> input != null && input.getApiUri().equals( finalApiUrl))
                 .findFirst();
-            Endpoint endpoint = optionalEndpoint.isPresent()? optionalEndpoint.get():null;
+            Endpoint endpoint = optionalEndpoint.orElse( null );
 
             if (endpoint == null) {
                 config.setEndpoints(Collections.singletonList(new Endpoint( apiUrl, apiUrl)));

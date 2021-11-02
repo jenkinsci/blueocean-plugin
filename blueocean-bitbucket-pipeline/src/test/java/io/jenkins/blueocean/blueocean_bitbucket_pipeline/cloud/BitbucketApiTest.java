@@ -119,7 +119,7 @@ public class BitbucketApiTest extends BbCloudWireMock {
                 "This is test content in new file",
                 "first commit", "null", null, null);
         assertNotNull(saveResponse.getCommitId());
-        String content = api.getContent(BbCloudWireMock.USER_UUID, "demo1", "foo", (String) saveResponse.getCommitId());
+        String content = api.getContent(BbCloudWireMock.USER_UUID, "demo1", "foo", saveResponse.getCommitId());
         assertEquals("This is test content in new file", content);
     }
 

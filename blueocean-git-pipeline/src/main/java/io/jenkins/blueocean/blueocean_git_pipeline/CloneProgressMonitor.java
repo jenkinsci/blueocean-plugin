@@ -45,10 +45,7 @@ class CloneProgressMonitor implements ProgressMonitor {
 
     @Override
     public void beginTask(String task, int i) {
-        CloneProgressMonitor existing = currentStatus.get(repositoryUrl);
-        if (existing == null) {
-            currentStatus.put(repositoryUrl, existing = this);
-        }
+        CloneProgressMonitor existing = currentStatus.computeIfAbsent( repositoryUrl, k -> this );
         existing.cloneCount.incrementAndGet();
         existing.latestProgress.set(i);
     }

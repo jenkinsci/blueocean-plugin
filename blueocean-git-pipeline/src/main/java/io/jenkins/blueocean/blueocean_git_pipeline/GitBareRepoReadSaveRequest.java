@@ -71,7 +71,6 @@ class GitBareRepoReadSaveRequest extends GitReadSaveRequest {
     GitBareRepoReadSaveRequest(AbstractGitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
         super(gitSource, branch, commitMessage, sourceBranch, filePath, contents);
         GitTool.DescriptorImpl toolDesc = Jenkins.get().getDescriptorByType( GitTool.DescriptorImpl.class);
-        @SuppressWarnings("deprecation")
         GitTool foundGitTool = null;
         if (gitSource != null) {
             for ( SCMSourceTrait trait : gitSource.getTraits()) {
@@ -95,62 +94,56 @@ class GitBareRepoReadSaveRequest extends GitReadSaveRequest {
 
     @Override
     byte[] read() throws IOException {
-        return invokeOnScm(new GitSCMFileSystem.FSFunction<byte[]>() {
-            @Override
-            public byte[] invoke(Repository repo) throws IOException, InterruptedException {
-                // Make sure credentials work
-                GitUtils.validatePushAccess(repo, gitSource.getRemote(), getCredential());
-                // Make sure up-to-date
-                GitUtils.fetch(repo, getCredential());
-                return GitUtils.readFile(repo, LOCAL_REF_BASE + branch, filePath);
-            }
-        });
+        return invokeOnScm( repo -> {
+            // Make sure credentials work
+            GitUtils.validatePushAccess(repo, gitSource.getRemote(), getCredential());
+            // Make sure up-to-date
+            GitUtils.fetch(repo, getCredential());
+            return GitUtils.readFile(repo, LOCAL_REF_BASE + branch, filePath);
+        } );
     }
 
     @Override
     void save() throws IOException {
-        invokeOnScm(new GitSCMFileSystem.FSFunction<Void>() {
-            @Override
-            public Void invoke(Repository repo) throws IOException {
-                String localBranchRef = LOCAL_REF_BASE + sourceBranch;
+        invokeOnScm( (GitSCMFileSystem.FSFunction<Void>) repo -> {
+            String localBranchRef = LOCAL_REF_BASE + sourceBranch;
 
-                ObjectId branchHead = repo.resolve(localBranchRef);
+            ObjectId branchHead = repo.resolve(localBranchRef);
 
+            try {
+                // Get committer info
+                User user = User.current();
+                if (user == null) {
+                    throw new ServiceException.UnauthorizedException("Not authenticated");
+                }
+                String mailAddress = MailAddressResolver.resolve(user);
+
+                if(mailAddress == null) {
+                    mailAddress = user.getId() + "@email-address-not-set";
+                }
+
+                StandardCredentials credential = getCredential();
+
+                // Make sure up-to-date and credentials work
+                GitUtils.fetch(repo, credential);
+
+                GitUtils.commit(repo, localBranchRef, filePath, contents, user.getId(), mailAddress, commitMessage, TimeZone.getDefault(), new Date());
+
+                GitUtils.push(gitSource.getRemote(), repo, credential, localBranchRef, REMOTE_REF_BASE + branch);
+                return null;
+            } finally {
+                // always roll back to undo our local changes
                 try {
-                    // Get committer info
-                    User user = User.current();
-                    if (user == null) {
-                        throw new ServiceException.UnauthorizedException("Not authenticated");
+                    if (branchHead != null) { // branchHead may be null if this was an empty repo
+                        RefUpdate rollback = repo.updateRef(localBranchRef);
+                        rollback.setNewObjectId(branchHead);
+                        rollback.forceUpdate();
                     }
-                    String mailAddress = MailAddressResolver.resolve(user);
-
-                    if(mailAddress == null) {
-                        mailAddress = user.getId() + "@email-address-not-set";
-                    }
-
-                    StandardCredentials credential = getCredential();
-
-                    // Make sure up-to-date and credentials work
-                    GitUtils.fetch(repo, credential);
-
-                    GitUtils.commit(repo, localBranchRef, filePath, contents, user.getId(), mailAddress, commitMessage, TimeZone.getDefault(), new Date());
-
-                    GitUtils.push(gitSource.getRemote(), repo, credential, localBranchRef, REMOTE_REF_BASE + branch);
-                    return null;
-                } finally {
-                    // always roll back to undo our local changes
-                    try {
-                        if (branchHead != null) { // branchHead may be null if this was an empty repo
-                            RefUpdate rollback = repo.updateRef(localBranchRef);
-                            rollback.setNewObjectId(branchHead);
-                            rollback.forceUpdate();
-                        }
-                    } catch(Exception ex) {
-                        log.log(Level.SEVERE, "Unable to roll back repo after save failure", ex);
-                    }
+                } catch(Exception ex) {
+                    log.log(Level.SEVERE, "Unable to roll back repo after save failure", ex);
                 }
             }
-        });
+        } );
     }
 
     <T> T invokeOnScm(final GitSCMFileSystem.FSFunction<T> function) throws IOException {

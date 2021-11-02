@@ -39,7 +39,7 @@ public class HttpResponse {
                 ErrorMessage errorMessage = new ErrorMessage(getStatus(), getStatusLine());
                 // WireMock returns "Bad Request" for the status message; it's also pretty nondescript
                 if (StringUtils.isEmpty(errorMessage.message) || "Bad Request".equals(errorMessage.message)) {
-                    String message;;
+                    String message;
                     List<ErrorMessage.Error> errors = new ArrayList<>();
                     try {
                         JSONObject jsonResponse = JSONObject.fromObject(IOUtils.toString(entity.getContent()));
