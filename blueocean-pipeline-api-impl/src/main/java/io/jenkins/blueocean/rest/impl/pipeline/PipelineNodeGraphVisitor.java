@@ -278,11 +278,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     logger.debug("skip parsing stage {} but parallelBranchEndNodes is empty", stage);
                 } else {
                     String endId = pendingBranchEndNodes.peek().getId();
-                    Stack<FlowNodeWrapper> stack = stackPerEnd.get(endId);
-                    if (stack == null) {
-                        stack = new Stack<>();
-                        stackPerEnd.put(endId, stack);
-                    }
+                    Stack<FlowNodeWrapper> stack = stackPerEnd.computeIfAbsent(endId, k -> new Stack<>());
                     stack.add(stage);
                 }
             }
@@ -461,12 +457,12 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             parallelBranches.push(branch);
         }
 
-        FlowNodeWrapper[] sortedBranches = parallelBranches.toArray(new FlowNodeWrapper[parallelBranches.size()]);
+        FlowNodeWrapper[] sortedBranches = parallelBranches.toArray(new FlowNodeWrapper[0]);
         Arrays.sort(sortedBranches, Comparator.comparing(FlowNodeWrapper::getDisplayName));
 
         parallelBranches.clear();
-        for (int i = 0; i < sortedBranches.length; i++) {
-            parallelBranches.push(sortedBranches[i]);
+        for (FlowNodeWrapper sortedBranch : sortedBranches) {
+            parallelBranches.push(sortedBranch);
         }
         for (FlowNodeWrapper p : parallelBranches) {
             nodes.push(p);

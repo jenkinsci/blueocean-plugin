@@ -28,106 +28,103 @@ public class BranchContainerImpl extends BluePipelineContainer {
      * - Favourites ordered by last run time
      * - All other branches ordered by last run time
      */
-    private static final Comparator<BluePipeline> BRANCH_COMPARATOR = new Comparator<BluePipeline>() {
-        @Override
-        public int compare(BluePipeline _pipeline1, BluePipeline _pipeline2) {
-            BranchImpl pipeline1 = (BranchImpl)_pipeline1;
-            BranchImpl pipeline2 = (BranchImpl)_pipeline2;
+    private static final Comparator<BluePipeline> BRANCH_COMPARATOR = ( _pipeline1, _pipeline2 ) -> {
+        BranchImpl pipeline1 = (BranchImpl)_pipeline1;
+        BranchImpl pipeline2 = (BranchImpl)_pipeline2;
 
-            BranchImpl.Branch branch1 = pipeline1.getBranch();
-            if (branch1 == null) {
+        BranchImpl.Branch branch1 = pipeline1.getBranch();
+        if (branch1 == null) {
+            return -1;
+        }
+
+        BranchImpl.Branch branch2 = pipeline2.getBranch();
+        if (branch2 == null) {
+            return 1;
+        }
+
+        // If one pipeline isnt the primary there is no need to go further
+        if(branch1.isPrimary() && !branch2.isPrimary()) {
+            return -1;
+        }
+
+        if(!branch1.isPrimary() && branch2.isPrimary()) {
+            return 1;
+        }
+
+        // If One pipeline isnt a favorite there is no need to go further.
+        if(pipeline1.isFavorite() && !pipeline2.isFavorite()) {
+            return -1;
+        }
+
+        if(!pipeline1.isFavorite() && pipeline2.isFavorite()) {
+            return 1;
+        }
+
+        BlueRun latestRun1 = pipeline1.getLatestRun();
+        BlueRun latestRun2 = pipeline2.getLatestRun();
+
+        // If a pipeline doesn't have a run yet, no need to go further.
+        if(latestRun1 != null && latestRun2 == null) {
+            return -1;
+        }
+
+        if(latestRun1 == null && latestRun2 != null) {
+            return 1;
+        }
+
+        //If neither have runs, lets just order by name.
+        if(latestRun1 == null) {
+            return pipeline1.getName().compareTo(pipeline2.getName());
+        }
+
+        // If one run hasnt finished yet, then lets order by that.
+        Date endTime1 = latestRun1.getEndTime() ;
+        Date endTime2 = latestRun2.getEndTime();
+        if(endTime1 != null && endTime2 == null) {
+            return 1;
+        }
+
+        if(endTime1 == null && endTime2 != null) {
+            return -1;
+        }
+
+        // If both jobs have ended, lets order by the one that ended last.
+        if(endTime1 != null) {
+            if(endTime1.getTime() > endTime2.getTime()) {
                 return -1;
             }
 
-            BranchImpl.Branch branch2 = pipeline2.getBranch();
-            if (branch2 == null) {
+            if(endTime1.getTime() < endTime2.getTime()) {
                 return 1;
-            }
-
-            // If one pipeline isnt the primary there is no need to go further
-            if(branch1.isPrimary() && !branch2.isPrimary()) {
-                return -1;
-            }
-
-            if(!branch1.isPrimary() && branch2.isPrimary()) {
-                return 1;
-            }
-
-            // If One pipeline isnt a favorite there is no need to go further.
-            if(pipeline1.isFavorite() && !pipeline2.isFavorite()) {
-                return -1;
-            }
-
-            if(!pipeline1.isFavorite() && pipeline2.isFavorite()) {
-                return 1;
-            }
-
-            BlueRun latestRun1 = pipeline1.getLatestRun();
-            BlueRun latestRun2 = pipeline2.getLatestRun();
-
-            // If a pipeline doesn't have a run yet, no need to go further.
-            if(latestRun1 != null && latestRun2 == null) {
-                return -1;
-            }
-
-            if(latestRun1 == null && latestRun2 != null) {
-                return 1;
-            }
-
-            //If neither have runs, lets just order by name.
-            if(latestRun1 == null) {
-                return pipeline1.getName().compareTo(pipeline2.getName());
-            }
-
-            // If one run hasnt finished yet, then lets order by that.
-            Date endTime1 = latestRun1.getEndTime() ;
-            Date endTime2 = latestRun2.getEndTime();
-            if(endTime1 != null && endTime2 == null) {
-                return 1;
-            }
-
-            if(endTime1 == null && endTime2 != null) {
-                return -1;
-            }
-
-            // If both jobs have ended, lets order by the one that ended last.
-            if(endTime1 != null) {
-                if(endTime1.getTime() > endTime2.getTime()) {
-                    return -1;
-                }
-
-                if(endTime1.getTime() < endTime2.getTime()) {
-                    return 1;
-                }
-
-                return pipeline1.getName().compareTo(pipeline2.getName());
-            }
-
-            //If both jobs have not ended yet, we need to order by start time.
-            Date startTime1 = latestRun1.getStartTime();
-            Date startTime2 = latestRun2.getStartTime();
-            if(startTime1 != null && startTime2 == null) {
-                return 1;
-            }
-
-            if(startTime1 == null && startTime2 != null) {
-                return -1;
-            }
-
-            if(startTime1 != null && startTime2 != null) {
-                if(startTime1.getTime() > startTime2.getTime()) {
-                    return -1;
-                }
-
-                if(startTime1.getTime() < startTime2.getTime()) {
-                    return 1;
-                }
-
-                return pipeline1.getName().compareTo(pipeline2.getName());
             }
 
             return pipeline1.getName().compareTo(pipeline2.getName());
         }
+
+        //If both jobs have not ended yet, we need to order by start time.
+        Date startTime1 = latestRun1.getStartTime();
+        Date startTime2 = latestRun2.getStartTime();
+        if(startTime1 != null && startTime2 == null) {
+            return 1;
+        }
+
+        if(startTime1 == null && startTime2 != null) {
+            return -1;
+        }
+
+        if(startTime1 != null && startTime2 != null) {
+            if(startTime1.getTime() > startTime2.getTime()) {
+                return -1;
+            }
+
+            if(startTime1.getTime() < startTime2.getTime()) {
+                return 1;
+            }
+
+            return pipeline1.getName().compareTo(pipeline2.getName());
+        }
+
+        return pipeline1.getName().compareTo(pipeline2.getName());
     };
 
     private final MultiBranchPipelineImpl pipeline;

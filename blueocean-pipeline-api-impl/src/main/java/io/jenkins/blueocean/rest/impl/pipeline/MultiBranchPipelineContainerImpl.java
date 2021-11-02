@@ -1,9 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import hudson.model.ItemGroup;
-import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BlueOrganization;

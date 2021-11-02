@@ -6,7 +6,6 @@ import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 public final class PrimaryBranch {
     /**

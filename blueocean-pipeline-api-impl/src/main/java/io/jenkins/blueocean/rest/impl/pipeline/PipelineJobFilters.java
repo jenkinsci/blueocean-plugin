@@ -45,7 +45,7 @@ public class PipelineJobFilters {
 
     @Extension
     public static class PullRequestFilter extends ContainerFilter {
-        private final Predicate<Item> filter = job ->  isPullRequest(job);
+        private final Predicate<Item> filter = PipelineJobFilters::isPullRequest;
 
         @Override
         public String getName() {
