@@ -83,26 +83,26 @@ public class TypeUtil {
      * Implements the logic for {@link #erasure(Type)}.
      */
     private static final TypeVisitor<Class,Void> eraser = new TypeVisitor<Class,Void>() {
-        public Class onClass(Class c,Void _) {
+        public Class onClass(Class c,Void v) {
             return c;
         }
 
-        public Class onParameterizdType(ParameterizedType p,Void _) {
+        public Class onParameterizdType(ParameterizedType p,Void v) {
             // TODO: why getRawType returns Type? not Class?
             return visit(p.getRawType(),null);
         }
 
-        public Class onGenericArray(GenericArrayType g,Void _) {
+        public Class onGenericArray(GenericArrayType g,Void v) {
             return Array.newInstance(
                 visit(g.getGenericComponentType(),null),
                 0 ).getClass();
         }
 
-        public Class onVariable(TypeVariable v,Void _) {
+        public Class onVariable(TypeVariable v,Void vo) {
             return visit(v.getBounds()[0],null);
         }
 
-        public Class onWildcard(WildcardType w,Void _) {
+        public Class onWildcard(WildcardType w,Void v) {
             return visit(w.getUpperBounds()[0],null);
         }
     };
@@ -323,7 +323,7 @@ public class TypeUtil {
                 throw new MalformedParameterizedTypeException();
             }
             for (int i = 0; i < actualTypeArguments.length; i++) {
-                // check actuals against formals' bounds
+                // check actual against formals' bounds
             }
 
         }

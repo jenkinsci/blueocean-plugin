@@ -67,7 +67,6 @@ public class Export {
      * @param writer The writer to output to.
      * @throws IOException Error serializing model object.
      */
-    @SuppressWarnings("unchecked")
     public static void toJson(@NonNull Object object, @NonNull Writer writer) throws IOException {
         toJson(object, writer, false);
     }

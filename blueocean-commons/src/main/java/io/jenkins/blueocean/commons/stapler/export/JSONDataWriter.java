@@ -148,7 +148,7 @@ class JSONDataWriter implements DataWriter {
     }
 
     @Override
-    public void type(Type expected, Class actual) throws IOException {
+    public void type(Type expected, Class<?> actual) throws IOException {
         classAttr = config.getClassAttribute().print(expected, actual);
     }
 

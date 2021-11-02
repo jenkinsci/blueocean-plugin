@@ -51,33 +51,33 @@ public abstract class ClassAttributeBehaviour {
      * @see DataWriter#type(Type, Class)
      */
     abstract @Nullable
-    Class map(@Nullable Type expected, @Nullable Class actual);
+    Class<?> map(@Nullable Type expected, @Nullable Class<?> actual);
 
-    String print(Type expected, Class actual) {
+    String print(Type expected, Class<?> actual) {
         return print(map(expected,actual));
     }
 
-    protected String print(Class t) {
+    protected String print(Class<?> t) {
         return t==null ? null : t.getName();
     }
 
     public static final ClassAttributeBehaviour NONE = new ClassAttributeBehaviour("NONE") {
         @Override
-        Class map(Type expected, Class actual) {
+        Class<?> map(Type expected, Class<?> actual) {
             return null;
         }
     };
 
     public static final ClassAttributeBehaviour ALWAYS = new ClassAttributeBehaviour("ALWAYS") {
         @Override
-        Class map(Type expected, Class actual) {
+        Class<?> map(Type expected, Class<?> actual) {
             return actual;
         }
     };
 
     public static final ClassAttributeBehaviour IF_NEEDED = new ClassAttributeBehaviour("IF_NEEDED") {
         @Override
-        Class map(Type expected, Class actual) {
+        Class<?> map(Type expected, Class<?> actual) {
             if (actual==null)
                 return null;    // nothing to write
             if (expected==actual)
@@ -94,12 +94,12 @@ public abstract class ClassAttributeBehaviour {
         final ClassAttributeBehaviour outer = this;
         return new ClassAttributeBehaviour(this.name+"+simple") {
             @Override
-            Class map(Type expected, Class actual) {
+            Class<?> map(Type expected, Class<?> actual) {
                 return outer.map(expected,actual);
             }
 
             @Override
-            protected String print(Class t) {
+            protected String print(Class<?> t) {
                 return t==null ? null : t.getSimpleName();
             }
         };

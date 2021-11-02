@@ -27,7 +27,6 @@ package io.jenkins.blueocean.commons.stapler.export;
  * Controls the portion of the object graph to be written to {@link DataWriter}.
  *
  * @author Kohsuke Kawaguchi
- * @see Model#writeTo(Object, org.kohsuke.stapler.export.TreePruner, DataWriter)
  */
 public abstract class TreePruner {
     /**
