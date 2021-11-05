@@ -281,7 +281,7 @@ public class BlueUrlTokenizer {
 
     private static Iterator<String> extractTokens(String url) {
 
-        return Arrays.asList(url.split("/")).stream()
+        return Arrays.stream( url.split( "/"))
             .filter( s -> s.length() != 0 )
             .collect( Collectors.toList() )
             .iterator();

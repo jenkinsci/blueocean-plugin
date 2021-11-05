@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.config;
 
-import com.google.common.collect.ImmutableSet;
 import io.jenkins.blueocean.rest.factory.BlueOceanConfigFactory;
 import io.jenkins.blueocean.rest.model.BlueOceanConfig;
 import org.junit.Rule;

@@ -37,7 +37,6 @@ import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -49,6 +48,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -73,7 +73,7 @@ public class BlueI18n implements ApiRoutable {
     /**
      * Bundle cache.
      */
-    private Map<BundleParams, BundleCacheEntry> bundleCache = new ConcurrentHashMap<>();
+    private final Map<BundleParams, BundleCacheEntry> bundleCache = new ConcurrentHashMap<>();
 
     /**
      * {@inheritDoc}
@@ -296,13 +296,13 @@ public class BlueI18n implements ApiRoutable {
             if (!bundleName.equals(that.bundleName)) {
                 return false;
             }
-            if (language != null ? !language.equals(that.language) : that.language != null) {
+            if ( !Objects.equals( language, that.language ) ) {
                 return false;
             }
-            if (country != null ? !country.equals(that.country) : that.country != null) {
+            if ( !Objects.equals( country, that.country ) ) {
                 return false;
             }
-            return variant != null ? variant.equals(that.variant) : that.variant == null;
+            return Objects.equals( variant, that.variant );
         }
 
         @Override

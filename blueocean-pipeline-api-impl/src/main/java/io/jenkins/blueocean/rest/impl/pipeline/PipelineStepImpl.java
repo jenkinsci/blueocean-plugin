@@ -21,7 +21,6 @@ import io.jenkins.blueocean.service.embedded.rest.LogResource;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.acegisecurity.Authentication;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.workflow.actions.ArgumentsAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
@@ -36,12 +35,13 @@ import org.jenkinsci.plugins.workflow.support.steps.input.InputStepExecution;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.framework.io.ByteBuffer;
+import org.springframework.security.core.Authentication;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -163,8 +163,8 @@ public class PipelineStepImpl extends BluePipelineStep {
         msg = msg + "\n";
 
         try (ByteBuffer byteBuffer = new ByteBuffer()) {
-            byteBuffer.write(msg.getBytes("UTF-8"));
-            return new LogResource(new AnnotatedLargeText(byteBuffer, Charset.forName("UTF-8"),true, null));
+            byteBuffer.write(msg.getBytes(StandardCharsets.UTF_8));
+            return new LogResource(new AnnotatedLargeText( byteBuffer, StandardCharsets.UTF_8, true, null));
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException(e.getMessage());
         }
@@ -244,7 +244,7 @@ public class PipelineStepImpl extends BluePipelineStep {
     }
 
     private Object parseValue(InputStepExecution execution, JSONArray parameters, StaplerRequest request) throws IOException, InterruptedException {
-        Map<String, Object> mapResult = new HashMap<String, Object>();
+        Map<String, Object> mapResult = new HashMap<>();
 
         InputStep input = execution.getInput();
         for(Object o: parameters){
@@ -272,7 +272,7 @@ public class PipelineStepImpl extends BluePipelineStep {
         // If a destination value is specified, push the submitter to it.
         String valueName = input.getSubmitterParameter();
         if (valueName != null && !valueName.isEmpty()) {
-            Authentication a = Jenkins.getAuthentication();
+            Authentication a = Jenkins.getAuthentication2();
             mapResult.put(valueName, a.getName());
         }
         switch (mapResult.size()) {

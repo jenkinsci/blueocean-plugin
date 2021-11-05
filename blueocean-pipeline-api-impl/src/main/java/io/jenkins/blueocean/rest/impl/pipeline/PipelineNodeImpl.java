@@ -275,7 +275,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     private List<Edge> buildEdges(List<FlowNodeWrapper> nodes) {
         return nodes.isEmpty()? Collections.emptyList():
-            nodes.stream().map( nodeWrapper -> new EdgeImpl( nodeWrapper ) ).collect( Collectors.toList() );
+            nodes.stream().map(EdgeImpl::new).collect(Collectors.toList());
 
     }
 

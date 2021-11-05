@@ -10,8 +10,8 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
-import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.StaplerRequest;
+import org.springframework.security.core.Authentication;
 
 import javax.annotation.Nonnull;
 
@@ -66,12 +66,12 @@ public class ScmResourceImpl extends BluePipelineScm {
         }else{
             acl = item.getACL();
         }
-        Authentication a = Jenkins.getAuthentication();
-        User user = User.get(a);
+        Authentication a = Jenkins.getAuthentication2();
+        User user = User.get2(a);
         if(user == null){
             throw new ServiceException.UnauthorizedException("No logged in user found");
         }
-        if(!acl.hasPermission(a, Item.CONFIGURE)){
+        if(!acl.hasPermission2(a, Item.CONFIGURE)){
             throw new ServiceException.ForbiddenException(
                     String.format("User %s must have Job configure permission to access content", a.getName()));
         }

@@ -49,8 +49,7 @@ public class PipelineMetadataServiceTest {
     public void declarativeAgents() throws Exception {
         PipelineMetadataService svc = new PipelineMetadataService();
 
-        List<ExportedDescribableModel> agents = new ArrayList<>();
-        agents.addAll(Arrays.asList(svc.doAgentMetadata()));
+        List<ExportedDescribableModel> agents = new ArrayList<>(Arrays.asList(svc.doAgentMetadata()));
 
         assertFalse(agents.isEmpty());
 
@@ -74,8 +73,7 @@ public class PipelineMetadataServiceTest {
     public void toolMetadata() throws Exception {
         PipelineMetadataService svc = new PipelineMetadataService();
 
-        List<ExportedToolDescriptor> tools = new ArrayList<>();
-        tools.addAll(Arrays.asList(svc.doToolMetadata()));
+        List<ExportedToolDescriptor> tools = new ArrayList<>(Arrays.asList(svc.doToolMetadata()));
 
         assertFalse(tools.isEmpty());
 
@@ -96,8 +94,7 @@ public class PipelineMetadataServiceTest {
     public void wrappers() throws Exception {
         PipelineMetadataService svc = new PipelineMetadataService();
 
-        List<ExportedPipelineStep> wrappers = new ArrayList<>();
-        wrappers.addAll(Arrays.asList(svc.doWrapperMetadata()));
+        List<ExportedPipelineStep> wrappers = new ArrayList<>(Arrays.asList(svc.doWrapperMetadata()));
 
         assertFalse(wrappers.isEmpty());
 
@@ -116,9 +113,7 @@ public class PipelineMetadataServiceTest {
     public void verifyFunctionNames() throws Exception {
         PipelineMetadataService svc = new PipelineMetadataService();
 
-        List<ExportedDescribableModel> steps = new ArrayList<>();
-
-        steps.addAll(Arrays.asList(svc.doPipelineStepMetadata()));
+        List<ExportedDescribableModel> steps = new ArrayList<>(Arrays.asList(svc.doPipelineStepMetadata()));
 
         assertFalse(steps.isEmpty());
 

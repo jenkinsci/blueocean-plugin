@@ -212,7 +212,7 @@ public class JiraSCMListenerTest {
 
 
     private static ChangeLogSet build( String... texts) {
-        List<ChangeLogSet.Entry> entries = Arrays.asList( texts ).stream().map( text -> {
+        List<ChangeLogSet.Entry> entries = Arrays.stream( texts ).map( text -> {
             final ChangeLogSet.Entry entry = mock(ChangeLogSet.Entry.class);
             when(entry.getMsg()).thenReturn(text);
             return  entry;

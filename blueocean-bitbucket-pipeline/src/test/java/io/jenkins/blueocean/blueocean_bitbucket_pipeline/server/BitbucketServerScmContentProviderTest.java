@@ -252,7 +252,7 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
 
         //mock blueocean credential provider stuff
         BlueOceanCredentialsProvider.FolderPropertyImpl folderProperty = mock(BlueOceanCredentialsProvider.FolderPropertyImpl.class);
-        DescribableList<AbstractFolderProperty<?>, AbstractFolderPropertyDescriptor> properties = new DescribableList<AbstractFolderProperty<?>, AbstractFolderPropertyDescriptor>(mbp);
+        DescribableList<AbstractFolderProperty<?>, AbstractFolderPropertyDescriptor> properties = new DescribableList<>(mbp);
         properties.add(new BlueOceanCredentialsProvider.FolderPropertyImpl(
                 user.getId(), credentialId,
                 BlueOceanCredentialsProvider.createDomain(apiUrl)

@@ -2,7 +2,7 @@ package io.jenkins.blueocean.auth.jwt;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
-import org.acegisecurity.Authentication;
+import org.springframework.security.core.Authentication;
 
 import java.util.Map;
 
@@ -32,7 +32,7 @@ public abstract class JwtAuthenticationStoreFactory implements ExtensionPoint{
      *
      * @return JwtAuthenticationStore, can be null
      */
-    public abstract  JwtAuthenticationStore getJwtAuthenticationStore(Authentication authentication);
+    public abstract  JwtAuthenticationStore getJwtAuthenticationStore( Authentication authentication);
 
 
     public static ExtensionList<JwtAuthenticationStoreFactory> all(){

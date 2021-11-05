@@ -46,10 +46,10 @@ public abstract class ScmContentProviderParams {
                 repo = repo(source);
             }
         }
-        this.apiUrl = apiUrl == null ? GitHubSCMSource.GITHUB_URL : apiUrl;;
+        this.apiUrl = apiUrl == null ? GitHubSCMSource.GITHUB_URL : apiUrl;
         this.owner = owner;
         this.repo = repo;
-        this.credentials = getCredentialForUser(item, this.apiUrl);;
+        this.credentials = getCredentialForUser(item, this.apiUrl);
     }
 
     public String getApiUrl() {

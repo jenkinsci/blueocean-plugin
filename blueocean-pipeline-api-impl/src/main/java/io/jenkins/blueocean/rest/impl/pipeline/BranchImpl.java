@@ -26,7 +26,6 @@ import javax.annotation.CheckForNull;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
-import java.util.Optional;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
 

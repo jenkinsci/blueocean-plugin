@@ -48,9 +48,7 @@ public class InputStepImpl extends BlueInputStep {
 
     @Override
     public List<Object> getParameters() {
-        List<Object> params = new ArrayList<>();
-        params.addAll(inputStep.getParameters());
-        return params;
+        return new ArrayList<>( inputStep.getParameters() );
     }
 
     @Override

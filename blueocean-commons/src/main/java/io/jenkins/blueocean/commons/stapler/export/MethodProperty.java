@@ -59,7 +59,7 @@ final class MethodProperty extends Property {
         return method.getGenericReturnType();
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return method.getReturnType();
     }
 

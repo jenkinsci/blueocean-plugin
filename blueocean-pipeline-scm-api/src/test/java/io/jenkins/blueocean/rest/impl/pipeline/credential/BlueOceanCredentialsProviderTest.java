@@ -1,12 +1,9 @@
 package io.jenkins.blueocean.rest.impl.pipeline.credential;
 
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
-import com.cloudbees.hudson.plugins.folder.AbstractFolderProperty;
-import com.cloudbees.hudson.plugins.folder.AbstractFolderPropertyDescriptor;
 import com.cloudbees.plugins.credentials.Credentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
-import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.cloudbees.plugins.credentials.domains.HostnameRequirement;
 import com.cloudbees.plugins.credentials.domains.PathRequirement;
 import com.cloudbees.plugins.credentials.domains.SchemeRequirement;
@@ -16,11 +13,9 @@ import hudson.security.ACL;
 import hudson.security.SecurityRealm;
 import hudson.util.DescribableList;
 import jenkins.model.Jenkins;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.Issue;
-import org.jvnet.hudson.test.MockFolder;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
@@ -30,7 +25,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,7 +32,6 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
@@ -63,8 +56,8 @@ public class BlueOceanCredentialsProviderTest {
     public void getCredentialsWhenUserExistedButNotAccessible() {
         PowerMockito.mockStatic(Jenkins.class);
         PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
-        PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
-        PowerMockito.when(Jenkins.getActiveInstance()).thenReturn(jenkins);
+        PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
+        PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
         when(jenkins.getSecurityRealm()).thenReturn(SecurityRealm.NO_AUTHENTICATION);
         when(jenkins.getSecretKey()).thenReturn("xxx");
 
@@ -87,7 +80,7 @@ public class BlueOceanCredentialsProviderTest {
             StandardUsernameCredentials.class,
             (ItemGroup) folder,
             ACL.SYSTEM,
-            new ArrayList<DomainRequirement>(Arrays.asList(
+            new ArrayList<>(Arrays.asList(
                 new SchemeRequirement("https"),
                 new HostnameRequirement("api.github.com"),
                 new PathRequirement("/")

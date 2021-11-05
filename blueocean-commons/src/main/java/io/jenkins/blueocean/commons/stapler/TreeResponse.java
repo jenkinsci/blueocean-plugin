@@ -64,11 +64,8 @@ public @interface TreeResponse {
                 }
             }
 
-            //by default we treat it as GET
-            if(method.equals("GET")){
-                return true;
-            }
-            return false;
+            //by default, we treat it as GET
+            return method.equals( "GET" );
         }
     }
 }

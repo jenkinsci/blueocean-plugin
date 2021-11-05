@@ -33,27 +33,27 @@ import org.kohsuke.stapler.export.Model;
  * @see Model
  */
 public class NotExportableException extends IllegalArgumentException {
-    private final Class type;
+    private final Class<?> type;
 
-    public NotExportableException(Class type) {
+    public NotExportableException(Class<?> type) {
         this(type+" doesn't have @"+ ExportedBean.class.getSimpleName(),type);
     }
 
-    public NotExportableException(Class type, Class<?> propertyOwner, String property) {
+    public NotExportableException(Class<?> type, Class<?> propertyOwner, String property) {
         this(type + " doesn't have @" + ExportedBean.class.getSimpleName() + " so cannot write " + propertyOwner.getName() + '.' + property, type);
     }
 
-    public NotExportableException(String s, Class type) {
+    public NotExportableException(String s, Class<?> type) {
         super(s);
         this.type = type;
     }
 
-    public NotExportableException(String message, Throwable cause, Class type) {
+    public NotExportableException(String message, Throwable cause, Class<?> type) {
         super(message, cause);
         this.type = type;
     }
 
-    public NotExportableException(Throwable cause, Class type) {
+    public NotExportableException(Throwable cause, Class<?> type) {
         super(cause);
         this.type = type;
     }
@@ -61,7 +61,7 @@ public class NotExportableException extends IllegalArgumentException {
     /**
      * Gets the type that didn't have {@link ExportedBean}
      */
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 }

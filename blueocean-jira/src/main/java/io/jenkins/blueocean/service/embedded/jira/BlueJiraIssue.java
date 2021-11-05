@@ -106,7 +106,7 @@ public class BlueJiraIssue extends BlueIssue {
 
     static Collection<String> findIssueKeys(String input, Pattern pattern) {
         Matcher m = pattern.matcher(input);
-        Set<String> issues = new HashSet();
+        Set<String> issues = new HashSet<>();
         while (m.find()) {
             if (m.groupCount() >= 1) {
                 String id = m.group(1);

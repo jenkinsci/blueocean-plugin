@@ -31,8 +31,8 @@ import org.kohsuke.stapler.export.ExportedBean;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -55,7 +55,7 @@ public class ModelTest {
     public static class Impl implements GenericInterface<Integer> {
         @Exported
         public List<Integer> get() {
-            return Arrays.asList(42);
+            return Collections.singletonList( 42 );
         }
     }
 
