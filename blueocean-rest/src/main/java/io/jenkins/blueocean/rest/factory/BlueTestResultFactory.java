@@ -76,21 +76,20 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
                         break;
                     case PASSED:
                         passed++;
-                        switch (result.getTestState()) {
-                            case FIXED:
-                                fixedTotal++;
-                                break;
+                        if ( result.getTestState() == BlueTestResult.State.FIXED )
+                        {
+                            fixedTotal++;
                         }
                         break;
                     case FAILED:
                         failed++;
-                        switch (result.getTestState()) {
-                            case REGRESSION:
-                                regressions++;
-                                break;
-                            default:
-                                existingFailedTotal++;
-                                break;
+                        if ( result.getTestState() == BlueTestResult.State.REGRESSION )
+                        {
+                            regressions++;
+                        }
+                        else
+                        {
+                            existingFailedTotal++;
                         }
                         break;
                 }
