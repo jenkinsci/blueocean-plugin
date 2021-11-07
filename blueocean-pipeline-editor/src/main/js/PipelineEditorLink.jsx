@@ -42,9 +42,14 @@ class PipelineEditorLink extends React.Component {
     }
 
     _loadPipeline() {
-        const { pipeline } = this.props;
-        const folder = pipeline.fullName.split('/')[0];
-        const href = Paths.rest.apiRoot() + '/organizations/' + pipeline.organization + '/pipelines/' + folder + '/';
+        const { run, pipeline } = this.props;
+        const pipelinePath = pipeline.fullName.split('/');
+        // this shows up in the branches table, each pipeline.fullName includes the branch
+        // if it's not on the branches table, branch is in the run
+        if (!run) {
+            pipelinePath.splice(-1);
+        }
+        const href = Paths.rest.apiRoot() + '/organizations/' + pipeline.organization + '/pipelines/' + pipelinePath.join('/') + '/';
         pipelineService.fetchPipeline(href, { useCache: true, disableCapabilities: false }).then(pipeline => {
             if (this._canSavePipeline(pipeline)) {
                 this.setState({ supportsSave: true });
