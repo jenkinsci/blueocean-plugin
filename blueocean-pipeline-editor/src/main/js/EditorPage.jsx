@@ -297,8 +297,7 @@ class PipelineLoader extends React.Component {
 
     loadPipelineMetadata() {
         const { organization, pipeline } = this.props.params;
-        const split = pipeline.split('/');
-        const team = split[0];
+        const team = pipeline;
         this.href = Paths.rest.pipeline(organization, team);
         return pipelineService
             .fetchPipeline(this.href, { useCache: true })
@@ -311,9 +310,8 @@ class PipelineLoader extends React.Component {
     loadBranchMetadata() {
         const { organization, pipeline, branch } = this.props.params;
         if (!branch) {
-            const split = pipeline.split('/');
-            const team = split[0];
-            const repo = split.length > 1 ? split[1] : team;
+            const team = pipeline;
+            const repo = pipeline;
             const { id: scmId, apiUrl } = this.state.scmSource;
             const orgRestUrl = UrlBuilder.buildRestUrl(organization);
             let repositoryUrl = `${orgRestUrl}scm/${scmId}/organizations/${team}/repositories/${repo}/`;
@@ -608,9 +606,8 @@ class PipelineLoader extends React.Component {
     save(saveToBranch, commitMessage, errorHandler) {
         const { organization, pipeline, branch = this.defaultBranch } = this.props.params;
         const pipelineJson = convertInternalModelToJson(pipelineStore.pipeline);
-        const split = pipeline.split('/');
-        const team = split[0];
-        const repo = split[1];
+        const team = pipeline;
+        const repo = pipeline;
         const saveMessage = commitMessage || (this.state.isSaved ? 'Updated Jenkinsfile' : 'Added Jenkinsfile');
         convertJsonToPipeline(JSON.stringify(pipelineJson), (pipelineScript, err) => {
             if (!err) {
@@ -660,7 +657,7 @@ class PipelineLoader extends React.Component {
         const { pipeline: pipelineName, branch } = this.props.params;
         const { pipelineScript } = this.state;
         const pipeline = pipelineService.getPipeline(this.href);
-        const repo = pipelineName && pipelineName.split('/')[1];
+        const repo = pipelineName;
         let title = pipeline ? decodeURIComponent(pipeline.fullDisplayName.replace('/', ' / ')) : pipelineName;
         if (branch || repo) {
             title += ' / ' + (branch || repo);
