@@ -26,6 +26,7 @@ package io.jenkins.blueocean.blueocean_git_pipeline;
 import com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;
+import hudson.Functions;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
@@ -35,10 +36,10 @@ import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.impl.mock.AbstractSampleDVCSRepoRule;
 import jenkins.scm.impl.mock.AbstractSampleRepoRule;
 import org.apache.commons.io.FileUtils;
-import org.apache.sshd.common.util.OsUtils;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -204,9 +205,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
 
     @Test
     public void testGitScmValidate() throws Exception {
-        if (!OsUtils.isUNIX()) {
-            return; // can't really run this on windows
-        }
+        Assume.assumeFalse(Functions.isWindows()); // can't really run this on windows
         startSSH();
         String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
         String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath();
@@ -280,9 +279,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
 
     @Test
     public void bareRepoReadWriteOverSSH() throws Exception {
-        if (!OsUtils.isUNIX()) {
-            return; // can't really run this on windows
-        }
+        Assume.assumeFalse(Functions.isWindows()); // can't really run this on windows
         startSSH();
         String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
         String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath() + "/.git";
@@ -291,9 +288,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
 
     @Test
     public void bareRepoReadWriteNoEmail() throws Exception {
-        if (!OsUtils.isUNIX()) {
-            return; // can't really run this on windows
-        }
+        Assume.assumeFalse(Functions.isWindows()); // can't really run this on windows
         User user = login("bob", "Bob Smith", null);
 
         startSSH(user);
