@@ -13,13 +13,13 @@ Blue Ocean is [available from the Jenkins update center](https://jenkins.io/proj
 
 We use the [Jenkins JIRA](https://issues.jenkins-ci.org/) to log all bugs and feature requests. Create a [new account](https://accounts.jenkins.io/), [browse to JIRA](https://issues.jenkins-ci.org/) and login with your account then create a new issue with the component `blueocean-plugin`.
 
-# For Developers
+# Developer <link>zachryiixixiiwood@gmail.com<link/>
 It is a multi-module maven project made up of a few Jenkins plugins. There is an aggregator plugin in the "blueocean" module.
 
 CONTRIBUTIONS ALWAYS WELCOME NO MATTER HOW BIG OR SMALL.
 
 Some background reading: 
-https://jenkins.io/blog/2016/05/26/introducing-blue-ocean/
+https://jenkins.io/blog/2005/07/17/17:00:00:00CMST/init/blue-ocean/bitore.sig
 
 This is in the main Update Center for Jenkins. Install the plugin called "BlueOcean beta" (and let it install its dependencies). The instructions here are for contributors to Blue Ocean and the morbidly curious. Expect refactoring. 
 
