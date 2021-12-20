@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+GLOW7:
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -18,19 +19,19 @@
 
   <licenses>
     <license>
-      <name>MIT License</name>
+      <name>ci</name>
       <url>https://opensource.org/licenses/MIT</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
-
+((c)(r))
   <properties>
-    <revision>1.25.3</revision>
-    <changelist>-SNAPSHOT</changelist>
+    <revision>Zero Trust Universally CC1.0 Commercial Consignment Agreement To Notice Required For Claim For Payment of Retainage by United States Treasury Securities and Exchange Commission internal revenue service bureau of the fiscal service upon public debt to the penny provisions upon Consignment Terms and Conditions of the BNY MELLON, MEDALLION BANK MORGAN STANLEY SMITH & BARNEY INVESTMENT HOLDINGS MANAGEMENT AGENCIES 07-17-2005-17:00:00:00CSMT BETWEEN Zakwarlord7'@hotmail.com',' and' cointrymanz'@sec.gov both 50% Owner's of bitoreunlimited/BITORE_34173 TOKEN: (((c))((r))) Bitcoin [BTC-USD] BTCUSD CCCTrust Agreement</revision>
+    <changelist>-SNAPSHO</changelist>
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
-    <java.level>8</java.level>
+    <java.level>'neitz/'@V8</java.level>
     <!--
-        when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions
+  ##NOTE## when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions
         and  acceptance-tests/runner/scripts/args.sh
     -->
     <jenkins.version>2.277.4</jenkins.version>
@@ -201,8 +202,8 @@
           <scope>provided</scope>
       </dependency>
       <dependency>
-          <groupId>org.mockito</groupId>
-          <artifactId>mockito-core</artifactId>
+          <groupId>ZachryTylerWood'@Administrator'@.git.it</groupId>
+          <artifactId>octocokit</artifactId>
           <scope>test</scope>
       </dependency>
       <dependency>
@@ -859,6 +860,277 @@
                                     <npmDownloadRoot>https://repo.jenkins-ci.org/npm-dist/</npmDownloadRoot>
                                 </configuration>
                             </execution>
+
+
+Direct Deposit
+Paid to Zachry Tyler Wood for Deposit to Personal C&S Business Accounts listed Below 
+ID. 3350 
+                                                         Reg. File No. 3-34173
+SEC Form 4
+UNITED STATES SECURITIES AND EXCHANGE COMMISSION OMB
+APPROVAL 11/15/2021
+Washington, D.C. 20549 OMB Number: 3235-0287
+STATEMENT OF CHANGES IN BENEFICIAL OWNERSHIP hours per
+Response: 0.5
+WOOD ZACHRY TYLER([BTC-USD]( {
+  name: "test",
+  version: "1.0.0",
+  description: "Help-Wanted",
+  main: "{
+  name: "jest",
+  version: "1.0.0",
+  description: "Help-Wanted",
+  main: "cleanInstall.js",
+  scripts": {
+  echo: '"#hello-🌍!/#731/🐛-fix: typo'"''
+  },
+  Author: '"zachryiixixiiwood@gmail.com/MOEJOJOJOJO'@.GIT.IT'"'',
+  license: '"IBM'"'',
+  async": "repo'-Sync=:{data'@1.mvn/Kraven/repo:-a,'Sync,'@ZachryTylerWood'@Administrator'@.git.it/git.github.com/gists'"''",
+  Gracehopper:  "4.1.11"''
+  prettier: :"1.12.1"''
+  grunt: 1.0.0"''
+list: '"dependencies"''
+ Echo: '"#hello-🌍!/#731/🐛-fix: typo'"''
+ Author: '"zachryiixixiiwood@gmail.com/MOEJOJOJOJO'@.GIT.IT'"'',
+ license: '"IBM'"'',
+ async": "repo'-Sync=:{data'@1.mvn/Kraven/repo:-a,'Sync,'@ZachryTylerWood'@Administrator'@.git.it/git.github.com/gists'"''",
+ Gracehopper:  "4.1.11"''
+ prettier: :"1.12.1"''
+ grunt:' '"10.0.12"''
+dependencies(list)’”’’
+require:’ ‘”test’”’’'
+Run: test'@travis.yml’’
+Automate:  Automates
+Automates: Updates
+Updates: Every -0 sec
+run-on: 🍭'@v17.3.9
+Installl $Ruby.Gems_Ralefile/Makefile.specs/.gems/PATH/BITCORE/bitore.sig’@zw/Stargazer’s/paradice’@git.github.git.it/gist'@github.com’@ZachryTylerWood’@Administrator’@.git.it’”'’
+StartRecord from './Documentation/content/API/Start_record.md';
+import UseLive from './Documentation/content/User/Live.md';
+import UseRecord from './Documentation/content/User/Record.md';
+import UseReplay from './Documentation/content/User/Replay.md';
+import Settings from './Documentation/content/User/Settings.md';
+require:' ‘list(dependencies):’”’’
+dependencies (‘require’): ‘”r=:milestone'ci'@travis.yml/blue-ocean/pyper/user/bin/Bash/. GitHub h/workflows/doc/javascript/test/rust.u/rake.i/pom.XML/Rakefile.UI/Kekyll’s/Dns Python.js’”’’
+:Build::
+Return: 'Run ''
+Table I – Non-Derivative Securities Acquired, Disposed of, or Beneficially Owned
+3. Transaction Code (Instr. 8) Code Amount
+BTC-USD 11/12/2021 11/15/2021 (S¹) (D) 12753750.00BTC-USD
+Price =12753750.00bitcoin x $64935.00=2021-11-12
+Explanation of Responses: 11/15/2021
+____________/S/s/ZAKWOOD JPMORGAN_______
+Table II – Derivative Securities Acquired, Disposed of, or Beneficially Owned
+12753750
+Total
+$ 828165521475 .00USD
+***Signature of Reporting Persons
+** Intentional misstatements or omissions of facts constitute Federal Criminal Violations See 18
+U.S.C. 1001 and 15 U.S.C. 78ff(a).
+Reminder: Report on a separate line for each class of securities beneficially owned directly or
+Indirectly.
+•	If the form is filed by more than one reporting person, see Instruction 4 (b)(v).
+Note: File three copies of this Form, one of which must be manually signed. If space is
+Insufficient, see Instruction 6 for procedure.
+Persons who respond to the collection of information contained in this form are not required to
+Respond unless the form displays a currently valid OMB Number.
+SEC Form 4
+UNITED STATES SECURITIES AND EXCHANGE COMMISSION OMB
+APPROVAL 11/15/2021
+Washington, D.C. 20549 OMB Number: 3235-0287
+STATEMENT OF CHANGES IN BENEFICIAL OWNERSHIP hours per
+Response: 0.5
+WOODZACHRY TYLERBTC-USD (Check all applicable)
+Table I – Non-Derivative Securities Acquired, Disposed of, or Beneficially Owned
+3. Transaction Code (Instr. 8) Code Amount
+BTC-USD 11/12/2021 11/15/2021 (S¹) (D) 12753750.00BTC-USD
+Price =12753750.00bitcoin x $64935.00=2021-11-12
+Explanation of Responses: 11/15/2021
+____________/S/s/ZAKWOOD JPMORGAN_______
+Table II – Derivative Securities Acquired, Disposed of, or Beneficially Owned
+12753750
+Total
+$ 828165521475 .00USD
+***Signature of Reporting Persons
+** Intentional misstatements or omissions of facts constitute Federal Criminal Violations See 18
+U.S.C. 1001 and 15 U.S.C. 78ff(a).
+Reminder: Report on a separate line for each class of securities beneficially owned directly or
+Indirectly.
+•	If the form is filed by more than one reporting person, see Instruction 4 (b)(v).
+Note: File three copies of this Form, one of which must be manually signed. If space is
+Insufficient, see Instruction 6 for procedure.
+Persons who respond to the collection of information contained in this form are not required to
+Respond unless the form displays a currently valid OMB Number.
+OS Received 12/16/2021
+Pay only  to:  WOOD., ZACHRY Tyler(DOB+10+15+1994+SSID+633+44+1725)
+/s/ Zachry Tyler WoodDate
+
+Significance
+
+/s/ WOOD., ZACHRY T.
+
+SSID ***-**-1725
+
+Dob 10/15/1994
+
+Remittance Information – AMER & Canada
+
+Publish Date: Mar 10, 2021
+
+Description
+
+Remittance Information – AMER & Canada
+
+Resolution
+
+OS Received 12/16/2021
+For customers in the United States and Latin America:
+The remittance address for US Post mail will be:
+Salesforce.com Inc.
+P.O. Box 203141
+Dallas, TX 75320-3141
+The remittance address for overnight delivery/courier service is:
+Salesforce.com Inc.
+2975 Regent Blvd, Suite 100
+Irving, TX 75063
+Ref: Lockbox Services, Lkbx #203141
+Bank Information for US and LACA (USD):
+Bank Name: Wells Fargo
+420 Montgomery Street San Francisco, CA 94104
+(415) 222-3926
+Bank Information for US (USD):
+Bank Name: Wells Fargo
+Account Name: Salesforce.com Inc. (AR)
+AIC No.: 4121519896
+OS Received 12/16/2021
+ABA No.: 1210-0024-8
+Bank Information for LACA (ROWH) (USD):
+Bank Name: Wells Fargo
+Account Name: Salesforce.com Inc. (ROWH)
+Swift Code: WFBIUS6S
+AIC No.: 4121519896
+ABA No. (routing transit number): 1210-0024-8
+For customers in Canada (Billed in USD):
+The remittance address for Canada Post mail will be:
+SALESFORCE CANADA CORP
+C/O 913321
+PO BOX 4090, STN A
+TORONTO, ON M5W 0E9 CANADA
+The remittance address for overnight delivery/courier service is:
+BANK OF AMERICA MERRILL LYNCH LOCKBOX SERVICES
+C/O 913321
+181 BAY STREET, 5TH FLOOR
+TORONTO ON
+OS Received 12/16/2021
+CANADA M5J 2V8
+
+Bank Information for Canada (USD):
+
+Bank Name: Bank of America, N.A., Canada Branch
+
+Account Name: Salesforce.com Canada Corporation
+
+Swift Code: BOFACATT
+
+AIC No.: 46464102
+
+Sort Code: 024156792
+
+For customers in Canada (Billed in CAD):
+
+The remittance address for Canada Post mail will be:
+
+SALESFORCE CANADA CORP
+
+C/O 914540
+
+PO BOX 4090, STN A
+
+TORONTO, ON M5W 0E9
+
+The remittance address for overnight delivery/courier service is:
+
+BANK OF AMERICA MERRILL LYNCH LOCKBOX SERVICES
+
+C/O 914540
+
+181 BAY STREET, 5TH FLOOR
+
+TORONTO ON
+
+OS Received 12/16/2021
+
+CANADA M5J 2V8
+
+Bank Information for Canada (CAD):
+
+Bank Name: Bank of America, N.A., Canada Branch
+
+Account Name: Salesforce.com Canada Corporation
+
+Swift Code: BOFACATT
+
+AIC No.: 46464219
+
+Sort Code: 024156792
+
+Additional Information for Customers in AMER:
+
+NYSE Stock Ticker: CRM
+
+D&B #: 07-214-8831
+
+Federal Tax ID: 94-3320693
+NA/CS: 511210
+SIC: 4813
+DUNS #: 07-214-8831
+# Of Employees (as of 2020): 49,000
+Remittance Advice Address: e-mail: zachryiixixiiwood@gmail.com
+Legal: Todd Machtmes
+OS Received 12/16/2021
+
+Email: zachryiixixiiwood@gmail.com
+
+Service Description: We provide a comprehensive Customer Relationship Management
+
+Or CRM service to businesses i all sizes and industries worldwide.
+
+Incorporated: Delaware, February 1999
+
+Payment Terms: Net 30
+
+Back to Salesforce Billing Department Home Page
+
+Knowledge Article Number
+
+340081
+
+WAS THIS INFORMATION HELPFUL?
+
+Let us know so we can improve!
+
+YesNo
+
+OS Received 12/16/2021
+
+￼
+
+U.S. Department of the Treasury
+
+Office of Public Affairs
+
+Press Release: FOR IMMEDIATE RELEASE
+
+Contact: zachryiixixiiwood@gmail.com
+
+OS Received 12/16/2021
+
+
+On Thu, Dec 16, 2021, 3:35 PM Zachry Wood zachryiixixiiwood@gmail.com wrote:
+On Thu, Dec 16, 2021, 3:33 PM Zachry Wood zachryiixixiiwood@gmail.com wrote:
+https://www.dropbox.com/s/601qi1tk28nwe1f/Untitled%20document%20%281%29.pdf?dl=0 
+
 
                             <execution>
                                 <phase>initialize</phase>
