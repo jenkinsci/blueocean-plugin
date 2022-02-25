@@ -10,7 +10,6 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
-import org.parboiled.common.StringUtils;
 
 import javax.annotation.Nonnull;
 
@@ -36,7 +35,7 @@ public class GithubEnterpriseScm extends GithubScm {
         String apiUri = getCustomApiUri();
 
         // NOTE: GithubEnterpriseScm requires that the apiUri be specified
-        if (StringUtils.isEmpty(apiUri)) {
+        if (apiUri == null || apiUri.isEmpty()) {
             throw new ServiceException.BadRequestException(new ErrorMessage(400, "apiUrl is required parameter"));
         }
 
