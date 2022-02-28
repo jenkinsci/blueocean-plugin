@@ -55,7 +55,6 @@ import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.SshSessionFactory;
 import org.eclipse.jgit.transport.SshTransport;
-import org.eclipse.jgit.transport.Transport;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.FS;
@@ -70,7 +69,7 @@ import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -252,26 +251,19 @@ class GitUtils {
                 JSch jsch = new JSch();
                 configureJSch(jsch);
                 // TODO: might need this: jsch.setHostKeyRepository(new KnownHosts(this));
-                try {
-                    KeyPair pair = KeyPair.load(jsch, privateKey.getPrivateKey().getBytes("utf-8"), null);
-                    byte[] passphrase = new byte[0];
-                    jsch.addIdentity(privateKey.getUsername(),
-                        pair.forSSHAgent(),
-                        null,
-                        passphrase);
-                    return jsch;
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
-                }
+                KeyPair pair = KeyPair.load(jsch, privateKey.getPrivateKey().getBytes(StandardCharsets.UTF_8), null);
+                byte[] passphrase = new byte[0];
+                jsch.addIdentity(privateKey.getUsername(),
+                    pair.forSSHAgent(),
+                    null,
+                    passphrase);
+                return jsch;
             }
         };
-        return new TransportConfigCallback() {
-            @Override
-            public void configure(Transport transport) {
-                if (transport instanceof SshTransport) {
-                    SshTransport sshTransport = (SshTransport) transport;
-                    sshTransport.setSshSessionFactory(sshSessionFactory);
-                }
+        return transport -> {
+            if (transport instanceof SshTransport) {
+                SshTransport sshTransport = (SshTransport) transport;
+                sshTransport.setSshSessionFactory(sshSessionFactory);
             }
         };
     }

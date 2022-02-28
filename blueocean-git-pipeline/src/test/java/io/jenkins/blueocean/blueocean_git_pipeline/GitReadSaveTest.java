@@ -24,24 +24,22 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey;
-import com.google.common.collect.ImmutableMap;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;
+import hudson.Functions;
 import hudson.model.User;
-import hudson.remoting.Base64;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.ssh.UserSSHKeyManager;
 import io.jenkins.blueocean.test.ssh.SSHServer;
-import jenkins.plugins.git.GitSCMFileSystem;
 import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.impl.mock.AbstractSampleDVCSRepoRule;
 import jenkins.scm.impl.mock.AbstractSampleRepoRule;
 import org.apache.commons.io.FileUtils;
-import org.apache.sshd.common.util.OsUtils;
-import org.eclipse.jgit.lib.Repository;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,12 +50,13 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Testing the git load/save backend
@@ -171,8 +170,8 @@ public class GitReadSaveTest extends PipelineBaseTest {
             File keyFile = new File(System.getProperty("TEST_SSH_SERVER_KEY_FILE", File.createTempFile("hostkey", "ser").getCanonicalPath()));
             int port = Integer.parseInt(System.getProperty("TEST_SSH_SERVER_PORT", "0"));
             boolean allowLocalUser = Boolean.getBoolean("TEST_SSH_SERVER_ALLOW_LOCAL");
-            String userPublicKey = Base64.encode(pair.getPublicKeyBlob());
-            sshd = new SSHServer(repoForSSH.getRoot(), keyFile, port, allowLocalUser, ImmutableMap.of("bob", userPublicKey), true);
+            String userPublicKey = Base64.getEncoder().encodeToString(pair.getPublicKeyBlob());
+            sshd = new SSHServer( repoForSSH.getRoot(), keyFile, port, allowLocalUser, MapsHelper.of("bob", userPublicKey), true);
             // Go, go, go
             sshd.start();
         }
@@ -191,13 +190,10 @@ public class GitReadSaveTest extends PipelineBaseTest {
     @Test
     public void testRepositoryCallbackToFSFunctionAdapter() throws IOException, InterruptedException {
         final boolean[] called = { false };
-        new GitBareRepoReadSaveRequest.RepositoryCallbackToFSFunctionAdapter<>(new GitSCMFileSystem.FSFunction<Object>() {
-            @Override
-            public Object invoke(Repository repository) throws IOException, InterruptedException {
-                called[0] = true;
-                return null;
-            }
-        }).invoke(null, null);
+        new GitBareRepoReadSaveRequest.RepositoryCallbackToFSFunctionAdapter<>( repository -> {
+            called[0] = true;
+            return null;
+        } ).invoke( null, null);
         Assert.assertTrue(called[0]);
     }
 
@@ -209,9 +205,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
 
     @Test
     public void testGitScmValidate() throws Exception {
-        if (!OsUtils.isUNIX()) {
-            return; // can't really run this on windows
-        }
+        Assume.assumeFalse(Functions.isWindows()); // can't really run this on windows
         startSSH();
         String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
         String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath();
@@ -224,12 +218,12 @@ public class GitReadSaveTest extends PipelineBaseTest {
             .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
             .put("/organizations/" + getOrgName() + "/scm/git/validate/")
-            .data(ImmutableMap.of(
+            .data(MapsHelper.of(
                 "repositoryUrl", remote,
                 "credentialId", UserSSHKeyManager.getOrCreate(bob).getId()
             )).build(Map.class);
 
-        assertTrue(r.get("error") == null);
+        assertNull(r.get("error"));
 
         // Create a job
         String jobName = "test-token-validation";
@@ -238,10 +232,10 @@ public class GitReadSaveTest extends PipelineBaseTest {
             .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
             .post("/organizations/" + getOrgName() + "/pipelines/")
-            .data(ImmutableMap.of(
+            .data(MapsHelper.of(
                 "name", jobName,
                 "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                "scmConfig", ImmutableMap.of(
+                "scmConfig", MapsHelper.of(
                     "uri", remote,
                     "credentialId", UserSSHKeyManager.getOrCreate(bob).getId())
             )).build(Map.class);
@@ -254,8 +248,8 @@ public class GitReadSaveTest extends PipelineBaseTest {
             .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
             .put("/organizations/" + getOrgName() + "/scm/git/validate/")
-            .data(ImmutableMap.of(
-                "pipeline", ImmutableMap.of("fullName", jobName),
+            .data(MapsHelper.of(
+                "pipeline", MapsHelper.of("fullName", jobName),
                 "credentialId", UserSSHKeyManager.getOrCreate(bob).getId()
             )).build(Map.class);
 
@@ -267,7 +261,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
             .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
             .put("/organizations/" + getOrgName() + "/scm/git/validate/")
-            .data(ImmutableMap.of(
+            .data(MapsHelper.of(
                 "repositoryUrl", remote,
                 "credentialId", UserSSHKeyManager.getOrCreate(alice).getId()
             )).build(Map.class);
@@ -277,17 +271,15 @@ public class GitReadSaveTest extends PipelineBaseTest {
             .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
             .put("/organizations/" + getOrgName() + "/scm/git/validate/")
-            .data(ImmutableMap.of(
-                "pipeline", ImmutableMap.of("fullName", jobName),
+            .data(MapsHelper.of(
+                "pipeline", MapsHelper.of("fullName", jobName),
                 "credentialId", UserSSHKeyManager.getOrCreate(alice).getId()
             )).build(Map.class);
     }
 
     @Test
     public void bareRepoReadWriteOverSSH() throws Exception {
-        if (!OsUtils.isUNIX()) {
-            return; // can't really run this on windows
-        }
+        Assume.assumeFalse(Functions.isWindows()); // can't really run this on windows
         startSSH();
         String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
         String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath() + "/.git";
@@ -296,9 +288,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
 
     @Test
     public void bareRepoReadWriteNoEmail() throws Exception {
-        if (!OsUtils.isUNIX()) {
-            return; // can't really run this on windows
-        }
+        Assume.assumeFalse(Functions.isWindows()); // can't really run this on windows
         User user = login("bob", "Bob Smith", null);
 
         startSSH(user);
@@ -326,10 +316,10 @@ public class GitReadSaveTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .crumb( crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
-                .data(ImmutableMap.of(
+                .data(MapsHelper.of(
                         "name", jobName,
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of(
+                        "scmConfig", MapsHelper.of(
                             "uri", remote,
                             "credentialId", UserSSHKeyManager.getOrCreate(user).getId())
                 )).build(Map.class);
@@ -347,10 +337,12 @@ public class GitReadSaveTest extends PipelineBaseTest {
 
         String base64Data = (String)((Map)r.get("content")).get("base64Data");
 
-        assertEquals(startPipelineScript, base64Data == null ? null : new String(Base64.decode(base64Data), "utf-8"));
+        assertEquals(startPipelineScript, base64Data == null ? null : new String( Base64.getDecoder().
+                                                                                    decode(base64Data),
+                                                                                    StandardCharsets.UTF_8));
 
         // Update the remote
-        String newBase64Data = Base64.encode(newPipelineScript.getBytes("utf-8"));
+        String newBase64Data = Base64.getEncoder().encodeToString(newPipelineScript.getBytes(StandardCharsets.UTF_8));
         Map<String,String> content = new HashMap<>();
         content.put("message", "Save Jenkinsfile");
         content.put("path", "Jenkinsfile");
@@ -366,7 +358,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .crumb( crumb )
                 .put(urlJobPrefix + "/scm/content/")
-                .data(ImmutableMap.of("content", content))
+                .data(MapsHelper.of("content", content))
                 .build(Map.class);
 
         // Check to make sure the remote was actually updated:

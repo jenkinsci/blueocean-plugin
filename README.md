@@ -1,5 +1,5 @@
 # Blue Ocean 
-Blue Ocean is the next generation user experience for Jenkins. You can learn more about its features on the [Blue Ocean project website](https://jenkins.io/projects/blueocean/).
+Blue Ocean is an alternative user experience for Jenkins. You can learn more about its features on the [Blue Ocean project website](https://jenkins.io/projects/blueocean/).
 
 Join the community and [![Gitter](https://badges.gitter.im/jenkinsci/blueocean-plugin.svg)](https://gitter.im/jenkinsci/blueocean-plugin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
@@ -59,7 +59,7 @@ Core Web infrastructure that bootstraps BlueOcean UI and integrates REST API cor
     
 ## Building and running
 
-At a minimum you will need a JVM and Maven installed, if you are doing active JavaScript development, 
+At a minimum you will need a JVM, Maven and python installed, if you are doing active JavaScript development, 
 you may want to install NodeJS, but it is not a requirement as the `frontend-maven-plugin` will install
 the correct version of Node locally for each plugin to build and develop with.
 

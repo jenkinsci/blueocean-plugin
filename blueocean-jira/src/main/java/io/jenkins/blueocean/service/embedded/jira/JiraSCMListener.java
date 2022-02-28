@@ -14,14 +14,12 @@ import hudson.scm.SCM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -51,8 +49,7 @@ public class JiraSCMListener extends SCMListener {
             // Query for JIRA issues
             List<Issue> issues = session.getIssuesFromJqlSearch(jql);
             Set<JiraIssue> issuesFromJqlSearch = issues == null ? Collections.emptySet() :
-                issues.stream().map( input -> new JiraIssue(input) )
-                    .collect( Collectors.toSet() );
+                issues.stream().map( JiraIssue::new ).collect( Collectors.toSet() );
 
             // If there are no JIRA issues, do not update the actions
             if (issuesFromJqlSearch.isEmpty()) {

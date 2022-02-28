@@ -8,11 +8,10 @@ import com.cloudbees.plugins.credentials.SystemCredentialsProvider;
 import com.cloudbees.plugins.credentials.ViewCredentialsAction;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
-import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.ExtensionList;
 import hudson.model.User;
-import org.apache.commons.io.IOUtils;
+import io.jenkins.blueocean.commons.MapsHelper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -91,9 +90,8 @@ public class CredentialApiTest extends PipelineBaseTest {
         systemStore.addDomain(new Domain("domain1", null, null));
 
         Map<String, Object> resp = post("/organizations/jenkins/credentials/system/domains/domain1/credentials/",
-                ImmutableMap.of("credentials",
-                        new ImmutableMap.Builder<String,Object>()
-                                .put("privateKeySource", ImmutableMap.of(
+                  MapsHelper.of("credentials", new MapsHelper.Builder<String,Object>()
+                                .put("privateKeySource", MapsHelper.of(
                                         "privateKey", "abcabc1212",
                                         "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
                                 .put("passphrase", "ssh2")
@@ -114,8 +112,8 @@ public class CredentialApiTest extends PipelineBaseTest {
         systemStore.addDomain(new Domain("domain1", null, null));
 
         Map<String, Object> resp = post("/organizations/jenkins/credentials/system/domains/domain1/credentials/",
-                ImmutableMap.of("credentials",
-                        new ImmutableMap.Builder<String,Object>()
+                                        MapsHelper.of("credentials",
+                        new MapsHelper.Builder<String,Object>()
                                 .put("password", "abcd")
                                 .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
                                 .put("scope", "GLOBAL")
@@ -136,8 +134,8 @@ public class CredentialApiTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .crumb( crumb )
                 .post("/organizations/jenkins/credentials/user/")
-                .data(                ImmutableMap.of("credentials",
-                        new ImmutableMap.Builder<String,Object>()
+                .data(MapsHelper.of("credentials",
+                        new MapsHelper.Builder<String,Object>()
                                 .put("password", "abcd")
                                 .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
                                 .put("scope", "USER")
@@ -161,9 +159,9 @@ public class CredentialApiTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .crumb( crumb )
                 .post("/organizations/jenkins/credentials/user/")
-                .data(                ImmutableMap.of("credentials",
-                        new ImmutableMap.Builder<String,Object>()
-                                .put("privateKeySource", ImmutableMap.of(
+                .data(MapsHelper.of("credentials",
+                        new MapsHelper.Builder<String,Object>()
+                                .put("privateKeySource", MapsHelper.of(
                                         "privateKey", "abcabc1212",
                                         "stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$DirectEntryPrivateKeySource"))
                                 .put("passphrase", "ssh2")

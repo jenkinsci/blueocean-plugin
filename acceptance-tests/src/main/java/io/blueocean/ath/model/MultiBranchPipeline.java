@@ -1,6 +1,5 @@
 package io.blueocean.ath.model;
 
-import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -10,6 +9,8 @@ import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.sse.SSEEvents;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Predicate;
+
 import org.json.JSONObject;
 
 public class MultiBranchPipeline extends AbstractPipeline {
@@ -37,7 +38,7 @@ public class MultiBranchPipeline extends AbstractPipeline {
     }
 
 
-    public Predicate<List<JSONObject>> buildsFinished = list -> SSEEvents.activityComplete(getFolder().getPath(getName())).apply(list);
+    public Predicate<List<JSONObject>> buildsFinished = list -> SSEEvents.activityComplete(getFolder().getPath(getName())).test(list);
 
     public MultiBranchPipeline buildBranch(String branch) throws IOException {
         jobApi.buildBranch(getFolder(), getName(), branch);

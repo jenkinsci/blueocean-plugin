@@ -1,13 +1,10 @@
 package io.jenkins.blueocean.service.embedded.rest.junit;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterators;
 import hudson.Extension;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.factory.BlueTrendFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.BlueTableRow;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
@@ -19,6 +16,7 @@ import org.kohsuke.stapler.export.Exported;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.StreamSupport;
 
 @Restricted(NoExternalUse.class)
 public class BlueJUnitTrend extends BlueTrend {
@@ -34,7 +32,7 @@ public class BlueJUnitTrend extends BlueTrend {
     private final BluePipeline pipeline;
     private final Link parent;
 
-    private static final Map<String, String> COLUMNS = ImmutableMap.<String, String> builder()
+    private static final Map<String, String> COLUMNS = new MapsHelper.Builder<String,String>()
         .put(TOTAL, "Total")
         .put(PASSED, "Passed")
         .put(FIXED, "Fixed")
@@ -83,7 +81,9 @@ public class BlueJUnitTrend extends BlueTrend {
             @Override
             public Iterator<BlueTableRow> iterator() {
                 return blueRunContainer == null ? null
-                    : Iterators.transform(blueRunContainer.iterator(),run -> new BlueJUnitTrendRow(run.getBlueTestSummary(), run.getId()));
+                    : StreamSupport.stream(blueRunContainer.spliterator(), false)
+                        .map( run -> (BlueTableRow)new BlueJUnitTrendRow(run.getBlueTestSummary(), run.getId()))
+                        .iterator();
             }
         };
     }

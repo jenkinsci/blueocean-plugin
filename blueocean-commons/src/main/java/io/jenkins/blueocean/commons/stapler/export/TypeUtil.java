@@ -44,6 +44,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Type arithmetic code. Taken from the JAXB RI.
@@ -82,26 +83,26 @@ public class TypeUtil {
      * Implements the logic for {@link #erasure(Type)}.
      */
     private static final TypeVisitor<Class,Void> eraser = new TypeVisitor<Class,Void>() {
-        public Class onClass(Class c,Void _) {
+        public Class onClass(Class c,Void v) {
             return c;
         }
 
-        public Class onParameterizdType(ParameterizedType p,Void _) {
+        public Class onParameterizdType(ParameterizedType p,Void v) {
             // TODO: why getRawType returns Type? not Class?
             return visit(p.getRawType(),null);
         }
 
-        public Class onGenericArray(GenericArrayType g,Void _) {
+        public Class onGenericArray(GenericArrayType g,Void v) {
             return Array.newInstance(
                 visit(g.getGenericComponentType(),null),
                 0 ).getClass();
         }
 
-        public Class onVariable(TypeVariable v,Void _) {
+        public Class onVariable(TypeVariable v,Void vo) {
             return visit(v.getBounds()[0],null);
         }
 
-        public Class onWildcard(WildcardType w,Void _) {
+        public Class onWildcard(WildcardType w,Void v) {
             return visit(w.getUpperBounds()[0],null);
         }
     };
@@ -322,7 +323,7 @@ public class TypeUtil {
                 throw new MalformedParameterizedTypeException();
             }
             for (int i = 0; i < actualTypeArguments.length; i++) {
-                // check actuals against formals' bounds
+                // check actual against formals' bounds
             }
 
         }
@@ -359,12 +360,8 @@ public class TypeUtil {
                 Type thatRawType = that.getRawType();
 
                 if (false) { // Debugging
-                    boolean ownerEquality = (ownerType == null ?
-                            thatOwner == null :
-                            ownerType.equals(thatOwner));
-                    boolean rawEquality = (rawType == null ?
-                            thatRawType == null :
-                            rawType.equals(thatRawType));
+                    boolean ownerEquality = Objects.equals(ownerType, thatOwner);
+                    boolean rawEquality = Objects.equals(rawType, thatRawType);
 
                     boolean typeArgEquality = Arrays.equals(actualTypeArguments, // avoid clone
                             that.getActualTypeArguments());
@@ -379,12 +376,8 @@ public class TypeUtil {
 
 
                 return
-                        (ownerType == null ?
-                        thatOwner == null :
-                        ownerType.equals(thatOwner)) &&
-                        (rawType == null ?
-                        thatRawType == null :
-                        rawType.equals(thatRawType)) &&
+                        Objects.equals(ownerType, thatOwner) &&
+                        Objects.equals(rawType, thatRawType) &&
                         Arrays.equals(actualTypeArguments, // avoid clone
                                 that.getActualTypeArguments());
             } else

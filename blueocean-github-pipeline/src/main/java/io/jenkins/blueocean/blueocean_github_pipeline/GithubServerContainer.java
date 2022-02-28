@@ -1,35 +1,28 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.base.Charsets;
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Ordering;
-import com.google.common.hash.Hashing;
 import hudson.model.Item;
-import hudson.model.User;
 import hudson.security.ACL;
 import hudson.security.ACLContext;
+import io.jenkins.blueocean.commons.DigestUtils;
 import io.jenkins.blueocean.commons.ErrorMessage;
+import io.jenkins.blueocean.commons.IterableUtils;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
 import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -60,7 +53,7 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
             throw new ServiceException.ForbiddenException("User does not have permission to create repository.", e);
         }
 
-        List<ErrorMessage.Error> errors = new LinkedList();
+        List<ErrorMessage.Error> errors = new LinkedList<>();
 
         // Validate name
         final String name = (String) request.get(GithubServer.NAME);
@@ -149,12 +142,8 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
 
     @Override
     public GithubServer get(final String encodedApiUrl) {
-        Endpoint endpoint = Iterables.find(GitHubConfiguration.get().getEndpoints(), new Predicate<Endpoint>() {
-            @Override
-            public boolean apply(@Nullable Endpoint input) {
-                return input != null && encodedApiUrl.equals(Hashing.sha256().hashString(input.getApiUri(), Charsets.UTF_8).toString());
-            }
-        }, null);
+        Endpoint endpoint = IterableUtils.find( GitHubConfiguration.get().getEndpoints(), input ->
+            input != null && encodedApiUrl.equals(DigestUtils.sha256(input.getApiUri())), null);
         if (endpoint == null) {
             throw new ServiceException.NotFoundException("not found");
         }
@@ -163,18 +152,10 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
 
     @Override
     public Iterator<ScmServerEndpoint> iterator() {
-        List<Endpoint> endpoints = Ordering.from(new Comparator<Endpoint>() {
-            @Override
-            public int compare(Endpoint o1, Endpoint o2) {
-                return ComparatorUtils.NATURAL_COMPARATOR.compare(o1.getName(), o2.getName());
-            }
-        }).sortedCopy(GitHubConfiguration.get().getEndpoints());
-        return Iterators.transform(endpoints.iterator(), new Function<Endpoint, ScmServerEndpoint>() {
-            @Override
-            public ScmServerEndpoint apply(Endpoint input) {
-                return new GithubServer(input, getLink());
-            }
-        });
+        List<Endpoint> copy = new ArrayList<>(GitHubConfiguration.get().getEndpoints());
+        return copy.stream()
+            .sorted((o1, o2) -> Comparator.<String>naturalOrder().compare(o1.getName(), o2.getName()))
+            .map(endpoint -> (ScmServerEndpoint)new GithubServer(endpoint, getLink())).iterator();
     }
 
     private String discardQueryString(String apiUrl) {
@@ -185,11 +166,8 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
     }
 
     private GithubServer findByName(final String name) {
-        return (GithubServer) Iterators.find(iterator(), new Predicate<ScmServerEndpoint>() {
-            @Override
-            public boolean apply(ScmServerEndpoint input) {
-                return input.getName().equals(name);
-            }
-        }, null);
+        return (GithubServer)IterableUtils.find(this,
+            scmServerEndpoint -> scmServerEndpoint.getName().equals(name),
+            null);
     }
 }

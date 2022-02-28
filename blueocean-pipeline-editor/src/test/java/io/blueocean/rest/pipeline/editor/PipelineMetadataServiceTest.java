@@ -4,7 +4,7 @@ import hudson.model.JDK;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.hamcrest.Matcher;
-import org.jenkinsci.plugins.docker.workflow.declarative.DockerPipeline;
+import org.jenkinsci.plugins.pipeline.modeldefinition.agent.impl.Label;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -49,15 +49,14 @@ public class PipelineMetadataServiceTest {
     public void declarativeAgents() throws Exception {
         PipelineMetadataService svc = new PipelineMetadataService();
 
-        List<ExportedDescribableModel> agents = new ArrayList<>();
-        agents.addAll(Arrays.asList(svc.doAgentMetadata()));
+        List<ExportedDescribableModel> agents = new ArrayList<>(Arrays.asList(svc.doAgentMetadata()));
 
         assertFalse(agents.isEmpty());
 
         ExportedDescribableModel m = null;
 
         for (ExportedDescribableModel a : agents) {
-            if (a.getType().equals(DockerPipeline.class.getName())) {
+            if (a.getType().endsWith(Label.class.getName())) {
                 m = a;
             }
         }
@@ -74,8 +73,7 @@ public class PipelineMetadataServiceTest {
     public void toolMetadata() throws Exception {
         PipelineMetadataService svc = new PipelineMetadataService();
 
-        List<ExportedToolDescriptor> tools = new ArrayList<>();
-        tools.addAll(Arrays.asList(svc.doToolMetadata()));
+        List<ExportedToolDescriptor> tools = new ArrayList<>(Arrays.asList(svc.doToolMetadata()));
 
         assertFalse(tools.isEmpty());
 
@@ -96,8 +94,7 @@ public class PipelineMetadataServiceTest {
     public void wrappers() throws Exception {
         PipelineMetadataService svc = new PipelineMetadataService();
 
-        List<ExportedPipelineStep> wrappers = new ArrayList<>();
-        wrappers.addAll(Arrays.asList(svc.doWrapperMetadata()));
+        List<ExportedPipelineStep> wrappers = new ArrayList<>(Arrays.asList(svc.doWrapperMetadata()));
 
         assertFalse(wrappers.isEmpty());
 
@@ -116,9 +113,7 @@ public class PipelineMetadataServiceTest {
     public void verifyFunctionNames() throws Exception {
         PipelineMetadataService svc = new PipelineMetadataService();
 
-        List<ExportedDescribableModel> steps = new ArrayList<>();
-
-        steps.addAll(Arrays.asList(svc.doPipelineStepMetadata()));
+        List<ExportedDescribableModel> steps = new ArrayList<>(Arrays.asList(svc.doPipelineStepMetadata()));
 
         assertFalse(steps.isEmpty());
 

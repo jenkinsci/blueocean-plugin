@@ -1,8 +1,5 @@
 package io.jenkins.blueocean.service.embedded.jira;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.plugins.jira.JiraBuildAction;
@@ -23,7 +20,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -42,10 +44,11 @@ public class BlueJiraIssueTest {
     @Test
     public void findIssueKeys() throws MalformedURLException {
         Pattern issuePattern = JiraSite.DEFAULT_ISSUE_PATTERN;
-        Assert.assertEquals(Sets.newHashSet("JENKINS-43400"), BlueJiraIssue.findIssueKeys("[JENKINS-43400] Print the error to the build log rather than", issuePattern));
-        Assert.assertEquals(Sets.newHashSet("JENKINS-43400"), BlueJiraIssue.findIssueKeys("JENKINS-43400 Print the error to the build log rather than", issuePattern));
-        Assert.assertEquals(Sets.newHashSet("JENKINS-43400"), BlueJiraIssue.findIssueKeys("foo/JENKINS-43400 Print the error to the build log rather than", issuePattern));
-        Assert.assertEquals(Sets.newHashSet("TEST-123", "EXAMPLE-123", "JENKINS-43400"), BlueJiraIssue.findIssueKeys("foo/JENKINS-43400 TEST-123 [EXAMPLE-123] Print the error to the build log rather than", issuePattern));
+        Assert.assertEquals(Collections.singleton("JENKINS-43400"), BlueJiraIssue.findIssueKeys( "[JENKINS-43400] Print the error to the build log rather than", issuePattern));
+        Assert.assertEquals(Collections.singleton("JENKINS-43400"), BlueJiraIssue.findIssueKeys("JENKINS-43400 Print the error to the build log rather than", issuePattern));
+        Assert.assertEquals(Collections.singleton("JENKINS-43400"), BlueJiraIssue.findIssueKeys("foo/JENKINS-43400 Print the error to the build log rather than", issuePattern));
+        Assert.assertEquals(new HashSet(Arrays.asList("TEST-123", "EXAMPLE-123", "JENKINS-43400")),
+                            BlueJiraIssue.findIssueKeys("foo/JENKINS-43400 TEST-123 [EXAMPLE-123] Print the error to the build log rather than", issuePattern));
     }
 
     @Test
@@ -92,12 +95,12 @@ public class BlueJiraIssueTest {
         when(site.getUrl(jiraIssue1)).thenReturn(new URL("http://jira.example.com/browse/FOO-123"));
         when(site.getUrl(jiraIssue2)).thenReturn(new URL("http://jira.example.com/browse/FOO-124"));
 
-        JiraBuildAction action = new JiraBuildAction(run, Sets.newLinkedHashSet(ImmutableSet.of(jiraIssue1, jiraIssue2)));
+        JiraBuildAction action = new JiraBuildAction(run, new LinkedHashSet( Arrays.asList(jiraIssue1, jiraIssue2)));
         when(run.getAction(JiraBuildAction.class)).thenReturn(action);
 
         // Expect two issues
         when(entry.getMsg()).thenReturn("something FOO-123 vivek FOO-124 #ace");
-        List<BlueIssue> issues = Lists.newLinkedList(BlueIssueFactory.resolve(entry));
+        List<BlueIssue> issues = new LinkedList<>(BlueIssueFactory.resolve(entry));
         Assert.assertEquals(2, issues.size());
 
         BlueIssue issue1 = issues.get(0);
@@ -179,9 +182,9 @@ public class BlueJiraIssueTest {
         BlueJiraIssue issue1 = new BlueJiraIssue("TEST-123", "http://jira.example.com/browse/TEST-123");
         BlueJiraIssue issue2 = new BlueJiraIssue("TEST-124", "http://jira.example.com/browse/TEST-124");
 
-        Assert.assertTrue(issue1.equals(issue1));
-        Assert.assertFalse(issue1.equals(issue2));
-        Assert.assertFalse(issue1.equals(new Object()));
+        Assert.assertEquals(issue1, issue1);
+        Assert.assertNotEquals(issue1, issue2);
+        Assert.assertNotEquals(issue1, new Object());
 
         Assert.assertNotEquals(issue1.hashCode(), issue2.hashCode());
     }

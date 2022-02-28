@@ -1,19 +1,19 @@
 package io.jenkins.blueocean.rest.pageable;
 
-import com.google.common.collect.Iterators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.Iterator;
-
-import static io.jenkins.blueocean.rest.Utils.skip;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Kohsuke Kawaguchi
  */
 public abstract class Pageables {
-    private static final Logger logger = LoggerFactory.getLogger(Pageables.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Pageables.class);
 
     private Pageables() {} // no instantiation
 
@@ -37,12 +37,10 @@ public abstract class Pageables {
      * @return iterator with starting index==start and size &lt; limit
      */
     public static <T> Iterator<T> slice(Iterator<T> base, int start, int limit) {
-        // fast-forward
-        int skipped = skip(base,start);
-        if (skipped < start){ //already at the end, nothing to return
-                Iterators.emptyIterator();
-        }
-        return Iterators.limit(base, limit);
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(base, Spliterator.SORTED), false)
+            .skip(start)
+            .limit(limit)
+            .iterator();
     }
 
     /**

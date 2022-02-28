@@ -39,7 +39,7 @@ public class HttpResponse {
                 ErrorMessage errorMessage = new ErrorMessage(getStatus(), getStatusLine());
                 // WireMock returns "Bad Request" for the status message; it's also pretty nondescript
                 if (StringUtils.isEmpty(errorMessage.message) || "Bad Request".equals(errorMessage.message)) {
-                    String message;;
+                    String message;
                     List<ErrorMessage.Error> errors = new ArrayList<>();
                     try {
                         JSONObject jsonResponse = JSONObject.fromObject(IOUtils.toString(entity.getContent()));
@@ -53,9 +53,13 @@ public class HttpResponse {
                             messageBuilder.append(err.getString("message"));
 
                             StringBuilder details = new StringBuilder();
-                            JSONArray errorDetails = err.getJSONArray("details");
-                            for (int detailIdx = 0; detailIdx < errorDetails.size(); detailIdx++) {
-                                details.append(errorDetails.getString(detailIdx)).append("\n");
+                            if (err.has("details")) {
+                                JSONArray errorDetails = err.getJSONArray("details");
+                                for (int detailIdx = 0; detailIdx < errorDetails.size(); detailIdx++) {
+                                    details.append(errorDetails.getString(detailIdx)).append("\n");
+                                }
+                            } else {
+                                details.append("no error details");
                             }
                             errors.add(new ErrorMessage.Error("", err.getString("exceptionName"), details.toString()));
                         }

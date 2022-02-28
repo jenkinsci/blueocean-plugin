@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableMap;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.Functions;
@@ -10,11 +10,11 @@ import hudson.model.AbstractItem;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
-import hudson.model.ParameterDefinition;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.plugins.favorite.Favorites;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
@@ -40,14 +40,13 @@ import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_JOB;
 
@@ -72,7 +71,7 @@ public class AbstractPipelineImpl extends BluePipeline {
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public BlueOrganization getOrganization() {
         return organization;
     }
@@ -145,12 +144,7 @@ public class AbstractPipelineImpl extends BluePipeline {
             throw new ServiceException.BadRequestException("Must provide pipeline name");
         }
         FavoriteUtil.toggle(favoriteAction, job);
-        return FavoriteUtil.getFavorite(job, new Reachable() {
-            @Override
-            public Link getLink() {
-                return AbstractPipelineImpl.this.getLink().ancestor();
-            }
-        });
+        return FavoriteUtil.getFavorite(job, () -> AbstractPipelineImpl.this.getLink().ancestor() );
 
     }
 
@@ -193,7 +187,7 @@ public class AbstractPipelineImpl extends BluePipeline {
      *
      * @return full display name
      */
-    public static String getFullDisplayName(@Nullable BlueOrganization org, @Nonnull Item item) {
+    public static String getFullDisplayName(@Nullable BlueOrganization org, @NonNull Item item) {
         ItemGroup<?> group = getBaseGroup(org);
         String[] displayNames = Functions.getRelativeDisplayNameFrom(item, group).split(" » ");
 
@@ -216,7 +210,7 @@ public class AbstractPipelineImpl extends BluePipeline {
      * @param item to return the full name of
      * @return
      */
-    public static String getFullName(@Nullable BlueOrganization org, @Nonnull Item item) {
+    public static String getFullName(@Nullable BlueOrganization org, @NonNull Item item) {
         ItemGroup<?> group = getBaseGroup(org);
         return Functions.getRelativeNameFrom(item, group);
     }
@@ -229,7 +223,7 @@ public class AbstractPipelineImpl extends BluePipeline {
      */
     public static ItemGroup<?> getBaseGroup(BlueOrganization org) {
         ItemGroup<?> group = null;
-        if (org != null && org instanceof AbstractOrganization) {
+        if (org instanceof AbstractOrganization) {
             group = ((AbstractOrganization) org).getGroup();
         }
         return group;
@@ -274,9 +268,7 @@ public class AbstractPipelineImpl extends BluePipeline {
         ParametersDefinitionProperty pp = (ParametersDefinitionProperty) job.getProperty(ParametersDefinitionProperty.class);
         List<Object> pds = new ArrayList<>();
         if(pp != null){
-            for(ParameterDefinition pd : pp.getParameterDefinitions()){
-                pds.add(pd);
-            }
+            pds.addAll(pp.getParameterDefinitions());
         }
         return pds;
     }
@@ -326,7 +318,7 @@ public class AbstractPipelineImpl extends BluePipeline {
     }
 
     public static Map<String, Boolean> getPermissions(AbstractItem item){
-        return ImmutableMap.of(
+        return MapsHelper.of(
             BluePipeline.CREATE_PERMISSION, item.getACL().hasPermission(Item.CREATE),
             BluePipeline.CONFIGURE_PERMISSION, item.getACL().hasPermission(Item.CONFIGURE),
             BluePipeline.READ_PERMISSION, item.getACL().hasPermission(Item.READ),
@@ -335,11 +327,7 @@ public class AbstractPipelineImpl extends BluePipeline {
         );
     }
 
-    public static final Predicate<Run> isRunning = new Predicate<Run>() {
-        public boolean apply(Run r) {
-            return r != null && r.isBuilding();
-        }
-    };
+    public static final Predicate<Run> isRunning = r -> r != null && r.isBuilding();
 
     public boolean isFavorite() {
         User user = User.current();

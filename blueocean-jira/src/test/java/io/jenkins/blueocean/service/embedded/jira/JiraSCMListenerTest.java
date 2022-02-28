@@ -18,7 +18,6 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -213,7 +212,7 @@ public class JiraSCMListenerTest {
 
 
     private static ChangeLogSet build( String... texts) {
-        List<ChangeLogSet.Entry> entries = Arrays.asList( texts ).stream().map( text -> {
+        List<ChangeLogSet.Entry> entries = Arrays.stream( texts ).map( text -> {
             final ChangeLogSet.Entry entry = mock(ChangeLogSet.Entry.class);
             when(entry.getMsg()).thenReturn(text);
             return  entry;

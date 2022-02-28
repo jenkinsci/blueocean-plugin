@@ -1,6 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.collect.Iterables;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.AbstractItem;
@@ -23,24 +23,23 @@ import io.jenkins.blueocean.rest.model.BlueTrendContainer;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.Disabler;
 import org.kohsuke.stapler.json.JsonBody;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Vivek Pandey
  */
 public class PipelineFolderImpl extends BluePipelineFolder {
     protected final BlueOrganization organization;
-    private final ItemGroup folder;
+    private final ItemGroup<?> folder;
     protected final Link parent;
 
-    public PipelineFolderImpl(BlueOrganization organization, ItemGroup folder, Link parent) {
+    public PipelineFolderImpl(BlueOrganization organization, ItemGroup<?> folder, Link parent) {
         this.organization = organization;
         this.folder = folder;
         this.parent = parent;
@@ -51,7 +50,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
         return organization.getName();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public BlueOrganization getOrganization() {
         return organization;
@@ -158,7 +157,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
         @Override
         public PipelineFolderImpl getPipeline(Item item, Reachable parent, BlueOrganization organization) {
             if (item instanceof ItemGroup) {
-                return new PipelineFolderImpl(organization, (ItemGroup) item, parent.getLink());
+                return new PipelineFolderImpl(organization, (ItemGroup<?>) item, parent.getLink());
             }
             return null;
         }
@@ -193,12 +192,9 @@ public class PipelineFolderImpl extends BluePipelineFolder {
         if(bluePipelineContainer==null) {
             return Collections.emptyList();
         }
-        return Iterables.transform(bluePipelineContainer, input -> {
-            if (input != null && input instanceof BluePipelineFolder) {
-                return input.getName();
-            }
-            return null;
-        });
+        return StreamSupport.stream(bluePipelineContainer.spliterator(), false).
+            map( bluePipeline -> (bluePipeline instanceof BluePipelineFolder)? bluePipeline.getName():null ).
+            collect( Collectors.toList());
     }
 
     @Override

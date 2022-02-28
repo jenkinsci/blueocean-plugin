@@ -1,9 +1,9 @@
 package io.jenkins.blueocean.service.embedded.analytics;
 
-import com.google.common.collect.Iterables;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
+import io.jenkins.blueocean.commons.IterableUtils;
 import io.keen.client.java.KeenProject;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -13,7 +13,7 @@ public abstract class KeenConfiguration implements ExtensionPoint {
 
     /** Current keen configuration */
     public static KeenConfiguration get() {
-        KeenConfiguration config = Iterables.getFirst(ExtensionList.lookup(KeenConfiguration.class), null);
+        KeenConfiguration config = IterableUtils.getFirst(ExtensionList.lookup(KeenConfiguration.class),null);
         if (config == null) {
             throw new IllegalStateException("no KeenConfiguration available");
         }

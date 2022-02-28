@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This provides and Blueocean REST API endpoint to obtain pipeline step metadata.
@@ -45,7 +46,7 @@ import java.util.Set;
 @Extension
 public class PipelineMetadataService implements ApiRoutable {
 
-    final static List<String> INCLUDED_ADVANCED_STEPS = Collections.unmodifiableList(Arrays.asList("catchError"));
+    final static List<String> INCLUDED_ADVANCED_STEPS = Collections.unmodifiableList(Arrays.asList("catchError", "container"));
 
     @Override
     public String getUrlName() {
@@ -54,7 +55,7 @@ public class PipelineMetadataService implements ApiRoutable {
 
     @GET
     public String doCrumbInfo() {
-        CrumbIssuer crumbIssuer = Jenkins.getInstance().getCrumbIssuer();
+        CrumbIssuer crumbIssuer = Jenkins.get().getCrumbIssuer();
         if (crumbIssuer != null) {
             return crumbIssuer.getCrumbRequestField()  + "=" + crumbIssuer.getCrumb();
         }
@@ -82,7 +83,7 @@ public class PipelineMetadataService implements ApiRoutable {
                 // Ignore!
             }
         }
-        return models.toArray(new ExportedDescribableModel[models.size()]);
+        return models.toArray(new ExportedDescribableModel[0]);
     }
 
     /**
@@ -100,7 +101,7 @@ public class PipelineMetadataService implements ApiRoutable {
                 descriptor.addInstallation(new ExportedToolDescriptor.ExportedToolInstallation(installation.getName(), installation.getClass()));
             }
         }
-        return models.toArray(new ExportedToolDescriptor[models.size()]);
+        return models.toArray(new ExportedToolDescriptor[0]);
     }
 
     /**
@@ -109,18 +110,13 @@ public class PipelineMetadataService implements ApiRoutable {
     @GET
     @TreeResponse
     public ExportedBuildCondition[] doBuildConditions() {
-        List<ExportedBuildCondition> exported = new ArrayList<>();
-        for (BuildCondition c : BuildCondition.all()) {
-            exported.add(new ExportedBuildCondition(symbolForObject(c), c.getDescription()));
-        }
+        List<ExportedBuildCondition> exported =
+            BuildCondition.all().stream()
+                .map(c -> new ExportedBuildCondition(symbolForObject(c), c.getDescription()))
+            .collect( Collectors.toList());
 
-        Collections.sort(exported, new Comparator<ExportedBuildCondition>() {
-            @Override
-            public int compare(ExportedBuildCondition o1, ExportedBuildCondition o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
-        return exported.toArray(new ExportedBuildCondition[exported.size()]);
+        exported.sort(Comparator.comparing(ExportedBuildCondition::getName));
+        return exported.toArray(new ExportedBuildCondition[0]);
     }
 
 
@@ -198,7 +194,7 @@ public class PipelineMetadataService implements ApiRoutable {
     }
 
     private <T extends Describable<T>,D extends Descriptor<T>> void populateMetaSteps(List<Descriptor<?>> r, Class<T> c) {
-        Jenkins j = Jenkins.getInstance();
+        Jenkins j = Jenkins.get();
         for (Descriptor<?> d : j.getDescriptorList(c)) {
             if (SimpleBuildStep.class.isAssignableFrom(d.clazz) && symbolForObject(d) != null) {
                 r.add(d);

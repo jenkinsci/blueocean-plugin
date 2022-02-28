@@ -45,7 +45,7 @@ public @interface TreeResponse {
                 return new HttpResponse() {
                     @Override
                     public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-                        Export.doJson(req, rsp, resp);;
+                        Export.doJson(req, rsp, resp);
                     }
                 };
             }else{
@@ -64,11 +64,8 @@ public @interface TreeResponse {
                 }
             }
 
-            //by default we treat it as GET
-            if(method.equals("GET")){
-                return true;
-            }
-            return false;
+            //by default, we treat it as GET
+            return method.equals( "GET" );
         }
     }
 }

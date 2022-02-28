@@ -47,7 +47,7 @@ public class BitbucketOrg extends ScmOrganization {
 
     @Override
     public boolean isJenkinsOrganizationPipeline() {
-        for(TopLevelItem item: Jenkins.getInstance().getItems()){
+        for(TopLevelItem item: Jenkins.get().getItems()){
             if(item instanceof OrganizationFolder){
                 OrganizationFolder folder = (OrganizationFolder) item;
                 for(SCMNavigator navigator: folder.getNavigators()) {

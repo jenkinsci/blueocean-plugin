@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.base.Predicate;
 import hudson.model.Action;
 import hudson.model.Queue;
 import hudson.model.queue.CauseOfBlockage;
@@ -10,9 +9,9 @@ import org.jenkinsci.plugins.pipeline.SyntheticStage;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
+import org.jenkinsci.plugins.workflow.actions.QueueItemAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.actions.TagsAction;
-import org.jenkinsci.plugins.workflow.actions.QueueItemAction;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
@@ -26,6 +25,7 @@ import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.Predicate;
 
 /**
  * @author Vivek Pandey
@@ -124,7 +124,8 @@ public class PipelineNodeUtil {
     }
 
     public static boolean isParallelBranch(@Nullable FlowNode node){
-        return node !=null && node.getAction(LabelAction.class) != null &&
+        return node!=null &&
+            node.getAction(LabelAction.class) != null &&
             node.getAction(ThreadNameAction.class) != null;
     }
 
@@ -192,7 +193,7 @@ public class PipelineNodeUtil {
     }
 
     /**
-     * Determine if the given {@link FlowNode} is the initial {@link StepStartNode} for an {@link org.jenkinsci.plugins.workflow.support.steps.ExecutorStep}.
+     * Determine if the given {@link FlowNode} is the initial {@link StepStartNode} for an {@link ExecutorStep}.
      *
      * @param node a possibly null {@link FlowNode}
      * @return true if {@code node} is the non-body start of the agent execution.

@@ -12,7 +12,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <phantomjs.binary.path>./target/phantomjs-maven-plugin/phantomjs-2.1.1-linux-x86_64/bin/phantomjs</phantomjs.binary.path>
         <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
-        <slf4j.version>1.7.25</slf4j.version>
+        <slf4j.version>1.7.32</slf4j.version>
         <selenium.version>3.141.59</selenium.version> <!-- 3.141.59 4.0.0-alpha-6 -->
     </properties>
 
@@ -43,6 +43,11 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -130,7 +135,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.6.1</version>
+            <version>2.13.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.tomakehurst</groupId>

@@ -1,19 +1,15 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.factory.BlueTrendFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueTrend;
 import io.jenkins.blueocean.rest.model.BlueTrendContainer;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Iterator;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 // TODO: reenable this after refactor
 // @Restricted(NoExternalUse.class)
@@ -32,20 +28,18 @@ public class BlueTrendContainerImpl extends BlueTrendContainer {
 
     @Override
     public BlueTrend get(final String name) {
-        BlueTrend trend = Iterators.find(iterator(), new Predicate<BlueTrend>() {
-            @Override
-            public boolean apply(@Nullable BlueTrend input) {
-                return input != null && input.getId().equals(name);
-            }
-        }, null);
-        if (trend == null) {
+        Optional<BlueTrend> trend = StreamSupport.stream( list().spliterator(), false).
+            filter( blueTrend -> blueTrend != null && blueTrend.getId().equals(name)).
+            findFirst();
+
+        if (!trend.isPresent()) {
             throw new ServiceException.NotFoundException("not found");
         }
-        return trend;
+        return trend.get();
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public Iterator<BlueTrend> iterator() {
         return BlueTrendFactory.getTrends(pipeline, getLink()).iterator();
     }

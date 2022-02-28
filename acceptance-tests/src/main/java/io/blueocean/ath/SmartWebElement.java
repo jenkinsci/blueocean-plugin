@@ -1,7 +1,5 @@
 package io.blueocean.ath;
 
-import com.google.common.base.Preconditions;
-import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -15,10 +13,11 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 /**
  * Wrapper around an underlying WebDriver that automatically handles waits and common gotchas
@@ -27,7 +26,7 @@ import java.util.function.Function;
  * Accepts expressions for css and xpath, if the provided lookup starts with a /, XPath is used
  */
 public class SmartWebElement implements WebElement {
-    private static Logger logger = Logger.getLogger(SmartWebElement.class);
+    private static Logger logger = LoggerFactory.getLogger(SmartWebElement.class);
     public static final int DEFAULT_TIMEOUT = Integer.getInteger("webDriverDefaultTimeout", 3000);
     public static final int RETRY_COUNT = 3;
 
@@ -121,10 +120,7 @@ public class SmartWebElement implements WebElement {
      */
     public boolean isPresent() {
         try {
-            if (getDriver().findElement(by) == null) {
-                return false;
-            }
-            return true;
+            return getDriver().findElement(by) != null;
         } catch(NoSuchElementException e) {
             return false;
         }
@@ -192,11 +188,9 @@ public class SmartWebElement implements WebElement {
      */
     private static void validateTextElement(WebElement element) {
         String tagName = element.getTagName().toLowerCase();
-        Preconditions.checkArgument(
-            "input".equals(tagName) || "textarea".equals(tagName),
-            "element must should be input or textarea but was %s",
-            tagName
-        );
+        if(!"input".equals(tagName) && !"textarea".equals(tagName)){
+            throw new IllegalArgumentException(String.format("element must be input or textarea but was %s", tagName));
+        }
     }
 
     /**

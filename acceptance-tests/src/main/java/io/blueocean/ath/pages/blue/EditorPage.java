@@ -1,19 +1,19 @@
 package io.blueocean.ath.pages.blue;
 
-import com.google.common.base.Strings;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.model.MultiBranchPipeline;
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import javax.inject.Inject;
 
 public class EditorPage {
 
-    private Logger logger = Logger.getLogger(EditorPage.class);
+    private Logger logger = LoggerFactory.getLogger(EditorPage.class);
 
     private MultiBranchPipeline pipeline;
 
@@ -128,7 +128,7 @@ public class EditorPage {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("textarea[placeholder=\"What changed?\"]")));
         logger.info("Entering commit message into What Changed textarea");
         wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"), "ATH made changes and is saving");
-        if(!Strings.isNullOrEmpty(branch)) {
+        if(StringUtils.isNotBlank(branch)) {
             wait.click(By.xpath("//span[text()='Commit to new branch']"));
             wait.sendKeys(By.cssSelector("input[placeholder='my-new-branch']:enabled"),branch);
             logger.info("Testing removal of spaces in branch name");

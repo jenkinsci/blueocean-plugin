@@ -23,13 +23,12 @@
 
 package io.jenkins.blueocean.commons.stapler.export;
 
-import com.google.common.base.Predicate;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import io.jenkins.blueocean.commons.stapler.export.TreePruner.ByDepth;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -41,6 +40,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,7 +70,7 @@ public class Model<T> {
      */
     private volatile Properties javadoc;
 
-    private final Set<String> propertyNames = new HashSet<String>();
+    private final Set<String> propertyNames = new HashSet<>();
 
     /*package*/ Model(ModelBuilder parent, Class<T> type, @CheckForNull Class<?> propertyOwner, @Nullable String property) throws NotExportableException {
         this.parent = parent;
@@ -87,7 +87,7 @@ public class Model<T> {
         else
             superModel = null;
 
-        List<Property> properties = new ArrayList<Property>();
+        List<Property> properties = new ArrayList<>();
 
         // Use reflection to find out what properties are exposed.
         for( Field f : type.getFields() ) {
@@ -110,7 +110,7 @@ public class Model<T> {
             }
         }
 
-        this.properties = properties.toArray(new Property[properties.size()]);
+        this.properties = properties.toArray(new Property[0]);
         Arrays.sort(this.properties);
         for (Property p : properties)
             this.propertyNames.add(p.name);
@@ -128,23 +128,15 @@ public class Model<T> {
     /**
      * Does a property exist strictly in this class?
      */
-    /*package*/ final Predicate<String> HAS_PROPERTY_NAME = new Predicate<String>() {
-        @Override
-        public boolean apply(@Nullable String name) {
-            return propertyNames.contains(name);
-        }
-    };
+    /*package*/ final Predicate<String> HAS_PROPERTY_NAME = propertyNames::contains;
     /**
      * Does a property exist strictly in this class or its ancestors?
      */
-    /*package*/ final Predicate<String> HAS_PROPERTY_NAME_IN_ANCESTORY = new Predicate<String>() {
-        @Override
-        public boolean apply(@Nullable String name) {
-            for (Model m=Model.this; m!=null; m=m.superModel)
-                if (m.propertyNames.contains(name))
-                    return true;
-            return false;
-        }
+    /*package*/ final Predicate<String> HAS_PROPERTY_NAME_IN_ANCESTORY = name -> {
+        for (Model m=Model.this; m!=null; m=m.superModel)
+            if (m.propertyNames.contains(name))
+                return true;
+        return false;
     };
 
     /**

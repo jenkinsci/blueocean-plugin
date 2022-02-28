@@ -38,53 +38,53 @@ public class ExportedToolDescriptor {
     private final String toolName;
     private final String symbol;
     private final Class<?> type;
-    private final List<ExportedToolInstallation> installations = new ArrayList<ExportedToolInstallation>();
+    private final List<ExportedToolInstallation> installations = new ArrayList<>();
 
     public ExportedToolDescriptor(String toolName, String symbol, Class<?> type) {
         this.toolName = toolName;
         this.symbol = symbol;
         this.type = type;
     }
-    
+
     @Exported
     public String getToolName() {
         return toolName;
     }
-    
+
     @Exported
     public String getSymbol() {
         return symbol;
     }
-    
+
     @Exported
     public String getType() {
         return type.getName();
     }
-    
+
     @Exported
     public ExportedToolInstallation[] getInstallations() {
-        return installations.toArray(new ExportedToolInstallation[installations.size()]);
+        return installations.toArray(new ExportedToolInstallation[0]);
     }
-    
+
     public void addInstallation(ExportedToolInstallation installation) {
         this.installations.add(installation);
     }
-    
+
     @ExportedBean
     public static class ExportedToolInstallation {
         private final String name;
         private final Class<?> type;
-        
+
         public ExportedToolInstallation(String name, Class<?> type) {
             this.name = name;
             this.type = type;
         }
-        
+
         @Exported
         public String getName() {
             return name;
         }
-        
+
         @Exported
         public String getType() {
             return type.getName();

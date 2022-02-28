@@ -3,14 +3,8 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import hudson.model.User;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
@@ -32,13 +26,14 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Vivek Pandey
@@ -53,7 +48,7 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
     @Override
     public Object getState() {
         StaplerRequest request = Stapler.getCurrentRequest();
-        Preconditions.checkNotNull(request, "Must be called in HTTP request context");
+        Objects.requireNonNull(request, "Must be called in HTTP request context");
 
         String apiUrl = request.getParameter("apiUrl");
 
@@ -111,7 +106,7 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
         User authenticatedUser = getAuthenticatedUser();
 
         StaplerRequest request = Stapler.getCurrentRequest();
-        Preconditions.checkNotNull(request, "This request must be made in HTTP context");
+        Objects.requireNonNull(request, "This request must be made in HTTP context");
         String credentialId = BitbucketCredentialUtils.computeCredentialId(getCredentialIdFromRequest(request), getId(), getUri());
 
         List<ErrorMessage.Error> errors = new ArrayList<>();
@@ -141,7 +136,7 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
                 throw new ServiceException.UnexpectedErrorException("BitbucketApiFactory to handle apiUrl " + apiUrl + " not found");
             }
 
-            Preconditions.checkNotNull(credential);
+            Objects.requireNonNull(credential);
             final BitbucketApi api = apiFactory.create(apiUrl, credential);
             return new Container<ScmOrganization>() {
                 @Override
@@ -168,15 +163,11 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
                         start = 0;
                     }
                     int page =  (start/limit) + 1;
-                    return Lists.transform(api.getOrgs(page, limit).getValues(), new Function<BbOrg, ScmOrganization>() {
-                        @Nullable
-                        @Override
-                        public ScmOrganization apply(@Nullable BbOrg input) {
-                            if (input != null) {
-                                return new BitbucketOrg(input, api, getLink());
-                            }
-                            return null;
+                    return api.getOrgs(page, limit).getValues().stream().map( input -> {
+                        if (input != null) {
+                            return (ScmOrganization) new BitbucketOrg(input, api, getLink());
                         }
+                        return null;
                     }).iterator();
                 }
             };
@@ -220,11 +211,11 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
             if (bbCredentials == null) {
                 CredentialsUtils.createCredentialsInUserStore(
                         credential, authenticatedUser, getDomainId(),
-                        ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
+                        Collections.singletonList(new BlueOceanDomainSpecification()));
             } else {
                 CredentialsUtils.updateCredentialsInUserStore(
                         bbCredentials, credential, authenticatedUser, getDomainId(),
-                        ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
+                        Collections.singletonList(new BlueOceanDomainSpecification()));
             }
 
             return createResponse(credential.getId());
@@ -331,7 +322,7 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
 
     protected StaplerRequest getStaplerRequest(){
         StaplerRequest request = Stapler.getCurrentRequest();
-        Preconditions.checkNotNull(request, "Must be called in HTTP request context");
+        Objects.requireNonNull(request, "Must be called in HTTP request context");
         return request;
     }
 

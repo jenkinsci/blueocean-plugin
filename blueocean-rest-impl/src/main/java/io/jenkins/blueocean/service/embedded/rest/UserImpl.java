@@ -1,13 +1,14 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.google.common.collect.ImmutableMap;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.ExtensionList;
 import hudson.model.Item;
 import hudson.model.User;
 import hudson.security.AccessControlled;
 import hudson.tasks.Mailer;
 import hudson.tasks.UserAvatarResolver;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.commons.ServiceException.ForbiddenException;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Reachable;
@@ -19,14 +20,11 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserPermission;
-import io.jenkins.blueocean.rest.model.GenericResource;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
-import org.kohsuke.stapler.export.ExportedBean;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Map;
 
@@ -50,14 +48,14 @@ public class UserImpl extends BlueUser {
 
     private final Reachable parent;
 
-    public UserImpl(@Nonnull BlueOrganization organization, @Nonnull User user, Reachable parent) {
+    public UserImpl(@NonNull BlueOrganization organization, @NonNull User user, Reachable parent) {
         this.parent = parent;
         this.user = user;
         this.organization = organization;
         organizationBase = getAccessControllerOrganization();
     }
 
-    public UserImpl(@Nonnull BlueOrganization organization, @Nonnull User user) {
+    public UserImpl(@NonNull BlueOrganization organization, @NonNull User user) {
         this(organization, user, null);
     }
 
@@ -174,11 +172,11 @@ public class UserImpl extends BlueUser {
     }
 
     private boolean isAdmin(){
-        return Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER);
+        return Jenkins.get().hasPermission(Jenkins.ADMINISTER);
     }
 
     private Map<String, Boolean> getPipelinePermissions(){
-        return ImmutableMap.of(
+        return MapsHelper.of(
                                BluePipeline.CREATE_PERMISSION, organizationBase.hasPermission(Item.CREATE),
                                BluePipeline.READ_PERMISSION, organizationBase.hasPermission(Item.READ),
                                BluePipeline.START_PERMISSION, organizationBase.hasPermission(Item.BUILD),
@@ -188,7 +186,7 @@ public class UserImpl extends BlueUser {
     }
 
     private Map<String, Boolean> getCredentialPermissions(){
-        return ImmutableMap.of(
+        return MapsHelper.of(
                                CREDENTIAL_CREATE_PERMISSION, organizationBase.hasPermission(CredentialsProvider.CREATE),
                                CREDENTIAL_VIEW_PERMISSION, organizationBase.hasPermission(CredentialsProvider.VIEW),
                                CREDENTIAL_DELETE_PERMISSION, organizationBase.hasPermission(CredentialsProvider.DELETE),
@@ -202,7 +200,7 @@ public class UserImpl extends BlueUser {
     }
 
     private AccessControlled getAccessControllerOrganization() {
-        AccessControlled orgBase = Jenkins.getInstance();
+        AccessControlled orgBase = Jenkins.get();
 
         if (organization instanceof AbstractOrganization) {
             ModifiableTopLevelItemGroup group = ((AbstractOrganization) organization).getGroup();

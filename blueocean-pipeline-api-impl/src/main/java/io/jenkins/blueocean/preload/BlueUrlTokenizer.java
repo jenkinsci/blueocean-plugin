@@ -33,12 +33,10 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -283,7 +281,7 @@ public class BlueUrlTokenizer {
 
     private static Iterator<String> extractTokens(String url) {
 
-        return Arrays.asList(url.split("/")).stream()
+        return Arrays.stream( url.split( "/"))
             .filter( s -> s.length() != 0 )
             .collect( Collectors.toList() )
             .iterator();

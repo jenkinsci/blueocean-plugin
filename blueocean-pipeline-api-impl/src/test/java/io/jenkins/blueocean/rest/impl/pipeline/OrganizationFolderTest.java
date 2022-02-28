@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.Lists;
 import hudson.ExtensionList;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
@@ -31,6 +30,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -77,7 +77,7 @@ public class OrganizationFolderTest{
                 new MultiBranchPipelineContainerImpl(organization, orgFolder, organizationFolder);
 
         assertEquals(multiBranchProject.getName(), multiBranchPipelineContainer.get("repo1").getName());
-        when(orgFolder.getItems()).thenReturn(Lists.<MultiBranchProject<?, ?>>newArrayList(multiBranchProject));
+        when(orgFolder.getItems()).thenReturn( Collections.singletonList(multiBranchProject));
         assertNotNull(organizationFolder.getPipelineFolderNames());
     }
 
@@ -105,12 +105,8 @@ public class OrganizationFolderTest{
         OrganizationFolderFactoryTestImpl organizationFolderFactoryTest = ((ExtensionList<OrganizationFolderPipelineImpl.OrganizationFolderFactory>) organizationFolderFactoryList).get(OrganizationFolderFactoryTestImpl.class);
         assertNotNull(organizationFolderFactoryTest);
 
-        OrganizationFolderPipelineImpl folderPipeline = organizationFolderFactoryTest.getFolder(orgFolder, new Reachable() {
-            @Override
-            public Link getLink() {
-                return organization.getLink().rel("/pipelines/");
-            }
-        }, mockOrganization());
+        OrganizationFolderPipelineImpl folderPipeline = organizationFolderFactoryTest
+            .getFolder( orgFolder, () -> organization.getLink().rel( "/pipelines/"), mockOrganization());
         assertNotNull(folderPipeline);
 
         assertNotNull(folderPipeline.getQueue());
@@ -213,7 +209,7 @@ public class OrganizationFolderTest{
     public static class OrganizationFolderFactoryTestImpl extends OrganizationFolderPipelineImpl.OrganizationFolderFactory {
         @Override
         protected OrganizationFolderPipelineImpl getFolder(jenkins.branch.OrganizationFolder folder, Reachable parent, BlueOrganization organization) {
-            if (folder.getName() != "orgFolder1") {
+            if (!"orgFolder1".equals(folder.getName())) {
                 OrganizationFolder orgFolder = mockOrgFolder(organization);
                 return new OrganizationFolderPipelineImpl(organization, orgFolder, organization.getLink().rel("/pipelines/")) {
                 };

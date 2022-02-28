@@ -2,13 +2,11 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
 import com.cloudbees.jenkins.plugins.bitbucket.endpoints.AbstractBitbucketEndpoint;
 import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
-import com.google.common.base.Function;
-import com.google.common.collect.Iterators;
 import hudson.model.Item;
-import hudson.model.User;
 import hudson.security.ACL;
 import hudson.security.ACLContext;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.Messages;
+import io.jenkins.blueocean.commons.DigestUtils;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
@@ -17,7 +15,6 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,14 +106,11 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
     @Override
     public Iterator<ScmServerEndpoint> iterator() {
         BitbucketEndpointConfiguration endpointConfiguration = BitbucketEndpointConfiguration.get();
-        Iterator<com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint> serverEndpoints =  Iterators
-                .filter(endpointConfiguration.getEndpoints().iterator(),
-                        com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint.class);
-        return Iterators.transform(serverEndpoints, new Function<AbstractBitbucketEndpoint, ScmServerEndpoint>() {
-            @Override
-            public ScmServerEndpoint apply(AbstractBitbucketEndpoint input) {
-                return new BitbucketServerEndpoint(input, BitbucketServerEndpointContainer.this);
-            }
-        });
+
+        return endpointConfiguration.getEndpoints().stream()
+            .filter(abstractBitbucketEndpoint -> abstractBitbucketEndpoint instanceof com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint)
+            .map(bitbucketServerEndpoint -> (ScmServerEndpoint) new BitbucketServerEndpoint( bitbucketServerEndpoint,
+                                                                    BitbucketServerEndpointContainer.this ) )
+            .iterator();
     }
 }

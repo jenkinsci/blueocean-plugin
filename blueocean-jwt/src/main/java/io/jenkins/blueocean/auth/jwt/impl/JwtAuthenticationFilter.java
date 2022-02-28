@@ -6,9 +6,9 @@ import hudson.security.ACL;
 import hudson.security.ACLContext;
 import hudson.util.PluginServletFilter;
 import io.jenkins.blueocean.auth.jwt.JwtTokenVerifier;
-import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
+import org.springframework.security.core.Authentication;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -74,7 +74,7 @@ public class JwtAuthenticationFilter implements Filter {
 
         // run the rest of the request with the new identity
         // create a new context and set it to holder to not clobber existing context
-        try (ACLContext ctx = ACL.as(token)) {
+        try (ACLContext ctx = ACL.as2(token)) {
             request.setAttribute(JWT_TOKEN_VALIDATED, true);
             chain.doFilter(req,rsp);
         }

@@ -2,7 +2,7 @@ package io.jenkins.blueocean.util;
 
 import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.common.collect.ImmutableMap;
+import io.jenkins.blueocean.commons.MapsHelper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -82,7 +82,7 @@ public class HttpRequestTest {
         stubFor(get(urlEqualTo(urlPath))
             .willReturn(aResponse().withBodyFile("body-organizations-jenkins-BiWX8.json")));
 
-        Map map = request.Get(urlPath)
+        Map<?,?> map = request.Get(urlPath)
             .as(Map.class);
 
         Assert.assertNotNull(map);
@@ -128,7 +128,7 @@ public class HttpRequestTest {
             .willReturn(aResponse().withStatus(200)));
 
         request.Post(urlPath)
-            .bodyJson(ImmutableMap.of("foo", "bar"))
+            .bodyJson(MapsHelper.of("foo", "bar"))
             .as(Void.class);
 
         verify(postRequestedFor(urlEqualTo(urlPath))

@@ -116,7 +116,7 @@ public class UserImplPermissionTest {
 
         mockStatic(Jenkins.class);
         when(Jenkins.getAuthentication()).thenReturn(authentication);
-        when(Jenkins.getInstance()).thenReturn(jenkins);
+        when(Jenkins.get()).thenReturn(jenkins);
 
         try {
             // After Jenkins 2.77 hasPermission is no longer in Node.class and is not final so we need to mock it

@@ -16,9 +16,6 @@ if (JENKINS_URL == 'https://ci.jenkins.io/') {
 properties([
   // only 20 builds,
   buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: '20')),
-  parameters([
-    booleanParam(name: 'USE_SAUCELABS', defaultValue: false)
-  ])
 ])
 
 credentials = [
@@ -33,16 +30,7 @@ envs = [
   'GIT_AUTHOR_EMAIL=hates@cake.com'
 ]
 
-jenkinsVersions = ['2.176.4']
-
-if (params.USE_SAUCELABS) {
-  credentials.add(usernamePassword(credentialsId: 'saucelabs', passwordVariable: 'SAUCE_ACCESS_KEY', usernameVariable: 'SAUCE_USERNAME'))
-  withCredentials([usernamePassword(credentialsId: 'saucelabs', passwordVariable: 'SAUCE_ACCESS_KEY', usernameVariable: 'SAUCE_USERNAME')]) {
-    envs.add("webDriverUrl=https://${env.SAUCE_USERNAME}:${env.SAUCE_ACCESS_KEY}@ondemand.saucelabs.com/wd/hub")
-  }
-  envs.add("saucelabs=true")
-  envs.add("TUNNEL_IDENTIFIER=${env.BUILD_TAG}")
-}
+jenkinsVersions = ['2.277.4']
 
 node() {
   withCredentials(credentials) {
@@ -57,11 +45,7 @@ node() {
           sh 'mv $MAVEN_SETTINGS settings.xml'
         }
         sh 'mv $BO_ATH_KEY_FILE acceptance-tests/bo-ath.key'
-        if (params.USE_SAUCELABS) {
-          sh "./acceptance-tests/runner/scripts/start-sc.sh"
-        } else {
-          sh "./acceptance-tests/runner/scripts/start-selenium.sh"
-        }
+        sh "./acceptance-tests/runner/scripts/start-selenium.sh"
         sh "./acceptance-tests/runner/scripts/start-bitbucket-server.sh"
       }
 
@@ -81,17 +65,19 @@ node() {
 
           stage('Building BlueOcean') {
             timeout(time: 90, unit: 'MINUTES') {
-              sh "mvn clean install -V -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
+              try {
+                sh "mvn clean install -T1C -V -B -DcleanNode -ntp -Dmaven.test.failure.ignore -s settings.xml -e -Dmaven.artifact.threads=30"
+              } finally {
+                junit testResults: '**/target/surefire-reports/TEST-*.xml', allowEmptyResults: true
+                junit testResults: '**/target/jest-reports/*.xml', allowEmptyResults: true
+                archiveArtifacts artifacts: '*/target/*.hpi',allowEmptyArchive: true
+              }
             }
-
-            junit '**/target/surefire-reports/TEST-*.xml'
-            junit '**/target/jest-reports/*.xml'
-            archive '*/target/*.hpi'
           }
 
           jenkinsVersions.each { version ->
             stage("ATH - Jenkins ${version}") {
-              timeout(time: 90, unit: 'MINUTES') {
+              timeout(time: 150, unit: 'MINUTES') {
                 dir('acceptance-tests') {
                   sh "bash -x ./run.sh -v=${version} --host=${ip} --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
                   junit '**/target/surefire-reports/*.xml'
@@ -104,11 +90,7 @@ node() {
       } finally {
         stage('Cleanup') {
           catchError(message: 'Suppressing error in Stage: Cleanup') {
-            if (params.USE_SAUCELABS) {
-              sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-sc.sh"
-            } else {
-              sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
-            }
+            sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
             sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-bitbucket-server.sh"
             deleteDir()
           }

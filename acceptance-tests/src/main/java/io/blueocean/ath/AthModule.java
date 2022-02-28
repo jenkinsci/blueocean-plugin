@@ -1,6 +1,5 @@
 package io.blueocean.ath;
 
-import com.google.common.base.Strings;
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
@@ -23,7 +22,7 @@ import io.blueocean.ath.pages.blue.PullRequestsPage;
 import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import io.blueocean.ath.pages.blue.RunDetailsTestsPage;
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
@@ -33,8 +32,9 @@ import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +46,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 public class AthModule extends AbstractModule {
-    private static final Logger logger = Logger.getLogger(AthModule.class);
+    private static final Logger logger = LoggerFactory.getLogger(AthModule.class);
 
     @Override
     protected void configure() {
@@ -79,16 +79,12 @@ public class AthModule extends AbstractModule {
             }
             capability.setCapability("extendedDebugging", "true");
             capability.setCapability("initialBrowserUrl", launchUrl);
-            if (!Strings.isNullOrEmpty(cfg.getString("TUNNEL_IDENTIFIER"))) {
+            if (!StringUtils.isBlank(cfg.getString("TUNNEL_IDENTIFIER"))) {
                 capability.setCapability("tunnelIdentifier", cfg.getString("TUNNEL_IDENTIFIER"));
             }
 
             WebDriver driver = new RemoteWebDriver(new URL(webDriverUrl), capability);
             LocalDriver.setCurrent(driver);
-            if (cfg.getBoolean("saucelabs", false)) {
-                LocalDriver.enableSauce();
-                System.out.println("SauceOnDemandSessionID=" + ((RemoteWebDriver) driver).getSessionId().toString());
-            }
 
             driver = new Augmenter().augment(driver);
             if (webDriverBrowserSize == null) {
@@ -116,8 +112,8 @@ public class AthModule extends AbstractModule {
 
             if(server.getComputerSet().getTotalExecutors() < 10) {
                 server.runScript(
-                    "jenkins.model.Jenkins.getInstance().setNumExecutors(10);\n" +
-                        "jenkins.model.Jenkins.getInstance().save();\n");
+                    "jenkins.model.Jenkins.get().setNumExecutors(10);\n" +
+                        "jenkins.model.Jenkins.get().save();\n", true);
             }
 
             Properties properties = new Properties();

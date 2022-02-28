@@ -65,7 +65,7 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
                                                           @Nonnull ItemGroup itemGroup,
                                                           @Nonnull
                                                               Authentication authentication) {
-        return getCredentials(type, itemGroup, authentication, Collections.<DomainRequirement>emptyList());
+        return getCredentials(type, itemGroup, authentication, Collections.emptyList());
     }
 
     @Nonnull

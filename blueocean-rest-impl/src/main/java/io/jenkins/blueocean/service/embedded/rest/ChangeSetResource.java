@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import hudson.scm.RepositoryBrowser;
@@ -9,16 +11,12 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BlueIssue;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
-import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import org.kohsuke.stapler.export.ExportedBean;
 
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Collection;
 
@@ -38,7 +36,7 @@ public class ChangeSetResource extends BlueChangeSetEntry {
     private final BlueOrganization organization;
     private int checkoutCount;
 
-    public ChangeSetResource(@Nonnull BlueOrganization organization, Entry changeSet, Reachable parent) {
+    public ChangeSetResource(@NonNull BlueOrganization organization, Entry changeSet, Reachable parent) {
         this.organization = organization;
         this.changeSet = changeSet;
         this.parent = parent;

@@ -3,22 +3,19 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 import com.cloudbees.jenkins.plugins.bitbucket.endpoints.AbstractBitbucketEndpoint;
 import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.Messages;
+import io.jenkins.blueocean.commons.DigestUtils;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.GET;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * @author Vivek Pandey
@@ -69,12 +66,7 @@ public class BitbucketServerEndpoint extends ScmServerEndpoint {
                     Messages.bbserver_version_validation_error(
                             version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION));
         }
-        return new HttpResponse(){
-            @Override
-            public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-                rsp.setStatus(200);
-            }
-        };
+        return ( req, rsp, node ) -> rsp.setStatus( 200);
     }
 
     @WebMethod(name="") @DELETE

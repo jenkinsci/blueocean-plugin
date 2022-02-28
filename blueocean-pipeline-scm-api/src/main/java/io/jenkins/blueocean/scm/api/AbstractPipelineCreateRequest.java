@@ -14,9 +14,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineCreateRequest;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
-import org.acegisecurity.Authentication;
-
-import com.google.common.base.Objects;
+import org.springframework.security.core.Authentication;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -37,9 +35,9 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
     protected @Nonnull TopLevelItem createProject(String name, String descriptorName, Class<? extends TopLevelItemDescriptor> descriptorClass, BlueOrganization organization) throws IOException {
         ModifiableTopLevelItemGroup p = getParent(organization);
 
-        final ACL acl = (p instanceof AccessControlled) ? ((AccessControlled) p).getACL() : Jenkins.getInstance().getACL();
-        Authentication a = Jenkins.getAuthentication();
-        if(!acl.hasPermission(a, Item.CREATE)){
+        final ACL acl = (p instanceof AccessControlled) ? ((AccessControlled) p).getACL() : Jenkins.get().getACL();
+        Authentication a = Jenkins.getAuthentication2();
+        if(!acl.hasPermission2(a, Item.CREATE)){
             throw new ServiceException.ForbiddenException(
                     String.format("Failed to create pipeline: %s. User %s doesn't have Job create permission", name, a.getName()));
         }
@@ -53,7 +51,7 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
                     String.format("Failed to create pipeline: %s. Pipeline can't be created in Jenkins root folder", name));
         }
 
-        if (!acl.hasCreatePermission(a, p, descriptor)) {
+        if (!acl.hasCreatePermission2(a, p, descriptor)) {
             throw new ServiceException.ForbiddenException("Missing permission: " + Item.CREATE.group.title+"/"+Item.CREATE.name + " " + Item.CREATE + "/" + descriptor.getDisplayName());
         }
         return p.createProject(descriptor, name, true);
@@ -66,9 +64,9 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
         if (authenticatedUser == null) {
             throw new ServiceException.UnauthorizedException("Must be logged in to create a pipeline");
         }
-        Authentication authentication = Jenkins.getAuthentication();
-        ACL acl = (p instanceof AccessControlled) ? ((AccessControlled) p).getACL() : Jenkins.getInstance().getACL();
-        if(!acl.hasPermission(authentication, Item.CREATE)){
+        Authentication authentication = Jenkins.getAuthentication2();
+        ACL acl = (p instanceof AccessControlled) ? ((AccessControlled) p).getACL() : Jenkins.get().getACL();
+        if(!acl.hasPermission2(authentication, Item.CREATE)){
             throw new ServiceException.ForbiddenException(
                 String.format("User %s doesn't have Job create permission", authenticatedUser.getId()));
         }
@@ -78,6 +76,7 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
     protected abstract String computeCredentialId(BlueScmConfig scmConfig);
 
     protected ModifiableTopLevelItemGroup getParent(BlueOrganization organization) {
-        return Objects.firstNonNull(OrganizationFactory.getItemGroup(organization), Jenkins.getInstance());
+        ModifiableTopLevelItemGroup m = OrganizationFactory.getItemGroup(organization);
+        return m!=null? m:Jenkins.get();
     }
 }

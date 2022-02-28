@@ -55,7 +55,7 @@ public class JwtAuthenticationServiceImplTest {
         JsonWebSignature jsw = (JsonWebSignature) jsonWebStructure;
 
         System.out.println(token);
-        System.out.println(jsw.toString());
+        System.out.println(jsw);
 
 
         String kid = jsw.getHeader("kid");

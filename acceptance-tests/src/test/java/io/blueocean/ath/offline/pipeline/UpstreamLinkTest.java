@@ -3,8 +3,6 @@ package io.blueocean.ath.offline.pipeline;
 import com.google.inject.Inject;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.BlueOceanAcceptanceTest;
-import io.blueocean.ath.SmartWebElement;
-import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.factory.ClassicPipelineFactory;
 import io.blueocean.ath.factory.FreestyleJobFactory;

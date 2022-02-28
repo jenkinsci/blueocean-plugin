@@ -5,7 +5,6 @@ import hudson.Extension;
 import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.Job;
-import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
@@ -27,7 +26,6 @@ import javax.annotation.CheckForNull;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
-import java.util.concurrent.ExecutionException;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
 
@@ -136,11 +134,7 @@ public class BranchImpl extends PipelineImpl {
         }
 
         public static Branch getBranch(final Job job) {
-            try {
-                return Caches.BRANCH_METADATA.get(job.getFullName()).orNull();
-            } catch (ExecutionException e) {
-                throw new ServiceException.UnexpectedErrorException("loading branch metadata for '" + job.getFullName() + "'", e);
-            }
+            return job == null? null : Caches.BRANCH_METADATA.get(job.getFullName());
         }
     }
 
@@ -192,11 +186,7 @@ public class BranchImpl extends PipelineImpl {
         }
 
         public static PullRequest get(final Job job) {
-            try {
-                return Caches.PULL_REQUEST_METADATA.get(job.getFullName()).orNull();
-            } catch (ExecutionException e) {
-                throw new ServiceException.UnexpectedErrorException("loading pr metadata for '" + job.getFullName() + "'", e);
-            }
+            return Caches.PULL_REQUEST_METADATA.get(job.getFullName());
         }
     }
 }

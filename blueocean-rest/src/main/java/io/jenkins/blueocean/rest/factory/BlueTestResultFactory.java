@@ -1,21 +1,18 @@
 package io.jenkins.blueocean.rest.factory;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Run;
+import io.jenkins.blueocean.commons.IterableUtils;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
-import jenkins.model.Jenkins;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public abstract class BlueTestResultFactory implements ExtensionPoint {
 
@@ -33,7 +30,7 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
      */
     public static final class Result {
 
-        private static final Result NOT_FOUND = new Result(ImmutableList.<BlueTestResult>of(), null);
+        private static final Result NOT_FOUND = new Result(Collections.emptyList(), null);
 
         @Nullable
         public final Iterable<BlueTestResult> results;
@@ -79,21 +76,20 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
                         break;
                     case PASSED:
                         passed++;
-                        switch (result.getTestState()) {
-                            case FIXED:
-                                fixedTotal++;
-                                break;
+                        if ( result.getTestState() == BlueTestResult.State.FIXED )
+                        {
+                            fixedTotal++;
                         }
                         break;
                     case FAILED:
                         failed++;
-                        switch (result.getTestState()) {
-                            case REGRESSION:
-                                regressions++;
-                                break;
-                            default:
-                                existingFailedTotal++;
-                                break;
+                        if ( result.getTestState() == BlueTestResult.State.REGRESSION )
+                        {
+                            regressions++;
+                        }
+                        else
+                        {
+                            existingFailedTotal++;
                         }
                         break;
                 }
@@ -117,13 +113,13 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
     }
 
     public static Result resolve(Run<?,?> run, Reachable parent) {
-        Iterable<BlueTestResult> results = ImmutableList.of();
+        Iterable<BlueTestResult> results = new ArrayList<>(0);
         BlueTestSummary summary = new BlueTestSummary(0, 0, 0, 0, 0, 0, 0, //
                                                       parent == null ? null : parent.getLink());
         for (BlueTestResultFactory factory : allFactories()) {
             Result result = factory.getBlueTestResults(run, parent);
             if (result != null && result.results != null && result.summary != null) {
-                results = Iterables.concat(result.results, results);
+                results = IterableUtils.chainedIterable(result.results, results);
                 summary = summary.tally(result.summary);
             }
         }

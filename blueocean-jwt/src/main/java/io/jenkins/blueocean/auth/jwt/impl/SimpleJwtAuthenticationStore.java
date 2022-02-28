@@ -4,7 +4,7 @@ import hudson.Extension;
 import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStore;
 import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStoreFactory;
 import net.sf.json.JSONObject;
-import org.acegisecurity.Authentication;
+import org.springframework.security.core.Authentication;
 
 import java.util.Map;
 import java.util.UUID;

@@ -86,7 +86,7 @@ public class RunBundleWatches {
         System.out.println("Running in development mode, watching bundles...");
 
         int buildNumber = 0;
-        List<PluginWrapper> plugins = Jenkins.getInstance().pluginManager.getPlugins();;
+        List<PluginWrapper> plugins = Jenkins.get().pluginManager.getPlugins();;
         for (final PluginWrapper p : plugins) {
             try {
                 final File projectDir = findPluginWorkDir(new File(p.baseResourceURL.getPath()));

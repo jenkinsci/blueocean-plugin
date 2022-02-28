@@ -25,19 +25,17 @@ package io.jenkins.blueocean.service.embedded;
 
 import hudson.Extension;
 import hudson.model.User;
+import io.jenkins.blueocean.commons.IterableUtils;
 import io.jenkins.blueocean.commons.PageStatePreloader;
 import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
-import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.rest.UserImpl;
 import net.sf.json.JSONObject;
 
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.google.common.collect.Iterables;
 
 /**
  * Preload the user object for the active user.
@@ -65,7 +63,7 @@ public class UserStatePreloader extends PageStatePreloader {
     @Override
     public String getStateJson() {
 
-        BlueOrganization organization = Iterables.getFirst(OrganizationFactory.getInstance().list(), null);
+        BlueOrganization organization = IterableUtils.getFirst(OrganizationFactory.getInstance().list(), null);
 
         try {
             User currentUser = User.current();

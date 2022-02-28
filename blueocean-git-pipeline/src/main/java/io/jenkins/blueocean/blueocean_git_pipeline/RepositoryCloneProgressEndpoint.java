@@ -23,10 +23,10 @@
  */
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
-import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.util.HttpResponses;
 import io.jenkins.blueocean.RootRoutable;
+import io.jenkins.blueocean.commons.MapsHelper;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.WebMethod;
@@ -51,7 +51,7 @@ public class RepositoryCloneProgressEndpoint implements RootRoutable {
         if (progress == null) {
             return null;
         }
-        return HttpResponses.okJSON(ImmutableMap.of("progress", progress.getPercentComplete()));
+        return HttpResponses.okJSON(MapsHelper.of("progress", progress.getPercentComplete()));
     }
 
     @DELETE

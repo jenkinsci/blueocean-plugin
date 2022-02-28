@@ -8,6 +8,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ExportedBean
 public class ExportedPipelineStep extends ExportedPipelineFunction {
@@ -24,25 +25,21 @@ public class ExportedPipelineStep extends ExportedPipelineFunction {
      */
     @Exported
     public List<String> getProvidedContext() {
-        List<String> out = new ArrayList<String>();
-        for (Class<?> c : descriptor.getProvidedContext()) {
-            out.add(c.getName());
-        }
-        return out;
+        return descriptor.getProvidedContext()
+            .stream().map(Class::getName)
+            .collect(Collectors.toList());
     }
-    
+
     /**
      * The Java class names that this pipeline requires to be in context
      */
     @Exported
     public List<String> getRequiredContext() {
-        List<String> out = new ArrayList<String>();
-        for (Class<?> c : descriptor.getRequiredContext()) {
-            out.add(c.getName());
-        }
-        return out;
+        return descriptor.getRequiredContext()
+            .stream().map(Class::getName)
+            .collect(Collectors.toList());
     }
-    
+
     /**
      * Indicates this step wraps a block of other steps
      */
@@ -51,7 +48,7 @@ public class ExportedPipelineStep extends ExportedPipelineFunction {
     public boolean getIsBlockContainer() {
         return descriptor.takesImplicitBlockArgument();
     }
-    
+
     /**
      * Relative descriptor URL for this step
      */

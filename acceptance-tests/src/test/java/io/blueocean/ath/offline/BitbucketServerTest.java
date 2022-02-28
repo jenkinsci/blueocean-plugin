@@ -11,11 +11,12 @@ import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
 import io.jenkins.blueocean.util.HttpRequest;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 
@@ -23,7 +24,7 @@ import java.io.IOException;
 @RunWith(ATHJUnitRunner.class)
 public class BitbucketServerTest implements WebDriverMixin {
 
-    private static Logger logger = Logger.getLogger(BitbucketServerTest.class);
+    private static Logger logger = LoggerFactory.getLogger(BitbucketServerTest.class);
     private static final String ENDPOINT_URL = "http://127.0.0.1:7990";
     private static final String BB_PROJECT_KEY = "BLUE";
     private static final String BB_PROJECT_NAME = "BlueOcean";

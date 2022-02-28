@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.google.common.base.Charsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 
 /**
@@ -32,7 +32,7 @@ public class JsonConverter{
     }
 
     public static <T> T toJava(InputStream data, Class<T> type) {
-        return toJava(new InputStreamReader(data, Charsets.UTF_8), type);
+        return toJava(new InputStreamReader(data, StandardCharsets.UTF_8), type);
     }
 
     public static <T> T toJava(Reader data, Class<T> type) {

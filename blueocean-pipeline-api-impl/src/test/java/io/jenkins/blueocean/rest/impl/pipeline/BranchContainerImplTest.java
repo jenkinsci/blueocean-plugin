@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.ImmutableMap;
 import hudson.model.User;
+import io.jenkins.blueocean.commons.MapsHelper;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
@@ -55,13 +55,13 @@ public class BranchContainerImplTest extends PipelineBaseTest {
         new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/p/branches/feature2/favorite")
             .jwtToken(token)
-            .data(ImmutableMap.of("favorite", true))
+            .data(MapsHelper.of("favorite", true))
             .build(Map.class);
 
         new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/p/branches/feature4/favorite")
             .jwtToken(token)
-            .data(ImmutableMap.of("favorite", true))
+            .data(MapsHelper.of("favorite", true))
             .build(Map.class);
 
         List l = request().get("/organizations/jenkins/pipelines/p/branches/")

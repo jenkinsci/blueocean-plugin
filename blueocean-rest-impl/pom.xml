@@ -47,7 +47,6 @@
             <groupId>oro</groupId>
             <artifactId>oro</artifactId>
         </dependency>
-
         <!-- Test plugins -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -94,6 +93,12 @@
         <dependency>
             <groupId>com.github.ua-parser</groupId>
             <artifactId>uap-java</artifactId>
+            <exclusions>
+              <exclusion> <!-- from io.jenkins.plugins:snakeyaml-api -->
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

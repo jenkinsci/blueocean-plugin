@@ -6,13 +6,19 @@ import hudson.Extension;
 import hudson.Plugin;
 import hudson.model.User;
 import hudson.tasks.Mailer;
-import io.jenkins.blueocean.auth.jwt.*;
+
+import io.jenkins.blueocean.auth.jwt.JwtAuthenticationService;
+import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStore;
+import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStoreFactory;
+import io.jenkins.blueocean.auth.jwt.JwtToken;
+import io.jenkins.blueocean.auth.jwt.SigningPublicKey;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.QueryParameter;
+import org.springframework.security.core.Authentication;
+
 import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -50,7 +56,7 @@ public class JwtAuthenticationServiceImpl extends JwtAuthenticationService {
             expiryTime = expiryTimeInMins * 60;
         }
 
-        Authentication authentication = Jenkins.getAuthentication();
+        Authentication authentication = Jenkins.getAuthentication2();
 
         String userId = authentication.getName();
 
@@ -64,7 +70,7 @@ public class JwtAuthenticationServiceImpl extends JwtAuthenticationService {
             if(p!=null)
                 email = p.getAddress();
         }
-        Plugin plugin = Jenkins.getInstance().getPlugin("blueocean-jwt");
+        Plugin plugin = Jenkins.get().getPlugin("blueocean-jwt");
         String issuer = "blueocean-jwt:"+ ((plugin!=null) ? plugin.getWrapper().getVersion() : "");
 
         JwtToken jwtToken = new JwtToken();
@@ -85,7 +91,7 @@ public class JwtAuthenticationServiceImpl extends JwtAuthenticationService {
         userObject.put("fullName", fullName);
         userObject.put("email", email);
 
-        JwtAuthenticationStore authenticationStore = getJwtStore(authentication);
+        JwtAuthenticationStore authenticationStore = getJwtStore( authentication);
 
         authenticationStore.store(authentication, context);
 

@@ -9,10 +9,6 @@ import io.jenkins.blueocean.auth.jwt.JwtTokenVerifier;
 import io.jenkins.blueocean.auth.jwt.SigningPublicKey;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.providers.AbstractAuthenticationToken;
-import org.acegisecurity.userdetails.UserDetails;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
 import org.jose4j.jwt.NumericDate;
@@ -24,10 +20,14 @@ import org.jose4j.jwx.JsonWebStructure;
 import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.annotation.CheckForNull;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -42,8 +42,8 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenVerifierImpl.class);
 
     @Override
-    public Authentication verify(HttpServletRequest request) {
-        return  validate(request);
+    public Authentication verify( HttpServletRequest request) {
+        return validate(request);
     }
 
     /**
@@ -95,7 +95,7 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
 
                 String subject = claims.getSubject();
                 if(subject.equals("anonymous")) { //if anonymous, we do not bother checking expiration
-                    return Jenkins.ANONYMOUS;
+                    return Jenkins.ANONYMOUS2;
                 }else{
                     // If not anonymous user, get Authentication object associated with this claim
                     // We give a change to the authentication store to inspect the claims and if expired it might
@@ -153,20 +153,23 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
         return jwtAuthenticationStore;
     }
 
-    public static class JwtAuthentication extends AbstractAuthenticationToken{
+    public static class JwtAuthentication extends AbstractAuthenticationToken {
         private final String name;
-        private final GrantedAuthority[] grantedAuthorities;
 
         public JwtAuthentication(String subject) {
+            super(extractGrantedAuthority(subject));
+            this.name = subject;
+            super.setAuthenticated(true);
+        }
+
+        private static Collection<? extends GrantedAuthority> extractGrantedAuthority(String subject) {
             User user = User.get(subject, false, Collections.emptyMap());
             if (user == null) {
                 throw new ServiceException.UnauthorizedException("Invalid JWT token: subject " + subject + " not found");
             }
             //TODO: UserDetails call is expensive, encode it in token and create UserDetails from it
-            UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(user.getId());
-            this.grantedAuthorities = d.getAuthorities();
-            this.name = subject;
-            super.setAuthenticated(true);
+            UserDetails d = Jenkins.get().getSecurityRealm().loadUserByUsername2( user.getId());
+            return d.getAuthorities();
         }
 
         @Override
@@ -184,10 +187,5 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
             return name;
         }
 
-        @Override
-        public GrantedAuthority[] getAuthorities() {
-            //Fix for FB warning: EI_EXPOSE_REP
-            return Arrays.copyOf(grantedAuthorities, grantedAuthorities.length);
-        }
     }
 }

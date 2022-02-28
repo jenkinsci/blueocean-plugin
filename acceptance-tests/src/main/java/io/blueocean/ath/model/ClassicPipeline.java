@@ -1,18 +1,14 @@
 package io.blueocean.ath.model;
 
 
-import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import io.blueocean.ath.api.classic.ClassicJobApi;
-import io.blueocean.ath.sse.SSEEvents;
 import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 public class ClassicPipeline extends AbstractPipeline {
     @AssistedInject

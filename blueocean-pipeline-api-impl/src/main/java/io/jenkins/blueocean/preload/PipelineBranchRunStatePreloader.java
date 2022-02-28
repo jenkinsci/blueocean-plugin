@@ -23,6 +23,7 @@
  */
 package io.jenkins.blueocean.preload;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.Job;
@@ -34,7 +35,6 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,7 +54,7 @@ public class PipelineBranchRunStatePreloader extends RESTFetchPreloader {
     private static final Logger LOGGER = Logger.getLogger(PipelineBranchRunStatePreloader.class.getName());
 
     @Override
-    protected FetchData getFetchData(@Nonnull BlueUrlTokenizer blueUrl) {
+    protected FetchData getFetchData(@NonNull BlueUrlTokenizer blueUrl) {
         //
         // See class description.
         // We're only interested in e.g. /jenkins/blue/organizations/jenkins/ATH/detail/activateFolder/1/pipeline/
@@ -66,7 +66,7 @@ public class PipelineBranchRunStatePreloader extends RESTFetchPreloader {
             return null;
         }
 
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         String pipelineFullName = blueUrl.getPart(BlueUrlTokenizer.UrlPart.PIPELINE);
         String branchName = blueUrl.getPart(BlueUrlTokenizer.UrlPart.BRANCH);
         String runId = blueUrl.getPart(BlueUrlTokenizer.UrlPart.PIPELINE_RUN_DETAIL_ID);

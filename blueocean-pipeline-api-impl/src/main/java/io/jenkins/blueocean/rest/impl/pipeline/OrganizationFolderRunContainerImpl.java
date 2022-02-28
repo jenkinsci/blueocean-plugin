@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.ImmutableList;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Item;
@@ -13,6 +12,7 @@ import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import org.kohsuke.stapler.StaplerRequest;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -62,6 +62,6 @@ public class OrganizationFolderRunContainerImpl extends BlueRunContainer {
     @Override
     @Nonnull
     public Iterator<BlueRun> iterator() {
-        return ImmutableList.of((BlueRun)run).iterator();
+        return Collections.singleton((BlueRun)run).iterator();
     }
 }

@@ -23,6 +23,8 @@
  */
 package io.jenkins.blueocean.i18n;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.PluginWrapper;
 import hudson.util.HttpResponses;
@@ -35,19 +37,18 @@ import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -72,7 +73,7 @@ public class BlueI18n implements ApiRoutable {
     /**
      * Bundle cache.
      */
-    private Map<BundleParams, BundleCacheEntry> bundleCache = new ConcurrentHashMap<>();
+    private final Map<BundleParams, BundleCacheEntry> bundleCache = new ConcurrentHashMap<>();
 
     /**
      * {@inheritDoc}
@@ -207,7 +208,7 @@ public class BlueI18n implements ApiRoutable {
 
     @CheckForNull
     static PluginWrapper getPlugin(String pluginName) {
-        Jenkins jenkins = Jenkins.getInstance();
+        Jenkins jenkins = Jenkins.get();
         return jenkins.getPluginManager().getPlugin(pluginName);
     }
 
@@ -295,13 +296,13 @@ public class BlueI18n implements ApiRoutable {
             if (!bundleName.equals(that.bundleName)) {
                 return false;
             }
-            if (language != null ? !language.equals(that.language) : that.language != null) {
+            if ( !Objects.equals( language, that.language ) ) {
                 return false;
             }
-            if (country != null ? !country.equals(that.country) : that.country != null) {
+            if ( !Objects.equals( country, that.country ) ) {
                 return false;
             }
-            return variant != null ? variant.equals(that.variant) : that.variant == null;
+            return Objects.equals( variant, that.variant );
         }
 
         @Override
@@ -339,7 +340,7 @@ public class BlueI18n implements ApiRoutable {
 
     static class JSONObjectResponse implements HttpResponse {
 
-        private static final Charset UTF8 = Charset.forName("UTF-8");
+        private static final Charset UTF8 = StandardCharsets.UTF_8;
 
         private final JSONObject jsonObject = new JSONObject();
         private BundleCacheEntry bundleCacheEntry;
@@ -366,7 +367,7 @@ public class BlueI18n implements ApiRoutable {
          * {@inheritDoc}
          */
         @Override
-        public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
+        public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException {
             rsp.setStatus(statusCode);
             rsp.setContentType("application/json; charset=UTF-8");
             if (bundleCacheEntry != null) {
@@ -398,7 +399,7 @@ public class BlueI18n implements ApiRoutable {
         }
     }
 
-    private static @Nonnull String urlDecode(@Nonnull String pathToken) {
+    private static @NonNull String urlDecode(@NonNull String pathToken) {
         try {
             return URLDecoder.decode(pathToken, "UTF-8");
         } catch (UnsupportedEncodingException e) {

@@ -23,10 +23,10 @@
 
 package io.jenkins.blueocean.commons.stapler.export;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerResponse;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Type;
 import java.util.Stack;
 import java.io.Writer;
@@ -41,12 +41,12 @@ import java.beans.Introspector;
 final class XMLDataWriter implements DataWriter {
 
     private String name;
-    private final Stack<String> objectNames = new Stack<String>();
+    private final Stack<String> objectNames = new Stack<>();
     /**
      * Stack that keeps track of whether we are inside an array.
      * The top element represents the current state.
      */
-    private final Stack<Boolean> isArray = new Stack<Boolean>();
+    private final Stack<Boolean> isArray = new Stack<>();
     private final Writer out;
     private ExportConfig config;
     private String classAttr;
@@ -68,8 +68,8 @@ final class XMLDataWriter implements DataWriter {
         this(bean,rsp.getWriter(),config);
     }
 
-    @Override
-    public @Nonnull ExportConfig getExportConfig() {
+    @Override @NonNull
+    public ExportConfig getExportConfig() {
         return exportConfig;
     }
 

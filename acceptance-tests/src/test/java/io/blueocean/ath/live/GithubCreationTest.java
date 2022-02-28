@@ -13,21 +13,21 @@ import io.blueocean.ath.pages.blue.GithubCreationPage;
 import io.blueocean.ath.pages.blue.PullRequestsPage;
 import io.blueocean.ath.sse.SSEClientRule;
 import io.blueocean.ath.util.GithubHelper;
-import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kohsuke.github.GHContentUpdateResponse;
-
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import javax.inject.Inject;
 import java.io.IOException;
 
 @Login
 @RunWith(ATHJUnitRunner.class)
 public class GithubCreationTest {
-    private Logger logger = Logger.getLogger(GithubCreationTest.class);
+    private Logger logger = LoggerFactory.getLogger(GithubCreationTest.class);
 
     @Inject
     GithubCreationPage creationPage;

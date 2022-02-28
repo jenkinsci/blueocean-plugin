@@ -1,6 +1,6 @@
 package io.jenkins.blueocean.auth.jwt;
 
-import org.acegisecurity.Authentication;
+import org.springframework.security.core.Authentication;
 
 import java.util.Map;
 
@@ -22,7 +22,7 @@ public interface JwtAuthenticationStore{
      *
      * @return Authentication object, always non-null
      */
-    Authentication getAuthentication(Map<String,Object> claims);
+    Authentication getAuthentication( Map<String,Object> claims);
 
 
     /**

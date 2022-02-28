@@ -24,12 +24,13 @@
 package io.jenkins.blueocean.commons.stapler.export;
 
 import com.fasterxml.jackson.core.io.JsonStringEncoder;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.apache.commons.lang.StringEscapeUtils;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
 /**
  * JSON writer.
@@ -53,8 +54,8 @@ class JSONDataWriter implements DataWriter {
         indent = config.isPrettyPrint() ? 0 : -1;
     }
 
-    @Override
-    public @Nonnull ExportConfig getExportConfig() {
+    @Override @NonNull
+    public ExportConfig getExportConfig() {
         return config;
     }
 
@@ -147,7 +148,7 @@ class JSONDataWriter implements DataWriter {
     }
 
     @Override
-    public void type(Type expected, Class actual) throws IOException {
+    public void type(Type expected, Class<?> actual) throws IOException {
         classAttr = config.getClassAttribute().print(expected, actual);
     }
 
@@ -171,7 +172,6 @@ class JSONDataWriter implements DataWriter {
 
     private static final char[] INDENT = new char[32];
     static {
-        for (int i=0; i<INDENT.length; i++)
-            INDENT[i] = ' ';
+        Arrays.fill(INDENT, ' ');
     }
 }

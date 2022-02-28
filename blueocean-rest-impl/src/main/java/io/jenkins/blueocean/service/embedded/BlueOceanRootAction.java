@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded;
 import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Module;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
 import io.jenkins.blueocean.BlueOceanUI;
@@ -17,8 +18,6 @@ import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
-
-import javax.annotation.Nonnull;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -69,13 +68,13 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
              * @see Jenkins#getTarget()
              */
             Authentication a = Jenkins.getAuthentication();
-            if(!Jenkins.getInstance().getACL().hasPermission(a,Jenkins.READ)){
+            if(!Jenkins.get().getACL().hasPermission(a,Jenkins.READ)){
                 throw new ServiceException.ForbiddenException("Forbidden");
             }
         }else{
             //If user doesn't have overall Jenkins read permission then return 403, which results in classic UI redirecting
             // user to login page
-            Jenkins.getInstance().checkPermission(Jenkins.READ);
+            Jenkins.get().checkPermission(Jenkins.READ);
         }
 
         // frontend uses this to determine when to reload
@@ -98,19 +97,19 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
     public static class BlueOceanUIProviderImpl extends BlueOceanUIProvider {
         @Override
         public String getRootUrl() {
-            return Jenkins.getInstance().getRootUrl();
+            return Jenkins.get().getRootUrl();
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public String getUrlBasePrefix() {
             return URL_BASE;
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public String getLandingPagePath() {
-            BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(Jenkins.getInstance());
+            BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(Jenkins.get());
             String orgName = organization != null ? organization.getName() : "jenkins";
             return String.format("/organizations/%s/pipelines/", orgName);
         }

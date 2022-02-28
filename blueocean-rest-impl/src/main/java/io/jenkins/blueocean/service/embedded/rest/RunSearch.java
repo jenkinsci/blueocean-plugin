@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.collect.ImmutableList;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Run;
@@ -9,7 +8,6 @@ import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
-import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
@@ -30,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -60,7 +59,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
         boolean latestOnly = q.param("latestOnly", Boolean.class);
 
         if(pipeline != null){
-            TopLevelItem p = Jenkins.getActiveInstance().getItem(pipeline);
+            TopLevelItem p = Jenkins.get().getItem(pipeline);
             if(latestOnly){
                 BlueRun r = getLatestRun((Job)p);
                 if(r != null) {
@@ -84,9 +83,9 @@ public class RunSearch extends OmniSearch<BlueRun> {
         final List<BlueRun> runs = new ArrayList<>();
         Iterable<Job> pipelines;
         if(job != null){
-            pipelines = ImmutableList.of(job);
+            pipelines = Collections.singletonList(job);
         }else{
-            pipelines = Jenkins.getInstance().getItems(Job.class);
+            pipelines = Jenkins.get().getItems(Job.class);
         }
         for (Job p : pipelines) {
             RunList<? extends Run> runList = p.getBuilds();
@@ -107,9 +106,9 @@ public class RunSearch extends OmniSearch<BlueRun> {
         final List<BlueRun> runs = new ArrayList<>();
         Iterable<Job> pipelines;
         if(job != null){
-            pipelines = ImmutableList.of(job);
+            pipelines = Collections.singletonList(job);
         }else{
-            pipelines = Jenkins.getInstance().getItems(Job.class);
+            pipelines = Jenkins.get().getItems(Job.class);
         }
 
         for (Job p : pipelines) {
@@ -130,7 +129,8 @@ public class RunSearch extends OmniSearch<BlueRun> {
 
     public static final String COLLECT_THREADS_KEY = "blueocean.collectRuns.threads";
 
-    private static final int COLLECT_THREADS = Integer.getInteger( COLLECT_THREADS_KEY, 0 );
+    private static final int COLLECT_THREADS = Integer.getInteger( COLLECT_THREADS_KEY,
+                                                                   Runtime.getRuntime().availableProcessors() / 2 );
 
     private static List<BlueRun> collectRuns(Iterator<? extends Run> runIterator, final Link parent, int start, int limit){
         if (COLLECT_THREADS > 1) {
@@ -185,16 +185,16 @@ public class RunSearch extends OmniSearch<BlueRun> {
             return Collections.emptyList();
         }
         ExecutorService
-            executorService =  new ThreadPoolExecutor( n < COLLECT_THREADS? n : COLLECT_THREADS,
-                                                       n < COLLECT_THREADS? n : COLLECT_THREADS,
+            executorService =  new ThreadPoolExecutor( Math.min(n, COLLECT_THREADS),
+                                                       Math.min(n, COLLECT_THREADS),
                                                        60L, TimeUnit.MILLISECONDS,
-                                                       new ArrayBlockingQueue<>( n ));
-        ExecutorCompletionService<BlueRun> ecs = new ExecutorCompletionService( executorService );
+                                                       new ArrayBlockingQueue<>(n));
+        ExecutorCompletionService<BlueRun> ecs = new ExecutorCompletionService<>(executorService);
         for(Callable<BlueRun> callable : callables) {
             ecs.submit( callable );
         }
-        LOGGER.debug( "submit done size:{}", n );
-        List<BlueRun> runs = new ArrayList<>( n );
+        LOGGER.debug("submit done size:{}", n);
+        List<BlueRun> runs = new ArrayList<>(n);
         try
         {
             for (int i = 0; i < n; ++i) {
@@ -203,14 +203,12 @@ public class RunSearch extends OmniSearch<BlueRun> {
                     runs.add( r );
                 }
             }
-        } catch ( InterruptedException e ) {
-            LOGGER.error( e.getMessage(), e );
-        } catch ( ExecutionException e ) {
-            LOGGER.error( e.getMessage(), e );
+        } catch (InterruptedException | ExecutionException e) {
+            LOGGER.error(e.getMessage(), e);
         } finally {
             executorService.shutdownNow();
         }
-        LOGGER.debug( "runs found:{}", runs.size() );
+        LOGGER.debug("runs found:{}", runs.size());
         return runs;
     }
 

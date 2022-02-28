@@ -1,11 +1,11 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.HttpResponse;
 import hudson.model.Item;
 import hudson.model.User;
 import hudson.security.GlobalMatrixAuthorizationStrategy;
 import hudson.security.HudsonPrivateSecurityRealm;
+import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import jenkins.model.Jenkins;
 import org.junit.Before;
@@ -46,7 +46,7 @@ public class GithubServerSecuredTest
     public void createAndListFailAnonymous() throws Exception {
         HttpResponse<String> response = request()
             .crumb( crumb )
-            .data(ImmutableMap.of(
+            .data(MapsHelper.of(
                 "name", "My Server",
                 "apiUrl", "https://foo.com/git/"
             ))
@@ -61,7 +61,7 @@ public class GithubServerSecuredTest
         HttpResponse<String> response = request()
             .crumb( crumb )
             .jwtToken( getJwtToken( j.jenkins, readUser.getId(), "pacific_ale") )
-            .data(ImmutableMap.of(
+            .data(MapsHelper.of(
                 "name", "My Server",
                 "apiUrl", "https://foo.com/git/"
             ))
@@ -78,7 +78,7 @@ public class GithubServerSecuredTest
         HttpResponse<String> response = request()
             .crumb( crumb )
             .jwtToken( getJwtToken( j.jenkins, writeUser.getId(), "pale_ale") )
-            .data(ImmutableMap.of(
+            .data(MapsHelper.of(
                 "name", "",
                 "apiUrl", "https://foo.com/git/"
             ))

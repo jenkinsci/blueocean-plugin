@@ -10,10 +10,11 @@ import io.blueocean.ath.pages.blue.ActivityPage;
 import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.sse.SSEClientRule;
 import io.blueocean.ath.sse.SSEEvents;
-import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -22,7 +23,7 @@ import java.io.IOException;
  * @author cliffmeyers
  */
 public class FavoritesNavigationTest extends AbstractFavoritesTest {
-    private static final Logger logger = Logger.getLogger(FavoritesNavigationTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FavoritesNavigationTest.class);
 
     @Inject @Rule
     public SSEClientRule sseClient;
@@ -35,7 +36,7 @@ public class FavoritesNavigationTest extends AbstractFavoritesTest {
 
     @Override
     protected Logger getLogger() {
-        return logger;
+        return LOGGER;
     }
 
     @Test
@@ -87,7 +88,8 @@ public class FavoritesNavigationTest extends AbstractFavoritesTest {
 
         String jobName = "navigation-multibranch";
         MultiBranchPipeline pipeline = multibranchFactory.pipeline(FOLDER, jobName).createPipeline(git);
-        String fullName = pipeline.getFullName();
+        String fullName = FOLDER.getPath() + "/" + jobName;
+        sseClient.untilEvents(SSEEvents.activityComplete(fullName));
 
         // the basics
         addAsFavorite(pipeline);

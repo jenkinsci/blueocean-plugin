@@ -1,23 +1,14 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterators;
 import hudson.Extension;
-import hudson.Functions;
-import hudson.Util;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueArtifactFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueArtifact;
-import org.kohsuke.stapler.Stapler;
-
-import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ArtifactImpl extends BlueArtifact {
     final private Run run;
@@ -63,12 +54,8 @@ public class ArtifactImpl extends BlueArtifact {
         @Override
         public Collection<BlueArtifact> getArtifacts(final Run<?, ?> run, final Reachable parent) {
             // TODO: we need to figure out if calling run.getArtifacts() is expensive or not
-            return Collections2.transform(run.getArtifacts(), new Function<Run.Artifact, BlueArtifact>() {
-                @Override
-                public BlueArtifact apply(Run.Artifact artifact) {
-                    return new ArtifactImpl(run, artifact, parent.getLink());
-                }
-            });
+            return run.getArtifacts().stream().map((Function<Run.Artifact, BlueArtifact>) artifact -> new ArtifactImpl( run, artifact, parent.getLink())).
+                collect(Collectors.toList());
         }
     }
 }

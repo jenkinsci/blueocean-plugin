@@ -110,7 +110,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         private OrganizationImpl instance;
 
         public TestOrganizationFactoryImpl() throws IOException {
-            Folder f = Jenkins.getInstance().createProject(Folder.class, "CustomOrg");
+            Folder f = Jenkins.get().createProject(Folder.class, "CustomOrg");
             instance = new OrganizationImpl("custom", f);
         }
 
@@ -128,7 +128,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
 
         @Override
         public Collection<BlueOrganization> list() {
-            return Collections.singleton((BlueOrganization) instance);
+            return Collections.singleton(instance);
         }
 
         @Override

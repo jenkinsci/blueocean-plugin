@@ -17,7 +17,7 @@ public class Slf4jTypeListener implements TypeListener{
         for (Field field : iTypeLiteral.getRawType().getDeclaredFields()) {
             if (field.getType() == Logger.class
                 && field.isAnnotationPresent(InjectLogger.class)) {
-                iTypeEncounter.register(new Slf4jMembersInjector<I>(field));
+                iTypeEncounter.register(new Slf4jMembersInjector<>(field));
             }
         }
     }
