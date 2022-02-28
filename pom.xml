@@ -419,7 +419,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-branch-source</artifactId>
-            <version>2.6.0</version>
+            <version>1577.v83564088883f</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
