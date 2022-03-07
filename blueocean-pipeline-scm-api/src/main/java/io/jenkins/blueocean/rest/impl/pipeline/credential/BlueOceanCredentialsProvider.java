@@ -24,6 +24,7 @@ import hudson.util.ListBoxModel;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.pipeline.credential.Messages;
 import jenkins.model.Jenkins;
+import jenkins.util.SystemProperties;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
@@ -68,12 +69,25 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
         return getCredentials(type, itemGroup, authentication, Collections.emptyList());
     }
 
+    private static boolean IsSystemPropertyEnabled() {
+        return SystemProperties.getBoolean( BlueOceanCredentialsProvider.class.getName() + ".enabled" );
+    }
+
+    @Override
+    public boolean isEnabled(Object context)
+    {
+        return IsSystemPropertyEnabled() && super.isEnabled(context);
+    }
+
     @Nonnull
     public <C extends Credentials> List<C> getCredentials(@Nonnull final Class<C> type,
                                                           @Nullable ItemGroup itemGroup,
                                                           @Nullable
                                                               Authentication authentication,
                                                           @Nonnull List<DomainRequirement> domainRequirements) {
+        if (!IsSystemPropertyEnabled()) {
+            return Collections.emptyList();
+        }
         final List<C> result = new ArrayList<>();
         final FolderPropertyImpl prop = propertyOf(itemGroup);
         if (prop != null && prop.domain.test(domainRequirements)) {
@@ -99,7 +113,6 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
         return result;
     }
 
-
     @Nonnull
     @Override
     public <C extends IdCredentials> ListBoxModel getCredentialIds(@Nonnull Class<C> type,
@@ -107,6 +120,9 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
                                                                    @Nullable Authentication authentication,
                                                                    @Nonnull List<DomainRequirement> domainRequirements,
                                                                    @Nonnull CredentialsMatcher matcher) {
+        if (!IsSystemPropertyEnabled()) {
+            return new ListBoxModel();
+        }
         ListBoxModel result = new ListBoxModel();
         FolderPropertyImpl prop = propertyOf(itemGroup);
         if (prop != null && prop.domain.test(domainRequirements)) {
@@ -123,6 +139,9 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
 
     @Override
     public CredentialsStore getStore(@CheckForNull ModelObject object) {
+        if (!IsSystemPropertyEnabled()) {
+            return null;
+        }
         FolderPropertyImpl property = propertyOf(object);
         return property != null ? property.getStore() : null;
     }
@@ -286,6 +305,9 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
             @Nonnull
             @Override
             public List<Credentials> getCredentials(@Nonnull Domain domain) {
+                if(!IsSystemPropertyEnabled()) {
+                    return Collections.emptyList();
+                }
                 final List<Credentials> result = new ArrayList<>(1);
                 if (domain.equals(FolderPropertyImpl.this.domain)) {
                     final User proxyUser = User.get(getUser(), false, Collections.emptyMap());
