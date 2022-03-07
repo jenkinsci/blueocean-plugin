@@ -24,6 +24,10 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.CredentialsScope;
+import com.cloudbees.plugins.credentials.CredentialsStore;
+import com.cloudbees.plugins.credentials.SystemCredentialsProvider;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;
 import hudson.model.User;
@@ -31,12 +35,16 @@ import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.ssh.UserSSHKeyManager;
 import io.jenkins.blueocean.test.ssh.SSHServer;
+import jenkins.model.Jenkins;
+import jenkins.plugins.git.AbstractGitSCMSource;
+import jenkins.plugins.git.GitSCMSource;
 import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.impl.mock.AbstractSampleDVCSRepoRule;
 import jenkins.scm.impl.mock.AbstractSampleRepoRule;
 import org.apache.commons.io.FileUtils;
 import org.apache.sshd.common.util.OsUtils;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -52,7 +60,9 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
@@ -82,6 +92,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
     @Override
     public void setup() throws Exception {
         super.setup();
+        setupUserCredentials();
         setupScm();
     }
 
@@ -92,6 +103,11 @@ public class GitReadSaveTest extends PipelineBaseTest {
     private static final String masterPipelineScript = "pipeline { stage('Build 1') { steps { echo 'build' } } }";
     private static final String branchPipelineScript = "pipeline { stage('Build 2') { steps { echo 'build' } } }";
     private static final String newPipelineScript = "pipeline { stage('Build 3') { steps { echo 'build' } } }";
+
+    private void setupUserCredentials() throws Exception {
+        User user = login();
+        UserSSHKeyManager.getOrCreate(user);
+    }
 
     private void setupScm() throws Exception {
         // create git repo
@@ -330,6 +346,36 @@ public class GitReadSaveTest extends PipelineBaseTest {
                 )).build(Map.class);
 
         assertEquals(jobName, r.get("name"));
+
+        // here we have an automatic ssh key authz being created for the user
+        // we copy this credentials at system level and tell the job to use it
+        BasicSSHUserPrivateKey sshUserPrivateKey = UserSSHKeyManager.getOrCreate(user);
+
+        BasicSSHUserPrivateKey.DirectEntryPrivateKeySource keySource =
+            new BasicSSHUserPrivateKey.DirectEntryPrivateKeySource(sshUserPrivateKey.getPrivateKey());
+        String id = UUID.randomUUID().toString();
+        BasicSSHUserPrivateKey key = new BasicSSHUserPrivateKey( CredentialsScope.SYSTEM, id, user.getId(), keySource,
+                                                                 null, id);
+
+
+        Iterable<CredentialsStore> stores = CredentialsProvider.lookupStores(Jenkins.get());
+        stores.forEach( credentialsStore -> {
+            if (credentialsStore instanceof SystemCredentialsProvider.StoreImpl) {
+                SystemCredentialsProvider.StoreImpl sysStore = (SystemCredentialsProvider.StoreImpl)credentialsStore;
+                try {
+                    sysStore.addCredentials(null, key);
+                } catch (IOException e) {
+                    throw new RuntimeException(e.getMessage(), e);
+                }
+            }
+        });
+
+        WorkflowMultiBranchProject item = (WorkflowMultiBranchProject) Jenkins.get().getItem( jobName);
+        item.getSCMSources().stream().forEach( scmSource -> {
+            String credId = ((AbstractGitSCMSource)scmSource).getCredentialsId();
+            LOGGER.debug( "credId: {}", credId );
+            ((GitSCMSource)scmSource).setCredentialsId(key.getId());
+        });
 
         String urlJobPrefix = "/organizations/" + getOrgName() + "/pipelines/" + jobName;
 

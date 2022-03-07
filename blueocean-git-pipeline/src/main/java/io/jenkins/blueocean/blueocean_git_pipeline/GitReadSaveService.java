@@ -23,11 +23,20 @@
  */
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
+import com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey;
+import com.cloudbees.plugins.credentials.CredentialsMatchers;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.CredentialsScope;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
+import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.User;
 import hudson.remoting.Base64;
+import hudson.security.ACL;
+import hudson.security.ACLContext;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.ScmContentProvider;
@@ -35,10 +44,13 @@ import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequire
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import javax.annotation.Nonnull;
 
+import io.jenkins.blueocean.ssh.UserSSHKeyManager;
 import jenkins.branch.MultiBranchProject;
+import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
 import net.sf.json.JSONObject;
@@ -105,7 +117,7 @@ public class GitReadSaveService extends ScmContentProvider {
 
     static GitReadSaveRequest makeSaveRequest(
         Item item, String branch, String commitMessage,
-        String sourceBranch, String filePath, byte[] contents) {
+        String sourceBranch, String filePath, byte[] contents, User user) {
         String defaultBranch = "master";
         GitSCMSource gitSource = null;
         if (item instanceof MultiBranchProject<?, ?>) {
@@ -115,6 +127,21 @@ public class GitReadSaveService extends ScmContentProvider {
                     gitSource = (GitSCMSource) s;
                 }
             }
+        }
+        if (gitSource != null) {
+            // this part is only used for authenticated user and we do not expose anything
+            //  as this has already been created when using the wizard
+            gitSource = new GitSCMSource(gitSource.getRemote()) {
+                @Override
+                protected StandardUsernameCredentials getCredentials() {
+                    User current = User.current();
+                    if (current == null) {
+                        return super.getCredentials();
+                    } else {
+                        return UserSSHKeyManager.getOrCreate(current);
+                    }
+                }
+            };
         }
 
         return new GitBareRepoReadSaveRequest(
@@ -135,7 +162,8 @@ public class GitReadSaveService extends ScmContentProvider {
                                req.getParameter("commitMessage"),
                                ObjectUtils.defaultIfNull(req.getParameter("sourceBranch"), branch),
                                req.getParameter("path"),
-                               Base64.decode(req.getParameter("contents"))
+                               Base64.decode(req.getParameter("contents")),
+                               User.current()
         );
     }
 
@@ -147,7 +175,8 @@ public class GitReadSaveService extends ScmContentProvider {
                                content.getString("message"),
                                content.has("sourceBranch") ? content.getString("sourceBranch") : branch,
                                content.getString("path"),
-                               Base64.decode(content.getString("base64Data"))
+                               Base64.decode(content.getString("base64Data")),
+                               User.current()
         );
     }
 
@@ -165,7 +194,8 @@ public class GitReadSaveService extends ScmContentProvider {
             final byte[] reqData = r.read();
             String encoded = Base64.encode(reqData);
 
-            final GitContent content = new GitContent(r.filePath, user.getId(), r.gitSource.getRemote(), r.filePath, 0, "sha", encoded, "", r.branch, r.sourceBranch, true, "");
+            final GitContent content = new GitContent(r.filePath, user.getId(), r.gitSource.getRemote(), r.filePath, 0,
+                                                      "sha", encoded, "", r.branch, r.sourceBranch, true, "");
             final GitFile gitFile = new GitFile(content);
             return gitFile;
         } catch (ServiceException.UnauthorizedException e) {
