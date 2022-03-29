@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.25</version>
+    <version>4.38</version>
     <relativePath />
   </parent>
 
@@ -33,7 +33,7 @@
         when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions
         and  acceptance-tests/runner/scripts/args.sh
     -->
-    <jenkins.version>2.277.4</jenkins.version>
+    <jenkins.version>2.332.1</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.12.0</frontend-version>
     <node.version>10.13.0</node.version>
@@ -272,8 +272,8 @@
 
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
-            <artifactId>bom-2.277.x</artifactId>
-            <version>984.vb5eaac999a7e</version>
+            <artifactId>bom-2.332.x</artifactId>
+            <version>1210.vcd41f6657f03</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>
