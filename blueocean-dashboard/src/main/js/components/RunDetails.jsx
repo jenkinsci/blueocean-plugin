@@ -57,11 +57,14 @@ function getTestSummaryUrl(runDetails) {
 class RunDetails extends Component {
     constructor(props) {
         super(props);
-        this.state = { isVisible: true };
+        this.state = { isVisible: true, actions: [] };
     }
 
     componentWillMount() {
         this._fetchRun(this.props);
+        Extensions.store.getExtensions(['jenkins.run.actions'], Extensions.Utils.sortByOrdinal, (actions = []) => {
+            this.setState({ actions });
+        });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -144,7 +147,7 @@ class RunDetails extends Component {
 
         const { router, location, params } = this.context;
         const { pipeline, setTitle, t, locale } = this.props;
-        const { isVisible } = this.state;
+        const { isVisible, actions } = this.state;
 
         if (!run || !pipeline) {
             this.props.setTitle(translate('common.pager.loading', { defaultValue: 'Loading...' }));
@@ -166,30 +169,21 @@ class RunDetails extends Component {
 
         const base = { base: baseUrl };
 
-        const failureCount = Math.min(99, (testSummary && parseInt(testSummary.failed)) || 0);
-        const testsBadge = failureCount > 0 && <div className="TabBadgeIcon">{failureCount}</div>;
-
         const tabs = [
             <TabLink to="/pipeline" {...base}>
                 {t('rundetail.header.tab.pipeline', {
                     defaultValue: 'Pipeline',
                 })}
             </TabLink>,
-            <TabLink to="/changes" {...base}>
-                {t('rundetail.header.tab.changes', {
-                    defaultValue: 'Changes',
-                })}
-            </TabLink>,
-            <TabLink to="/tests" {...base}>
-                {t('rundetail.header.tab.tests', { defaultValue: 'Tests' })}
-                {testsBadge}
-            </TabLink>,
-            <TabLink to="/artifacts" {...base}>
-                {t('rundetail.header.tab.artifacts', {
-                    defaultValue: 'Artifacts',
-                })}
-            </TabLink>,
         ];
+
+        actions.map(descriptor => {
+            const action = new descriptor({pipeline, run: currentRun});
+            const badge = action.notification && <div className="TabBadgeIcon">{ action.notification }</div>;
+            tabs.push(
+                <TabLink to={'/' + action.name} { ...base }>{action.title}{badge}</TabLink>
+            );
+        });
 
         const iconButtons = [
             <ReplayButton className="icon-button dark" runnable={this.props.pipeline} latestRun={currentRun} onNavigation={switchRunDetails} autoNavigate />,
