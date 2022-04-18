@@ -25,10 +25,9 @@
                 </includes>
             </resource>
             <resource>
-                <directory>src/main/resources/io/jenkins/blueocean</directory>
-                <targetPath>io/jenkins/blueocean</targetPath>
+                <directory>src/main/resources</directory>
                 <includes>
-                    <include>.adjunct</include>
+                    <include>**/*</include>
                 </includes>
             </resource>
             <resource>
