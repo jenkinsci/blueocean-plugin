@@ -22,6 +22,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
+import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.junit.After;
 import org.junit.Rule;
@@ -139,7 +140,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .crumb(this.crumb)
-                .put("/organizations/" + getOrgName() + "/scm/github/validate/?apiUrl="+githubApiUrl)
+                .post("/organizations/" + getOrgName() + "/scm/github/validate/?apiUrl=" + githubApiUrl)
                 .build(Map.class);
         String credentialId = (String) r.get("credentialId");
         assertEquals(GithubScm.ID, credentialId);
@@ -155,11 +156,32 @@ public abstract class GithubMockBase extends PipelineBaseTest {
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
             .crumb( this.crumb )
-            .put("/organizations/" + getOrgName() + "/scm/github-enterprise/validate/?apiUrl="+githubApiUrl)
+            .post("/organizations/" + getOrgName() + "/scm/github-enterprise/validate/?apiUrl="+githubApiUrl)
             .build(Map.class);
         String credentialId = (String) r.get("credentialId");
         assertEquals(GithubCredentialUtils.computeCredentialId(null, GithubEnterpriseScm.ID, githubApiUrl), credentialId);
         return credentialId;
+    }
+
+    protected void createCredentialWithId(String jwt, String credentialId) {
+        createCredentialWithIdForOrg(jwt, credentialId, "jenkins");
+    }
+
+    protected void createCredentialWithIdForOrg(String jwt, String credentialId, String orgName) {
+        request()
+            .jwtToken(jwt)
+            .crumb(crumb)
+            .data(MapsHelper.of("credentials", new MapsHelper.Builder()
+                .put("scope", "USER")
+                .put("id", credentialId)
+                .put("username", "username")
+                .put("password", "password")
+                .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
+                .put("$class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
+                .build()))
+            .post("/organizations/" + orgName + "/credentials/user/")
+            .status(201)
+            .build(JSONObject.class);
     }
 
     /**

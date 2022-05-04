@@ -233,6 +233,7 @@ public class GitScm extends AbstractScm {
         if (user == null) {
             throw new ServiceException.UnauthorizedException("Not authenticated");
         }
+        checkPermission();
 
         // --[ Get credential id from request or create from repo url ]----------------------------------------
 

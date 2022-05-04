@@ -233,7 +233,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
             .status(200)
             .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
-            .put("/organizations/" + getOrgName() + "/scm/git/validate/")
+            .post("/organizations/" + getOrgName() + "/scm/git/validate/")
             .data(MapsHelper.of(
                 "repositoryUrl", remote,
                 "credentialId", UserSSHKeyManager.getOrCreate(bob).getId()
@@ -263,7 +263,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
             .status(200)
             .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
-            .put("/organizations/" + getOrgName() + "/scm/git/validate/")
+            .post("/organizations/" + getOrgName() + "/scm/git/validate/")
             .data(MapsHelper.of(
                 "pipeline", MapsHelper.of("fullName", jobName),
                 "credentialId", UserSSHKeyManager.getOrCreate(bob).getId()
@@ -272,25 +272,25 @@ public class GitReadSaveTest extends PipelineBaseTest {
         User alice = login("alice", "Alice Cooper", "alice@jenkins-ci.org");
 
         // Test alice fails
-        r = new RequestBuilder(baseUrl)
+        new RequestBuilder(baseUrl)
             .status(428)
             .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
-            .put("/organizations/" + getOrgName() + "/scm/git/validate/")
+            .post("/organizations/" + getOrgName() + "/scm/git/validate/")
             .data(MapsHelper.of(
                 "repositoryUrl", remote,
                 "credentialId", UserSSHKeyManager.getOrCreate(alice).getId()
-            )).build(Map.class);
+            )).build(String.class);
 
-        r = new RequestBuilder(baseUrl)
+        new RequestBuilder(baseUrl)
             .status(428)
             .crumb( crumb )
             .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
-            .put("/organizations/" + getOrgName() + "/scm/git/validate/")
+            .post("/organizations/" + getOrgName() + "/scm/git/validate/")
             .data(MapsHelper.of(
                 "pipeline", MapsHelper.of("fullName", jobName),
                 "credentialId", UserSSHKeyManager.getOrCreate(alice).getId()
-            )).build(Map.class);
+            )).build(String.class);
     }
 
     @Test

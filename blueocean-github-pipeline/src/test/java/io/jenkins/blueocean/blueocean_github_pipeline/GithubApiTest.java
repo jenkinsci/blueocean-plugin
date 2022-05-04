@@ -38,9 +38,10 @@ public class GithubApiTest extends GithubMockBase {
 
         //now that there is github credentials setup, calling scm api to get credential should simply return that.
         Map r = new RequestBuilder(baseUrl)
+                .crumb(crumb)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/?apiUrl="+githubApiUrl)
+                .post("/organizations/jenkins/scm/github/?apiUrl="+githubApiUrl)
                 .build(Map.class);
 
         assertEquals("github", r.get("credentialId"));
@@ -50,8 +51,9 @@ public class GithubApiTest extends GithubMockBase {
         r = new RequestBuilder(baseUrl)
                 .data(MapsHelper.of("accessToken", accessToken))
                 .status(200)
+                .crumb(crumb)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/jenkins/scm/github/validate/?apiUrl="+githubApiUrl)
+                .post("/organizations/jenkins/scm/github/validate/?apiUrl="+githubApiUrl)
                 .build(Map.class);
 
         assertEquals("github", r.get("credentialId"));
@@ -67,9 +69,10 @@ public class GithubApiTest extends GithubMockBase {
         );
 
         Map r = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .status(428)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .get("/organizations/jenkins/scm/github/?apiUrl="+githubApiUrl)
+            .post("/organizations/jenkins/scm/github/?apiUrl="+githubApiUrl)
             .build(Map.class);
 
         assertEquals("Invalid accessToken", r.get("message").toString());
@@ -85,9 +88,10 @@ public class GithubApiTest extends GithubMockBase {
         );
 
         Map r = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .status(428)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .get("/organizations/jenkins/scm/github/?apiUrl="+githubApiUrl)
+            .post("/organizations/jenkins/scm/github/?apiUrl="+githubApiUrl)
             .build(Map.class);
 
         assertTrue(r.get("message").toString().contains("missing scopes"));
@@ -98,17 +102,19 @@ public class GithubApiTest extends GithubMockBase {
         String credentialId = createGithubCredential(user);
 
         List l = new RequestBuilder(baseUrl)
+                .crumb(crumb)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/organizations/?credentialId=" + credentialId+"&apiUrl="+githubApiUrl)
+                .post("/organizations/jenkins/scm/github/organizations/?credentialId=" + credentialId+"&apiUrl="+githubApiUrl)
                 .build(List.class);
 
         Assert.assertTrue(l.size() > 0);
 
         Map resp = new RequestBuilder(baseUrl)
+                .crumb(crumb)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/?pageSize=10&page=1&apiUrl="+githubApiUrl)
+                .post("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/?pageSize=10&page=1&apiUrl="+githubApiUrl)
                 .build(Map.class);
 
         Map repos = (Map) resp.get("repositories");
@@ -118,9 +124,10 @@ public class GithubApiTest extends GithubMockBase {
         assertTrue(repoItems.size() > 0);
 
         resp = new RequestBuilder(baseUrl)
+                .crumb(crumb)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/RunMyProcess-task/?apiUrl="+githubApiUrl)
+                .post("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/RunMyProcess-task/?apiUrl="+githubApiUrl)
                 .build(Map.class);
 
         assertEquals("RunMyProcess-task", resp.get("name"));

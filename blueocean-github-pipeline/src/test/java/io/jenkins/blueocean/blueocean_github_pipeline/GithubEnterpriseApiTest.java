@@ -43,10 +43,11 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
     @Test
     public void validateGithubTokenApiUrlRequired() throws UnirestException {
         Map r = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .data(MapsHelper.of("accessToken", accessToken))
             .status(400)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .put("/organizations/jenkins/scm/github-enterprise/validate")
+            .post("/organizations/jenkins/scm/github-enterprise/validate")
             .build(Map.class);
         assertEquals(400, r.get("code"));
     }
@@ -57,9 +58,10 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
 
         //now that there is github credentials setup, calling scm api to get credential should simply return that.
         Map r = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .get("/organizations/jenkins/scm/github-enterprise/?apiUrl=" + githubApiUrl)
+            .post("/organizations/jenkins/scm/github-enterprise/?apiUrl=" + githubApiUrl)
             .build(Map.class);
 
         assertEquals(GithubCredentialUtils.computeCredentialId(null, GithubEnterpriseScm.ID, githubApiUrl), r.get("credentialId"));
@@ -70,9 +72,10 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
     public void fetchExistingCredentialApiUrlRequired() throws IOException, UnirestException {
         // fetch the github-enterprise endpoint without specifying apirUrl
         Map r = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .status(400)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .get("/organizations/jenkins/scm/github-enterprise/")
+            .post("/organizations/jenkins/scm/github-enterprise/")
             .build(Map.class);
         assertEquals(400, r.get("code"));
     }
@@ -86,9 +89,10 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
 
         // look up credential for apiUrl that's invalid
         Map r = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .get("/organizations/jenkins/scm/github-enterprise/?apiUrl="+bogusUrl)
+            .post("/organizations/jenkins/scm/github-enterprise/?apiUrl="+bogusUrl)
             .build(Map.class);
 
         assertNull(r.get("credentialId"));
@@ -105,9 +109,10 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
         );
 
         Map r = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .status(428)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .get("/organizations/jenkins/scm/github-enterprise/?apiUrl="+githubApiUrl)
+            .post("/organizations/jenkins/scm/github-enterprise/?apiUrl="+githubApiUrl)
             .build(Map.class);
 
         assertEquals("Invalid accessToken", r.get("message").toString());
@@ -123,9 +128,10 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
         );
 
         Map r = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .status(428)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .get("/organizations/jenkins/scm/github-enterprise/?apiUrl="+githubApiUrl)
+            .post("/organizations/jenkins/scm/github-enterprise/?apiUrl="+githubApiUrl)
             .build(Map.class);
 
         assertTrue(r.get("message").toString().contains("missing scopes"));
@@ -136,9 +142,10 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
         String credentialId = createGithubEnterpriseCredential();
 
         List l = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .get("/organizations/jenkins/scm/github-enterprise/organizations/?credentialId="+credentialId+"&apiUrl="+githubApiUrl)
+            .post("/organizations/jenkins/scm/github-enterprise/organizations/?credentialId="+credentialId+"&apiUrl="+githubApiUrl)
             .build(List.class);
 
         Assert.assertTrue(l.size() > 0);
@@ -148,9 +155,10 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
         }
 
         Map resp = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .get("/organizations/jenkins/scm/github-enterprise/organizations/CloudBees-community/repositories/?pageSize=10&page=1&apiUrl="+githubApiUrl)
+            .post("/organizations/jenkins/scm/github-enterprise/organizations/CloudBees-community/repositories/?pageSize=10&page=1&apiUrl="+githubApiUrl)
             .build(Map.class);
 
         Map repos = (Map) resp.get("repositories");

@@ -47,7 +47,14 @@ export class BbCreationApi {
             false
         );
 
-        return this._fetch(orgsUrl)
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+
+        return this._fetch(orgsUrl, { fetchOptions })
             .then(orgs => capabilityAugmenter.augmentCapabilities(orgs))
             .then(orgs => this._listOrganizationsSuccess(orgs, credentialId, apiUrl, pagedOrgsStart), error => this._listOrganizationsFailure(error));
     }
@@ -88,8 +95,15 @@ export class BbCreationApi {
             `${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/organizations/${organizationName}/repositories/` +
                 `?credentialId=${credentialId}&pageNumber=${pageNumber}&pageSize=${pageSize}&apiUrl=${apiUrl}`
         );
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
 
-        return this._fetch(reposUrl).then(response => capabilityAugmenter.augmentCapabilities(response));
+        return this._fetch(reposUrl, { fetchOptions })
+            .then(response => capabilityAugmenter.augmentCapabilities(response));
     }
 
     createMbp(credentialId, scmId, apiUrl, itemName, bbOrganizationKey, repoName, creatorClass) {
