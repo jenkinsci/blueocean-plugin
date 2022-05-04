@@ -207,13 +207,13 @@ public abstract class PipelineBaseTest{
         }
     }
 
-    protected String post(String path, String body, String contentType, int expectedStatus){
+    protected String post(String path, Object body, String contentType, int expectedStatus){
         assert path.startsWith("/");
         try {
             HttpResponse<String> response = Unirest.post(getBaseUrl(path))
                 .header("Content-Type",contentType)
-                .header("Accept-Encoding","")
                 .header("Authorization", "Bearer "+jwtToken)
+                .header(crumb.field, crumb.value)
                 .body(body).asObject(String.class);
             Assert.assertEquals(expectedStatus, response.getStatus());
             return response.getBody();

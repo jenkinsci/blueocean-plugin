@@ -36,18 +36,20 @@ public class BitbucketServerScmTest extends BbServerWireMock {
     @Test
     public void getBitbucketScmWithoutApiUrlParam() throws IOException, UnirestException {
         new RequestBuilder(baseUrl)
+                .crumb(crumb)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-                .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/")
+                .post("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/")
                 .build(Map.class);
     }
 
     @Test
     public void getBitbucketScm() throws IOException, UnirestException {
         Map r = new RequestBuilder(baseUrl)
+                .crumb(crumb)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-                .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/?apiUrl="+apiUrl)
+                .post("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/?apiUrl="+apiUrl)
                 .build(Map.class);
 
         assertNotNull(r);
@@ -70,9 +72,10 @@ public class BitbucketServerScmTest extends BbServerWireMock {
         assertEquals(credentialId, expectedCredId);
 
         Map r = new RequestBuilder(baseUrl)
+                .crumb(crumb)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-                .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+String.format("?apiUrl=%s",apiUrl))
+                .post("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/"+String.format("?apiUrl=%s",apiUrl))
                 .build(Map.class);
 
         assertEquals(normalizedUrl, r.get("uri"));
@@ -86,9 +89,10 @@ public class BitbucketServerScmTest extends BbServerWireMock {
         assertEquals(expectedCredId, expectedCredIdWithSlash);
 
         r = new RequestBuilder(baseUrl)
+                .crumb(crumb)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-                .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+String.format("?apiUrl=%s",apiUrl))
+                .post("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/"+String.format("?apiUrl=%s",apiUrl))
                 .build(Map.class);
 
         assertEquals(expectedCredId, r.get("credentialId"));
@@ -99,9 +103,10 @@ public class BitbucketServerScmTest extends BbServerWireMock {
     public void getOrganizationsWithCredentialId() throws IOException, UnirestException {
         String credentialId = createCredential(BitbucketServerScm.ID);
         List orgs = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-            .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/?apiUrl="+apiUrl+"&credentialId="+credentialId)
+            .post("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/?apiUrl="+apiUrl+"&credentialId="+credentialId)
             .build(List.class);
         assertEquals(3, orgs.size());
         assertEquals("Vivek Pandey", ((Map)orgs.get(0)).get("name"));
@@ -116,9 +121,10 @@ public class BitbucketServerScmTest extends BbServerWireMock {
     public void getOrganizationsWithoutCredentialId() throws IOException, UnirestException {
         createCredential(BitbucketServerScm.ID);
         List orgs = new RequestBuilder(baseUrl)
+                .crumb(crumb)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-                .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/?apiUrl="+apiUrl)
+                .post("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/?apiUrl="+apiUrl)
                 .build(List.class);
         assertEquals(3, orgs.size());
         assertEquals("Vivek Pandey", ((Map)orgs.get(0)).get("name"));
@@ -132,9 +138,10 @@ public class BitbucketServerScmTest extends BbServerWireMock {
     @Test
     public void getOrganizationsWithInvalidCredentialId() throws IOException, UnirestException {
         Map r = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .status(400)
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-            .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/?apiUrl="+apiUrl+"&credentialId=foo")
+            .post("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/?apiUrl="+apiUrl+"&credentialId=foo")
             .build(Map.class);
     }
 
@@ -142,9 +149,10 @@ public class BitbucketServerScmTest extends BbServerWireMock {
     public void getRepositoriesWithCredentialId() throws IOException, UnirestException {
         String credentialId = createCredential(BitbucketServerScm.ID);
         Map repoResp = new RequestBuilder(baseUrl)
+                .crumb(crumb)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-                .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/TESTP/repositories/?apiUrl="+apiUrl+"&credentialId="+credentialId)
+                .post("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/TESTP/repositories/?apiUrl="+apiUrl+"&credentialId="+credentialId)
                 .build(Map.class);
         List repos = (List) ((Map)repoResp.get("repositories")).get("items");
         assertEquals(2, repos.size());
@@ -163,9 +171,10 @@ public class BitbucketServerScmTest extends BbServerWireMock {
     public void getRepositoriesWithoutCredentialId() throws IOException, UnirestException {
         createCredential(BitbucketServerScm.ID);
         Map repoResp = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-            .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/TESTP/repositories/?apiUrl="+apiUrl)
+            .post("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/TESTP/repositories/?apiUrl="+apiUrl)
             .build(Map.class);
         List repos = (List) ((Map)repoResp.get("repositories")).get("items");
         assertEquals(2, repos.size());
@@ -192,10 +201,12 @@ public class BitbucketServerScmTest extends BbServerWireMock {
             .willReturn(aResponse().withStatus(401)));
 
         Map result = httpRequest()
-            .Get("/organizations/{org}/scm/{scmid}/?apiUrl={apiurl}")
+            .Post("/organizations/{org}/scm/{scmid}/?apiUrl={apiurl}")
             .urlPart("org", "jenkins")
             .urlPart("scmid", BitbucketServerScm.ID)
             .urlPart("apiurl", apiUrl)
+            .header("Content-Type", "application/json")
+            .header(crumb.field, crumb.value)
             .status(401)
             .as(Map.class);
 

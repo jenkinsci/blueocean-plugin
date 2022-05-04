@@ -23,7 +23,15 @@ class BbCredentialsApi {
         const path = UrlConfig.getJenkinsRootURL();
         const credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/?apiUrl=${apiUrl}`);
 
-        return this._fetch(credUrl).then(result => this._findExistingCredentialSuccess(result), error => this._findExistingCredentialFailure(error));
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+
+        return this._fetch(credUrl, {fetchOptions})
+            .then(result => this._findExistingCredentialSuccess(result), error => this._findExistingCredentialFailure(error));
     }
 
     _findExistingCredentialSuccess(credential) {
@@ -55,7 +63,7 @@ class BbCredentialsApi {
         };
 
         const fetchOptions = {
-            method: 'PUT',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },

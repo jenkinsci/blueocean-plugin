@@ -9,7 +9,7 @@ import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
-import org.kohsuke.stapler.verb.PUT;
+import org.kohsuke.stapler.verb.POST;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -84,7 +84,7 @@ public abstract class Scm extends Resource {
      *
      * @return credential id. If accessToken is not applicable to this SCM, null is returned.
      */
-    @PUT
+    @POST
     @WebMethod(name = VALIDATE)
     public abstract @CheckForNull HttpResponse validateAndCreate(@JsonBody JSONObject request);
 }

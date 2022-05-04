@@ -31,8 +31,14 @@ export class GithubCreationApi {
             false
         );
         orgsUrl = GithubApiUtils.appendApiUrlParam(orgsUrl, apiUrl);
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
 
-        return this._fetch(orgsUrl)
+        return this._fetch(orgsUrl, { fetchOptions })
             .then(orgs => capabilityAugmenter.augmentCapabilities(orgs))
             .then(orgs => this._listOrganizationsSuccess(orgs), error => this._listOrganizationsFailure(error));
     }
@@ -74,8 +80,15 @@ export class GithubCreationApi {
                 `?credentialId=${credentialId}&pageNumber=${pageNumber}&pageSize=${pageSize}`
         );
         reposUrl = GithubApiUtils.appendApiUrlParam(reposUrl, apiUrl);
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
 
-        return this._fetch(reposUrl).then(response => capabilityAugmenter.augmentCapabilities(response));
+        return this._fetch(reposUrl, { fetchOptions })
+            .then(response => capabilityAugmenter.augmentCapabilities(response));
     }
 
     findExistingOrgFolder(githubOrganization) {

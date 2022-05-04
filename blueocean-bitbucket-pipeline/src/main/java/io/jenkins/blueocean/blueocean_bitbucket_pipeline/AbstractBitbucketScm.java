@@ -7,7 +7,6 @@ import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -24,6 +23,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -49,6 +49,12 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
     public Object getState() {
         StaplerRequest request = Stapler.getCurrentRequest();
         Objects.requireNonNull(request, "Must be called in HTTP request context");
+        String method = request.getMethod();
+        if (!"POST".equalsIgnoreCase(method)) {
+            throw new ServiceException.MethodNotAllowedException(String.format("Request method %s is not allowed", method));
+        }
+
+        checkPermission();
 
         String apiUrl = request.getParameter("apiUrl");
 
@@ -103,10 +109,16 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
 
     @Override
     public Container<ScmOrganization> getOrganizations() {
-        User authenticatedUser = getAuthenticatedUser();
-
         StaplerRequest request = Stapler.getCurrentRequest();
         Objects.requireNonNull(request, "This request must be made in HTTP context");
+        String method = request.getMethod();
+        if (!"POST".equalsIgnoreCase(method)) {
+            throw new ServiceException.MethodNotAllowedException(String.format("Request method %s is not allowed", method));
+        }
+
+        User authenticatedUser = getAuthenticatedUser();
+        checkPermission();
+
         String credentialId = BitbucketCredentialUtils.computeCredentialId(getCredentialIdFromRequest(request), getId(), getUri());
 
         List<ErrorMessage.Error> errors = new ArrayList<>();
@@ -191,6 +203,7 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
         if(authenticatedUser == null){
             throw new ServiceException.UnauthorizedException("No logged in user found");
         }
+        checkPermission();
 
         String userName = (String) request.get("userName");
         String password = (String) request.get("password");
