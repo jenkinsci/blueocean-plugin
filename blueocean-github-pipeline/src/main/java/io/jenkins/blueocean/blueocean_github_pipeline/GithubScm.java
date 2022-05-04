@@ -136,6 +136,15 @@ public class GithubScm extends AbstractScm {
 
     @Override
     public Object getState() {
+        StaplerRequest request = Stapler.getCurrentRequest();
+        Objects.requireNonNull(request, "Must be called in HTTP request context");
+        String method = request.getMethod();
+        if (!"POST".equalsIgnoreCase(method)) {
+            throw new ServiceException.MethodNotAllowedException(String.format("Request method %s is not allowed", method));
+        }
+
+        checkPermission();
+
         this.validateExistingAccessToken();
         return super.getState();
     }
@@ -187,9 +196,17 @@ public class GithubScm extends AbstractScm {
 
     @Override
     public Container<ScmOrganization> getOrganizations() {
+        StaplerRequest request = Stapler.getCurrentRequest();
+        Objects.requireNonNull(request, "This request must be made in HTTP context");
+        String method = request.getMethod();
+        if (!"POST".equalsIgnoreCase(method)) {
+            throw new ServiceException.MethodNotAllowedException(String.format("Request method %s is not allowed", method));
+        }
+
         StandardUsernamePasswordCredentials credential = getCredential();
         String accessToken = credential.getPassword().getPlainText();
 
+        checkPermission();
         try {
             GitHub github = GitHubFactory.connect(accessToken, getUri());
 
@@ -298,6 +315,7 @@ public class GithubScm extends AbstractScm {
 
         try {
             User authenticatedUser =  getAuthenticatedUser();
+            checkPermission();
 
             HttpURLConnection connection = connect(String.format("%s/%s", getUri(), "user"),accessToken);
             validateAccessTokenScopes(connection);

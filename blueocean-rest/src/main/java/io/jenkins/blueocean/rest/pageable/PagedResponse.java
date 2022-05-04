@@ -16,8 +16,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
+import static io.jenkins.blueocean.commons.stapler.TreeResponse.Processor.SCM_ORGANIZATIONS_URI;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -32,12 +34,19 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface PagedResponse {
     int DEFAULT_LIMIT=100;
     class Processor extends Interceptor {
+
         @Override
         public Object invoke(StaplerRequest request, StaplerResponse response, Object instance, Object[] arguments)
             throws IllegalAccessException, InvocationTargetException, ServletException {
 
             String method = request.getMethod();
-            if(!method.equalsIgnoreCase("GET")){
+            // Requests to organizations/orgName/scm/scmName/organizations/ have to be sent via POST, because specific
+            // implementations of Scm.getOrganizations have side effects (such as sending requests to SCM APIs).
+            // All requests that try to access child routes of organizations/orgName/scm/scmName/organizations/
+            // must be sent via POST too. We allow POST requests for these routes by checking a requested URL against
+            // a predefined pattern. Various Stapler quirks with getter methods and child routes prevent us from using
+            // standard @POST annotations on individual routes.
+            if(!method.equalsIgnoreCase("GET") && !postRouteMatches(request, SCM_ORGANIZATIONS_URI)){
                 throw new CancelRequestHandlingException();
             }
             final Pageable<?> resp = (Pageable<?>) target.invoke(request, response, instance, arguments);
@@ -92,6 +101,12 @@ public @interface PagedResponse {
             return sb.toString();
         }
 
+        private boolean postRouteMatches(StaplerRequest request, Pattern pattern) {
+            String method = request.getMethod();
+            if (!"POST".equalsIgnoreCase(method))
+                return false;
 
+            return pattern.matcher(request.getOriginalRequestURI()).find();
+        }
     }
 }

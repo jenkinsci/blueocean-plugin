@@ -28,7 +28,14 @@ export class GitPWCredentialsApi implements GitPWCredentialsApiPublic {
         // Create error in sync code for better stack trace
         const possibleError = new TypedError();
 
-        return this._fetch(credUrl).then(
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+
+        return this._fetch(credUrl, {fetchOptions}).then(
             result => this._findExistingCredentialSuccess(result),
             error => {
                 const { responseBody } = error;
@@ -78,7 +85,7 @@ export class GitPWCredentialsApi implements GitPWCredentialsApiPublic {
         }
 
         const fetchOptions = {
-            method: 'PUT',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },

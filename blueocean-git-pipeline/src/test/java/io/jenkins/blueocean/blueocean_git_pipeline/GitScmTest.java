@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.jvnet.hudson.test.MockAuthorizationStrategy;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestExtension;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -402,7 +403,10 @@ public class GitScmTest extends PipelineBaseTest {
 
     @Test
     public void shouldCreateCredentialsWithDefaultId() throws Exception {
-        User user = login();
+        User user = login("Ken", "Create", "ken@create.item");
+        MockAuthorizationStrategy a = new MockAuthorizationStrategy();
+        a.grant(Jenkins.READ, Item.CREATE).everywhere().to(user.getId());
+        j.jenkins.setAuthorizationStrategy(a);
 
         String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
 
@@ -421,7 +425,7 @@ public class GitScmTest extends PipelineBaseTest {
             .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
             .crumb( crumb )
             .data(params)
-            .put(scmValidatePath)
+            .post(scmValidatePath)
             .build(Map.class);
 
         assertEquals("ok", resp.get("status"));
@@ -446,7 +450,10 @@ public class GitScmTest extends PipelineBaseTest {
      */
     @Test
     public void shouldNotCreateCredentialsForBadUrl1() throws Exception {
-        User user = login();
+        User user = login("Ken", "Create", "ken@create.item");
+        MockAuthorizationStrategy a = new MockAuthorizationStrategy();
+        a.grant(Jenkins.READ, Item.CREATE).everywhere().to(user.getId());
+        j.jenkins.setAuthorizationStrategy(a);
 
         String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
 
@@ -465,7 +472,7 @@ public class GitScmTest extends PipelineBaseTest {
             .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
             .crumb( crumb )
             .data(params)
-            .put(scmValidatePath)
+            .post(scmValidatePath)
             .build(Map.class);
 
         assertTrue(resp.get("message").toString().toLowerCase().contains("invalid url"));
@@ -477,7 +484,10 @@ public class GitScmTest extends PipelineBaseTest {
      */
     @Test
     public void shouldNotCreateCredentialsForBadUrl2() throws Exception {
-        User user = login();
+        User user = login("Ken", "Create", "ken@create.item");
+        MockAuthorizationStrategy a = new MockAuthorizationStrategy();
+        a.grant(Jenkins.READ, Item.CREATE).everywhere().to(user.getId());
+        j.jenkins.setAuthorizationStrategy(a);
 
         String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
 
@@ -496,7 +506,7 @@ public class GitScmTest extends PipelineBaseTest {
             .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
             .crumb( crumb )
             .data(params)
-            .put(scmValidatePath)
+            .post(scmValidatePath)
             .build(Map.class);
 
         assertTrue(resp.get("message").toString().toLowerCase().contains("url unreachable"));

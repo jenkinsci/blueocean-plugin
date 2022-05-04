@@ -71,7 +71,7 @@ export class GitCredentialsPickerSSH extends Component {
             body.branch = branch || 'master';
         }
         const fetchOptions = {
-            method: 'PUT',
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),
         };

@@ -8,6 +8,7 @@ import hudson.model.User;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.BitbucketCloudScm;
 import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
+import net.sf.json.JSONObject;
 import org.junit.Before;
 
 import java.io.File;
@@ -69,9 +70,10 @@ public abstract class BitbucketWireMockBase extends PipelineBaseTest{
     protected String createCredential(String scmId, String apiMode, User user) throws IOException, UnirestException {
 
         RequestBuilder builder = new RequestBuilder(baseUrl)
+                .crumb(crumb)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/jenkins/scm/"+ scmId+"/validate/")
+                .post("/organizations/jenkins/scm/"+ scmId+"/validate/")
                 .data(MapsHelper.of("apiUrl", apiUrl,
                         "userName", getUserName(),
                         "password", getPassword()));
@@ -95,5 +97,22 @@ public abstract class BitbucketWireMockBase extends PipelineBaseTest{
     protected String createCredential(String scmId) throws IOException, UnirestException {
         User user = login();
         return createCredential(scmId, user);
+    }
+
+    protected void createCredentialWithId(String jwt, String credentialId) {
+        request()
+            .jwtToken(jwt)
+            .crumb(crumb)
+            .data(MapsHelper.of("credentials", new MapsHelper.Builder()
+                .put("scope", "SYSTEM")
+                .put("id", credentialId)
+                .put("username", "vivek")
+                .put("password", "password")
+                .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
+                .put("$class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
+                .build()))
+            .post("/organizations/jenkins/credentials/user/")
+            .status(201)
+            .build(JSONObject.class);
     }
 }

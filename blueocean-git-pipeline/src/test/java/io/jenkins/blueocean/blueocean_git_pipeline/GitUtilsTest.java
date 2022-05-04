@@ -116,6 +116,6 @@ public class GitUtilsTest extends PipelineBaseTest {
             "requirePush", true,
             "branch", "master");
 
-        put("/organizations/jenkins/scm/git/validate/", body, 428);
+        post("/organizations/jenkins/scm/git/validate/", body, "application/json", 428);
     }
 }

@@ -17,9 +17,10 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
     @Test
     public void getBitbucketScm() throws UnirestException {
         Map r = new RequestBuilder(baseUrl)
+                .crumb(crumb)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-                .get("/organizations/jenkins/scm/"+ BitbucketCloudScm.ID+getApiUrlParam())
+                .post("/organizations/jenkins/scm/"+ BitbucketCloudScm.ID + "/" + getApiUrlParam())
                 .build(Map.class);
 
         assertNotNull(r);
@@ -32,9 +33,10 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
     public void getOrganizationsWithCredentialId() throws IOException, UnirestException {
         String credentialId = createCredential(BitbucketCloudScm.ID);
         List orgs = new RequestBuilder(baseUrl)
+                .crumb(crumb)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-                .get("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/"+getApiUrlParam()+"&credentialId="+credentialId)
+                .post("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/"+getApiUrlParam()+"&credentialId="+credentialId)
                 .build(List.class);
         assertEquals(2, orgs.size());
         assertEquals(BbCloudWireMock.USER_UUID, ((Map)orgs.get(0)).get("key"));
@@ -47,9 +49,10 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
     public void getOrganizationsWithoutCredentialId() throws IOException, UnirestException {
         createCredential(BitbucketCloudScm.ID);
         List orgs = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-            .get("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/"+getApiUrlParam())
+            .post("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/"+getApiUrlParam())
             .build(List.class);
         assertEquals(2, orgs.size());
         assertEquals(BbCloudWireMock.USER_UUID, ((Map)orgs.get(0)).get("key"));
@@ -61,9 +64,10 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
     @Test
     public void getOrganizationsWithInvalidCredentialId() throws IOException, UnirestException {
         Map r = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .status(400)
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-            .get("/organizations/jenkins/scm/"+ BitbucketCloudScm.ID+"/organizations/"+getApiUrlParam()+"&credentialId=foo")
+            .post("/organizations/jenkins/scm/"+ BitbucketCloudScm.ID+"/organizations/"+getApiUrlParam()+"&credentialId=foo")
             .build(Map.class);
     }
 
@@ -71,9 +75,10 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
     public void getRepositoriesWithCredentialId() throws IOException, UnirestException {
         String credentialId = createCredential(BitbucketCloudScm.ID);
         Map repoResp = new RequestBuilder(baseUrl)
+                .crumb(crumb)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-                .get("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/" + BbCloudWireMock.TEAM_UUID + "/repositories/"+getApiUrlParam()+"&credentialId="+credentialId)
+                .post("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/" + BbCloudWireMock.TEAM_UUID + "/repositories/"+getApiUrlParam()+"&credentialId="+credentialId)
                 .build(Map.class);
         List repos = (List) ((Map)repoResp.get("repositories")).get("items");
         assertEquals("pipeline-demo-test", ((Map)repos.get(0)).get("name"));
@@ -92,9 +97,10 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
     public void getRepositoriesWithoutCredentialId() throws IOException, UnirestException {
         createCredential(BitbucketCloudScm.ID);
         Map repoResp = new RequestBuilder(baseUrl)
+            .crumb(crumb)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-            .get("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/" + BbCloudWireMock.TEAM_UUID + "/repositories/"+getApiUrlParam())
+            .post("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/" + BbCloudWireMock.TEAM_UUID + "/repositories/"+getApiUrlParam())
             .build(Map.class);
         List repos = (List) ((Map)repoResp.get("repositories")).get("items");
         assertEquals("pipeline-demo-test", ((Map)repos.get(0)).get("name"));
