@@ -45,11 +45,15 @@ export class RunDetailsPipeline extends Component {
         document.removeEventListener('keydown', this._handleKeys);
         document.removeEventListener('wheel', this._onScrollHandler);
     }
-    // we bail out on arrow_up key
+    // we bail out on arrow_up, home or page up key and continue on end key
     _handleKeys(event) {
-        if (event.keyCode === 38 && this.augmenter.karaoke && this.props.result.state !== 'PAUSED') {
-            logger.debug('stop follow along by key up');
+        if ((event.keyCode === 38 || event.keyCode === 36 || event.keyCode === 33) && this.augmenter.karaoke && this.props.result.state !== 'PAUSED') {
+            logger.debug('stop follow along by key up, home or page up');
             this.augmenter.setKaraoke(false);
+        }
+        if ((event.keyCode === 35) && !this.augmenter.karaoke && this.props.result.state !== 'PAUSED') {
+            logger.debug('start follow along by key end');
+            this.augmenter.setKaraoke(true);
         }
     }
     // need to register handler to step out of karaoke mode
@@ -77,7 +81,7 @@ export class RunDetailsPipeline extends Component {
         const branch = this.props.params.branch;
 
         const commonProps = {
-            scrollToBottom: this.augmenter.karaoke || (run && run.result === 'FAILURE'),
+            scrollToBottom: this.augmenter.karaoke,
             augmenter: this.augmenter,
             t,
             run,
