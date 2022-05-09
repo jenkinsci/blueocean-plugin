@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Default implementation of {@link OrganizationFactory} for a master is to have everything in
+ * Default implementation of {@link OrganizationFactory} for a controller is to have everything in
  * one organization called "jenkins"
  *
  * @author Kohsuke Kawaguchi
