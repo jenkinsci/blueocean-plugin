@@ -11,7 +11,7 @@ import io.jenkins.blueocean.rest.model.BlueFavorite;
  *
  * For example:
  *
- * A favorite multi-branch project might resolve to a master branch pipeline
+ * A favorite multi-branch project might resolve to a main branch pipeline
  *
  * @author Vivek Pandey
  */
