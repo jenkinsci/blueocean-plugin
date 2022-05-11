@@ -1,6 +1,6 @@
 #!groovy
 
-if (JENKINS_URL == 'https://ci.jenkins.io/') {
+if (JENKINS_URL == 'NOhttps://ci.jenkins.io/') {
   buildPlugin(
     configurations: [
       [ platform: "linux", jdk: "8" ],
