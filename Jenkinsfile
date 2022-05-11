@@ -39,7 +39,7 @@ node() {
       stage('Setup') {
         deleteDir()
         checkout scm
-        sh 'docker build -t blueocean_build_env --build-arg GID=$(id -g ${USER}) --build-arg UID=$(id -u ${USER}) - < Dockerfile.build'
+        //sh 'docker build -t blueocean_build_env --build-arg GID=$(id -g ${USER}) --build-arg UID=$(id -u ${USER}) - < Dockerfile.build'
         sh 'mv $LIVE_PROPERTIES_FILE acceptance-tests/live.properties'
         configFileProvider([configFile(fileId: 'blueocean-maven-settings', variable: 'MAVEN_SETTINGS')]) {
           sh 'mv $MAVEN_SETTINGS settings.xml'
@@ -50,7 +50,7 @@ node() {
       }
 
       try {
-        docker.image('blueocean_build_env').inside("--net=container:blueo-selenium") {
+        docker.image('blueocean/blueocean:build_env').inside("--net=container:blueo-selenium") {
           ip = sh(returnStdout: true, script: "hostname -I  | awk '{print \$1}'").trim()
           echo "IP: [${ip}]"
           stage('Sanity check dependencies') {
