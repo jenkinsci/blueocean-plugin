@@ -19,8 +19,8 @@ properties([
 ])
 
 credentials = [
-  file(credentialsId: 'blueoceandeploy_ath', variable: 'LIVE_PROPERTIES_FILE'),
-  file(credentialsId: 'blueocean-ath-private-repo-key', variable: 'BO_ATH_KEY_FILE')
+  file(credentialsId: 'blueoceandeploy_ath', variable: 'LIVE_PROPERTIES_FILE')
+  //file(credentialsId: 'blueocean-ath-private-repo-key', variable: 'BO_ATH_KEY_FILE')
 ]
 
 envs = [
@@ -44,7 +44,7 @@ node() {
         configFileProvider([configFile(fileId: 'blueocean-maven-settings', variable: 'MAVEN_SETTINGS')]) {
           sh 'mv $MAVEN_SETTINGS settings.xml'
         }
-        sh 'mv $BO_ATH_KEY_FILE acceptance-tests/bo-ath.key'
+        //sh 'mv $BO_ATH_KEY_FILE acceptance-tests/bo-ath.key'
         sh "./acceptance-tests/runner/scripts/start-selenium.sh"
         sh "./acceptance-tests/runner/scripts/start-bitbucket-server.sh"
       }
