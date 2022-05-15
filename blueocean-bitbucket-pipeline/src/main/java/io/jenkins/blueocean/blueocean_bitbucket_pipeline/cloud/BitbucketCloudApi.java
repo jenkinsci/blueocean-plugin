@@ -102,7 +102,7 @@ public class BitbucketCloudApi extends BitbucketApi {
             if(pageSize <=0){
                 pageSize = PagedResponse.DEFAULT_LIMIT;
             }
-            InputStream inputStream = request.get(String.format("%s&page=%s&pagelen=%s",baseUrl+"teams/?role=contributor",
+            InputStream inputStream = request.get(String.format("%s&page=%s&pagelen=%s",baseUrl+"workspaces/?role=collaborator",
                     pageNumber,pageSize)).getContent();
             BbPage<BbOrg> page =  om.reader().forType(new TypeReference<BbCloudPage<BbCloudTeam>>(){}).readValue(inputStream);
             if(pageNumber == 1){ //add user org as the first org on first page
