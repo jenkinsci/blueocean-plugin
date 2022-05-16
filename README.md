@@ -245,7 +245,7 @@ If you wanted to see if a new version of a library works with blue ocean:
 * Check back later for build success (ie unit tests)
 * The Acceptance Test Harness will normally be automatically triggered after a successful PR build, however, it ie best to check it has run: (https://ci.blueocean.io/job/ATH-Jenkinsfile/job/master/) - consult a blue ocean contributor (see below) and they will ensure it has run. This is required for a dependency change.
 * Contact a contributor (see below) to let them know of your proposed change so they can review it and do extra testing
-* Ensure any dependencies are released to the non beta UC, before merging to controller when approved. 
+* Ensure any dependencies are released to the non beta UC, before merging to main when approved. 
 
 Once the PR is accepted, it will be in use on "dogfood" on ci.blueocean.io/blue - and thus it will be in day to day use almost immediately. If it does bad things, expect to hear about it. 
 
