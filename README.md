@@ -266,7 +266,7 @@ The Acceptance test suite is located here: [acceptance-tests](./acceptance-tests
 When the ATH passes and there is a consensus that a release can be performed: 
 
 * Ensure that the person doing the release has permissions for all the blueocean modules here: https://github.com/jenkins-infra/repository-permissions-updater/tree/master/permissions (or it will fail)
-* Switch to the branch to release from (usually controller)
+* Switch to the branch to release from (usually main)
 * Run a `mvn clean -DcleanNode install -DskipTests` once to clear the decks if you are working on other branches
 * Perform the release: 
 
