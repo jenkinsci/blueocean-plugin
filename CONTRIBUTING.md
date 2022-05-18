@@ -7,7 +7,7 @@ For information on contributing to Jenkins, check out the https://wiki.jenkins-c
 
 ## Changes and pull requests
 
-All changes should come via pull requests, never to master directly. A pull request can be as a branch on this repo or from a forked one, doesn't matter. If a branch on this repo, name it topic/x feature/x or bug/x - depending on what you are doing. Once it is merged, please do delete the branch. 
+All changes should come via pull requests, never to main directly. A pull request can be as a branch on this repo or from a forked one, doesn't matter. If a branch on this repo, name it topic/x feature/x or bug/x - depending on what you are doing. Once it is merged, please do delete the branch. 
 
 You can open a Pull Request at any time. People often like to do this because it allows them to utilize the Pull Request Builder on their PR, as well as allowing them to capture early feedback.
 
@@ -24,7 +24,7 @@ Avoid "bike shed" discussions about styles or whitespace unless it really impact
 
 # Merging
 
-All commits should be squashed before being merged to `master` to preserve a sane history. The Merge button on the PR screen has been configured to do this automatically.
+All commits should be squashed before being merged to `the main` to preserve a sane history. The Merge button on the PR screen has been configured to do this automatically.
 
 # Code Style
 
