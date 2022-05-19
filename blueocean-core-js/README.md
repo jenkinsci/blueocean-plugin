@@ -27,7 +27,7 @@ To test changes in blueocean-core-js, perform the following steps:
 ## Publishing a Production Version
 
 Once the changes to blueocean-core-js are approved via PR, perform the following steps:
-- Ensure your branch is 100% up to date with master. **This is critical**, otherwise recent changes may be lost and break the app.
+- Ensure your branch is 100% up to date with controller. **This is critical**, otherwise recent changes may be lost and break the app.
    - If changes to core-js were made in the interim, ideally you should merge and publish a new pre-release version to ensure builds still pass.
 - Tick version numbers in package.json and npm-shrinkwrap.json to a production version, e.g. "0.0.90"
 - `npm run gulp`
@@ -41,7 +41,7 @@ Once the changes to blueocean-core-js are approved via PR, perform the following
       - `npm install @jenkins-cd/blueocean-core-js@0.0.90 -S -E`
 - You should see all package.json and npm-shrinkwrap.json updated to reflect the new version number.
 - Push changes to your branch and ensure that the blueocean-plugin and ATH builds both pass.
-- Merge your PR to master.
+- Merge your PR to controller.
 
 # Running Tests
 
