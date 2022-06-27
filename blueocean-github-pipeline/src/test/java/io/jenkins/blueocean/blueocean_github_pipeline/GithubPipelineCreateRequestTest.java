@@ -295,61 +295,66 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
 
     @Test
     public void shouldFindUserStoreCredential() throws IOException {
-        //add username password credential to user's credential store in user domain and in USER scope
-        User user = login();
-        CredentialsStore store=null;
-        for(CredentialsStore s: CredentialsProvider.lookupStores(user)){
-            if(s.hasPermission(CredentialsProvider.CREATE) && s.hasPermission(CredentialsProvider.UPDATE)){
-                store = s;
-                break;
+        System.setProperty(io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider.class.getName() + ".enabled", "true");
+        try {
+            //add username password credential to user's credential store in user domain and in USER scope
+            User user = login();
+            CredentialsStore store = null;
+            for (CredentialsStore s : CredentialsProvider.lookupStores(user)) {
+                if (s.hasPermission(CredentialsProvider.CREATE) && s.hasPermission(CredentialsProvider.UPDATE)) {
+                    store = s;
+                    break;
+                }
             }
-        }
 
-        assertNotNull(store);
-        store.addDomain(new Domain("github-domain",
+            assertNotNull(store);
+            store.addDomain(new Domain("github-domain",
                 "GitHub Domain to store personal access token",
                 Collections.<DomainSpecification>singletonList(new BlueOceanDomainSpecification())));
 
 
-        Domain domain = store.getDomainByName("github-domain");
-        StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
+            Domain domain = store.getDomainByName("github-domain");
+            StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
                 "github", "GitHub Access Token", user.getId(), "12345");
-        store.addCredentials(domain, credential);
+            store.addCredentials(domain, credential);
 
-        //create another credentials with same id in system store with different description
-        for(CredentialsStore s: CredentialsProvider.lookupStores(Jenkins.get())){
-            s.addCredentials(Domain.global(), new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
+            //create another credentials with same id in system store with different description
+            for (CredentialsStore s : CredentialsProvider.lookupStores(Jenkins.get())) {
+                s.addCredentials(Domain.global(), new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
                     "github", "System GitHub Access Token", user.getId(), "12345"));
-        }
+            }
 
-        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "demo");
-        AbstractFolderProperty prop = new BlueOceanCredentialsProvider.FolderPropertyImpl(user.getId(), credential.getId(),
+            WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "demo");
+            AbstractFolderProperty prop = new BlueOceanCredentialsProvider.FolderPropertyImpl(user.getId(), credential.getId(),
                 BlueOceanCredentialsProvider.createDomain("https://api.github.com"));
 
-        mp.addProperty(prop);
+            mp.addProperty(prop);
 
-        // lookup for created credential id in system store, it should resolve to previously created user store credential
-        StandardCredentials c = Connector.lookupScanCredentials((Item)mp, "https://api.github.com", credential.getId());
-        assertEquals("GitHub Access Token", c.getDescription());
+            // lookup for created credential id in system store, it should resolve to previously created user store credential
+            StandardCredentials c = Connector.lookupScanCredentials((Item) mp, "https://api.github.com", credential.getId());
+            assertEquals("GitHub Access Token", c.getDescription());
 
-        assertNotNull(c);
-        assertTrue(c instanceof StandardUsernamePasswordCredentials);
-        StandardUsernamePasswordCredentials usernamePasswordCredentials = (StandardUsernamePasswordCredentials) c;
-        assertEquals(credential.getId(), usernamePasswordCredentials.getId());
-        assertEquals(credential.getPassword().getPlainText(),usernamePasswordCredentials.getPassword().getPlainText());
-        assertEquals(credential.getUsername(),usernamePasswordCredentials.getUsername());
+            assertNotNull(c);
+            assertTrue(c instanceof StandardUsernamePasswordCredentials);
+            StandardUsernamePasswordCredentials usernamePasswordCredentials = (StandardUsernamePasswordCredentials) c;
+            assertEquals(credential.getId(), usernamePasswordCredentials.getId());
+            assertEquals(credential.getPassword().getPlainText(), usernamePasswordCredentials.getPassword().getPlainText());
+            assertEquals(credential.getUsername(), usernamePasswordCredentials.getUsername());
 
-        //check the domain
-        Domain d = CredentialsUtils.findDomain(credential.getId(), user);
-        assertNotNull(d);
-        assertTrue(d.test(new BlueOceanDomainRequirement()));
+            //check the domain
+            Domain d = CredentialsUtils.findDomain(credential.getId(), user);
+            assertNotNull(d);
+            assertTrue(d.test(new BlueOceanDomainRequirement()));
 
-        //now remove this property
-        mp.getProperties().remove(prop);
+            //now remove this property
+            mp.getProperties().remove(prop);
 
-        //it must resolve to system credential
-        c = Connector.lookupScanCredentials((Item)mp, null, credential.getId());
-        assertEquals("System GitHub Access Token", c.getDescription());
+            //it must resolve to system credential
+            c = Connector.lookupScanCredentials((Item) mp, null, credential.getId());
+            assertEquals("System GitHub Access Token", c.getDescription());
+        } finally {
+            System.setProperty(io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider.class.getName() + ".enabled", "false");
+        }
     }
 
     @Test

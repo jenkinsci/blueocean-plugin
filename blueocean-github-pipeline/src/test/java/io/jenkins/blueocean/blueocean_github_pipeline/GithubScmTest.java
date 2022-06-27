@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.cloudbees.hudson.plugins.folder.Folder;
 import com.cloudbees.plugins.credentials.CredentialsMatcher;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
@@ -7,16 +8,23 @@ import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
+import hudson.model.Item;
 import hudson.model.User;
+import hudson.security.AccessControlled;
 import hudson.security.SecurityRealm;
 import hudson.tasks.Mailer;
 import hudson.util.Secret;
+import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
+import io.jenkins.blueocean.service.embedded.OrganizationFactoryImpl;
 import jenkins.model.Jenkins;
+import jenkins.model.ModifiableTopLevelItemGroup;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.GrantedAuthority;
+import org.apache.xpath.operations.Or;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,7 +44,6 @@ import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.scm.Scm.CREDENTIAL_ID;
@@ -48,7 +55,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({GithubScm.class, Jenkins.class, Authentication.class, User.class, Secret.class,
-    CredentialsMatchers.class, CredentialsProvider.class, Stapler.class, HttpRequest.class})
+    CredentialsMatchers.class, CredentialsProvider.class, Stapler.class, HttpRequest.class, OrganizationFactory.class})
 @PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubScmTest {
 
@@ -116,6 +123,15 @@ public class GithubScmTest {
         GithubScm githubScm = new GithubScm(() -> new Link( "/blue/organizations/jenkins/scm/"));
 
         mockCredentials("joe", accessToken, githubScm.getId(), GithubScm.DOMAIN_NAME);
+
+        mockStatic(OrganizationFactory.class);
+        OrganizationFactoryImpl organizationFactory = mock(OrganizationFactoryImpl.class);
+        when(OrganizationFactory.getInstance()).thenReturn(organizationFactory);
+        AbstractOrganization organization = mock(AbstractOrganization.class);
+        when(organizationFactory.list()).thenReturn(Collections.singletonList(organization));
+        Folder rootOrgFolder = mock(Folder.class);
+        when(organization.getGroup()).thenReturn(rootOrgFolder);
+        when(rootOrgFolder.hasPermission(Item.CREATE)).thenReturn(true);
 
         mockStatic(HttpRequest.class);
         HttpRequest httpRequestMock = mock(HttpRequest.class);

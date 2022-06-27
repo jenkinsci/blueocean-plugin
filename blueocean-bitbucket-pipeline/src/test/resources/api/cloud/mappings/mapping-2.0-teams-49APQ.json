@@ -1,7 +1,7 @@
 {
   "id": "cde61be3-1825-33a7-a21c-f3a06bd21ac8",
   "request": {
-    "url": "/api/2.0/teams/?role=contributor&page=1&pagelen=100",
+    "url": "/api/2.0/workspaces/?role=collaborator&page=1&pagelen=100",
     "method": "GET"
   },
   "response": {

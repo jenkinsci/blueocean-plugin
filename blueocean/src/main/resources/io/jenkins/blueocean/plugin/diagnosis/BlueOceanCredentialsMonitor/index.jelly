@@ -1,0 +1,33 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:st="jelly:stapler">
+  <l:layout>
+    <st:include page="sidepanel" it="${app}"/>
+    <l:main-panel>
+      <j:if test="${it.blueOceanCredentialsProvidedEnabled}">
+        <h2 class="danger">Warning</h2>
+        <p>You have reactivated the Blue Ocean credentials provider, which has known security vulnerabilities.
+        For more details click <a href="https://cloudbees.com/r/blue-ocean-credentials-removal" target="_blank">here</a></p>
+        <p class="warning">Please note that this option will be removed in a later release.</p>
+      </j:if>
+      <h2>${%Blue Ocean Credentials}</h2>
+      <p>For more details about the Blue Ocean credentials, click <a href="https://cloudbees.com/r/blue-ocean-credentials-removal" target="_blank">here</a>.</p>
+      <p>${%blurb}</p>
+      <p>You should change the following SCM Source used by the following projects:</p>
+      <ul>
+        <j:forEach var="entry" items="${it.projectsNamesUrlsWithBoFolderCred}">
+          <li>${%linkToProject(rootURL+'/'+entry.value, entry.key)}</li>
+        </j:forEach>
+      </ul>
+
+      <p>
+      ${%scanning.warning}
+      </p>
+      <p>
+        <a href="scan">Force scan</a>
+      </p>
+      <p>${%scanning.property}
+        <pre>-Dio.jenkins.blueocean.plugin.diagnosis.BlueOceanCredentialsMonitor.scanning.interval.minutes=5</pre>
+      </p>
+    </l:main-panel>
+  </l:layout>
+</j:jelly>

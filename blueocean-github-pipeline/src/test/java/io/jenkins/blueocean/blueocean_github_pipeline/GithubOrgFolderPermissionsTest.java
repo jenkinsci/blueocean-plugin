@@ -10,6 +10,7 @@ import io.jenkins.blueocean.service.embedded.OrganizationFactoryImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
+import net.sf.json.JSONArray;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,7 +39,8 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         j.jenkins.setAuthorizationStrategy(authz);
         // refresh the JWT token otherwise all hell breaks loose.
         jwtToken = getJwtToken(j.jenkins, "vivek", "vivek");
-        createGithubPipeline(true);
+        createCredentialWithId(jwtToken, GithubScm.ID);
+        createGithubPipeline(jwtToken, true);
     }
 
     @Test
@@ -48,18 +50,21 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         j.jenkins.setAuthorizationStrategy(authz);
         // refresh the JWT token otherwise all hell breaks loose.
         jwtToken = getJwtToken(j.jenkins, "vivek", "vivek");
-        createGithubPipeline(false);
+        createCredentialWithId(jwtToken, GithubScm.ID);
+
+        createGithubPipeline(jwtToken, false);
     }
 
     @Test
     public void canCreateWhenHavePermissionsOnCustomOrg() throws Exception {
         MockAuthorizationStrategy authz = new MockAuthorizationStrategy();
-        authz.grant(Item.READ,Jenkins.READ).everywhere().to(user);
+        authz.grant(Item.READ, Jenkins.READ).everywhere().to(user);
         authz.grant(Item.CREATE, Item.CONFIGURE).onFolders(getOrgRoot()).to(user);
         j.jenkins.setAuthorizationStrategy(authz);
         // refresh the JWT token otherwise all hell breaks loose.
         jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
-        createGithubPipeline(true);
+        createCredentialWithIdForOrg(jwtToken, GithubScm.ID, getOrgName());
+        createGithubPipeline(jwtToken, true);
     }
 
     @Test
@@ -69,15 +74,53 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         j.jenkins.setAuthorizationStrategy(authz);
         // refresh the JWT token otherwise all hell breaks loose.
         jwtToken = getJwtToken(j.jenkins, "vivek", "vivek");
-        createGithubPipeline(false);
+        createCredentialWithId(jwtToken, GithubScm.ID);
+        createGithubPipeline(jwtToken, false);
     }
 
-    private void createGithubPipeline(boolean shouldSucceed) throws Exception {
-        String credentialId = createGithubCredential(user);
+    @Test
+    public void getOrganizationsOnCustomOrg() throws Exception {
+        MockAuthorizationStrategy authz = new MockAuthorizationStrategy();
+        authz.grant(Item.READ, Jenkins.READ).everywhere().to("custom");
+        authz.grant(Item.CREATE, Item.CONFIGURE).onFolders(getOrgRoot()).to("custom");
+        j.jenkins.setAuthorizationStrategy(authz);
+        String jwt = getJwtToken(j.jenkins, "custom", "custom");
+        createCredentialWithIdForOrg(jwt, GithubScm.ID, getOrgName());
+
+        JSONArray res = request()
+            .crumb(crumb)
+            .jwtToken(jwt)
+            .status(200)
+            .post("/organizations/" + getOrgName() + "/scm/github/organizations/?apiUrl=" + githubApiUrl)
+            .build(JSONArray.class);
+
+        assertEquals(6, res.size());
+    }
+
+    @Test
+    public void getOrganizationsOnDefaultOrg() throws Exception {
+        MockAuthorizationStrategy authz = new MockAuthorizationStrategy();
+        authz.grant(Item.READ, Jenkins.READ).everywhere().to("default");
+        authz.grant(Item.CREATE, Item.CONFIGURE).onFolders(getOrgRoot()).to("default");
+        j.jenkins.setAuthorizationStrategy(authz);
+        String jwt = getJwtToken(j.jenkins, "default", "default");
+        createCredentialWithIdForOrg(jwt, GithubScm.ID, getOrgName());
+
+        JSONArray res = request()
+            .crumb(crumb)
+            .jwtToken(jwt)
+            .status(200)
+            .post("/organizations/" + getOrgName() + "/scm/github/organizations/?apiUrl=" + githubApiUrl)
+            .build(JSONArray.class);
+
+        assertEquals(6, res.size());
+    }
+
+    private void createGithubPipeline(String jwt, boolean shouldSucceed) {
         String pipelineName = "cloudbeers";
         Map resp = new RequestBuilder(baseUrl)
                 .status(shouldSucceed ? 201 : 403)
-                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .jwtToken(jwt)
                 .crumb( this.crumb )
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(GithubTestUtils.buildRequestBody(GithubScm.ID,null, githubApiUrl, pipelineName, "PR-demo"))
@@ -104,7 +147,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         return OrganizationFactory.getItemGroup(getOrgName());
     }
 
-    @TestExtension(value={"canCreateWhenHavePermissionsOnCustomOrg","canNotCreateWhenHaveNoPermissionOnCustomOrg"})
+    @TestExtension(value={"canCreateWhenHavePermissionsOnCustomOrg","canNotCreateWhenHaveNoPermissionOnCustomOrg","getOrganizationsOnCustomOrg"})
     public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
 
         private OrganizationImpl instance;

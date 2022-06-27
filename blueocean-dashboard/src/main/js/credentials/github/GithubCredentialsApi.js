@@ -32,10 +32,18 @@ class GithubCredentialsApi {
 
     findExistingCredential(apiUrl) {
         const path = UrlConfig.getJenkinsRootURL();
-        let credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}`);
+        let credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/`);
         credUrl = GithubApiUtils.appendApiUrlParam(credUrl, apiUrl);
 
-        return this._fetch(credUrl).then(result => this._findExistingCredentialSuccess(result), error => this._findExistingCredentialFailure(error));
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+
+        return this._fetch(credUrl, {fetchOptions})
+            .then(result => this._findExistingCredentialSuccess(result), error => this._findExistingCredentialFailure(error));
     }
 
     _findExistingCredentialSuccess(credential) {
@@ -69,7 +77,7 @@ class GithubCredentialsApi {
         };
 
         const fetchOptions = {
-            method: 'PUT',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },

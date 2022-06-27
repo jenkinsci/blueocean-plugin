@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.scm.api;
 
 import com.cloudbees.plugins.credentials.domains.Domain;
+import hudson.ExtensionList;
 import hudson.model.Cause;
 import hudson.model.Failure;
 import hudson.model.TaskListener;
@@ -218,6 +219,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
             if (StringUtils.isEmpty(scmConfig.getUri())) {
                 throw new ServiceException.BadRequestException("uri not specified");
             }
+            // ExtensionList.lookupSingleton(BlueOceanCredentialsProvider.class).isEnabled( null ) ??
             if(domain.test(new BlueOceanDomainRequirement())) { //this is blueocean specific domain
                 project.addProperty(
                     new BlueOceanCredentialsProvider.FolderPropertyImpl(authenticatedUser.getId(),

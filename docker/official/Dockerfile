@@ -3,7 +3,7 @@ FROM jenkins/jenkins:lts-alpine
 
 USER root
 
-# Add the docker binary so running Docker commands from the master works nicely
+# Add the docker binary so running Docker commands from the main works nicely
 RUN apk -U add docker
 
 USER jenkins
