@@ -32,6 +32,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;
 import hudson.Functions;
 import hudson.model.User;
+import hudson.plugins.git.GitTool;
 import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.ssh.UserSSHKeyManager;
@@ -43,6 +44,7 @@ import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.impl.mock.AbstractSampleDVCSRepoRule;
 import jenkins.scm.impl.mock.AbstractSampleRepoRule;
 import org.apache.commons.io.FileUtils;
+import org.jenkinsci.plugins.gitclient.JGitTool;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.junit.After;
@@ -61,7 +63,6 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -296,21 +297,35 @@ public class GitReadSaveTest extends PipelineBaseTest {
     @Test
     public void bareRepoReadWriteOverSSH() throws Exception {
         Assume.assumeFalse(Functions.isWindows()); // can't really run this on windows
-        startSSH();
-        String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
-        String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath() + "/.git";
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, remote, repoForSSH, masterPipelineScript);
+        GitTool[] initialInstallations = Jenkins.get().getDescriptorByType(GitTool.DescriptorImpl.class).getInstallations();
+        try {
+            Jenkins.get().getDescriptorByType(GitTool.DescriptorImpl.class).setInstallations(new JGitTool());
+
+            startSSH();
+            String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
+            String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath() + "/.git";
+            testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, remote, repoForSSH, masterPipelineScript);
+
+        } finally {
+            Jenkins.get().getDescriptorByType(GitTool.DescriptorImpl.class).setInstallations(initialInstallations);
+        }
     }
 
     @Test
     public void bareRepoReadWriteNoEmail() throws Exception {
         Assume.assumeFalse(Functions.isWindows()); // can't really run this on windows
-        User user = login("bob", "Bob Smith", null);
+        GitTool[] initialInstallations = Jenkins.get().getDescriptorByType(GitTool.DescriptorImpl.class).getInstallations();
+        try {
+            Jenkins.get().getDescriptorByType(GitTool.DescriptorImpl.class).setInstallations(new JGitTool());
+            User user = login("bob", "Bob Smith", null);
 
-        startSSH(user);
-        String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
-        String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath() + "/.git";
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, remote, repoForSSH, masterPipelineScript, user);
+            startSSH(user);
+            String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
+            String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath() + "/.git";
+            testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, remote, repoForSSH, masterPipelineScript, user);
+        } finally {
+            Jenkins.get().getDescriptorByType(GitTool.DescriptorImpl.class).setInstallations(initialInstallations);
+        }
     }
 
     private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull GitSampleRepoRule repo, @Nullable String startPipelineScript) throws Exception {

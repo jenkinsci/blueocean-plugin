@@ -431,6 +431,11 @@
             <artifactId>maven-artifact</artifactId>
             <version>3.5.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>git-client</artifactId>
+            <version>3.11.1</version>
+        </dependency>
 
         <!-- Other -->
         <dependency>
