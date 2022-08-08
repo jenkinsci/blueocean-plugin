@@ -14,6 +14,22 @@ Note that the **__Blue Ocean__** plugin is the only one that you need to install
 
 https://jenkins.io/projects/blueocean/[Learn more]
 
+[NOTE]
+.Blue Ocean status
+====
+Blue Ocean will not receive further functionality updates.
+Blue Ocean will continue to provide easy-to-use Pipeline visualization, but it will not be enhanced further.
+It will only receive selective updates for significant security issues or functional defects.
+
+Alternative options for Pipeline visualization, such as the link:https://plugins.jenkins.io/pipeline-stage-view/[Pipeline: Stage View] and link:https://plugins.jenkins.io/pipeline-graph-view/[Pipeline Graph View] plugins, are available and offer some of the same functionality.
+While not complete replacements for Blue Ocean, contributions are encouraged from the community for continued development of these plugins.
+
+The link:https://www.jenkins.io/doc/book/pipeline/getting-started/#snippet-generator[Pipeline syntax snippet generator] assists users as they define Pipeline steps with their arguments.
+It is the preferred tool for Jenkins Pipeline creation, as it provides online help for the Pipeline steps available in your Jenkins controller.
+It uses the plugins installed on your Jenkins controller to generate the Pipeline syntax.
+Refer to the link:https://www.jenkins.io/doc/pipeline/steps/[Pipeline steps reference] page for information on all available Pipeline steps.
+====
+
 == Running behind a proxy? Read this
 
 In some cases proxies can rewrite URIs that have encoding in them and break web apps.
