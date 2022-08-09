@@ -8,7 +8,6 @@ import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.commons.DigestUtils;
 import io.jenkins.blueocean.commons.ServiceException;
 import org.apache.commons.lang.StringUtils;
-import org.jenkinsci.main.modules.instance_identity.InstanceIdentity;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Stapler;
@@ -50,11 +49,9 @@ public abstract class AbstractAnalytics extends Analytics {
                 allProps.putAll(additionalProperties);
             }
         }
-        String server = server();
-        allProps.put("jenkins", server);
         // Background requests do not have userId
         if (Stapler.getCurrentRequest() != null) {
-            String identity = identity(server);
+            String identity = identity();
             allProps.put("userId", identity);
         }
 
@@ -71,20 +68,9 @@ public abstract class AbstractAnalytics extends Analytics {
 
     protected abstract void doTrack(String name, Map<String, Object> allProps);
 
-    protected final String server() {
-        byte[] identityBytes;
-        try {
-            identityBytes = InstanceIdentity.get().getPublic().getEncoded();
-        } catch (AssertionError e) {
-            LOGGER.error("There was a problem identifying this server", e);
-            throw new IllegalStateException("There was a problem identifying this server", e);
-        }
-        return DigestUtils.sha256(identityBytes);
-    }
-
-    protected final String identity(String server) {
+    protected final String identity() {
         User user = User.current();
         String username = user == null ? "ANONYMOUS" : user.getId();
-        return DigestUtils.sha256(username + server, Charset.defaultCharset());
+        return DigestUtils.sha256(username, Charset.defaultCharset());
     }
 }
