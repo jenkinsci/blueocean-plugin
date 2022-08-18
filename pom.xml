@@ -33,7 +33,7 @@
         when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions
         and  acceptance-tests/runner/scripts/args.sh
     -->
-    <jenkins.version>2.332</jenkins.version>
+    <jenkins.version>2.332.1</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.12.0</frontend-version>
     <node.version>10.13.0</node.version>
@@ -414,6 +414,32 @@
             <artifactId>pipeline-milestone-step</artifactId>
             <version>1.3.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-parent</artifactId>
+            <version>999999-SNAPSHOT</version>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.jenkinsci.plugins</groupId>-->
+<!--            <artifactId>pipeline-model-definition</artifactId>-->
+<!--            <version>999999-SNAPSHOT</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.jenkinsci.plugins</groupId>-->
+<!--            <artifactId>pipeline-model-api</artifactId>-->
+<!--            <version>999999-SNAPSHOT</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.jenkinsci.plugins</groupId>-->
+<!--            <artifactId>pipeline-model-extensions</artifactId>-->
+<!--            <version>999999-SNAPSHOT</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.jenkinsci.plugins</groupId>-->
+<!--            <artifactId>pipeline-stage-tags-metadata</artifactId>-->
+<!--            <version>999999-SNAPSHOT</version>-->
+<!--        </dependency>-->
 
         <!-- Other -->
         <dependency>

@@ -181,7 +181,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
     public boolean isRestartable() {
         RestartDeclarativePipelineAction restartDeclarativePipelineAction =
             this.run.getAction( RestartDeclarativePipelineAction.class );
-        if (restartDeclarativePipelineAction != null && this.run.getParent().isRestartableFromStage()) {
+        if (restartDeclarativePipelineAction != null && restartDeclarativePipelineAction.isRestartEnabled()) {
             List<String> restartableStages = restartDeclarativePipelineAction.getRestartableStages();
             if (restartableStages != null) {
                 return restartableStages.contains(this.getDisplayName())

@@ -76,7 +76,7 @@ public class PipelineNodeImplTest {
         PowerMockito.field(PipelineNodeImpl.class, "run").set(underTest, this.run);
         PowerMockito.when(run.getAction(RestartDeclarativePipelineAction.class)).thenReturn(action);
         PowerMockito.when(this.run.getParent()).thenReturn(job);
-        PowerMockito.when(job.isRestartableFromStage()).thenReturn(true);
+        PowerMockito.when(action.isRestartEnabled()).thenReturn(true);
         PowerMockito.when(action.getRestartableStages()).thenReturn(restartableStages);
         PowerMockito.when(restartableStages.contains(underTest.getDisplayName())).thenReturn(true);
         PowerMockito.when(underTest.getStateObj()).thenReturn(BlueRun.BlueRunState.FINISHED);
@@ -93,7 +93,7 @@ public class PipelineNodeImplTest {
         PowerMockito.field(PipelineNodeImpl.class, "run").set(underTest, this.run);
         PowerMockito.when(run.getAction(RestartDeclarativePipelineAction.class)).thenReturn(action);
         PowerMockito.when(this.run.getParent()).thenReturn(job);
-        PowerMockito.when(job.isRestartableFromStage()).thenReturn(true);
+        PowerMockito.when(action.isRestartEnabled()).thenReturn(true);
         PowerMockito.when(action.getRestartableStages()).thenReturn(restartableStages);
         PowerMockito.when(restartableStages.contains(underTest.getDisplayName())).thenReturn(true);
         PowerMockito.when(underTest.getStateObj()).thenReturn(BlueRun.BlueRunState.FINISHED);
@@ -111,8 +111,7 @@ public class PipelineNodeImplTest {
         PowerMockito.field(PipelineNodeImpl.class, "run").set(underTest, this.run);
         PowerMockito.when(run.getAction(RestartDeclarativePipelineAction.class)).thenReturn(action);
         PowerMockito.when(this.run.getParent()).thenReturn(job);
-        PowerMockito.when(job.isRestartableFromStage()).thenReturn(false);
-        PowerMockito.when(action.getRestartableStages()).thenReturn(restartableStages);
+        PowerMockito.when(action.isRestartEnabled()).thenReturn(false);
         PowerMockito.when(restartableStages.contains(underTest.getDisplayName())).thenReturn(true);
         PowerMockito.when(underTest.getStateObj()).thenReturn(BlueRun.BlueRunState.FINISHED);
         PowerMockito.when(underTest.isRestartable()).thenCallRealMethod();
