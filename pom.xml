@@ -25,7 +25,7 @@
   </licenses>
 
   <properties>
-    <revision>1.25.6</revision>
+    <revision>1.25.7</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <java.level>8</java.level>
@@ -556,14 +556,6 @@
                     <artifactId>jackson-databind</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <!-- Included in core -->
-        <dependency>
-            <groupId>org.jenkins-ci.modules</groupId>
-            <artifactId>instance-identity</artifactId>
-            <version>2.2</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>

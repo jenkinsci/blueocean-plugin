@@ -3,6 +3,19 @@ Blue Ocean is an alternative user experience for Jenkins. You can learn more abo
 
 Join the community and [![Gitter](https://badges.gitter.im/jenkinsci/blueocean-plugin.svg)](https://gitter.im/jenkinsci/blueocean-plugin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
+# Blue Ocean status
+
+Blue Ocean will not receive further functionality updates.
+Blue Ocean will continue to provide easy-to-use Pipeline visualization, but it will not be enhanced further.
+It will only receive selective updates for significant security issues or functional defects.
+
+Alternative options for Pipeline visualization, such as the [Pipeline: Stage View](https://plugins.jenkins.io/pipeline-stage-view/) and [Pipeline Graph View](https://plugins.jenkins.io/pipeline-graph-view/) plugins, are available and offer some of the same functionality.
+While not complete replacements for Blue Ocean, contributions are encouraged from the community for continued development of these plugins.
+
+The [Pipeline syntax snippet generator](https://www.jenkins.io/doc/book/pipeline/getting-started/#snippet-generator) assists users as they define Pipeline steps with their arguments.
+It is the preferred tool for Jenkins Pipeline creation, as it provides online help for the Pipeline steps available in your Jenkins controller.
+It uses the plugins installed on your Jenkins controller to generate the Pipeline syntax.
+Refer to the [Pipeline steps reference](https://www.jenkins.io/doc/pipeline/steps/) page for information on all available Pipeline steps.
 
 # Get Blue Ocean
 
