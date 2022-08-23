@@ -2,7 +2,7 @@ package io.jenkins.blueocean.commons;
 
 import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 
@@ -14,7 +14,7 @@ public class JSON {
      * @param input string
      * @return sanitized string
      */
-    public static String sanitizeString(@Nonnull String input) {
+    public static String sanitizeString(@NonNull String input) {
         // replace the guava method
         // return CharMatcher.JAVA_ISO_CONTROL.and(CharMatcher.anyOf("\r\n\t")).removeFrom(input);
         if (StringUtils.isEmpty(input)) {

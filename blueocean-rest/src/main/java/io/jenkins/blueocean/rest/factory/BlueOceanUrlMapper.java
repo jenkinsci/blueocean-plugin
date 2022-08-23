@@ -4,8 +4,8 @@ import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.ModelObject;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * Maps Jenkins {@link ModelObject} to BlueOcean front end URL
@@ -20,7 +20,7 @@ public abstract class BlueOceanUrlMapper implements ExtensionPoint{
      * @return Gives url for this model object, returns null if it can't compute URL for this model object
      */
     @CheckForNull
-    public abstract String getUrl(@Nonnull ModelObject modelObject);
+    public abstract String getUrl(@NonNull ModelObject modelObject);
 
     public static ExtensionList<BlueOceanUrlMapper> all(){
         return ExtensionList.lookup(BlueOceanUrlMapper.class);

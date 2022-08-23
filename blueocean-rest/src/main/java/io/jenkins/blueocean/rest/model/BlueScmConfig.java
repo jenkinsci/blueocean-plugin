@@ -3,8 +3,8 @@ package io.jenkins.blueocean.rest.model;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -31,7 +31,7 @@ public class BlueScmConfig {
     /**
      * Gives ID of SCM
      */
-    public @Nonnull String getId() {
+    public @NonNull String getId() {
         return id;
     }
 
@@ -53,7 +53,7 @@ public class BlueScmConfig {
     /**
      * Gives map of configuration item specific to this pipeline creation
      */
-    public @Nonnull Map<String, Object> getConfig() {
+    public @NonNull Map<String, Object> getConfig() {
         return config;
     }
 

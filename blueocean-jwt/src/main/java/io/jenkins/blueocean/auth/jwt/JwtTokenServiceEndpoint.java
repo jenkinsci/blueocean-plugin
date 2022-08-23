@@ -3,8 +3,8 @@ package io.jenkins.blueocean.auth.jwt;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * This extension point serves the JWT token service endpoint
@@ -16,7 +16,7 @@ public abstract class JwtTokenServiceEndpoint implements ExtensionPoint{
     /**
      * @return Gives JWT endpoint address, e.g. https://example.com/
      */
-    public abstract @Nonnull String getHostUrl();
+    public abstract @NonNull String getHostUrl();
 
     public static ExtensionList<JwtTokenServiceEndpoint> all(){
         return  ExtensionList.lookup(JwtTokenServiceEndpoint.class);

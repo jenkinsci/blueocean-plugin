@@ -28,7 +28,7 @@ import org.kohsuke.stapler.export.CustomExportedBean;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -313,7 +313,7 @@ public abstract class Property implements Comparable<Property> {
         }
 
         @Override
-        public @Nonnull
+        public @NonNull
         ExportConfig getExportConfig() {
             return exportConfig;
         }

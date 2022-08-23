@@ -44,7 +44,7 @@ import org.jvnet.hudson.test.TestExtension;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
@@ -211,7 +211,7 @@ public class BlueOceanWebURLBuilderTest {
     public static class TestUrlMapper extends BlueOceanUrlMapper{
 
         @Override
-        public String getUrl(@Nonnull ModelObject modelObject) {
+        public String getUrl(@NonNull ModelObject modelObject) {
             return modelObject instanceof FreeStyleProject ? "/customerUrlMapper/"+((FreeStyleProject)modelObject).getName() : null;
         }
     }

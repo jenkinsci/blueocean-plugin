@@ -5,16 +5,16 @@ import hudson.model.ModelObject;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlObjectFactory;
 import io.jenkins.blueocean.rest.model.BlueOceanUrlObject;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * @author Vivek Pandey
  */
 @Extension(ordinal = -9999)
 public class BlueOceanUrlObjectFactoryImpl extends BlueOceanUrlObjectFactory {
-    @Nonnull
+    @NonNull
     @Override
-    public BlueOceanUrlObject get(@Nonnull final ModelObject object) {
+    public BlueOceanUrlObject get(@NonNull final ModelObject object) {
         return new BlueOceanUrlObjectImpl(object);
     }
 }

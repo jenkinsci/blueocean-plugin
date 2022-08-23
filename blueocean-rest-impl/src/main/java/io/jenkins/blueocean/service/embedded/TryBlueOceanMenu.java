@@ -12,7 +12,7 @@ import io.jenkins.blueocean.rest.factory.BlueOceanUrlObjectFactory;
 import io.jenkins.blueocean.rest.model.BlueOceanUrlObject;
 import jenkins.model.TransientActionFactory;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -36,9 +36,9 @@ public class TryBlueOceanMenu extends TransientActionFactory<ModelObject> {
     /**
      * {@inheritDoc}
      */
-    @Nonnull
+    @NonNull
     @Override
-    public Collection<? extends Action> createFor(@Nonnull ModelObject target) {
+    public Collection<? extends Action> createFor(@NonNull ModelObject target) {
         // we do not report actions as it might appear multiple times, we simply add it to Actionable
         BlueOceanUrlObjectFactory f = getFirst();
         if(f != null) {

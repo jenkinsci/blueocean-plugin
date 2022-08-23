@@ -12,7 +12,7 @@ import io.jenkins.blueocean.rest.model.Container;
 import jenkins.model.ModifiableTopLevelItemGroup;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +37,7 @@ public class CredentialContainer extends Container<CredentialApi> implements Org
                 : null;
     }
 
-    public CredentialContainer(@Nonnull Link parent) {
+    public CredentialContainer(@NonNull Link parent) {
         this.self = parent.rel("credentials");
     }
 

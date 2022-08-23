@@ -10,7 +10,7 @@ import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.GenericStatus;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * @author Vivek Pandey
@@ -19,7 +19,7 @@ public class NodeRunStatus {
     public final BlueRun.BlueRunResult result;
     public final BlueRun.BlueRunState state;
 
-    public NodeRunStatus(@Nonnull FlowNode endNode) {
+    public NodeRunStatus(@NonNull FlowNode endNode) {
         Result result = null;
         ErrorAction errorAction = endNode.getError();
         WarningAction warningAction = endNode.getPersistentAction(WarningAction.class);

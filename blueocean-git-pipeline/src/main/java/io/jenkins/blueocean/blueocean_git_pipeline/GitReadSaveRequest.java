@@ -31,7 +31,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequire
 import io.jenkins.blueocean.ssh.UserSSHKeyManager;
 import jenkins.plugins.git.AbstractGitSCMSource;
 
-import javax.annotation.CheckForNull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import java.io.IOException;
 import java.util.logging.Logger;
 

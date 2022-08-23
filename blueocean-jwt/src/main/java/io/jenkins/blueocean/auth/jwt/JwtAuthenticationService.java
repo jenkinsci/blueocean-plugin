@@ -7,7 +7,7 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
 
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.Nullable;
 
 /**
  * JWT endpoint resource. Provides functionality to get JWT token and also provides JWK endpoint to get

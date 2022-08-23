@@ -41,8 +41,8 @@ import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,7 +72,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
 
     @Override
     @SuppressWarnings("unchecked")
-    public BluePipeline create(@Nonnull BlueOrganization organization, @Nonnull Reachable parent) throws IOException {
+    public BluePipeline create(@NonNull BlueOrganization organization, @NonNull Reachable parent) throws IOException {
         validateInternal(getName(), scmConfig, organization);
         MultiBranchProject project = createMultiBranchProject(organization);
         assignCredentialToProject(scmConfig, project);
@@ -96,7 +96,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
     /**
      * @return Get {@link SCMSourceEvent}
      */
-    protected @Nullable AbstractScmSourceEvent getScmSourceEvent(@Nonnull MultiBranchProject project, @Nonnull SCMSource source){
+    protected @Nullable AbstractScmSourceEvent getScmSourceEvent(@NonNull MultiBranchProject project, @NonNull SCMSource source){
         return null;
     }
 
@@ -106,7 +106,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
      * @param scmConfig config
      * @return valid SCMSource
      */
-    protected abstract SCMSource createSource(@Nonnull MultiBranchProject project, @Nonnull BlueScmConfig scmConfig);
+    protected abstract SCMSource createSource(@NonNull MultiBranchProject project, @NonNull BlueScmConfig scmConfig);
 
     /**
      * Validate the provided SCMConfig and test that a connection can be made to the SCM server
@@ -121,7 +121,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
         private AtomicBoolean jenkinsFileFound = new AtomicBoolean();
 
         @Override
-        public boolean isHead(@Nonnull Probe probe, @Nonnull TaskListener listener) throws IOException {
+        public boolean isHead(@NonNull Probe probe, @NonNull TaskListener listener) throws IOException {
             SCMProbeStat stat = probe.stat("Jenkinsfile");
             boolean foundJenkinsFile =  stat.getType() != SCMFile.Type.NONEXISTENT && stat.getType() != SCMFile.Type.DIRECTORY;
             if(foundJenkinsFile && !jenkinsFileFound.get()) {
@@ -140,12 +140,12 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
      * @param scmSource scm source
      * @return true as default. false if it can determine there is no Jenkinsfile in all branches
      */
-    protected boolean repoHasJenkinsFile(@Nonnull SCMSource scmSource) {
+    protected boolean repoHasJenkinsFile(@NonNull SCMSource scmSource) {
         final AbstractMultiBranchCreateRequest.JenkinsfileCriteria criteria = new AbstractMultiBranchCreateRequest.JenkinsfileCriteria();
         try {
             scmSource.fetch(criteria, new SCMHeadObserver() {
                 @Override
-                public void observe(@Nonnull SCMHead head, @Nonnull SCMRevision revision) throws IOException, InterruptedException {
+                public void observe(@NonNull SCMHead head, @NonNull SCMRevision revision) throws IOException, InterruptedException {
                     //do nothing
                 }
 

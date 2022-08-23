@@ -3,7 +3,7 @@ package io.jenkins.blueocean.rest.factory.organization;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.model.ModifiableTopLevelItemGroup;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * Base abstract class implementing {@link BlueOrganization}. Implementors of {@link BlueOrganization} should extend
@@ -18,5 +18,5 @@ public abstract class AbstractOrganization extends BlueOrganization{
     /**
      * Gives the {@link ModifiableTopLevelItemGroup} associated with this organization
      */
-    public @Nonnull abstract ModifiableTopLevelItemGroup getGroup();
+    public @NonNull abstract ModifiableTopLevelItemGroup getGroup();
 }

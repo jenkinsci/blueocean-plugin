@@ -19,7 +19,7 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
 import org.springframework.security.core.Authentication;
 
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;

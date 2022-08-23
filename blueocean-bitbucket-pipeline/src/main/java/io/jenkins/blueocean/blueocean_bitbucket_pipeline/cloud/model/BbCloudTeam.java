@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Map;
 
 /**
@@ -17,9 +17,9 @@ public class BbCloudTeam extends BbOrg {
     private final String avatar;
 
     @JsonCreator
-    public BbCloudTeam(@Nonnull @JsonProperty("uuid") String uuid,
-                       @Nonnull @JsonProperty("display_name") String displayName,
-                       @Nonnull @JsonProperty("links") Map<String, Map<String, String>> links) {
+    public BbCloudTeam(@NonNull @JsonProperty("uuid") String uuid,
+                       @NonNull @JsonProperty("display_name") String displayName,
+                       @NonNull @JsonProperty("links") Map<String, Map<String, String>> links) {
         this.uuid = uuid;
         this.displayName = displayName;
         Map<String,String> a = links.get("avatar");

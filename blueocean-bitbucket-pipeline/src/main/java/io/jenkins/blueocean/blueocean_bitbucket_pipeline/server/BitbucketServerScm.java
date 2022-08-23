@@ -8,7 +8,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * @author Vivek Pandey
@@ -21,13 +21,13 @@ public class BitbucketServerScm extends AbstractBitbucketScm {
         super(parent);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getId() {
         return ID;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getUri() {
         return getApiUrlParameter();
@@ -39,11 +39,11 @@ public class BitbucketServerScm extends AbstractBitbucketScm {
     }
 
     @Override
-    protected  @Nonnull String createCredentialId(@Nonnull String apiUrl){
+    protected  @NonNull String createCredentialId(@NonNull String apiUrl){
         return BitbucketCredentialUtils.computeCredentialId(null, ID, apiUrl);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     protected String getDomainId() {
         return DOMAIN_NAME;
@@ -59,7 +59,7 @@ public class BitbucketServerScm extends AbstractBitbucketScm {
             return null;
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public Scm getScm(Reachable parent) {
             return new BitbucketServerScm(parent);

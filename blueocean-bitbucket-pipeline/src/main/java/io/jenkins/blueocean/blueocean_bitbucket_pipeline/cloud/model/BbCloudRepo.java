@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbRepo;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.Map;
 
 /**
@@ -19,12 +19,12 @@ public class BbCloudRepo extends BbRepo {
     private final BbCloudTeam team;
     private final String defaultBranch;
 
-    public BbCloudRepo(@Nonnull @JsonProperty("slug")String slug,
-                       @Nonnull @JsonProperty("name") String name,
-                       @Nonnull @JsonProperty("scm") String scm,
+    public BbCloudRepo(@NonNull @JsonProperty("slug")String slug,
+                       @NonNull @JsonProperty("name") String name,
+                       @NonNull @JsonProperty("scm") String scm,
                        @JsonProperty("is_private") boolean isPrivate,
                        @Nullable @JsonProperty("mainbranch") Map<String,String> mainBranch,
-                       @Nonnull @JsonProperty("owner") BbCloudTeam team) {
+                       @NonNull @JsonProperty("owner") BbCloudTeam team) {
         this.slug = slug;
         this.name = name;
         this.team = team;

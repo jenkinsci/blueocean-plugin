@@ -33,8 +33,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -54,7 +54,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
 
     @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
     @Override
-    protected SCMSource createSource(@Nonnull MultiBranchProject project, @Nonnull BlueScmConfig scmConfig) {
+    protected SCMSource createSource(@NonNull MultiBranchProject project, @NonNull BlueScmConfig scmConfig) {
         /* scmConfig.uri presence is already validated in {@link #validate} but lets check just in case */
         if(StringUtils.isBlank(scmConfig.getUri())){
             throw new ServiceException.BadRequestException("scmConfig.uri must be present");
@@ -90,7 +90,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
 
     @Nullable
     @Override
-    protected AbstractScmSourceEvent getScmSourceEvent(@Nonnull final MultiBranchProject project, @Nonnull SCMSource source) {
+    protected AbstractScmSourceEvent getScmSourceEvent(@NonNull final MultiBranchProject project, @NonNull SCMSource source) {
         if(source instanceof BitbucketSCMSource) {
             return new AbstractScmSourceEvent(((BitbucketSCMSource)source).getRepository(),
                     ((BitbucketSCMSource)source).getServerUrl()) {
@@ -106,12 +106,12 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
     }
 
     @Override
-    protected boolean repoHasJenkinsFile(@Nonnull SCMSource scmSource) {
+    protected boolean repoHasJenkinsFile(@NonNull SCMSource scmSource) {
         final JenkinsfileCriteria criteria = new JenkinsfileCriteria();
         try {
             scmSource.fetch(criteria, new SCMHeadObserver() {
                 @Override
-                public void observe(@Nonnull SCMHead head, @Nonnull SCMRevision revision) {
+                public void observe(@NonNull SCMHead head, @NonNull SCMRevision revision) {
                     //do nothing
                 }
 

@@ -5,7 +5,7 @@ import hudson.model.InvisibleAction;
 import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.rest.model.BlueOceanUrlObject;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Objects;
 
 /**
@@ -14,7 +14,7 @@ import java.util.Objects;
 public final class BlueOceanUrlAction implements Action {
     private final BlueOceanUrlObject blueOceanUrlObject;
 
-    public BlueOceanUrlAction(@Nonnull BlueOceanUrlObject urlObject) {
+    public BlueOceanUrlAction(@NonNull BlueOceanUrlObject urlObject) {
         Objects.requireNonNull(urlObject);
         this.blueOceanUrlObject = urlObject;
     }

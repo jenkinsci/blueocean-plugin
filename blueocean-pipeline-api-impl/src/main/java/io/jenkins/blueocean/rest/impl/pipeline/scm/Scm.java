@@ -11,8 +11,8 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.POST;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * Scm Resource
@@ -30,11 +30,11 @@ public abstract class Scm extends Resource {
 
     /** SCM id. For example, github, bitbucket etc. */
     @Exported(name = ID)
-    public abstract @Nonnull String getId();
+    public abstract @NonNull String getId();
 
     /** SCM URI */
     @Exported(name = URI)
-    public abstract @Nonnull String getUri();
+    public abstract @NonNull String getUri();
 
     /** credentialId attached to this scm */
     @Exported(name = CREDENTIAL_ID)

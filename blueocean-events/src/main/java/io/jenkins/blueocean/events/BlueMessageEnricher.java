@@ -44,7 +44,7 @@ import org.jenkinsci.plugins.pubsub.MessageEnricher;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.logging.Logger;
 
 import static java.util.logging.Level.WARNING;
@@ -65,7 +65,7 @@ public class BlueMessageEnricher extends MessageEnricher {
     }
 
     @Override
-    public void enrich(@Nonnull Message message) {
+    public void enrich(@NonNull Message message) {
         try {
             maybeEnrichMessage(message);
         } catch (Exception e) {
@@ -73,7 +73,7 @@ public class BlueMessageEnricher extends MessageEnricher {
         }
     }
 
-    private void maybeEnrichMessage(@Nonnull Message message) {
+    private void maybeEnrichMessage(@NonNull Message message) {
         String channelName = message.getChannelName();
         if (channelName.equals(Events.JobChannel.NAME) && message instanceof JobChannelMessage) {
             JobChannelMessage jobChannelMessage = (JobChannelMessage) message;

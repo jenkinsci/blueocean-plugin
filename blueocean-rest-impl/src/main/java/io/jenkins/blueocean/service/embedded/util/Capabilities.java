@@ -3,7 +3,7 @@ package io.jenkins.blueocean.service.embedded.util;
 import hudson.model.Item;
 import io.jenkins.blueocean.rest.annotation.Capability;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.*;
 
 /**
@@ -23,7 +23,7 @@ public class Capabilities {
         return item != null && capability != null && Capabilities.hasCapability(item.getClass(), capability);
     }
 
-    private static boolean hasCapability(@Nonnull Class<?> clazz, @Nonnull String capability) {
+    private static boolean hasCapability(@NonNull Class<?> clazz, @NonNull String capability) {
 
         Class<?> searchClass = clazz;
 

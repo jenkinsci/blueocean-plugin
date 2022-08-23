@@ -5,8 +5,8 @@ import hudson.ExtensionList;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import hudson.ExtensionPoint;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * Factory for Bitbucket API. Bitbucket server and cloud APIs are different and
@@ -18,7 +18,7 @@ public abstract class BitbucketApiFactory implements ExtensionPoint {
     /**
      * @return true if this factory can handle this scmId
      */
-    public abstract boolean handles(@Nonnull String scmId);
+    public abstract boolean handles(@NonNull String scmId);
 
     /**
      * Create {@link BitbucketApi} instance.
@@ -29,14 +29,14 @@ public abstract class BitbucketApiFactory implements ExtensionPoint {
      * @param credentials {@link StandardUsernamePasswordCredentials}
      * @return {@link BitbucketApi} instance
      */
-    public abstract @Nonnull BitbucketApi create(@Nonnull String apiUrl, @Nonnull StandardUsernamePasswordCredentials credentials);
+    public abstract @NonNull BitbucketApi create(@NonNull String apiUrl, @NonNull StandardUsernamePasswordCredentials credentials);
 
     /**
      * Resolves a {@link BitbucketApiFactory}
      * @param scmId id {@link Scm#getId()} of Bitbucket SCM provider
      * @return {@link BitbucketApiFactory} instance, could be null
      */
-    public static @CheckForNull BitbucketApiFactory resolve(@Nonnull String scmId){
+    public static @CheckForNull BitbucketApiFactory resolve(@NonNull String scmId){
         for(BitbucketApiFactory api: ExtensionList.lookup(BitbucketApiFactory.class)){
             if(api.handles(scmId)){
                 return api;

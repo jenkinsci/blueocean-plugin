@@ -19,7 +19,7 @@ import io.jenkins.blueocean.service.embedded.rest.LogResource;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import org.kohsuke.stapler.QueryParameter;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Collection;
 import java.util.Date;
 
@@ -79,7 +79,7 @@ public class OrganizationFolderRunImpl extends BlueRun {
         return folderComputation.getTimestamp().getTime();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Container<BlueChangeSetEntry> getChangeSet() {
         return Containers.empty(getLink());

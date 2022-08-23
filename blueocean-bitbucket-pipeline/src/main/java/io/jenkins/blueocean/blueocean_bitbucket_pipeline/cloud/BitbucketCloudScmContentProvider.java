@@ -5,15 +5,15 @@ import hudson.Extension;
 import hudson.model.Item;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.AbstractBitbucketScmContentProvider;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * @author cliffmeyers
  */
 @Extension(ordinal = -100)
 public class BitbucketCloudScmContentProvider extends AbstractBitbucketScmContentProvider {
-    @Nonnull
+    @NonNull
     @Override
     public String getScmId() {
         return BitbucketCloudScm.ID;
@@ -21,13 +21,13 @@ public class BitbucketCloudScmContentProvider extends AbstractBitbucketScmConten
 
     @CheckForNull
     @Override
-    public String getApiUrl(@Nonnull Item item) {
+    public String getApiUrl(@NonNull Item item) {
         BitbucketSCMSource source = getSourceFromItem(item);
         return source != null ? source.getServerUrl() : null;
     }
 
     @Override
-    public boolean support(@Nonnull Item item) {
+    public boolean support(@NonNull Item item) {
         BitbucketSCMSource source = getSourceFromItem(item);
         return source != null && source.getServerUrl().startsWith(BitbucketCloudScm.API_URL);
     }

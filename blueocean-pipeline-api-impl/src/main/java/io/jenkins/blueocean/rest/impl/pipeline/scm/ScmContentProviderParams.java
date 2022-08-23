@@ -8,8 +8,8 @@ import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMSource;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.List;
 
 /**
@@ -74,7 +74,7 @@ public abstract class ScmContentProviderParams {
      * @param scmSource scm source
      * @return null if there is no owner in this SCMSource
      */
-    protected abstract @CheckForNull String owner(@Nonnull SCMSource scmSource);
+    protected abstract @CheckForNull String owner(@NonNull SCMSource scmSource);
 
     /**
      * Gives owner of {@link SCMNavigator}, typically organization
@@ -82,7 +82,7 @@ public abstract class ScmContentProviderParams {
      * @param scmNavigator scm navigator
      * @return null if there is no owner in this SCMSource
      */
-    protected abstract @CheckForNull String owner(@Nonnull SCMNavigator scmNavigator);
+    protected abstract @CheckForNull String owner(@NonNull SCMNavigator scmNavigator);
 
 
     /**
@@ -91,21 +91,21 @@ public abstract class ScmContentProviderParams {
      * @param scmSource scm source
      * @return null if there is no repo attached to this SCMSource
      */
-    protected abstract @CheckForNull String repo(@Nonnull SCMSource scmSource);
+    protected abstract @CheckForNull String repo(@NonNull SCMSource scmSource);
 
     /**
      * Gives SCM api URL attached to this SCMSource
      * @param scmSource scm source
      * @return SCM api URL
      */
-    protected abstract @CheckForNull String apiUrl(@Nonnull SCMSource scmSource);
+    protected abstract @CheckForNull String apiUrl(@NonNull SCMSource scmSource);
 
     /**
      * Gives SCM api URL attached to this ScmNavigator
      * @param scmNavigator scm source
      * @return SCM api URL
      */
-    protected abstract @CheckForNull String apiUrl(@Nonnull SCMNavigator scmNavigator);
+    protected abstract @CheckForNull String apiUrl(@NonNull SCMNavigator scmNavigator);
 
     /**
      * Gives credential for SCM with this URL
@@ -113,5 +113,5 @@ public abstract class ScmContentProviderParams {
      * @param apiUrl api url of scm provider
      * @return credential
      */
-    protected abstract @Nonnull StandardUsernamePasswordCredentials getCredentialForUser(@Nonnull Item item, @Nonnull String apiUrl);
+    protected abstract @NonNull StandardUsernamePasswordCredentials getCredentialForUser(@NonNull Item item, @NonNull String apiUrl);
 }

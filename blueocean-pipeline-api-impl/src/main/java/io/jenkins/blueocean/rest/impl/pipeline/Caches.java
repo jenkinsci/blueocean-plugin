@@ -21,7 +21,7 @@ import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.concurrent.TimeUnit;
 
 class Caches {

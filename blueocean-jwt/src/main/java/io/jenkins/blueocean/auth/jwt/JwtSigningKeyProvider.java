@@ -3,7 +3,7 @@ package io.jenkins.blueocean.auth.jwt;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 
-import javax.annotation.CheckForNull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * PublicKey provider, to be used during signing

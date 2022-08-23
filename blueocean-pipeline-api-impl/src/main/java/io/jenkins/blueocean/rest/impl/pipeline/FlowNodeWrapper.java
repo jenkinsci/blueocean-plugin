@@ -12,9 +12,9 @@ import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -74,12 +74,12 @@ public class FlowNodeWrapper {
     private Collection<Action> pipelineActions;
 
 
-    public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status, @Nonnull TimingInfo timingInfo, @Nonnull WorkflowRun run) {
+    public FlowNodeWrapper(@NonNull FlowNode node, @NonNull NodeRunStatus status, @NonNull TimingInfo timingInfo, @NonNull WorkflowRun run) {
         this(node, status, timingInfo, null, run);
     }
 
-    public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status,
-                           @Nonnull TimingInfo timingInfo, @Nullable InputStep inputStep, @Nonnull WorkflowRun run) {
+    public FlowNodeWrapper(@NonNull FlowNode node, @NonNull NodeRunStatus status,
+                           @NonNull TimingInfo timingInfo, @Nullable InputStep inputStep, @NonNull WorkflowRun run) {
         this.node = node;
         this.status = status;
         this.timingInfo = timingInfo;
@@ -94,7 +94,7 @@ public class FlowNodeWrapper {
         return run;
     }
 
-    public @Nonnull
+    public @NonNull
     String getDisplayName() {
         return displayName;
     }
@@ -110,7 +110,7 @@ public class FlowNodeWrapper {
         throw new IllegalArgumentException(String.format("Unknown FlowNode %s, type: %s", node.getId(), node.getClass()));
     }
 
-    public @Nonnull
+    public @NonNull
     NodeRunStatus getStatus() {
         if (hasBlockError()) {
             if (isBlockErrorInterruptedWithAbort()) {
@@ -122,17 +122,17 @@ public class FlowNodeWrapper {
         return status;
     }
 
-    public @Nonnull
+    public @NonNull
     TimingInfo getTiming() {
         return timingInfo;
     }
 
-    public @Nonnull
+    public @NonNull
     String getId() {
         return node.getId();
     }
 
-    public @Nonnull
+    public @NonNull
     FlowNode getNode() {
         return node;
     }
@@ -162,7 +162,7 @@ public class FlowNodeWrapper {
         return parents.size() > 0 ? parents.get(0) : null;
     }
 
-    public @Nonnull
+    public @NonNull
     List<FlowNodeWrapper> getParents() {
         return parents;
     }

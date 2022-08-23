@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbBranch;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * @author Vivek Pandey
@@ -15,8 +15,8 @@ public class BbCloudBranch extends BbBranch{
     private final boolean defaultBranch;
 
     @JsonCreator
-    public BbCloudBranch(@Nonnull @JsonProperty("name") String name,
-                         @Nonnull @JsonProperty("target") Target target) {
+    public BbCloudBranch(@NonNull @JsonProperty("name") String name,
+                         @NonNull @JsonProperty("target") Target target) {
         this.name = name;
         this.commitId = target.hash;
         this.defaultBranch = target.repo.getDefaultBranch().equals(name);
@@ -42,7 +42,7 @@ public class BbCloudBranch extends BbBranch{
         private final BbCloudRepo repo;
 
         @JsonCreator
-        public Target(@Nonnull @JsonProperty("hash") String hash, @Nonnull @JsonProperty("repository") BbCloudRepo repo) {
+        public Target(@NonNull @JsonProperty("hash") String hash, @NonNull @JsonProperty("repository") BbCloudRepo repo) {
             this.hash = hash;
             this.repo = repo;
         }

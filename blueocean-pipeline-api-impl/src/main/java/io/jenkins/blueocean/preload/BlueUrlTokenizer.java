@@ -29,8 +29,8 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Arrays;
@@ -173,7 +173,7 @@ public class BlueUrlTokenizer {
      * @return A {@link BlueUrlTokenizer} instance iff the URL is a Blue Ocean UI URL, otherwise {@code null}.
      */
     public static @CheckForNull
-    BlueUrlTokenizer parse(@Nonnull String url) {
+    BlueUrlTokenizer parse(@NonNull String url) {
         Iterator<String> urlTokens = extractTokens(url);
 
         //
@@ -238,16 +238,16 @@ public class BlueUrlTokenizer {
         return null;
     }
 
-    private void addPart(@Nonnull UrlPart urlPart, @Nonnull String value) {
+    private void addPart(@NonNull UrlPart urlPart, @NonNull String value) {
         urlParts.put(urlPart, value);
         this.lastPart = urlPart;
     }
 
-    public boolean hasPart(@Nonnull UrlPart urlPart) {
+    public boolean hasPart(@NonNull UrlPart urlPart) {
         return urlParts.containsKey(urlPart);
     }
 
-    public @CheckForNull String getPart(@Nonnull UrlPart urlPart) {
+    public @CheckForNull String getPart(@NonNull UrlPart urlPart) {
         return urlParts.get(urlPart);
     }
 
@@ -259,11 +259,11 @@ public class BlueUrlTokenizer {
         return this.lastPart;
     }
 
-    public boolean lastPartIs(@Nonnull UrlPart urlPart) {
+    public boolean lastPartIs(@NonNull UrlPart urlPart) {
         return this.lastPart == urlPart;
     }
 
-    public boolean lastPartIs(@Nonnull UrlPart urlPart, @Nonnull String value) {
+    public boolean lastPartIs(@NonNull UrlPart urlPart, @NonNull String value) {
         if (this.lastPart != null && this.lastPart == urlPart) {
             String part = getPart(this.lastPart);
             return part != null && part.equals(value);

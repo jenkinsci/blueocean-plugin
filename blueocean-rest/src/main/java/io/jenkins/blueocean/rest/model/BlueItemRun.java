@@ -4,7 +4,7 @@ import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Collection;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_RUN;
@@ -43,7 +43,7 @@ public interface BlueItemRun {
      * @return Gives change set of a run
      */
     @Exported(inline = true)
-    @Nonnull
+    @NonNull
     @Navigable
     Container<BlueChangeSetEntry> getChangeSet();
 

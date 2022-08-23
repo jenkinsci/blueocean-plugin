@@ -4,8 +4,8 @@ import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import hudson.model.Job;
 import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 
 public final class PrimaryBranch {
     /**
@@ -15,7 +15,7 @@ public final class PrimaryBranch {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public static Job resolve(@Nonnull AbstractFolder folder) {
+    public static Job resolve(@NonNull AbstractFolder folder) {
         Job job = (Job) folder.getAllJobs().stream().filter(
             input -> input != null && ( (Job) input ).getAction( PrimaryInstanceMetadataAction.class ) != null ).
             findFirst().

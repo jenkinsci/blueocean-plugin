@@ -37,7 +37,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.framework.io.ByteBuffer;
 import org.springframework.security.core.Authentication;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -134,7 +134,7 @@ public class PipelineStepImpl extends BluePipelineStep {
             final String errorLog = node.blockError();
             if(errorLog != null){
                 return new LogResource(logAction.getLogText(), new LogAppender() {
-                    @Nonnull
+                    @NonNull
                     @Override
                     public Reader getLog() {
                         return new StringReader(errorLog+"\n");

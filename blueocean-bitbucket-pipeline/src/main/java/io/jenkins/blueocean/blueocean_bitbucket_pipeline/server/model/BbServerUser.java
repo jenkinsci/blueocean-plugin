@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbUser;
 import io.jenkins.blueocean.rest.Utils;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +20,8 @@ public class BbServerUser extends BbUser {
     private final String avatar;
 
     @JsonCreator
-    public BbServerUser(@Nonnull @JsonProperty("displayName") String displayName,
-                        @Nonnull @JsonProperty("slug") String slug, @Nonnull @JsonProperty("emailAddress") String emailAddress, @JsonProperty("links") Map<String, List<Map<String,String>>> links) {
+    public BbServerUser(@NonNull @JsonProperty("displayName") String displayName,
+                        @NonNull @JsonProperty("slug") String slug, @NonNull @JsonProperty("emailAddress") String emailAddress, @JsonProperty("links") Map<String, List<Map<String,String>>> links) {
         this.displayName = displayName;
         this.slug = slug;
         this.emailAddress = emailAddress;

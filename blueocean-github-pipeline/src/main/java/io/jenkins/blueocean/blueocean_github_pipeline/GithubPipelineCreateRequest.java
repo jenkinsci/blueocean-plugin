@@ -26,8 +26,8 @@ import org.jenkinsci.plugins.github_branch_source.GitHubSCMSourceBuilder;
 import org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class GithubPipelineCreateRequest extends AbstractMultiBranchCreateReques
     }
 
     @Override
-    protected SCMSource createSource(@Nonnull MultiBranchProject project, @Nonnull BlueScmConfig scmConfig) {
+    protected SCMSource createSource(@NonNull MultiBranchProject project, @NonNull BlueScmConfig scmConfig) {
         // Update endpoint only if its GitHub Enterprise
         if(scmConfig.getId().equals(GithubEnterpriseScm.ID)) {
             updateEndpoints(scmConfig.getUri());
@@ -70,7 +70,7 @@ public class GithubPipelineCreateRequest extends AbstractMultiBranchCreateReques
 
     @Nullable
     @Override
-    protected AbstractScmSourceEvent getScmSourceEvent(@Nonnull final MultiBranchProject project, @Nonnull SCMSource source) {
+    protected AbstractScmSourceEvent getScmSourceEvent(@NonNull final MultiBranchProject project, @NonNull SCMSource source) {
         if(source instanceof GitHubSCMSource) {
             return new AbstractScmSourceEvent(((GitHubSCMSource)source).getRepository(),
                     ((GitHubSCMSource)source).getApiUri()) {

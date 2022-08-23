@@ -28,7 +28,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -157,29 +157,29 @@ public class OrganizationFolderTest{
 
     @TestExtension("testOrganizationFolderFactory")
     public static class ScmContentProviderTest extends ScmContentProvider {
-        @Nonnull
+        @NonNull
         @Override
         public String getScmId() {
             return "TestProvider";
         }
 
         @Override
-        public String getApiUrl(@Nonnull Item item) {
+        public String getApiUrl(@NonNull Item item) {
             return null;
         }
 
         @Override
-        public Object getContent(@Nonnull StaplerRequest staplerRequest, @Nonnull Item item) {
+        public Object getContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item) {
             return "hello";
         }
 
         @Override
-        public Object saveContent(@Nonnull StaplerRequest staplerRequest, @Nonnull Item item) {
+        public Object saveContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item) {
             return null;
         }
 
         @Override
-        public boolean support(@Nonnull Item item) {
+        public boolean support(@NonNull Item item) {
             return item instanceof OrganizationFolder;
         }
     }

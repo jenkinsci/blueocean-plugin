@@ -2,7 +2,7 @@ package io.jenkins.blueocean.commons.stapler.export;
 
 import org.jvnet.tiger_types.Types;
 
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.lang.reflect.Type;
 
 /**

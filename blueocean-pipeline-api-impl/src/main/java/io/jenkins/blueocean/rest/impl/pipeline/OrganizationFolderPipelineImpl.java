@@ -38,7 +38,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -104,7 +104,7 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
         return organization.getName();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public BlueOrganization getOrganization() {
         return organization;
