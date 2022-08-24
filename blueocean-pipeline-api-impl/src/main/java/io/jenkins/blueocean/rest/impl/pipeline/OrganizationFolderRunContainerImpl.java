@@ -11,7 +11,7 @@ import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -60,7 +60,7 @@ public class OrganizationFolderRunContainerImpl extends BlueRunContainer {
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public Iterator<BlueRun> iterator() {
         return Collections.singleton((BlueRun)run).iterator();
     }

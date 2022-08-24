@@ -10,7 +10,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.POST;
 import org.kohsuke.stapler.verb.PUT;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Collection;
 import java.util.Date;
 
@@ -86,7 +86,7 @@ public abstract class BlueRun extends Resource implements BlueItemRun {
      * @return Gives change set of a run
      */
     @Exported(inline = true)
-    @Nonnull
+    @NonNull
     @Navigable
     public abstract Container<BlueChangeSetEntry> getChangeSet();
 

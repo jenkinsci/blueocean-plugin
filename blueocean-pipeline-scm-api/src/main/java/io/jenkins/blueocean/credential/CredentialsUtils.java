@@ -17,9 +17,9 @@ import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,8 +35,8 @@ import java.util.Optional;
  */
 public class CredentialsUtils {
 
-    public static void createCredentialsInUserStore(@Nonnull Credentials credential, @Nonnull User user,
-                                                    @Nonnull String domainName, @Nonnull List<DomainSpecification> domainSpecifications)
+    public static void createCredentialsInUserStore(@NonNull Credentials credential, @NonNull User user,
+                                                    @NonNull String domainName, @NonNull List<DomainSpecification> domainSpecifications)
             throws IOException {
         CredentialsStore store= findUserStoreFirstOrNull(user);
 
@@ -52,9 +52,9 @@ public class CredentialsUtils {
 
     }
 
-    public static void updateCredentialsInUserStore(@Nonnull Credentials current, @Nonnull Credentials replacement,
-                                                    @Nonnull User user,
-                                                    @Nonnull String domainName, @Nonnull List<DomainSpecification> domainSpecifications)
+    public static void updateCredentialsInUserStore(@NonNull Credentials current, @NonNull Credentials replacement,
+                                                    @NonNull User user,
+                                                    @NonNull String domainName, @NonNull List<DomainSpecification> domainSpecifications)
             throws IOException {
         CredentialsStore store= findUserStoreFirstOrNull(user);
 
@@ -70,7 +70,7 @@ public class CredentialsUtils {
         }
     }
 
-    public static @CheckForNull Domain findDomain(@Nonnull final String credentialId, @Nonnull User user){
+    public static @CheckForNull Domain findDomain(@NonNull final String credentialId, @NonNull User user){
         for(final CredentialsStore store: findUserStores(user)) {
             Optional<Domain> d = store.getDomains().stream()
                 .filter(domain -> domain != null && store.getCredentials( domain)
@@ -88,7 +88,7 @@ public class CredentialsUtils {
     /**
      * Get all domains this user has access to
      */
-    public static @Nonnull Iterable<Domain> getUserDomains(@Nonnull User user){
+    public static @NonNull Iterable<Domain> getUserDomains(@NonNull User user){
         List<Domain> domains = new ArrayList<>();
         for(final CredentialsStore store: findUserStores(user)) {
             domains.addAll(store.getDomains());
@@ -99,7 +99,7 @@ public class CredentialsUtils {
         return domains;
     }
 
-    public static @CheckForNull <C extends Credentials> C findCredential(@Nonnull String credentialId, @Nonnull Class<C> type, @Nonnull DomainRequirement... domainRequirements){
+    public static @CheckForNull <C extends Credentials> C findCredential(@NonNull String credentialId, @NonNull Class<C> type, @NonNull DomainRequirement... domainRequirements){
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider.lookupCredentials(
                         type,
@@ -119,7 +119,7 @@ public class CredentialsUtils {
         return null;
     }
 
-    private static @Nonnull Iterable<CredentialsStore> findUserStores(User user){
+    private static @NonNull Iterable<CredentialsStore> findUserStores(User user){
         List<CredentialsStore> stores = new ArrayList<>();
 
         //First user store
@@ -162,9 +162,9 @@ public class CredentialsUtils {
         return Collections.emptyList();
     }
 
-    private static @Nonnull Domain findOrCreateDomain(@Nonnull CredentialsStore store,
-                                                      @Nonnull String domainName,
-                                                      @Nonnull List<DomainSpecification> domainSpecifications)
+    private static @NonNull Domain findOrCreateDomain(@NonNull CredentialsStore store,
+                                                      @NonNull String domainName,
+                                                      @NonNull List<DomainSpecification> domainSpecifications)
             throws IOException {
 
         Domain domain = store.getDomainByName(domainName);

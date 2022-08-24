@@ -6,8 +6,8 @@ import hudson.model.Item;
 import jenkins.scm.api.SCMNavigator;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * SCM content specific APIs
@@ -19,14 +19,14 @@ public abstract class ScmContentProvider implements ExtensionPoint{
      * Get the "scmId" for the content provider as defined in Scm.getId()
      * @return SCM identifier
      */
-    public abstract @Nonnull String getScmId();
+    public abstract @NonNull String getScmId();
 
     /**
      * Get the SCM API URL for the provided item
      * @param item {@link Item} item to resolve backing SCM API URL
      * @return SCM API URL
      */
-    public abstract @CheckForNull String getApiUrl(@Nonnull Item item);
+    public abstract @CheckForNull String getApiUrl(@NonNull Item item);
 
     /**
      * Gives content of scm file.
@@ -36,7 +36,7 @@ public abstract class ScmContentProvider implements ExtensionPoint{
      *                         or {@link jenkins.branch.MultiBranchProject}
      * @return scm content
      */
-    public abstract @CheckForNull Object getContent(@Nonnull StaplerRequest staplerRequest, @Nonnull Item item);
+    public abstract @CheckForNull Object getContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item);
 
     /**
      * Save content
@@ -46,14 +46,14 @@ public abstract class ScmContentProvider implements ExtensionPoint{
      *                         or {@link jenkins.branch.MultiBranchProject}
      * @return SCM specific save content response
      */
-    public abstract @CheckForNull Object saveContent(@Nonnull StaplerRequest staplerRequest, @Nonnull Item item);
+    public abstract @CheckForNull Object saveContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item);
 
     /**
      * {@link ScmContentProvider} instance that supports given {@link SCMNavigator}.
      *
      * @return true if this provide can handle it.
      */
-    public abstract boolean support(@Nonnull Item item);
+    public abstract boolean support(@NonNull Item item);
 
     /**
      * Resolve {@link ScmContentProvider} for given {@link Item}.
@@ -61,7 +61,7 @@ public abstract class ScmContentProvider implements ExtensionPoint{
      * @param item item for which {@link ScmContentProvider} is resolved
      * @return resolved ScmContentProvider
      */
-    public static ScmContentProvider resolve(@Nonnull Item item){
+    public static ScmContentProvider resolve(@NonNull Item item){
         for(ScmContentProvider provider: all()){
             if(provider.support(item)){
                 return provider;

@@ -4,7 +4,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.ModelObject;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlMapper;
 import io.jenkins.blueocean.rest.model.BlueOceanUrlObject;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * @author Vivek Pandey
@@ -22,17 +22,17 @@ public class BlueOceanUrlObjectImpl extends BlueOceanUrlObject {
     }
 
     @Override
-    public @Nonnull String getDisplayName() {
+    public @NonNull String getDisplayName() {
         return Messages.BlueOceanUrlAction_DisplayName();
     }
 
     @Override
-    public @Nonnull String getUrl() {
+    public @NonNull String getUrl() {
         return mappedUrl;
     }
 
     @Override
-    public @Nonnull String getIconUrl() {
+    public @NonNull String getIconUrl() {
         return "/plugin/blueocean-rest-impl/images/48x48/blueocean.png";
     }
 

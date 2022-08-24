@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbRepo;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * @author Vivek Pandey
@@ -18,10 +18,10 @@ public class BbServerRepo extends BbRepo {
     private final boolean publicRepo;
 
     @JsonCreator
-    public BbServerRepo(@Nonnull @JsonProperty("slug") String slug, @Nonnull @JsonProperty("name") String name,
-                        @Nonnull @JsonProperty("scmId") String scmId,
-                        @Nonnull @JsonProperty("public") Boolean publicRepo,
-                        @Nonnull @JsonProperty("project")BbServerProject project) {
+    public BbServerRepo(@NonNull @JsonProperty("slug") String slug, @NonNull @JsonProperty("name") String name,
+                        @NonNull @JsonProperty("scmId") String scmId,
+                        @NonNull @JsonProperty("public") Boolean publicRepo,
+                        @NonNull @JsonProperty("project")BbServerProject project) {
         this.slug = slug;
         this.name = name;
         this.scmId = scmId;

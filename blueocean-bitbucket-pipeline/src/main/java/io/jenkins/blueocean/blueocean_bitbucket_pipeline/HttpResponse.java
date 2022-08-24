@@ -13,8 +13,8 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -84,7 +84,7 @@ public class HttpResponse {
         return response.getStatusLine().getStatusCode();
     }
 
-    public @Nonnull String getStatusLine() {
+    public @NonNull String getStatusLine() {
         return response.getStatusLine().getReasonPhrase();
     }
 

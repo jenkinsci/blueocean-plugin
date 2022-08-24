@@ -9,8 +9,8 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.PUT;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -58,7 +58,7 @@ public abstract class BluePipeline extends Resource implements BluePipelineItem,
     /**
      * @return the organization that this pipeline is a child of
      */
-    @Nonnull
+    @NonNull
     public abstract BlueOrganization getOrganization();
 
     /**

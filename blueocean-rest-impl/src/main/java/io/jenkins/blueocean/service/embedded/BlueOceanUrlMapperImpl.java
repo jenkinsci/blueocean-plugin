@@ -17,8 +17,8 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.model.ModifiableTopLevelItemGroup;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -29,7 +29,7 @@ import java.net.URLEncoder;
 @Extension(ordinal = -9999)
 public class BlueOceanUrlMapperImpl extends BlueOceanUrlMapper {
     @Override
-    public String getUrl(@Nonnull ModelObject modelObject) {
+    public String getUrl(@NonNull ModelObject modelObject) {
         BlueOrganization organization = getOrganization(modelObject);
         if(organization == null){ //no organization, best we can do is to land user on landing page
             return getLandingPagePath();

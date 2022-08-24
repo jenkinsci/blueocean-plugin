@@ -46,7 +46,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import io.jenkins.blueocean.ssh.UserSSHKeyManager;
 import jenkins.branch.MultiBranchProject;
@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
 public class GitReadSaveService extends ScmContentProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(GitReadSaveService.class);
-    @Nonnull
+    @NonNull
     private static ReadSaveType TYPE = ReadSaveType.DEFAULT;
 
     /**
@@ -92,14 +92,14 @@ public class GitReadSaveService extends ScmContentProvider {
         }
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getScmId() {
         return "git";
     }
 
     @Override
-    public String getApiUrl(@Nonnull Item item) {
+    public String getApiUrl(@NonNull Item item) {
         if (item instanceof org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject) {
             MultiBranchProject<?,?> mbp = (MultiBranchProject<?,?>)item;
             return mbp.getSCMSources().stream()
@@ -111,7 +111,7 @@ public class GitReadSaveService extends ScmContentProvider {
         return null;
     }
 
-    public static void setType(@Nonnull ReadSaveType type) {
+    public static void setType(@NonNull ReadSaveType type) {
         TYPE = type;
     }
 
@@ -181,7 +181,7 @@ public class GitReadSaveService extends ScmContentProvider {
     }
 
     @Override
-    public Object getContent(@Nonnull StaplerRequest req, @Nonnull Item item) {
+    public Object getContent(@NonNull StaplerRequest req, @NonNull Item item) {
         item.checkPermission(Item.READ);
         User user = User.current();
         if (user == null) {
@@ -206,7 +206,7 @@ public class GitReadSaveService extends ScmContentProvider {
     }
 
     @Override
-    public Object saveContent(@Nonnull StaplerRequest req, @Nonnull Item item) {
+    public Object saveContent(@NonNull StaplerRequest req, @NonNull Item item) {
         item.checkPermission(Item.CONFIGURE);
         User user = User.current();
         if (user == null) {
@@ -227,12 +227,12 @@ public class GitReadSaveService extends ScmContentProvider {
     }
 
     @Override
-    public boolean support(@Nonnull Item item) {
+    public boolean support(@NonNull Item item) {
         return getApiUrl(item) != null;
     }
 
-    @Nonnull
-    protected StandardUsernamePasswordCredentials getCredentialForUser(@Nonnull Item item, @Nonnull String repositoryUrl) {
+    @NonNull
+    protected StandardUsernamePasswordCredentials getCredentialForUser(@NonNull Item item, @NonNull String repositoryUrl) {
 
         User user = User.current();
         if (user == null) { //ensure this session has authenticated user

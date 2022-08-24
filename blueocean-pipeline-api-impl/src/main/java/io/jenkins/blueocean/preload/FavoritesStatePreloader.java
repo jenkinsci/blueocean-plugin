@@ -36,7 +36,7 @@ import io.jenkins.blueocean.service.embedded.rest.UserImpl;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -56,7 +56,7 @@ public class FavoritesStatePreloader extends RESTFetchPreloader {
     private static final int DEFAULT_LIMIT = 26;
 
     @Override
-    protected FetchData getFetchData(@Nonnull BlueUrlTokenizer blueUrl) {
+    protected FetchData getFetchData(@NonNull BlueUrlTokenizer blueUrl) {
         User jenkinsUser = User.current();
         if (jenkinsUser != null) {
             BlueOrganization organization = IterableUtils.getFirst(OrganizationFactory.getInstance().list(), null);

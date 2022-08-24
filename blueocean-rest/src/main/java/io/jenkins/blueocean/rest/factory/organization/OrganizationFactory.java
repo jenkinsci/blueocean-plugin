@@ -8,8 +8,8 @@ import hudson.model.Run;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.model.ModifiableTopLevelItemGroup;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Collection;
 
 /**
@@ -89,7 +89,7 @@ public abstract class OrganizationFactory implements ExtensionPoint {
         }
     }
 
-    @Nonnull
+    @NonNull
     public static OrganizationFactory getInstance() {
         OrganizationFactory r = ExtensionList.lookup(OrganizationFactory.class).get(0);
         if (r==null) {

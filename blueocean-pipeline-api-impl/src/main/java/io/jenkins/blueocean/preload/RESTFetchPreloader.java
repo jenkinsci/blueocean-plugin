@@ -28,7 +28,7 @@ import net.sf.json.JSONObject;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * REST prefetch data preloader.
@@ -73,14 +73,14 @@ public abstract class RESTFetchPreloader extends PageStatePreloader
         return null;
     }
 
-    protected abstract FetchData getFetchData(@Nonnull BlueUrlTokenizer blueUrl);
+    protected abstract FetchData getFetchData(@NonNull BlueUrlTokenizer blueUrl);
 
     public static final class FetchData {
 
         private String restUrl;
         private String data;
 
-        public FetchData(@Nonnull String restUrl, @Nonnull String data) {
+        public FetchData(@NonNull String restUrl, @NonNull String data) {
             this.restUrl = restUrl;
             this.data = data;
         }

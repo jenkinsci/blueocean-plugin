@@ -28,7 +28,7 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.kohsuke.stapler.NoStaplerConstructorException;
 import org.kohsuke.stapler.verb.GET;
 
-import javax.annotation.CheckForNull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

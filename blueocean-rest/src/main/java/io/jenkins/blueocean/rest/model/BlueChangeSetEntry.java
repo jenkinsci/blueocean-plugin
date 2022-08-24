@@ -2,8 +2,8 @@ package io.jenkins.blueocean.rest.model;
 
 import org.kohsuke.stapler.export.Exported;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.Collection;
 
 
@@ -42,7 +42,7 @@ public abstract class BlueChangeSetEntry extends Resource {
      * @return
      *      never null.
      */
-    @Nonnull
+    @NonNull
     @Exported(name = AUTHOR, inline = true)
     public abstract BlueUser getAuthor();
 
@@ -63,7 +63,7 @@ public abstract class BlueChangeSetEntry extends Resource {
      * @return
      *      Can be empty but never null.
      */
-    @Nonnull
+    @NonNull
     @Exported(name = MESSAGE)
     public abstract String getMsg();
 
@@ -77,7 +77,7 @@ public abstract class BlueChangeSetEntry extends Resource {
      *
      * @return never null.
      */
-    @Nonnull
+    @NonNull
     @Exported(name = AFFECTED_PATHS)
     public abstract Collection<String> getAffectedPaths();
 

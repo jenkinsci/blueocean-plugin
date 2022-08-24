@@ -12,9 +12,9 @@ import org.apache.http.client.HttpResponseException;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.Map;
 
 /**
@@ -29,7 +29,7 @@ public abstract class BitbucketApi {
     protected final String userName;
     protected final HttpRequest request;
 
-    protected BitbucketApi(@Nonnull String apiUrl, @Nonnull StandardUsernamePasswordCredentials credentials) {
+    protected BitbucketApi(@NonNull String apiUrl, @NonNull StandardUsernamePasswordCredentials credentials) {
         this.apiUrl = ensureTrailingSlash(apiUrl);
         this.request = new HttpRequest.HttpRequestBuilder(apiUrl).credentials(credentials).build();
         this.userName = credentials.getUsername();
@@ -38,7 +38,7 @@ public abstract class BitbucketApi {
     /**
      * @return {@link BbUser}
      */
-    public @Nonnull BbUser getUser(){
+    public @NonNull BbUser getUser(){
         return getUser(this.userName);
     }
 
@@ -49,7 +49,7 @@ public abstract class BitbucketApi {
      *
      * @return {@link BbUser}
      */
-    public @Nonnull abstract BbUser getUser(@Nonnull String userSlug);
+    public @NonNull abstract BbUser getUser(@NonNull String userSlug);
 
     /**
      * Gives collection of Bitbucket organizations (Project/Team).
@@ -58,7 +58,7 @@ public abstract class BitbucketApi {
      * @param pageSize number of items in a page
      * @return Collection of {@link BbOrg}s
      */
-    public @Nonnull abstract BbPage<BbOrg> getOrgs(int pageNumber, int pageSize);
+    public @NonNull abstract BbPage<BbOrg> getOrgs(int pageNumber, int pageSize);
 
     /**
      * Gives {@link BbOrg} for given project/team name.
@@ -67,7 +67,7 @@ public abstract class BitbucketApi {
      *
      * @return {@link BbOrg} instance
      */
-    public @Nonnull abstract BbOrg getOrg(@Nonnull String orgName);
+    public @NonNull abstract BbOrg getOrg(@NonNull String orgName);
 
     /**
      * Gives {@link BbRepo}
@@ -76,7 +76,7 @@ public abstract class BitbucketApi {
      * @param repoSlug repo slug {@link BbRepo#getSlug()}
      * @return {@link BbRepo} instance
      */
-    public @Nonnull abstract BbRepo getRepo(@Nonnull String orgId, String repoSlug);
+    public @NonNull abstract BbRepo getRepo(@NonNull String orgId, String repoSlug);
 
     /**
      * Gives collection of {@link BbRepo}s.
@@ -86,7 +86,7 @@ public abstract class BitbucketApi {
      * @param pageSize page size
      * @return
      */
-    public @Nonnull abstract BbPage<BbRepo> getRepos(@Nonnull String orgId, int pageNumber, int pageSize);
+    public @NonNull abstract BbPage<BbRepo> getRepos(@NonNull String orgId, int pageNumber, int pageSize);
 
     /**
      * Gives content of files in Bitbucket.
@@ -100,10 +100,10 @@ public abstract class BitbucketApi {
      * @param commitId commitId of branch, path will be served off it.
      * @return content
      */
-    public @Nonnull abstract String getContent(@Nonnull String orgId,
-                                               @Nonnull String repoSlug,
-                                               @Nonnull String path,
-                                               @Nonnull String commitId);
+    public @NonNull abstract String getContent(@NonNull String orgId,
+                                               @NonNull String repoSlug,
+                                               @NonNull String path,
+                                               @NonNull String commitId);
 
 
     /**
@@ -119,11 +119,11 @@ public abstract class BitbucketApi {
      * @return {@link BbSaveContentResponse} on successful save.
      * @throws io.jenkins.blueocean.commons.ServiceException.ConflictException in case of conflict during save
      */
-    public @Nonnull abstract BbSaveContentResponse saveContent(@Nonnull String orgId,
-                                                               @Nonnull String repoSlug,
-                                                               @Nonnull String path,
-                                                               @Nonnull String content,
-                                                               @Nonnull String commitMessage,
+    public @NonNull abstract BbSaveContentResponse saveContent(@NonNull String orgId,
+                                                               @NonNull String repoSlug,
+                                                               @NonNull String path,
+                                                               @NonNull String content,
+                                                               @NonNull String commitMessage,
                                                                @Nullable String branch,
                                                                @Nullable String sourceBranch,
                                                                @Nullable String commitId);
@@ -137,10 +137,10 @@ public abstract class BitbucketApi {
      * @param branch Bitbucket branch {@link BbBranch#getDisplayId()}
      * @return true if file exists
      */
-    public abstract boolean fileExists(@Nonnull String orgId,
-                                       @Nonnull String repoSlug,
-                                       @Nonnull String path,
-                                       @Nonnull String branch);
+    public abstract boolean fileExists(@NonNull String orgId,
+                                       @NonNull String repoSlug,
+                                       @NonNull String path,
+                                       @NonNull String branch);
 
     /**
      * Gives Bitbucket branch
@@ -150,7 +150,7 @@ public abstract class BitbucketApi {
      * @param branch branch name {@link BbBranch#getDisplayId()}
      * @return {@link BbBranch} instance. Could be null if there is no such branch.
      */
-    public @CheckForNull abstract BbBranch getBranch(@Nonnull String orgId, @Nonnull String repoSlug, @Nonnull String branch);
+    public @CheckForNull abstract BbBranch getBranch(@NonNull String orgId, @NonNull String repoSlug, @NonNull String branch);
 
     /**
      * Create branch.
@@ -160,8 +160,8 @@ public abstract class BitbucketApi {
      * @param payload branch payload
      * @return Created branch
      */
-    public @Nonnull abstract BbBranch createBranch(@Nonnull String orgId,
-                                                   @Nonnull String repoSlug,
+    public @NonNull abstract BbBranch createBranch(@NonNull String orgId,
+                                                   @NonNull String repoSlug,
                                                    Map<String, String> payload);
 
     /**
@@ -171,7 +171,7 @@ public abstract class BitbucketApi {
      * @param repoSlug Repo slug {@link BbRepo#getSlug()}
      * @return Default branch. null if it's empty repo or if the scm doesn't support default branch concept.
      */
-    public @CheckForNull abstract BbBranch getDefaultBranch(@Nonnull String orgId, @Nonnull String repoSlug);
+    public @CheckForNull abstract BbBranch getDefaultBranch(@NonNull String orgId, @NonNull String repoSlug);
 
     /**
      * Checks if its empty/un-initialized
@@ -179,7 +179,7 @@ public abstract class BitbucketApi {
      * @param repoSlug Repo slug {@link BbRepo#getSlug()}
      * @return true if this is empty or un-initialized repo
      */
-    public abstract boolean isEmptyRepo(@Nonnull String orgId, @Nonnull String repoSlug);
+    public abstract boolean isEmptyRepo(@NonNull String orgId, @NonNull String repoSlug);
 
     /**
      * Converts thrown exception during BB HTTP call in to JSON serializable {@link ServiceException}

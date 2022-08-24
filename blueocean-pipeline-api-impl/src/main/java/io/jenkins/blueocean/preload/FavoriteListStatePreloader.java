@@ -10,8 +10,8 @@ import jenkins.model.Jenkins;
 import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import net.sf.json.JSONArray;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  */
 @Extension
 public class FavoriteListStatePreloader extends PageStatePreloader {
-    @Nonnull
+    @NonNull
     @Override
     public String getStatePropertyPath() {
         return "favoritesList";

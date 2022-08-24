@@ -43,7 +43,7 @@ import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -84,7 +84,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         this.scriptPath = scriptPath;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public BlueOrganization getOrganization() {
         return organization;

@@ -18,7 +18,7 @@ import org.jenkinsci.plugins.github_branch_source.Endpoint;
 import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
 import org.kohsuke.stapler.json.JsonBody;
 
-import javax.annotation.CheckForNull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;

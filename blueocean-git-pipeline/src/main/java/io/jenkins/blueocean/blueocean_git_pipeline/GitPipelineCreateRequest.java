@@ -17,7 +17,7 @@ import jenkins.scm.api.trait.SCMSourceTrait;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class GitPipelineCreateRequest extends AbstractMultiBranchCreateRequest {
     }
 
     @Override
-    protected SCMSource createSource(@Nonnull MultiBranchProject project, @Nonnull BlueScmConfig scmConfig) {
+    protected SCMSource createSource(@NonNull MultiBranchProject project, @NonNull BlueScmConfig scmConfig) {
         GitSCMSource gitSource = new GitSCMSource(StringUtils.defaultString(scmConfig.getUri()));
         gitSource.setCredentialsId(computeCredentialId(scmConfig));
         List<SCMSourceTrait> traits = gitSource.getTraits();
@@ -68,7 +68,7 @@ public class GitPipelineCreateRequest extends AbstractMultiBranchCreateRequest {
     }
 
     @Override
-    protected boolean repoHasJenkinsFile(@Nonnull SCMSource scmSource) {
+    protected boolean repoHasJenkinsFile(@NonNull SCMSource scmSource) {
         return true;
     }
 

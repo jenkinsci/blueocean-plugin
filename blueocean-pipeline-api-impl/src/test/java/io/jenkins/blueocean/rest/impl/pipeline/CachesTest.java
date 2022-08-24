@@ -31,7 +31,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -54,7 +54,7 @@ public class CachesTest {
      */
     public abstract class MockJob extends Job {
 
-        @Nonnull
+        @NonNull
         @Override
         public ItemGroup getParent() {
             return super.getParent();

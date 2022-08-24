@@ -37,7 +37,7 @@ import org.jenkinsci.plugins.pubsub.Message;
 import org.jenkinsci.plugins.pubsub.MessageEnricher;
 import org.jenkinsci.plugins.pubsub.QueueTaskMessage;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * MessageEnricher that adds information when MultiBranchProject or OrganizationFolder indexing succeeds or fails.
@@ -48,7 +48,7 @@ import javax.annotation.Nonnull;
 public class JobIndexingMessageEnricher extends MessageEnricher {
 
     @Override
-    public void enrich(@Nonnull Message message) {
+    public void enrich(@NonNull Message message) {
         if (message instanceof JobChannelMessage) {
             JobChannelMessage jobChannelMessage = (JobChannelMessage) message;
             Item jobChannelItem = jobChannelMessage.getJobChannelItem();

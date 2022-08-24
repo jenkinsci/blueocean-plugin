@@ -53,8 +53,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -313,16 +313,16 @@ public class GitReadSaveTest extends PipelineBaseTest {
         testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, remote, repoForSSH, masterPipelineScript, user);
     }
 
-    private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull GitSampleRepoRule repo, @Nullable String startPipelineScript) throws Exception {
+    private void testGitReadWrite(final @NonNull GitReadSaveService.ReadSaveType type, @NonNull GitSampleRepoRule repo, @Nullable String startPipelineScript) throws Exception {
         testGitReadWrite(type, repo.getRoot().getCanonicalPath(), repo, startPipelineScript);
     }
 
 
-    private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull String remote, @Nonnull GitSampleRepoRule repo, @Nullable String startPipelineScript) throws Exception {
+    private void testGitReadWrite(final @NonNull GitReadSaveService.ReadSaveType type, @NonNull String remote, @NonNull GitSampleRepoRule repo, @Nullable String startPipelineScript) throws Exception {
         testGitReadWrite(type,remote,repo,startPipelineScript, login());
     }
 
-    private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull String remote, @Nonnull GitSampleRepoRule repo, @Nullable String startPipelineScript, @Nullable User user) throws Exception {
+    private void testGitReadWrite(final @NonNull GitReadSaveService.ReadSaveType type, @NonNull String remote, @NonNull GitSampleRepoRule repo, @Nullable String startPipelineScript, @Nullable User user) throws Exception {
         GitReadSaveService.setType(type);
 
         String jobName = repo.getRoot().getName();

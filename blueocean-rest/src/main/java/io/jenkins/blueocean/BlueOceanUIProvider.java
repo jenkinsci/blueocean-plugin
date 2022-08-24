@@ -3,8 +3,8 @@ package io.jenkins.blueocean;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * BlueOcean UI provider.
@@ -29,7 +29,7 @@ public abstract class BlueOceanUIProvider implements ExtensionPoint {
      *
      * @return url base
      */
-    public @Nonnull abstract String getUrlBasePrefix();
+    public @NonNull abstract String getUrlBasePrefix();
 
     /**
      * Gives landing page path. This path is suffixes to  getUrlBase().
@@ -41,7 +41,7 @@ public abstract class BlueOceanUIProvider implements ExtensionPoint {
      *
      * @return landing page URL path
      */
-    public @Nonnull abstract String getLandingPagePath();
+    public @NonNull abstract String getLandingPagePath();
 
     public static ExtensionList<BlueOceanUIProvider> all(){
         return ExtensionList.lookup(BlueOceanUIProvider.class);

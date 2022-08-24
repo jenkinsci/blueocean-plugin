@@ -35,7 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import javax.servlet.ServletException;
 
 import org.acegisecurity.AccessDeniedException;
@@ -219,7 +219,7 @@ public class UserImplPermissionTest {
             return displayName;
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public ModifiableTopLevelItemGroup getGroup() {
             return this;

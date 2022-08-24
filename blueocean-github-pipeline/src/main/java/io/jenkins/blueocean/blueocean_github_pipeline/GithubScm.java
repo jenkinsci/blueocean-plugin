@@ -43,8 +43,8 @@ import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.GET;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -78,12 +78,12 @@ public class GithubScm extends AbstractScm {
 
     protected final Reachable parent;
 
-    @Nonnull
+    @NonNull
     static ObjectWriter getMappingObjectWriter() {
         return GitHub.getMappingObjectWriter();
     }
 
-    @Nonnull
+    @NonNull
     static ObjectReader getMappingObjectReader() {
         return GitHub.getMappingObjectReader();
     }
@@ -98,12 +98,12 @@ public class GithubScm extends AbstractScm {
     }
 
     @Override
-    public @Nonnull String getId() {
+    public @NonNull String getId() {
         return ID;
     }
 
     @Override
-    public @Nonnull String getUri() {
+    public @NonNull String getUri() {
         String apiUri = getCustomApiUri();
 
         // NOTE: GithubScm only uses a custom apiUri in the context of automated tests
@@ -269,15 +269,15 @@ public class GithubScm extends AbstractScm {
         return true;
     }
 
-    protected @Nonnull String createCredentialId(@Nonnull String apiUrl) {
+    protected @NonNull String createCredentialId(@NonNull String apiUrl) {
         return GithubCredentialUtils.computeCredentialId(null, GithubScm.ID, apiUrl);
     }
 
-    protected @Nonnull String getCredentialDescription() {
+    protected @NonNull String getCredentialDescription() {
         return CREDENTIAL_DESCRIPTION;
     }
 
-    protected @Nonnull String getCustomApiUri() {
+    protected @NonNull String getCustomApiUri() {
         StaplerRequest request = Stapler.getCurrentRequest();
         Objects.requireNonNull(request, "Must be called in HTTP request context");
         String apiUri = request.getParameter("apiUrl");
@@ -297,7 +297,7 @@ public class GithubScm extends AbstractScm {
         return apiUri;
     }
 
-    static String normalizeUrl(@Nonnull String apiUrl){
+    static String normalizeUrl(@NonNull String apiUrl){
         if (apiUrl.endsWith("/")) {
             apiUrl = apiUrl.substring(0, apiUrl.length() - 1);
         }
@@ -419,7 +419,7 @@ public class GithubScm extends AbstractScm {
         }
     }
 
-    static void validateUserHasPushPermission(@Nonnull String apiUrl, @Nullable String accessToken, @Nullable String owner, @Nullable String repoName) {
+    static void validateUserHasPushPermission(@NonNull String apiUrl, @Nullable String accessToken, @Nullable String owner, @Nullable String repoName) {
         GHRepository repo;
         try {
             repo = HttpRequest.get(String.format("%s/repos/%s/%s", apiUrl, owner, repoName))
@@ -435,14 +435,14 @@ public class GithubScm extends AbstractScm {
     @Extension
     public static class GithubScmFactory extends ScmFactory {
         @Override
-        public Scm getScm(@Nonnull String id, @Nonnull Reachable parent) {
+        public Scm getScm(@NonNull String id, @NonNull Reachable parent) {
             if(id.equals(ID)){
                 return new GithubScm(parent);
             }
             return null;
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public Scm getScm(Reachable parent) {
             return new GithubScm(parent);

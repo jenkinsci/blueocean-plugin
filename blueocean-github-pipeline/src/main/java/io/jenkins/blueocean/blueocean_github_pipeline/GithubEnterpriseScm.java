@@ -11,7 +11,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * @author Vivek Pandey
@@ -26,12 +26,12 @@ public class GithubEnterpriseScm extends GithubScm {
     }
 
     @Override
-    public @Nonnull String getId() {
+    public @NonNull String getId() {
         return ID;
     }
 
     @Override
-    public @Nonnull String getUri() {
+    public @NonNull String getUri() {
         String apiUri = getCustomApiUri();
 
         // NOTE: GithubEnterpriseScm requires that the apiUri be specified
@@ -74,12 +74,12 @@ public class GithubEnterpriseScm extends GithubScm {
     }
 
     @Override
-    protected @Nonnull String createCredentialId(@Nonnull String apiUri) {
+    protected @NonNull String createCredentialId(@NonNull String apiUri) {
         return GithubCredentialUtils.computeCredentialId(null, GithubEnterpriseScm.ID, apiUri);
     }
 
     @Override
-    protected @Nonnull String getCredentialDescription() {
+    protected @NonNull String getCredentialDescription() {
         return CREDENTIAL_DESCRIPTION;
     }
 
@@ -94,7 +94,7 @@ public class GithubEnterpriseScm extends GithubScm {
             return null;
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public Scm getScm(Reachable parent) {
             return new GithubEnterpriseScm(parent);

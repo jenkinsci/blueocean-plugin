@@ -9,8 +9,8 @@ import jenkins.branch.MultiBranchProject;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
 public abstract class AbstractScmContentProvider extends ScmContentProvider {
 
     @Override
-    public Object getContent(@Nonnull StaplerRequest request, @Nonnull Item item) {
+    public Object getContent(@NonNull StaplerRequest request, @NonNull Item item) {
         String path = StringUtils.defaultIfEmpty(request.getParameter("path"), null);
         String type = StringUtils.defaultIfEmpty(request.getParameter("type"), null);
         String repo = StringUtils.defaultIfEmpty(request.getParameter("repo"), null);
@@ -94,13 +94,13 @@ public abstract class AbstractScmContentProvider extends ScmContentProvider {
         private final String type;
         private final StandardUsernamePasswordCredentials credentials;
 
-        private ScmGetRequest(@Nonnull String apiUrl,
-                              @Nonnull String owner,
-                              @Nonnull String repo,
+        private ScmGetRequest(@NonNull String apiUrl,
+                              @NonNull String owner,
+                              @NonNull String repo,
                               @Nullable String branch,
-                              @Nonnull String path,
+                              @NonNull String path,
                               @Nullable String type,
-                              @Nonnull StandardUsernamePasswordCredentials credentials) {
+                              @NonNull StandardUsernamePasswordCredentials credentials) {
             this.apiUrl = apiUrl;
             this.owner = owner;
             this.repo = repo;

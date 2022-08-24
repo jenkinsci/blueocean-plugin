@@ -3,8 +3,8 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbPage;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +23,7 @@ public class BbCloudPage<T> extends BbPage<T> {
                        @JsonProperty("page") int page,
                        @JsonProperty("size") int size,
                        @Nullable @JsonProperty("next") String next,
-                       @Nonnull @JsonProperty("values") List<T> values) {
+                       @NonNull @JsonProperty("values") List<T> values) {
         this.pageLength = pageLength;
         this.page = page;
         this.size = size;

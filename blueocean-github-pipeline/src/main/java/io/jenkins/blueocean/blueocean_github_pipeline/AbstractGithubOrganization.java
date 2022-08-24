@@ -8,8 +8,8 @@ import jenkins.scm.api.SCMNavigator;
 import org.apache.http.client.utils.URIBuilder;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,7 +43,7 @@ public abstract class AbstractGithubOrganization extends ScmOrganization {
     }
 
     @Nullable
-    protected static String getAvatarWithSize(@Nonnull String avatarUrl) {
+    protected static String getAvatarWithSize(@NonNull String avatarUrl) {
         try {
             return new URIBuilder(avatarUrl).addParameter("s", Integer.toString(AVATAR_SIZE)).build().toString();
         } catch (URISyntaxException e) {

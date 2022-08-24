@@ -14,7 +14,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.log4j.Logger;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -80,7 +80,7 @@ public class HttpRequest {
      * Create an instance that will prepend "baseUrl" to the url specified in Get, Post, etc.
      * @param baseUrl
      */
-    public HttpRequest(@Nonnull String baseUrl) {
+    public HttpRequest(@NonNull String baseUrl) {
         if(StringUtils.isBlank(baseUrl)){
             throw new IllegalStateException("baseUrl is required");
         }
@@ -92,7 +92,7 @@ public class HttpRequest {
      * @param baseUrl url to prepend
      * @return builder
      */
-    public HttpRequest baseUrl(@Nonnull String baseUrl) {
+    public HttpRequest baseUrl(@NonNull String baseUrl) {
         this.baseUrl = baseUrl;
         return this;
     }

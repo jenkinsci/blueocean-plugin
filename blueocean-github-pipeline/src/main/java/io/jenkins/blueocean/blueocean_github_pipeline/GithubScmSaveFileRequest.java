@@ -9,8 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.github.GHContent;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +30,7 @@ public class GithubScmSaveFileRequest{
         this.content = content;
     }
 
-    public Object save(@Nonnull String apiUrl, @Nullable String owner, @Nullable String repoName, @Nullable String accessToken) {
+    public Object save(@NonNull String apiUrl, @Nullable String owner, @Nullable String repoName, @Nullable String accessToken) {
         List<ErrorMessage.Error> errors = new ArrayList<>();
 
         if(this.content == null){

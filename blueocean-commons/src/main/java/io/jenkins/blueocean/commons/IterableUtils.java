@@ -1,6 +1,6 @@
 package io.jenkins.blueocean.commons;
 
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;

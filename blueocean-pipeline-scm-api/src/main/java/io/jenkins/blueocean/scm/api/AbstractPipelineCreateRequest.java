@@ -16,7 +16,7 @@ import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 import org.springframework.security.core.Authentication;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 
 /**
@@ -32,7 +32,7 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
     }
 
 
-    protected @Nonnull TopLevelItem createProject(String name, String descriptorName, Class<? extends TopLevelItemDescriptor> descriptorClass, BlueOrganization organization) throws IOException {
+    protected @NonNull TopLevelItem createProject(String name, String descriptorName, Class<? extends TopLevelItemDescriptor> descriptorClass, BlueOrganization organization) throws IOException {
         ModifiableTopLevelItemGroup p = getParent(organization);
 
         final ACL acl = (p instanceof AccessControlled) ? ((AccessControlled) p).getACL() : Jenkins.get().getACL();
