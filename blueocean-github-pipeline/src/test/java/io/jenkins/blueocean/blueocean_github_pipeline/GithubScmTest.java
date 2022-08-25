@@ -10,7 +10,6 @@ import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import hudson.model.Item;
 import hudson.model.User;
-import hudson.security.AccessControlled;
 import hudson.security.SecurityRealm;
 import hudson.tasks.Mailer;
 import hudson.util.Secret;
@@ -20,24 +19,18 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.service.embedded.OrganizationFactoryImpl;
 import jenkins.model.Jenkins;
-import jenkins.model.ModifiableTopLevelItemGroup;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.GrantedAuthority;
-import org.apache.xpath.operations.Or;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.ByteArrayInputStream;
 import java.net.HttpURLConnection;
@@ -47,16 +40,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.scm.Scm.CREDENTIAL_ID;
-import static org.powermock.api.mockito.PowerMockito.*;
-
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Vivek Pandey
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({GithubScm.class, Jenkins.class, Authentication.class, User.class, Secret.class,
-    CredentialsMatchers.class, CredentialsProvider.class, Stapler.class, HttpRequest.class, OrganizationFactory.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubScmTest {
 
     @Mock
@@ -85,7 +75,7 @@ public class GithubScmTest {
         when(user.getId()).thenReturn("joe");
         when(user.getFullName()).thenReturn("joe smith");
         when(user.getDisplayName()).thenReturn("joe smith");
-        when(User.class, method(User.class, "get", Authentication.class)).withArguments(authentication).thenReturn(user);
+        when(User.get(authentication)).thenReturn(user);
         when(User.current()).thenReturn(user);
     }
 
@@ -93,10 +83,10 @@ public class GithubScmTest {
     public void validateAccessTokenScopes() throws Exception {
 
         HttpURLConnection httpURLConnectionMock = mock(HttpURLConnection.class);
-        doNothing().when(httpURLConnectionMock).connect();
+        Mockito.doNothing().when(httpURLConnectionMock).connect();
 
         URL urlMock = mock(URL.class);
-        whenNew(URL.class).withAnyArguments().thenReturn(urlMock);
+        //whenNew(URL.class).withAnyArguments().thenReturn(urlMock);
         when(urlMock.openConnection(Proxy.NO_PROXY)).thenReturn(httpURLConnectionMock);
         when(httpURLConnectionMock.getHeaderField("X-OAuth-Scopes")).thenReturn("user:email,repo");
         when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
@@ -143,7 +133,7 @@ public class GithubScmTest {
         when(httpRequestMock.withAuthorizationToken(tokenCaptor.capture())).thenReturn(httpRequestMock);
 
         HttpURLConnection httpURLConnectionMock = mock(HttpURLConnection.class);
-        doNothing().when(httpURLConnectionMock).connect();
+        Mockito.doNothing().when(httpURLConnectionMock).connect();
         when(httpRequestMock.connect()).thenReturn(httpURLConnectionMock);
 
         when(httpURLConnectionMock.getHeaderField("X-OAuth-Scopes")).thenReturn("user:email,repo");
@@ -179,7 +169,7 @@ public class GithubScmTest {
     void mockCredentials(String userId, String accessToken, String credentialId, String domainName) throws Exception {
         //Mock Credentials
         UsernamePasswordCredentialsImpl credentials = mock(UsernamePasswordCredentialsImpl.class);
-        whenNew(UsernamePasswordCredentialsImpl.class).withAnyArguments().thenReturn(credentials);
+        //whenNew(UsernamePasswordCredentialsImpl.class).withAnyArguments().thenReturn(credentials);
         when(credentials.getId()).thenReturn(credentialId);
         when(credentials.getUsername()).thenReturn(userId);
 
@@ -189,18 +179,15 @@ public class GithubScmTest {
         CredentialsMatcher credentialsMatcher = mock(CredentialsMatcher.class);
         mockStatic(CredentialsMatchers.class);
         mockStatic(CredentialsProvider.class);
-        when(CredentialsMatchers.withId(
-            credentialId)).thenReturn(credentialsMatcher);
+        when(CredentialsMatchers.withId(credentialId)).thenReturn(credentialsMatcher);
 
         BlueOceanDomainRequirement blueOceanDomainRequirement = mock(BlueOceanDomainRequirement.class);
-        whenNew(BlueOceanDomainRequirement.class).withNoArguments().thenReturn(blueOceanDomainRequirement);
+        //whenNew(BlueOceanDomainRequirement.class).withNoArguments().thenReturn(blueOceanDomainRequirement);
 
-        when(CredentialsProvider.class, "lookupCredentials",
-             StandardUsernamePasswordCredentials.class, jenkins, authentication, blueOceanDomainRequirement)
+        when(CredentialsProvider.lookupCredentials(StandardUsernamePasswordCredentials.class, jenkins, authentication, blueOceanDomainRequirement))
             .thenReturn(Collections.singletonList(credentials));
 
-        when(CredentialsMatchers.class, "firstOrNull",
-             Collections.singletonList(credentials), credentialsMatcher).thenReturn(credentials);
+        when(CredentialsMatchers.firstOrNull(Collections.singletonList(credentials), credentialsMatcher)).thenReturn(credentials);
 
         when(CredentialsMatchers.allOf(credentialsMatcher)).thenReturn(credentialsMatcher);
 
@@ -214,8 +201,7 @@ public class GithubScmTest {
         when(credentialsStore.hasPermission(CredentialsProvider.UPDATE)).thenReturn(true);
         when(credentialsStore.getDomainByName(domainName)).thenReturn(domain);
 
-        when(CredentialsProvider.class, "lookupStores", user).
-            thenReturn(Collections.singletonList(credentialsStore));
+        when(CredentialsProvider.lookupStores(user)).thenReturn(Collections.singleton(credentialsStore));
 
         when(credentialsStore.addCredentials(domain, credentials)).thenReturn(true);
         when(credentialsStore.updateCredentials(domain, credentials, credentials)).thenReturn(true);

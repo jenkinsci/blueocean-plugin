@@ -46,13 +46,8 @@ import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.TestExtension;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -64,9 +59,6 @@ import static org.junit.Assert.*;
 /**
  * @author Vivek Pandey
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(GitHubWebHook.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubPipelineCreateRequestTest extends GithubMockBase {
 
     @Override
@@ -80,10 +72,10 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
 
     @Test
     public void createPipeline() throws UnirestException {
-        PowerMockito.mockStatic(GitHubWebHook.class);
+        Mockito.mockStatic(GitHubWebHook.class);
         GitHubWebHook gitHubWebHookMock = Mockito.spy(GitHubWebHook.class);
-        PowerMockito.when(GitHubWebHook.get()).thenReturn(gitHubWebHookMock);
-        PowerMockito.when(GitHubWebHook.getJenkinsInstance()).thenReturn(this.j.jenkins);
+        Mockito.when(GitHubWebHook.get()).thenReturn(gitHubWebHookMock);
+        Mockito.when(GitHubWebHook.getJenkinsInstance()).thenReturn(this.j.jenkins);
         String credentialId = createGithubCredential(user);
         Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
                 .status(201)
