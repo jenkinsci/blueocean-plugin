@@ -603,7 +603,7 @@ public class GitScmTest extends PipelineBaseTest {
 
         @Override
         public Collection<BlueOrganization> list() {
-            return Collections.singleton((BlueOrganization) instance);
+            return Collections.singleton(instance);
         }
 
         @Override
