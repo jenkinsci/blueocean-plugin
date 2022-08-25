@@ -6,8 +6,10 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.metadata.ObjectMetadataAction;
 import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import static org.junit.Assert.*;
@@ -21,13 +23,15 @@ public class BranchMetadataTest {
     Job job;
     BranchImpl branch;
 
+    MockedStatic<Jenkins> jenkinsMockedStatic;
+
     @Before
     public void setup() {
         Caches.BRANCH_METADATA.invalidateAll();
 
         jenkins = mock(Jenkins.class);
 
-        Mockito.mockStatic(Jenkins.class);
+        jenkinsMockedStatic = Mockito.mockStatic(Jenkins.class);
         when(Jenkins.get()).thenReturn(jenkins);
 
         when(jenkins.getFullName()).thenReturn("");
@@ -39,6 +43,11 @@ public class BranchMetadataTest {
 
         org = mock(BlueOrganization.class);
         branch = new BranchImpl(org, job, new Link("foo"));
+    }
+
+    @After
+    public void cleanup() {
+        jenkinsMockedStatic.close();
     }
 
     @Test
