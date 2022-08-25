@@ -146,7 +146,7 @@ public class CachesTest {
     public void testBranchCacheLoaderWithNoObjectMetadataAction() throws Exception {
         PrimaryInstanceMetadataAction instanceMetadataAction = new PrimaryInstanceMetadataAction();
         when(job.getAction(PrimaryInstanceMetadataAction.class)).thenReturn(instanceMetadataAction);
-        
+
         Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(jenkins);
         BranchImpl.Branch branch = loader.load(job.getFullName());
 

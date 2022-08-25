@@ -15,6 +15,7 @@ import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
 import jenkins.scm.api.metadata.AvatarMetadataAction;
 import org.acegisecurity.Authentication;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,6 +25,7 @@ import org.jvnet.hudson.test.WithoutJenkins;
 import org.kohsuke.stapler.StaplerRequest;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -45,10 +47,20 @@ public class OrganizationFolderTest{
     private BlueOrganization organization;
     private OrganizationFolder orgFolder;
 
+    static MockedStatic<OrganizationFactory> organizationFactoryMockedStatic;
+
     @Before
     public void setup(){
         this.organization = mockOrganization();
         this.orgFolder = mockOrgFolder(organization);
+    }
+
+    @After
+    public void cleanup() {
+        if(organizationFactoryMockedStatic!=null) {
+            organizationFactoryMockedStatic.close();
+            organizationFactoryMockedStatic = null;
+        }
     }
 
     @Test
@@ -90,8 +102,10 @@ public class OrganizationFolderTest{
 
     @Test
     public void testOrganizationFolderFactory() throws Exception{
-        List<OrganizationFolderPipelineImpl.OrganizationFolderFactory> organizationFolderFactoryList = ExtensionList.lookup(OrganizationFolderPipelineImpl.OrganizationFolderFactory.class);
-        OrganizationFolderFactoryTestImpl organizationFolderFactoryTest = ((ExtensionList<OrganizationFolderPipelineImpl.OrganizationFolderFactory>) organizationFolderFactoryList).get(OrganizationFolderFactoryTestImpl.class);
+        List<OrganizationFolderPipelineImpl.OrganizationFolderFactory> organizationFolderFactoryList =
+            ExtensionList.lookup(OrganizationFolderPipelineImpl.OrganizationFolderFactory.class);
+        OrganizationFolderFactoryTestImpl organizationFolderFactoryTest =
+            ((ExtensionList<OrganizationFolderPipelineImpl.OrganizationFolderFactory>) organizationFolderFactoryList).get(OrganizationFolderFactoryTestImpl.class);
         assertNotNull(organizationFolderFactoryTest);
 
         OrganizationFolderPipelineImpl folderPipeline = organizationFolderFactoryTest
@@ -173,7 +187,9 @@ public class OrganizationFolderTest{
         OrganizationFolder orgFolder = Mockito.mock(OrganizationFolder.class);
 
         OrganizationFactory organizationFactory = mock(OrganizationFactory.class);
-        Mockito.mockStatic(OrganizationFactory.class);
+        if (organizationFactoryMockedStatic==null) {
+            organizationFactoryMockedStatic = Mockito.mockStatic(OrganizationFactory.class);
+        }
         Mockito.when(OrganizationFactory.getInstance()).thenReturn(organizationFactory);
         when(organizationFactory.getContainingOrg((ItemGroup) orgFolder)).thenReturn(organization);
         Mockito.when(orgFolder.getDisplayName()).thenReturn("vivek");
