@@ -8,19 +8,12 @@ import jenkins.scm.api.metadata.ObjectMetadataAction;
 import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Mockito;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
-@PrepareForTest(Jenkins.class)
 public class BranchMetadataTest {
 
     Jenkins jenkins;
@@ -34,7 +27,7 @@ public class BranchMetadataTest {
 
         jenkins = mock(Jenkins.class);
 
-        PowerMockito.mockStatic(Jenkins.class);
+        Mockito.mockStatic(Jenkins.class);
         when(Jenkins.get()).thenReturn(jenkins);
 
         when(jenkins.getFullName()).thenReturn("");

@@ -6,14 +6,12 @@ import hudson.model.ItemGroup;
 import hudson.model.Project;
 import io.jenkins.blueocean.service.embedded.rest.ContainerFilter;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestExtension;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,39 +21,39 @@ import java.util.function.Predicate;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.powermock.api.mockito.PowerMockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mockStatic;
 
 /**
  * @author Vivek Pandey
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
-@PrepareForTest(Stapler.class)
 public class ContainerFilterTest extends BaseTest{
 
     @Test
     public void testPagedFilter() throws IOException {
         StaplerRequest request = mock(StaplerRequest.class);
         when(request.getParameter("filter")).thenReturn("itemgroup-only");
-        mockStatic(Stapler.class);
-        when(Stapler.getCurrentRequest()).thenReturn(request);
+        try (MockedStatic<Stapler> mockedStatic = mockStatic(Stapler.class)) {
+            when(Stapler.getCurrentRequest()).thenReturn(request);
 
-        List<Item> items = new ArrayList<>();
-        MockFolder folder = j.createFolder("folder");
-        for(int i=0; i<50; i++){
-            FreeStyleProject job = folder.createProject(FreeStyleProject.class, "job"+i);
-            items.add(folder.createProject(MockFolder.class, "subFolder"+i));
-            items.add(job);
-        }
-        assertEquals(100, items.size());
-        //there are total 50 folders in items, we want 25 of them starting 25th ending at 49th.
-        Collection<Item> jobs = ContainerFilter.filter(items, 25, 25);
-        assertEquals(25, jobs.size());
-        int i = 25;
-        for(Item item: jobs){
-            assertTrue(item instanceof ItemGroup);
-            assertEquals("subFolder"+i++, item.getName());
-        }
+            List<Item> items = new ArrayList<>();
+            MockFolder folder = j.createFolder("folder");
+            for (int i = 0; i < 50; i++) {
+                FreeStyleProject job = folder.createProject(FreeStyleProject.class, "job" + i);
+                items.add(folder.createProject(MockFolder.class, "subFolder" + i));
+                items.add(job);
+            }
+            assertEquals(100, items.size());
+            //there are total 50 folders in items, we want 25 of them starting 25th ending at 49th.
+            Collection<Item> jobs = ContainerFilter.filter(items, 25, 25);
+            assertEquals(25, jobs.size());
+            int i = 25;
+            for (Item item : jobs) {
+                assertTrue(item instanceof ItemGroup);
+                assertEquals("subFolder" + i++, item.getName());
+            }
+    }
     }
 
     @Test

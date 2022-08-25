@@ -19,6 +19,7 @@ import jenkins.scm.api.metadata.ObjectMetadataAction;
 import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import jenkins.scm.impl.mock.MockChangeRequestSCMHead;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,12 +27,12 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -42,10 +43,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
-@PrepareForTest({ ExtensionList.class })
+@RunWith(MockitoJUnitRunner.class)
 public class CachesTest {
 
     /*
@@ -74,6 +72,8 @@ public class CachesTest {
     @Mock
     Folder folder;
 
+    MockedStatic<ExtensionList> extensionListMockedStatic;
+
     @Before
     public void setup() {
         when(jenkins.getFullName()).thenReturn("");
@@ -86,6 +86,13 @@ public class CachesTest {
         when(job.getFullName()).thenReturn("cool-branch");
 
         when(jenkins.getItemByFullName("/Repo/cool-branch", Job.class)).thenReturn(job);
+    }
+
+    @After
+    public void cleanup() {
+        if(extensionListMockedStatic!=null) {
+            extensionListMockedStatic.close();
+        }
     }
 
     public static class UsesJenkinsRule {
@@ -175,7 +182,7 @@ public class CachesTest {
         ContributorMetadataAction contributorMetadataAction = new ContributorMetadataAction("Hates Cake", "He hates cake", "hc@example.com");
         when(job.getAction(ContributorMetadataAction.class)).thenReturn(contributorMetadataAction);
 
-        PowerMockito.mockStatic(ExtensionList.class);
+        extensionListMockedStatic = Mockito.mockStatic(ExtensionList.class);
 
         ExtensionList<SCMHead.HeadByItem> extensionList = mock(ExtensionList.class);
         when(extensionList.iterator()).thenReturn(Collections.<SCMHead.HeadByItem>singletonList(new HeadByItemForTest()).iterator());
@@ -199,7 +206,7 @@ public class CachesTest {
         ContributorMetadataAction contributorMetadataAction = new ContributorMetadataAction("Hates Cake", "He hates cake", "hc@example.com");
         when(job.getAction(ContributorMetadataAction.class)).thenReturn(contributorMetadataAction);
 
-        PowerMockito.mockStatic(ExtensionList.class);
+        extensionListMockedStatic = Mockito.mockStatic(ExtensionList.class);
 
         ExtensionList<SCMHead.HeadByItem> extensionList = mock(ExtensionList.class);
         when(extensionList.iterator()).thenReturn(Collections.emptyIterator());
@@ -217,7 +224,7 @@ public class CachesTest {
         ContributorMetadataAction contributorMetadataAction = new ContributorMetadataAction("Hates Cake", "He hates cake", "hc@example.com");
         when(job.getAction(ContributorMetadataAction.class)).thenReturn(contributorMetadataAction);
 
-        PowerMockito.mockStatic(ExtensionList.class);
+        extensionListMockedStatic = Mockito.mockStatic(ExtensionList.class);
 
         ExtensionList<SCMHead.HeadByItem> extensionList = mock(ExtensionList.class);
         when(extensionList.iterator()).thenReturn(Collections.<SCMHead.HeadByItem>singletonList(new HeadByItemForTest()).iterator());
