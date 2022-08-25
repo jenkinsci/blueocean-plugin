@@ -57,5 +57,5 @@ export default class RunDetailsTestsLink extends ComponentLink {
     name = 'tests';
     title = t('rundetail.header.tab.tests');
     component = RunDetailsTests;
-    get notification() { return Math.min(99, (this.run.testSummary && parseInt(this.run.testSummary.failed)) || 0) || null; }
+    get notification() { return Math.min(99, this.run.testSummary && parseInt(this.run.testSummary.failed) || 0) || null; }
 }
