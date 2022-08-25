@@ -24,14 +24,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.mockito.Mock;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,7 +40,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-@RunWith(MockitoJUnitRunner.class)
 public class CachesTest {
 
     /*
@@ -63,27 +59,27 @@ public class CachesTest {
         }
     }
 
-    @Mock
     Jenkins jenkins;
 
-    @Mock
     MockJob job;
 
-    @Mock
     Folder folder;
 
     MockedStatic<ExtensionList> extensionListMockedStatic;
 
     @Before
     public void setup() {
+        jenkins = Mockito.mock(Jenkins.class);
         when(jenkins.getFullName()).thenReturn("");
 
+        folder = Mockito.mock(Folder.class);
         when(folder.getParent()).thenReturn(jenkins);
         when(folder.getFullName()).thenReturn("/Repo");
         when(jenkins.getItem("/Repo")).thenReturn(folder);
 
+        job = Mockito.mock(MockJob.class);
         when(job.getParent()).thenReturn(folder);
-        when(job.getFullName()).thenReturn("cool-branch");
+        when(job.getFullName()).thenReturn("/Repo/cool-branch");
 
         when(jenkins.getItemByFullName("/Repo/cool-branch", Job.class)).thenReturn(job);
     }
@@ -150,8 +146,7 @@ public class CachesTest {
     public void testBranchCacheLoaderWithNoObjectMetadataAction() throws Exception {
         PrimaryInstanceMetadataAction instanceMetadataAction = new PrimaryInstanceMetadataAction();
         when(job.getAction(PrimaryInstanceMetadataAction.class)).thenReturn(instanceMetadataAction);
-        when(job.getFullName()).thenReturn("cool-branch");
-
+        
         Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(jenkins);
         BranchImpl.Branch branch = loader.load(job.getFullName());
 
@@ -164,7 +159,6 @@ public class CachesTest {
     public void testBranchCacheLoaderWithNoPrimaryInstanceMetadataAction() throws Exception {
         ObjectMetadataAction metadataAction = new ObjectMetadataAction("A cool branch", "A very cool change", "http://example.com/branches/cool-branch");
         when(job.getAction(ObjectMetadataAction.class)).thenReturn(metadataAction);
-        when(job.getFullName()).thenReturn("cool-branch");
 
         Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(jenkins);
         BranchImpl.Branch branch = loader.load(job.getFullName());
