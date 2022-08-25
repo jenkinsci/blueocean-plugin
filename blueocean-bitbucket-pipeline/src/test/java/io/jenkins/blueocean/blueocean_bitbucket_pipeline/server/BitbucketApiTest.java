@@ -18,24 +18,17 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbUser;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerBranch;
 import io.jenkins.blueocean.commons.MapsHelper;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.UnsupportedEncodingException;
 
 import static org.junit.Assert.*;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mockStatic;
 
 /**
  * @author Vivek Pandey
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Secret.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class BitbucketApiTest extends BbServerWireMock {
     private BitbucketApi api;
 
@@ -195,7 +188,7 @@ public class BitbucketApiTest extends BbServerWireMock {
         final Secret secret = Mockito.mock(Secret.class);
         when(secret.getPlainText()).thenReturn(getPassword());
 
-        PowerMockito.mockStatic(Secret.class);
+        mockStatic(Secret.class);
         when(Secret.toString(secret)).thenReturn(getPassword());
 
         return new StandardUsernamePasswordCredentials(){

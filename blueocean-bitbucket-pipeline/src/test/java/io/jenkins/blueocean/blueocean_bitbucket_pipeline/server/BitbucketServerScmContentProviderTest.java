@@ -18,13 +18,9 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFile;
 import jenkins.branch.MultiBranchProject;
 import net.sf.json.JSONObject;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,14 +28,13 @@ import java.io.StringReader;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
-import static org.powermock.api.mockito.PowerMockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Vivek Pandey
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Stapler.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
 
     @Test

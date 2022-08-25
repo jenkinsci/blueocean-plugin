@@ -8,11 +8,6 @@ import io.jenkins.blueocean.util.HttpRequest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,13 +16,12 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Vivek Pandey
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({BitbucketServerApi.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class BitbucketServerEndpointTest extends BbServerWireMock {
     private static final String URL = "/organizations/jenkins/scm/bitbucket-server/servers/";
 
@@ -42,8 +36,8 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
 
     @Test
     public void testServerNotBitbucket() throws Exception {
-        PowerMockito.mockStatic(BitbucketServerApi.class);
-        PowerMockito.when(BitbucketServerApi.getVersion(apiUrl))
+        mockStatic(BitbucketServerApi.class);
+        when(BitbucketServerApi.getVersion(apiUrl))
                 .thenThrow(new ServiceException.NotFoundException("Not found"));
         // Create a server
         Map resp = request()
@@ -237,8 +231,8 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
 
     @Test
     public void shouldFailOnIncompatibleVersionInAdd() throws UnirestException, IOException {
-        PowerMockito.mockStatic(BitbucketServerApi.class);
-        PowerMockito.when(BitbucketServerApi.getVersion(apiUrl))
+        mockStatic(BitbucketServerApi.class);
+        when(BitbucketServerApi.getVersion(apiUrl))
                 .thenReturn("5.0.2");
 
         Map server = request()
@@ -281,8 +275,8 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         assertEquals("My Server", server.get("name"));
         assertEquals(apiUrl, server.get("apiUrl"));
 
-        PowerMockito.mockStatic(BitbucketServerApi.class);
-        PowerMockito.when(BitbucketServerApi.getVersion(apiUrl))
+        mockStatic(BitbucketServerApi.class);
+        when(BitbucketServerApi.getVersion(apiUrl))
                 .thenReturn("5.0.2");
 
         Map r = new RequestBuilder(baseUrl)
