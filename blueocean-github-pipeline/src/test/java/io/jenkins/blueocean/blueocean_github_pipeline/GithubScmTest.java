@@ -128,55 +128,58 @@ public class GithubScmTest {
 
         mockCredentials("joe", accessToken, githubScm.getId(), GithubScm.DOMAIN_NAME);
 
-        mockStatic(OrganizationFactory.class);
-        OrganizationFactoryImpl organizationFactory = mock(OrganizationFactoryImpl.class);
-        when(OrganizationFactory.getInstance()).thenReturn(organizationFactory);
-        AbstractOrganization organization = mock(AbstractOrganization.class);
-        when(organizationFactory.list()).thenReturn(Collections.singletonList(organization));
-        Folder rootOrgFolder = mock(Folder.class);
-        when(organization.getGroup()).thenReturn(rootOrgFolder);
-        when(rootOrgFolder.hasPermission(Item.CREATE)).thenReturn(true);
+        try (MockedStatic<OrganizationFactory> mock = mockStatic(OrganizationFactory.class);
+            MockedStatic<HttpRequest> mockedStatic = mockStatic(HttpRequest.class);
+            MockedStatic<Stapler> mockedStatic1 = mockStatic(Stapler.class)) {
 
-        mockStatic(HttpRequest.class);
-        HttpRequest httpRequestMock = mock(HttpRequest.class);
+            OrganizationFactoryImpl organizationFactory = mock(OrganizationFactoryImpl.class);
+            when(OrganizationFactory.getInstance()).thenReturn(organizationFactory);
+            AbstractOrganization organization = mock(AbstractOrganization.class);
+            when(organizationFactory.list()).thenReturn(Collections.singletonList(organization));
+            Folder rootOrgFolder = mock(Folder.class);
+            when(organization.getGroup()).thenReturn(rootOrgFolder);
+            when(rootOrgFolder.hasPermission(Item.CREATE)).thenReturn(true);
+            HttpRequest httpRequestMock = mock(HttpRequest.class);
 
-        ArgumentCaptor<String> urlStringCaptor = ArgumentCaptor.forClass(String.class);
-        when(HttpRequest.get(urlStringCaptor.capture())).thenReturn(httpRequestMock);
+            ArgumentCaptor<String> urlStringCaptor = ArgumentCaptor.forClass(String.class);
+            when(HttpRequest.get(urlStringCaptor.capture())).thenReturn(httpRequestMock);
 
-        ArgumentCaptor<String> tokenCaptor = ArgumentCaptor.forClass(String.class);
-        when(httpRequestMock.withAuthorizationToken(tokenCaptor.capture())).thenReturn(httpRequestMock);
+            ArgumentCaptor<String> tokenCaptor = ArgumentCaptor.forClass(String.class);
+            when(httpRequestMock.withAuthorizationToken(tokenCaptor.capture())).thenReturn(httpRequestMock);
 
-        HttpURLConnection httpURLConnectionMock = mock(HttpURLConnection.class);
-        Mockito.doNothing().when(httpURLConnectionMock).connect();
-        when(httpRequestMock.connect()).thenReturn(httpURLConnectionMock);
+            HttpURLConnection httpURLConnectionMock = mock(HttpURLConnection.class);
+            Mockito.doNothing().when(httpURLConnectionMock).connect();
+            when(httpRequestMock.connect()).thenReturn(httpURLConnectionMock);
 
-        when(httpURLConnectionMock.getHeaderField("X-OAuth-Scopes")).thenReturn("user:email,repo");
-        when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
+            when(httpURLConnectionMock.getHeaderField("X-OAuth-Scopes")).thenReturn("user:email,repo");
+            when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
 
-        String guser = "{\n  \"login\": \"joe\",\n  \"id\": 1, \"email\": \"joe@example.com\", \"created_at\": \"2008-01-14T04:33:35Z\"}";
+            String guser = "{\n  \"login\": \"joe\",\n  \"id\": 1, \"email\": \"joe@example.com\", \"created_at\": \"2008-01-14T04:33:35Z\"}";
 
-        mockStatic(Stapler.class);
-        StaplerRequest request = mock(StaplerRequest.class);
-        when(Stapler.getCurrentRequest()).thenReturn(request);
+            StaplerRequest request = mock(StaplerRequest.class);
+            when(Stapler.getCurrentRequest()).thenReturn(request);
 
-        when(HttpRequest.getInputStream(httpURLConnectionMock)).thenReturn(new ByteArrayInputStream(guser.getBytes(StandardCharsets.UTF_8)));
+            when(HttpRequest.getInputStream(httpURLConnectionMock)).thenReturn(new ByteArrayInputStream(guser.getBytes(StandardCharsets.UTF_8)));
 
-        githubScm.validateAndCreate(req);
+            githubScm.validateAndCreate(req);
 
-        String id = githubScm.getCredentialId();
-        Assert.assertEquals(githubScm.getId(), id);
+            String id = githubScm.getCredentialId();
+            Assert.assertEquals(githubScm.getId(), id);
 
-        Assert.assertEquals("constructed url", "https://api.github.com/user", urlStringCaptor.getValue());
-        Assert.assertEquals("access token passed to github", accessToken.trim(), tokenCaptor.getValue());
+            Assert.assertEquals("constructed url", "https://api.github.com/user", urlStringCaptor.getValue());
+            Assert.assertEquals("access token passed to github", accessToken.trim(), tokenCaptor.getValue());
+        }
+
     }
 
     @Test
     public void getOrganizations() {
-        mockStatic(Stapler.class);
-        StaplerRequest staplerRequest = mock(StaplerRequest.class);
-        when(Stapler.getCurrentRequest()).thenReturn(staplerRequest);
+        try (MockedStatic<Stapler> staplerMockedStatic = mockStatic(Stapler.class)) {
+            StaplerRequest staplerRequest = mock(StaplerRequest.class);
+            when(Stapler.getCurrentRequest()).thenReturn(staplerRequest);
 
-        when(staplerRequest.getParameter(CREDENTIAL_ID)).thenReturn("12345");
+            when(staplerRequest.getParameter(CREDENTIAL_ID)).thenReturn("12345");
+        }
 
     }
 
@@ -191,33 +194,34 @@ public class GithubScmTest {
         when(secret.getPlainText()).thenReturn(accessToken);
         when(credentials.getPassword()).thenReturn(secret);
         CredentialsMatcher credentialsMatcher = mock(CredentialsMatcher.class);
-        mockStatic(CredentialsMatchers.class);
-        mockStatic(CredentialsProvider.class);
-        when(CredentialsMatchers.withId(credentialId)).thenReturn(credentialsMatcher);
+        try(MockedStatic<CredentialsMatchers> credentialsMatchersMockedStatic = mockStatic(CredentialsMatchers.class);
+            MockedStatic<CredentialsProvider> credentialsProviderMockedStatic =  mockStatic(CredentialsProvider.class)){
+            when(CredentialsMatchers.withId(credentialId)).thenReturn(credentialsMatcher);
 
-        BlueOceanDomainRequirement blueOceanDomainRequirement = mock(BlueOceanDomainRequirement.class);
-        //whenNew(BlueOceanDomainRequirement.class).withNoArguments().thenReturn(blueOceanDomainRequirement);
+            BlueOceanDomainRequirement blueOceanDomainRequirement = mock(BlueOceanDomainRequirement.class);
+            //whenNew(BlueOceanDomainRequirement.class).withNoArguments().thenReturn(blueOceanDomainRequirement);
 
-        when(CredentialsProvider.lookupCredentials(StandardUsernamePasswordCredentials.class, jenkins, authentication, blueOceanDomainRequirement))
-            .thenReturn(Collections.singletonList(credentials));
+            when(CredentialsProvider.lookupCredentials(StandardUsernamePasswordCredentials.class, jenkins, authentication, blueOceanDomainRequirement))
+                .thenReturn(Collections.singletonList(credentials));
 
-        when(CredentialsMatchers.firstOrNull(Collections.singletonList(credentials), credentialsMatcher)).thenReturn(credentials);
+            when(CredentialsMatchers.firstOrNull(Collections.singletonList(credentials), credentialsMatcher)).thenReturn(credentials);
 
-        when(CredentialsMatchers.allOf(credentialsMatcher)).thenReturn(credentialsMatcher);
+            when(CredentialsMatchers.allOf(credentialsMatcher)).thenReturn(credentialsMatcher);
 
-        //Mock credentials Domain
-        Domain domain = mock(Domain.class);
-        when(domain.getName()).thenReturn(domainName);
+            //Mock credentials Domain
+            Domain domain = mock(Domain.class);
+            when(domain.getName()).thenReturn(domainName);
 
-        //Mock credentials Store
-        CredentialsStore credentialsStore = mock(CredentialsStore.class);
-        when(credentialsStore.hasPermission(CredentialsProvider.CREATE)).thenReturn(true);
-        when(credentialsStore.hasPermission(CredentialsProvider.UPDATE)).thenReturn(true);
-        when(credentialsStore.getDomainByName(domainName)).thenReturn(domain);
+            //Mock credentials Store
+            CredentialsStore credentialsStore = mock(CredentialsStore.class);
+            when(credentialsStore.hasPermission(CredentialsProvider.CREATE)).thenReturn(true);
+            when(credentialsStore.hasPermission(CredentialsProvider.UPDATE)).thenReturn(true);
+            when(credentialsStore.getDomainByName(domainName)).thenReturn(domain);
 
-        when(CredentialsProvider.lookupStores(user)).thenReturn(Collections.singleton(credentialsStore));
+            when(CredentialsProvider.lookupStores(user)).thenReturn(Collections.singleton(credentialsStore));
 
-        when(credentialsStore.addCredentials(domain, credentials)).thenReturn(true);
-        when(credentialsStore.updateCredentials(domain, credentials, credentials)).thenReturn(true);
+            when(credentialsStore.addCredentials(domain, credentials)).thenReturn(true);
+            when(credentialsStore.updateCredentials(domain, credentials, credentials)).thenReturn(true);
+        }
     }
 }
