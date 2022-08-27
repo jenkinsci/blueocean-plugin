@@ -47,6 +47,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.TestExtension;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -72,47 +73,48 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
 
     @Test
     public void createPipeline() throws UnirestException {
-        Mockito.mockStatic(GitHubWebHook.class);
-        GitHubWebHook gitHubWebHookMock = Mockito.spy(GitHubWebHook.class);
-        Mockito.when(GitHubWebHook.get()).thenReturn(gitHubWebHookMock);
-        Mockito.when(GitHubWebHook.getJenkinsInstance()).thenReturn(this.j.jenkins);
-        String credentialId = createGithubCredential(user);
-        Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
+        try (MockedStatic<GitHubWebHook> mockedStatic = Mockito.mockStatic(GitHubWebHook.class)) {
+            GitHubWebHook gitHubWebHookMock = Mockito.spy(GitHubWebHook.class);
+            Mockito.when(GitHubWebHook.get()).thenReturn(gitHubWebHookMock);
+            Mockito.when(GitHubWebHook.getJenkinsInstance()).thenReturn(this.j.jenkins);
+            String credentialId = createGithubCredential(user);
+            Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .crumb( this.crumb )
                 .post("/organizations/jenkins/pipelines/")
                 .data(MapsHelper.of("name", "pipeline1", "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
-                        "scmConfig", MapsHelper.of("id", GithubScm.ID, "uri", githubApiUrl, "credentialId", credentialId,
-                                "config", MapsHelper.of("repoOwner", "cloudbeers", "repository", "PR-demo"))))
+                    "scmConfig", MapsHelper.of("id", GithubScm.ID, "uri", githubApiUrl, "credentialId", credentialId,
+                        "config", MapsHelper.of("repoOwner", "cloudbeers", "repository", "PR-demo"))))
                 .build(Map.class);
-        assertNotNull(r);
-        assertEquals("pipeline1", r.get("name"));
+            assertNotNull(r);
+            assertEquals("pipeline1", r.get("name"));
 
-        MultiBranchProject mbp = (MultiBranchProject) j.getInstance().getItem("pipeline1");
-        GitHubSCMSource source = (GitHubSCMSource) mbp.getSCMSources().get(0);
-        List<SCMSourceTrait> traits = source.getTraits();
+            MultiBranchProject mbp = (MultiBranchProject) j.getInstance().getItem("pipeline1");
+            GitHubSCMSource source = (GitHubSCMSource) mbp.getSCMSources().get(0);
+            List<SCMSourceTrait> traits = source.getTraits();
 
-        Assert.assertNotNull(SCMTrait.find(traits, CleanAfterCheckoutTrait.class));
-        Assert.assertNotNull(SCMTrait.find(traits, CleanBeforeCheckoutTrait.class));
-        Assert.assertNotNull(SCMTrait.find(traits, LocalBranchTrait.class));
+            Assert.assertNotNull(SCMTrait.find(traits, CleanAfterCheckoutTrait.class));
+            Assert.assertNotNull(SCMTrait.find(traits, CleanBeforeCheckoutTrait.class));
+            Assert.assertNotNull(SCMTrait.find(traits, LocalBranchTrait.class));
 
-        BranchDiscoveryTrait branchDiscoveryTrait = SCMTrait.find(traits, BranchDiscoveryTrait.class);
-        Assert.assertNotNull(branchDiscoveryTrait);
-        Assert.assertTrue(branchDiscoveryTrait.isBuildBranch());
-        Assert.assertTrue(branchDiscoveryTrait.isBuildBranchesWithPR());
+            BranchDiscoveryTrait branchDiscoveryTrait = SCMTrait.find(traits, BranchDiscoveryTrait.class);
+            Assert.assertNotNull(branchDiscoveryTrait);
+            Assert.assertTrue(branchDiscoveryTrait.isBuildBranch());
+            Assert.assertTrue(branchDiscoveryTrait.isBuildBranchesWithPR());
 
-        ForkPullRequestDiscoveryTrait forkPullRequestDiscoveryTrait = SCMTrait.find(traits, ForkPullRequestDiscoveryTrait.class);
-        Assert.assertNotNull(forkPullRequestDiscoveryTrait);
-        Assert.assertTrue(forkPullRequestDiscoveryTrait.getTrust() instanceof ForkPullRequestDiscoveryTrait.TrustPermission);
-        Assert.assertEquals(1, forkPullRequestDiscoveryTrait.getStrategies().size());
-        Assert.assertTrue(forkPullRequestDiscoveryTrait.getStrategies().contains(ChangeRequestCheckoutStrategy.MERGE));
+            ForkPullRequestDiscoveryTrait forkPullRequestDiscoveryTrait = SCMTrait.find(traits, ForkPullRequestDiscoveryTrait.class);
+            Assert.assertNotNull(forkPullRequestDiscoveryTrait);
+            Assert.assertTrue(forkPullRequestDiscoveryTrait.getTrust() instanceof ForkPullRequestDiscoveryTrait.TrustPermission);
+            Assert.assertEquals(1, forkPullRequestDiscoveryTrait.getStrategies().size());
+            Assert.assertTrue(forkPullRequestDiscoveryTrait.getStrategies().contains(ChangeRequestCheckoutStrategy.MERGE));
 
-        OriginPullRequestDiscoveryTrait originPullRequestDiscoveryTrait = SCMTrait.find(traits, OriginPullRequestDiscoveryTrait.class);
-        Assert.assertNotNull(originPullRequestDiscoveryTrait);
-        Assert.assertEquals(1, originPullRequestDiscoveryTrait.getStrategies().size());
-        Assert.assertTrue(originPullRequestDiscoveryTrait.getStrategies().contains(ChangeRequestCheckoutStrategy.MERGE));
-        Mockito.verify(gitHubWebHookMock, Mockito.times(1)).registerHookFor(mbp);
+            OriginPullRequestDiscoveryTrait originPullRequestDiscoveryTrait = SCMTrait.find(traits, OriginPullRequestDiscoveryTrait.class);
+            Assert.assertNotNull(originPullRequestDiscoveryTrait);
+            Assert.assertEquals(1, originPullRequestDiscoveryTrait.getStrategies().size());
+            Assert.assertTrue(originPullRequestDiscoveryTrait.getStrategies().contains(ChangeRequestCheckoutStrategy.MERGE));
+            Mockito.verify(gitHubWebHookMock, Mockito.times(1)).registerHookFor(mbp);
+        }
     }
 
     @Test

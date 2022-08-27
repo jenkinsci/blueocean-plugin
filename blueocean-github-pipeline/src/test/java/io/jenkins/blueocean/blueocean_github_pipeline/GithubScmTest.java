@@ -23,14 +23,18 @@ import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.GrantedAuthority;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.ByteArrayInputStream;
 import java.net.HttpURLConnection;
@@ -47,6 +51,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Vivek Pandey
  */
+@RunWith(MockitoJUnitRunner.class)
 public class GithubScmTest {
 
     @Mock
@@ -58,9 +63,12 @@ public class GithubScmTest {
     @Mock
     User user;
 
+    MockedStatic<Jenkins> jenkinsMockedStatic;
+    MockedStatic<User> userMockedStatic;
+
     @Before
     public void setup() throws Exception {
-        mockStatic(Jenkins.class);
+        jenkinsMockedStatic = mockStatic(Jenkins.class);
 
         when(Jenkins.get()).thenReturn(jenkins);
         when(Jenkins.getInstanceOrNull()).thenReturn(jenkins);
@@ -70,13 +78,19 @@ public class GithubScmTest {
 
         Mockito.when(authentication.getAuthorities()).thenReturn(grantedAuthorities);
         Mockito.when(authentication.getPrincipal()).thenReturn("joe");
-        mockStatic(User.class);
+        userMockedStatic = mockStatic(User.class);
 
         when(user.getId()).thenReturn("joe");
         when(user.getFullName()).thenReturn("joe smith");
         when(user.getDisplayName()).thenReturn("joe smith");
         when(User.get(authentication)).thenReturn(user);
         when(User.current()).thenReturn(user);
+    }
+
+    @After
+    public void cleanup() {
+        jenkinsMockedStatic.close();
+        userMockedStatic.close();
     }
 
     @Test

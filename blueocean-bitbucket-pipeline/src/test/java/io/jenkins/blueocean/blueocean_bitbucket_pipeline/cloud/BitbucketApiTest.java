@@ -13,6 +13,7 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbRepo;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbSaveContentResponse;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbUser;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import static org.junit.Assert.assertEquals;
@@ -125,47 +126,49 @@ public class BitbucketApiTest extends BbCloudWireMock {
         final Secret secret = Mockito.mock(Secret.class);
         when(secret.getPlainText()).thenReturn(getPassword());
 
-        mockStatic(Secret.class);
-        when(Secret.toString(secret)).thenReturn(getPassword());
+        try (MockedStatic<Secret> secretMockedStatic = mockStatic(Secret.class)) {
+            when(Secret.toString(secret)).thenReturn(getPassword());
 
-        return new StandardUsernamePasswordCredentials() {
-            @Override
-            public CredentialsScope getScope() {
-                return CredentialsScope.SYSTEM;
-            }
+            return new StandardUsernamePasswordCredentials() {
+                @Override
+                public CredentialsScope getScope() {
+                    return CredentialsScope.SYSTEM;
+                }
 
-            @NonNull
-            @Override
-            public CredentialsDescriptor getDescriptor() {
-                return new CredentialsDescriptor() {
+                @NonNull
+                @Override
+                public CredentialsDescriptor getDescriptor() {
+                    return new CredentialsDescriptor() {
 
-                };
-            }
+                    };
+                }
 
-            @NonNull
-            @Override
-            public String getUsername() {
-                return username;
-            }
+                @NonNull
+                @Override
+                public String getUsername() {
+                    return username;
+                }
 
-            @NonNull
-            @Override
-            public String getId() {
-                return "bitbucket-api-test";
-            }
+                @NonNull
+                @Override
+                public String getId() {
+                    return "bitbucket-api-test";
+                }
 
-            @NonNull
-            @Override
-            public String getDescription() {
-                return "";
-            }
+                @NonNull
+                @Override
+                public String getDescription() {
+                    return "";
+                }
 
-            @NonNull
-            @Override
-            public Secret getPassword() {
-                return secret;
-            }
-        };
+                @NonNull
+                @Override
+                public Secret getPassword() {
+                    return secret;
+                }
+            };
+        }
+
     }
 
 }
