@@ -4,11 +4,10 @@ import { CommitId, PlaceholderTable, ReadableDate, JTable, TableHeaderRow, Table
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
 import LinkifiedText from './LinkifiedText';
-import { ShowMoreButton, i18nTranslator, ComponentLink } from '@jenkins-cd/blueocean-core-js';
-
-const t = i18nTranslator('blueocean-dashboard');
+import { ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 
 function NoChangesPlaceholder(props) {
+    const { t } = props;
 
     const columns = [
         { width: 750, isFlexible: true, head: { text: 40 }, cell: { text: 150 } },
@@ -29,8 +28,12 @@ function NoChangesPlaceholder(props) {
     );
 }
 
+NoChangesPlaceholder.propTypes = {
+    t: PropTypes.func,
+};
+
 @observer
-export class RunDetailsChanges extends Component {
+export default class RunDetailsChanges extends Component {
     componentWillMount() {
         this._fetchChangeSet(this.props);
     }
@@ -46,7 +49,7 @@ export class RunDetailsChanges extends Component {
     }
 
     render() {
-        const { locale } = this.props;
+        const { t, locale } = this.props;
 
         if (!this.pager) {
             return null;
@@ -75,7 +78,7 @@ export class RunDetailsChanges extends Component {
         ];
 
         const changeSetSplitBySource = [];
-        changeSet.map(commit => {
+        changeSet.map((commit) => {
             if (changeSetSplitBySource[commit.checkoutCount] === undefined) {
                 changeSetSplitBySource[commit.checkoutCount] = [];
             }
@@ -87,7 +90,7 @@ export class RunDetailsChanges extends Component {
                 {changeSetSplitBySource.map((changeSet, changeSetIdx) => (
                     <JTable columns={columns} className="changeset-table" key={changeSetIdx}>
                         <TableHeaderRow />
-                        {changeSet.map(commit => (
+                        {changeSet.map((commit) => (
                             <TableRow key={commit.commitId}>
                                 <TableCell>
                                     <CommitId commitId={commit.commitId} url={commit.url} />
@@ -118,6 +121,7 @@ export class RunDetailsChanges extends Component {
 RunDetailsChanges.propTypes = {
     result: PropTypes.object,
     locale: PropTypes.string,
+    t: PropTypes.func,
     params: PropTypes.any,
     pipeline: PropTypes.object,
     results: PropTypes.object,
@@ -127,9 +131,3 @@ RunDetailsChanges.contextTypes = {
     params: PropTypes.object.isRequired,
     activityService: PropTypes.object.isRequired,
 };
-
-export default class RunDetailsChangesLink extends ComponentLink {
-    name = 'changes';
-    title = t('rundetail.header.tab.changes');
-    component = RunDetailsChanges;
-}
