@@ -8,7 +8,6 @@ import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
-import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.Item;
@@ -66,7 +65,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
     @After
     public void tearDown() {
         if (!perTestStubMappings.isEmpty()) {
-            perTestStubMappings.forEach( mapping -> githubApi.removeStub( mapping));
+            perTestStubMappings.forEach(mapping -> githubApi.removeStub(mapping));
             perTestStubMappings.clear();
         }
     }
@@ -113,14 +112,11 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
             Assert.assertNotNull(originPullRequestDiscoveryTrait);
             Assert.assertEquals(1, originPullRequestDiscoveryTrait.getStrategies().size());
             Assert.assertTrue(originPullRequestDiscoveryTrait.getStrategies().contains(ChangeRequestCheckoutStrategy.MERGE));
-            Mockito.verify(gitHubWebHookMock, Mockito.times(1)).registerHookFor(mbp);
         }
     }
 
     @Test
     public void createPipelineNoJenkinsFile() throws UnirestException, IOException {
-//        AbstractMultiBranchCreateRequest.JenkinsfileCriteria criteria = Mockito.mock(AbstractMultiBranchCreateRequest.JenkinsfileCriteria.class);
-//        when(criteria.isJenkinsfileFound()).thenReturn(true);
         OrganizationImpl organization = new OrganizationImpl("jenkins", j.jenkins);
         String credentialId = createGithubCredential(user);
 
@@ -130,7 +126,6 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
                 "empty1", new BlueScmConfig(GithubScm.ID, githubApiUrl, credentialId, config));
 
         request.create(organization, organization);
-//        verify(criteria, atLeastOnce()).isJenkinsfileFound();
     }
 
     @Test
@@ -304,7 +299,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
             assertNotNull(store);
             store.addDomain(new Domain("github-domain",
                 "GitHub Domain to store personal access token",
-                Collections.<DomainSpecification>singletonList(new BlueOceanDomainSpecification())));
+                Collections.singletonList(new BlueOceanDomainSpecification())));
 
 
             Domain domain = store.getDomainByName("github-domain");

@@ -6,13 +6,12 @@ import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import hudson.model.Item;
 import hudson.model.User;
 import hudson.security.SecurityRealm;
 import hudson.tasks.Mailer;
-import hudson.util.Secret;
+import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -33,17 +32,13 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.ByteArrayInputStream;
 import java.net.HttpURLConnection;
-import java.net.Proxy;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
-import static io.jenkins.blueocean.rest.impl.pipeline.scm.Scm.CREDENTIAL_ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -77,13 +72,9 @@ public class GithubScmTest {
         when(Jenkins.getAuthentication()).thenReturn(authentication);
         GrantedAuthority[] grantedAuthorities = new GrantedAuthority[]{SecurityRealm.AUTHENTICATED_AUTHORITY};
 
-        Mockito.when(authentication.getAuthorities()).thenReturn(grantedAuthorities);
-        Mockito.when(authentication.getPrincipal()).thenReturn("joe");
         userMockedStatic = mockStatic(User.class);
 
         when(user.getId()).thenReturn("joe");
-        when(user.getFullName()).thenReturn("joe smith");
-        when(user.getDisplayName()).thenReturn("joe smith");
         when(User.get(authentication)).thenReturn(user);
         when(User.current()).thenReturn(user);
     }
@@ -98,7 +89,6 @@ public class GithubScmTest {
     public void validateAccessTokenScopes() throws Exception {
 
         HttpURLConnection httpURLConnectionMock = mock(HttpURLConnection.class);
-        Mockito.doNothing().when(httpURLConnectionMock).connect();
 
         HttpRequest httpRequest = mock(HttpRequest.class);
 
@@ -106,11 +96,8 @@ public class GithubScmTest {
             when(HttpRequest.get(GitHubSCMSource.GITHUB_URL)).thenReturn(httpRequest);
             when(httpRequest.withAuthorizationToken(any())).thenReturn(httpRequest);
             when(httpRequest.connect()).thenReturn(httpURLConnectionMock);
-            URL urlMock = mock(URL.class);
-            when(urlMock.openConnection(Proxy.NO_PROXY)).thenReturn(httpURLConnectionMock);
             when(httpURLConnectionMock.getHeaderField("X-OAuth-Scopes")).thenReturn("user:email,repo");
             when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
-
             HttpURLConnection httpURLConnection = GithubScm.connect(GitHubSCMSource.GITHUB_URL, "abcd");
             GithubScm.validateAccessTokenScopes(httpURLConnection);
         }
@@ -129,15 +116,15 @@ public class GithubScmTest {
     protected void validateAndCreate(String accessToken) throws Exception {
 
         Mailer.UserProperty userProperty = mock(Mailer.UserProperty.class);
-        when(userProperty.getAddress()).thenReturn("joe@example.com");
         JSONObject req = new JSONObject().element("accessToken", accessToken);
         GithubScm githubScm = new GithubScm(() -> new Link( "/blue/organizations/jenkins/scm/"));
 
         mockCredentials("joe", accessToken, githubScm.getId(), GithubScm.DOMAIN_NAME);
 
         try (MockedStatic<OrganizationFactory> mock = mockStatic(OrganizationFactory.class);
-            MockedStatic<HttpRequest> mockedStatic = mockStatic(HttpRequest.class);
-            MockedStatic<Stapler> mockedStatic1 = mockStatic(Stapler.class)) {
+             MockedStatic<HttpRequest> mockedStatic = mockStatic(HttpRequest.class);
+             MockedStatic<Stapler> mockedStatic1 = mockStatic(Stapler.class);
+             MockedStatic<CredentialsUtils> credentialsUtilsMockedStatic = mockStatic(CredentialsUtils.class)) {
 
             OrganizationFactoryImpl organizationFactory = mock(OrganizationFactoryImpl.class);
             when(OrganizationFactory.getInstance()).thenReturn(organizationFactory);
@@ -155,7 +142,6 @@ public class GithubScmTest {
             when(httpRequestMock.withAuthorizationToken(tokenCaptor.capture())).thenReturn(httpRequestMock);
 
             HttpURLConnection httpURLConnectionMock = mock(HttpURLConnection.class);
-            Mockito.doNothing().when(httpURLConnectionMock).connect();
             when(httpRequestMock.connect()).thenReturn(httpURLConnectionMock);
 
             when(httpURLConnectionMock.getHeaderField("X-OAuth-Scopes")).thenReturn("user:email,repo");
@@ -167,6 +153,10 @@ public class GithubScmTest {
             when(Stapler.getCurrentRequest()).thenReturn(request);
 
             when(HttpRequest.getInputStream(httpURLConnectionMock)).thenReturn(new ByteArrayInputStream(guser.getBytes(StandardCharsets.UTF_8)));
+
+            StandardUsernamePasswordCredentials credentials = mock(StandardUsernamePasswordCredentials.class);
+            when(credentials.getId()).thenReturn(GithubScm.ID);
+            when(CredentialsUtils.findCredential(any(), any(), any())).thenReturn(credentials);
 
             githubScm.validateAndCreate(req);
 
@@ -184,51 +174,28 @@ public class GithubScmTest {
         try (MockedStatic<Stapler> staplerMockedStatic = mockStatic(Stapler.class)) {
             StaplerRequest staplerRequest = mock(StaplerRequest.class);
             when(Stapler.getCurrentRequest()).thenReturn(staplerRequest);
-
-            when(staplerRequest.getParameter(CREDENTIAL_ID)).thenReturn("12345");
         }
-
     }
 
     void mockCredentials(String userId, String accessToken, String credentialId, String domainName) throws Exception {
         //Mock Credentials
         UsernamePasswordCredentialsImpl credentials = mock(UsernamePasswordCredentialsImpl.class);
-        //whenNew(UsernamePasswordCredentialsImpl.class).withAnyArguments().thenReturn(credentials);
-        when(credentials.getId()).thenReturn(credentialId);
-        when(credentials.getUsername()).thenReturn(userId);
 
-        Secret secret = mock(Secret.class);
-        when(secret.getPlainText()).thenReturn(accessToken);
-        when(credentials.getPassword()).thenReturn(secret);
         CredentialsMatcher credentialsMatcher = mock(CredentialsMatcher.class);
         try(MockedStatic<CredentialsMatchers> credentialsMatchersMockedStatic = mockStatic(CredentialsMatchers.class);
             MockedStatic<CredentialsProvider> credentialsProviderMockedStatic =  mockStatic(CredentialsProvider.class)){
             when(CredentialsMatchers.withId(credentialId)).thenReturn(credentialsMatcher);
 
             BlueOceanDomainRequirement blueOceanDomainRequirement = mock(BlueOceanDomainRequirement.class);
-            //whenNew(BlueOceanDomainRequirement.class).withNoArguments().thenReturn(blueOceanDomainRequirement);
 
             when(CredentialsProvider.lookupCredentials(StandardUsernamePasswordCredentials.class, jenkins, authentication, blueOceanDomainRequirement))
                 .thenReturn(Collections.singletonList(credentials));
-
             when(CredentialsMatchers.firstOrNull(Collections.singletonList(credentials), credentialsMatcher)).thenReturn(credentials);
-
             when(CredentialsMatchers.allOf(credentialsMatcher)).thenReturn(credentialsMatcher);
-
-            //Mock credentials Domain
-            Domain domain = mock(Domain.class);
-            when(domain.getName()).thenReturn(domainName);
 
             //Mock credentials Store
             CredentialsStore credentialsStore = mock(CredentialsStore.class);
-            when(credentialsStore.hasPermission(CredentialsProvider.CREATE)).thenReturn(true);
-            when(credentialsStore.hasPermission(CredentialsProvider.UPDATE)).thenReturn(true);
-            when(credentialsStore.getDomainByName(domainName)).thenReturn(domain);
-
             when(CredentialsProvider.lookupStores(user)).thenReturn(Collections.singleton(credentialsStore));
-
-            when(credentialsStore.addCredentials(domain, credentials)).thenReturn(true);
-            when(credentialsStore.updateCredentials(domain, credentials, credentials)).thenReturn(true);
         }
     }
 }
