@@ -44,6 +44,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.scm.Scm.CREDENTIAL_ID;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -99,14 +100,20 @@ public class GithubScmTest {
         HttpURLConnection httpURLConnectionMock = mock(HttpURLConnection.class);
         Mockito.doNothing().when(httpURLConnectionMock).connect();
 
-        URL urlMock = mock(URL.class);
-        //whenNew(URL.class).withAnyArguments().thenReturn(urlMock);
-        when(urlMock.openConnection(Proxy.NO_PROXY)).thenReturn(httpURLConnectionMock);
-        when(httpURLConnectionMock.getHeaderField("X-OAuth-Scopes")).thenReturn("user:email,repo");
-        when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
+        HttpRequest httpRequest = mock(HttpRequest.class);
 
-        HttpURLConnection httpURLConnection = GithubScm.connect(GitHubSCMSource.GITHUB_URL, "abcd");
-        GithubScm.validateAccessTokenScopes(httpURLConnection);
+        try (MockedStatic<HttpRequest> mockedStatic = mockStatic(HttpRequest.class)) {
+            when(HttpRequest.get(GitHubSCMSource.GITHUB_URL)).thenReturn(httpRequest);
+            when(httpRequest.withAuthorizationToken(any())).thenReturn(httpRequest);
+            when(httpRequest.connect()).thenReturn(httpURLConnectionMock);
+            URL urlMock = mock(URL.class);
+            when(urlMock.openConnection(Proxy.NO_PROXY)).thenReturn(httpURLConnectionMock);
+            when(httpURLConnectionMock.getHeaderField("X-OAuth-Scopes")).thenReturn("user:email,repo");
+            when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
+
+            HttpURLConnection httpURLConnection = GithubScm.connect(GitHubSCMSource.GITHUB_URL, "abcd");
+            GithubScm.validateAccessTokenScopes(httpURLConnection);
+        }
     }
 
     @Test
