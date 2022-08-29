@@ -1,0 +1,29 @@
+{
+  "id" : "7269cd83-1af6-4134-9161-82360d678dcc",
+  "name" : "bitbucket_rest_api_10_projects_testp_repos_pipeline-demo-test_browse_somefile",
+  "request" : {
+    "url" : "/rest/api/1.0/projects/TESTP/repos/pipeline-demo-test/browse/SomeFile",
+    "method" : "PUT",
+    "bodyPatterns" : [ {
+      "anything" : "anything"
+    } ]
+  },
+  "response" : {
+    "status" : "400",
+    "body" : "{\"errors\":[{\"context\":null,\"message\":\"File editing canceled for 'SomeFile' on 'master'.\",\"exceptionName\":\"com.atlassian.bitbucket.hook.repository.RepositoryHookVetoedException\",\"details\":[\"Branch permissions canceled the editing of 'SomeFile' on 'master'.\",\"Branch refs/heads/master can only be modified through pull requests.\\nCheck your branch permissions configuration with the project administrator.\"],\"trigger\":{\"id\":\"file-edit\",\"abortOnFirstVeto\":false}}]}",
+    "headers" : {
+      "X-AREQUESTID" : "@L72CV8x1069x1007x0",
+      "X-AUSERID" : "2",
+      "X-AUSERNAME" : "user",
+      "Cache-Control" : "no-cache, no-transform",
+      "Vary" : "X-AUSERNAME,Accept-Encoding",
+      "X-Content-Type-Options" : "nosniff",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Sun, 19 Aug 2018 21:49:54 GMT",
+      "Connection" : "close"
+    }
+  },
+  "uuid" : "7269cd83-1af6-4134-9161-82360d678dcc",
+  "persistent" : true,
+  "insertionIndex" : 68
+}

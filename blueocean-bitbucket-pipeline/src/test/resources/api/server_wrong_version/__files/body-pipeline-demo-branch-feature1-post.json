@@ -1,0 +1,8 @@
+{
+  "displayId" : "feature1",
+  "latestCommit" : "0bae0ddbed2e897d3b44abc3aca9ba26e2f61710",
+  "isDefault" : false,
+  "type" : "BRANCH",
+  "id" : "refs/heads/feature1",
+  "latestChangeset" : "0bae0ddbed2e897d3b44abc3aca9ba26e2f61710"
+}

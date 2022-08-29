@@ -1,0 +1,24 @@
+{
+  "id" : "bdb28fee-bd1e-3dee-88f8-a821eba79ca6",
+  "request" : {
+    "url" : "/rest/api/1.0/users/vivek",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-users-vivek-nBWrI.json",
+    "headers" : {
+      "X-AREQUESTID" : "@190KU8Bx932x11x0",
+      "X-ASEN" : "SEN-L9817337",
+      "X-AUSERID" : "1",
+      "X-AUSERNAME" : "vivek",
+      "Cache-Control" : "no-cache, no-transform",
+      "Vary" : "X-AUSERNAME,Accept-Encoding",
+      "Transfer-Encoding" : "chunked",
+      "X-Content-Type-Options" : "nosniff",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Sat, 17 Jun 2017 15:32:55 GMT"
+    }
+  },
+  "uuid" : "bdb28fee-bd1e-3dee-88f8-a821eba79ca6"
+}

@@ -1,0 +1,24 @@
+{
+  "id" : "1723ba44-da9f-3d78-932b-579607e6d20d",
+  "request" : {
+    "url" : "/rest/api/1.0/projects/TESTP/repos/empty-repo-test/branches/default",
+    "method" : "HEAD"
+  },
+  "response" : {
+    "status" : 404,
+    "bodyFileName" : "body-empty-repo-not-found-head.json",
+    "headers" : {
+      "X-AREQUESTID" : "@1M44HP4x927x2045x0",
+      "X-ASEN" : "SEN-L9817337",
+      "X-AUSERID" : "1",
+      "X-AUSERNAME" : "vivek",
+      "Cache-Control" : "no-cache, no-transform",
+      "Vary" : "X-AUSERNAME,Accept-Encoding",
+      "Transfer-Encoding" : "chunked",
+      "X-Content-Type-Options" : "nosniff",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Mon, 12 Jun 2017 15:27:38 GMT"
+    }
+  },
+  "uuid" : "1723ba44-da9f-3d78-932b-579607e6d20d"
+}

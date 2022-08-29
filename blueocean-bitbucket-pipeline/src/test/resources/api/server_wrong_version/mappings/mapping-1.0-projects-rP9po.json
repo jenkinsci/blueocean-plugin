@@ -1,0 +1,24 @@
+{
+  "id" : "7c0f0c4e-16c2-3971-8ba1-91f60b69ffed",
+  "request" : {
+    "url" : "/rest/api/1.0/projects/?start=0&limit=100",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-1.0-projects-rP9po.json",
+    "headers" : {
+      "X-AREQUESTID" : "@1M44HP4x854x1959x0",
+      "X-ASEN" : "SEN-L9817337",
+      "X-AUSERID" : "1",
+      "X-AUSERNAME" : "vivek",
+      "Cache-Control" : "no-cache, no-transform",
+      "Vary" : "X-AUSERNAME,Accept-Encoding",
+      "Transfer-Encoding" : "chunked",
+      "X-Content-Type-Options" : "nosniff",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Mon, 12 Jun 2017 14:14:51 GMT"
+    }
+  },
+  "uuid" : "7c0f0c4e-16c2-3971-8ba1-91f60b69ffed"
+}

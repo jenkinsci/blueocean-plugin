@@ -1,14 +1,11 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
-import com.mashape.unirest.http.exceptions.UnirestException;
 import io.jenkins.blueocean.commons.DigestUtils;
 import io.jenkins.blueocean.commons.MapsHelper;
-import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.util.HttpRequest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.MockedStatic;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -17,8 +14,6 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Vivek Pandey
@@ -36,39 +31,12 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
     }
 
     @Test
-    public void testServerNotBitbucket() throws Exception {
-        try (MockedStatic<BitbucketServerApi> mockedStatic =  mockStatic(BitbucketServerApi.class)) {
-            when(BitbucketServerApi.getVersion(apiUrl))
-                .thenThrow(new ServiceException.NotFoundException("Not found"));
-            // Create a server
-            Map resp = request()
-                .status(400)
-                .jwtToken(token)
-                .crumb( crumb )
-                .data(MapsHelper.of(
-                    "name", "My Server",
-                    "apiUrl", apiUrl
-                ))
-                .post(URL)
-                .build(Map.class);
-
-            List errors = (List) resp.get("errors");
-            assertEquals(1, errors.size());
-
-            Map error1 = (Map) errors.get(0);
-            assertEquals("apiUrl", error1.get("field"));
-            Assert.assertNotNull(error1.get("message"));
-            assertEquals("INVALID", error1.get("code"));
-        }
-    }
-
-    @Test
     public void testServerBadServer() throws Exception {
         // Create a server
         Map resp = request()
                 .status(400)
                 .jwtToken(token)
-                .crumb( crumb )
+                .crumb(crumb)
                 .data(MapsHelper.of(
                         "name", "My Server",
                         "apiUrl", "http://foobar/"
@@ -90,7 +58,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         Map resp = request()
                 .status(400)
                 .jwtToken(token)
-                .crumb( crumb )
+                .crumb(crumb)
                 .data(new HashMap())
                 .post(URL)
                 .build(Map.class);
@@ -111,7 +79,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         Map resp = request()
                 .status(400)
                 .jwtToken(token)
-                .crumb( crumb )
+                .crumb(crumb)
                 .data(MapsHelper.of( "name", "foo"))
                 .post(URL)
                 .build(Map.class);
@@ -131,7 +99,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         Map resp = request()
                 .status(400)
                 .jwtToken(token)
-                .crumb( crumb )
+                .crumb(crumb)
                 .data(MapsHelper.of( "apiUrl", apiUrl))
                 .post(URL)
                 .build(Map.class);
@@ -152,7 +120,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         Map server = request()
                 .status(200)
                 .jwtToken(token)
-                .crumb( crumb )
+                .crumb(crumb)
                 .data(MapsHelper.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
@@ -162,10 +130,10 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         assertEquals(apiUrl, server.get("apiUrl"));
 
         // Create a server
-        Map resp = server = request()
+        Map resp = request()
                 .status(400)
                 .jwtToken(token)
-                .crumb( crumb )
+                .crumb(crumb)
                 .data(MapsHelper.of(
                         "name", "My Server 2",
                         "apiUrl", apiUrl
@@ -190,7 +158,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         Map server = request()
                 .status(200)
                 .jwtToken(token)
-                .crumb( crumb )
+                .crumb(crumb)
                 .data(MapsHelper.of(
                         "name", "My Server",
                         "apiUrl", apiUrl
@@ -229,65 +197,6 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
                 .jwtToken(token)
                 .get(URL+id+"/validate/")
                 .build(Map.class);
-    }
-
-    @Test
-    public void shouldFailOnIncompatibleVersionInAdd() throws UnirestException, IOException {
-        try (MockedStatic<BitbucketServerApi> mockedStatic =  mockStatic(BitbucketServerApi.class)) {
-            when(BitbucketServerApi.getVersion(apiUrl))
-                .thenReturn("5.0.2");
-
-            Map server = request()
-                .status(400)
-                .jwtToken(token)
-                .crumb(crumb)
-                .data(MapsHelper.of(
-                    "name", "My Server",
-                    "apiUrl", apiUrl
-                ))
-                .post(URL)
-                .build(Map.class);
-
-            List errors = (List) server.get("errors");
-            assertEquals(1, errors.size());
-
-            Map error1 = (Map) errors.get(0);
-            assertEquals("apiUrl", error1.get("field"));
-            assertEquals("INVALID", error1.get("code"));
-            assertNotNull(error1.get("message"));
-            assertEquals("This Bitbucket Server is too old (5.0.2) to work with Jenkins. Please upgrade Bitbucket to 5.2.0 or later.", error1.get("message"));
-        }
-    }
-
-    @Test
-    public void shouldFailOnIncompatibleVersion() throws UnirestException, IOException {
-        // Create a server
-        Map server = request()
-                .status(200)
-                .jwtToken(token)
-                .crumb( crumb )
-                .data(MapsHelper.of(
-                        "name", "My Server",
-                        "apiUrl", apiUrl
-                ))
-                .post(URL)
-                .build(Map.class);
-
-        String id = DigestUtils.sha256Hex(apiUrl);
-        assertEquals(id, server.get("id"));
-        assertEquals("My Server", server.get("name"));
-        assertEquals(apiUrl, server.get("apiUrl"));
-
-        try (MockedStatic<BitbucketServerApi> mockedStatic =  mockStatic(BitbucketServerApi.class)) {
-            when(BitbucketServerApi.getVersion(apiUrl))
-                .thenReturn("5.0.2");
-
-            Map r = new RequestBuilder(baseUrl)
-                .status(428)
-                .jwtToken(token)
-                .get("/organizations/jenkins/scm/" + BitbucketServerScm.ID + "/servers/" + id + "/validate/")
-                .build(Map.class);
-        }
     }
 
     // TODO: need a test case as unprivileged user
@@ -344,7 +253,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
     private List getServers() {
         return request()
                 .status(200)
-                .crumb( crumb )
+                .crumb(crumb)
                 .jwtToken(token)
                 .get(URL)
                 .build(List.class);
