@@ -7,9 +7,6 @@ import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,9 +22,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author cliffmeyers
  */
-
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class GithubEnterpriseApiTest extends GithubMockBase {
 
     @Test

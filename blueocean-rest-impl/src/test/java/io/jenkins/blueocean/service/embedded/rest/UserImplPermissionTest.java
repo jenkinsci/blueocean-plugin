@@ -26,7 +26,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,25 +41,21 @@ import org.acegisecurity.AccessDeniedException;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.GrantedAuthority;
 import org.apache.commons.lang.StringUtils;
+import org.junit.After;
 import org.junit.AssumptionViolatedException;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.Node;
 import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
@@ -80,14 +75,15 @@ import io.jenkins.blueocean.rest.model.BlueUserPermission;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
-@PrepareForTest({ Jenkins.class, User.class })
 public class UserImplPermissionTest {
     private TestOrganization testOrganization;
     private User user;
     private Authentication authentication;
     private Jenkins jenkins;
+
+    private MockedStatic<Jenkins> jenkinsMockedStatic;
+
+    private MockedStatic<User> userMockedStatic;
 
     @Before
     public void setup() throws IOException {
@@ -114,7 +110,7 @@ public class UserImplPermissionTest {
             }
         });
 
-        mockStatic(Jenkins.class);
+        jenkinsMockedStatic = Mockito.mockStatic(Jenkins.class);
         when(Jenkins.getAuthentication()).thenReturn(authentication);
         when(Jenkins.get()).thenReturn(jenkins);
 
@@ -138,11 +134,16 @@ public class UserImplPermissionTest {
             });
         }
 
-        mockStatic(User.class);
+        userMockedStatic = Mockito.mockStatic(User.class);
         when(User.get("some_user", false, Collections.EMPTY_MAP)).thenReturn(user);
     }
 
 
+    @After
+    public void cleanup() {
+        jenkinsMockedStatic.close();
+        userMockedStatic.close();
+    }
     /**
      * Tests that the permissions are checked against the organization base and not the Jenkins instance. In this case
      * Jenkins instance will always return false to permission request and the organization base true.

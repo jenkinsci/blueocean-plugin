@@ -18,10 +18,8 @@ import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.Issue;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,9 +32,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ User.class, Jenkins.class })
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
+@RunWith(MockitoJUnitRunner.class)
 public class BlueOceanCredentialsProviderTest {
 
     @Mock(answer = Answers.CALLS_REAL_METHODS)
@@ -54,16 +50,13 @@ public class BlueOceanCredentialsProviderTest {
     @Test
     @Issue("JENKINS-53188")
     public void getCredentialsWhenUserExistedButNotAccessible() {
-        PowerMockito.mockStatic(Jenkins.class);
-        PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
-        PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
-        PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
-        when(jenkins.getSecurityRealm()).thenReturn(SecurityRealm.NO_AUTHENTICATION);
-        when(jenkins.getSecretKey()).thenReturn("xxx");
+        Mockito.mockStatic(Jenkins.class);
+        Mockito.when(Jenkins.get()).thenReturn(jenkins);
+        Mockito.when(Jenkins.get()).thenReturn(jenkins);
 
-        PowerMockito.mockStatic(User.class);
+        Mockito.mockStatic(User.class);
         // Make sure we return a user, cause it did once exist
-        PowerMockito.when(User.get(anyString(), anyBoolean(), any())).thenReturn(user);
+        Mockito.when(User.get(anyString(), anyBoolean(), any())).thenReturn(user);
 
         Domain domain = BlueOceanCredentialsProvider.createDomain("api.github.com");
         BlueOceanCredentialsProvider blueOceanCredentialsProvider = new BlueOceanCredentialsProvider();
@@ -72,8 +65,6 @@ public class BlueOceanCredentialsProviderTest {
             "halkeye",
             domain
         );
-        when(folder.getProperties()).thenReturn(describableList);
-        when(describableList.get(BlueOceanCredentialsProvider.FolderPropertyImpl.class)).thenReturn(prop);
 
         // Should be empty when trying to impersonate and grab credentials though
         List<StandardUsernameCredentials> credentials = blueOceanCredentialsProvider.getCredentials(

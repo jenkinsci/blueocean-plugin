@@ -8,15 +8,13 @@ import hudson.plugins.jira.JiraSession;
 import hudson.plugins.jira.JiraSite;
 import hudson.plugins.jira.model.JiraIssue;
 import hudson.scm.ChangeLogSet;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.mockito.ArgumentCaptor;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,17 +25,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(JiraSite.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class JiraSCMListenerTest {
 
     @Rule
     public JenkinsRule j = new JenkinsRule();
+
+    MockedStatic<JiraSite> jiraSiteMockedStatic;
+
+    @After
+    public void cleanup() {
+        if(jiraSiteMockedStatic!=null) {
+            jiraSiteMockedStatic.close();
+        }
+    }
 
     @Test
     public void onChangeLogParsed() throws Exception {
@@ -66,7 +70,7 @@ public class JiraSCMListenerTest {
         };
 
         // Setup JIRA site
-        mockStatic(JiraSite.class);
+        jiraSiteMockedStatic = mockStatic(JiraSite.class);
         JiraSite site = mock(JiraSite.class);
         JiraSession session = mock(JiraSession.class);
 
@@ -117,7 +121,7 @@ public class JiraSCMListenerTest {
         };
 
         // Setup JIRA site
-        mockStatic(JiraSite.class);
+        jiraSiteMockedStatic = mockStatic(JiraSite.class);
         JiraSite site = mock(JiraSite.class);
         JiraSession session = mock(JiraSession.class);
 
@@ -171,7 +175,7 @@ public class JiraSCMListenerTest {
         };
 
         // Setup JIRA site
-        mockStatic(JiraSite.class);
+        jiraSiteMockedStatic = mockStatic(JiraSite.class);
         JiraSite site = mock(JiraSite.class);
 
         when(site.getIssuePattern()).thenReturn(JiraSite.DEFAULT_ISSUE_PATTERN);

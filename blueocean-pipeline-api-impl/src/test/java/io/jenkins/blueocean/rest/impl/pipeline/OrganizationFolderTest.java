@@ -15,20 +15,19 @@ import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
 import jenkins.scm.api.metadata.AvatarMetadataAction;
 import org.acegisecurity.Authentication;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 import org.jvnet.hudson.test.WithoutJenkins;
 import org.kohsuke.stapler.StaplerRequest;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -41,20 +40,27 @@ import static org.mockito.Mockito.when;
 /**
  * @author Vivek Pandey
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
-@PrepareForTest({OrganizationFactory.class, OrganizationFolder.class, StaplerRequest.class})
 public class OrganizationFolderTest{
     @Rule
-    JenkinsRule j = new JenkinsRule();
+    public JenkinsRule j = new JenkinsRule();
 
     private BlueOrganization organization;
     private OrganizationFolder orgFolder;
+
+    static MockedStatic<OrganizationFactory> organizationFactoryMockedStatic;
 
     @Before
     public void setup(){
         this.organization = mockOrganization();
         this.orgFolder = mockOrgFolder(organization);
+    }
+
+    @After
+    public void cleanup() {
+        if(organizationFactoryMockedStatic!=null) {
+            organizationFactoryMockedStatic.close();
+            organizationFactoryMockedStatic = null;
+        }
     }
 
     @Test
@@ -68,11 +74,11 @@ public class OrganizationFolderTest{
         assertEquals(organizationFolder.getDisplayName(), organizationFolder.getDisplayName());
         assertEquals(organization.getName(), organizationFolder.getOrganizationName());
         assertNotNull(organizationFolder.getIcon());
-        MultiBranchProject multiBranchProject = PowerMockito.mock(MultiBranchProject.class);
+        MultiBranchProject multiBranchProject = Mockito.mock(MultiBranchProject.class);
         when(orgFolder.getItem("repo1")).thenReturn(multiBranchProject);
-        PowerMockito.when(OrganizationFactory.getInstance().getContainingOrg((ItemGroup)multiBranchProject)).thenReturn(organization);
-        PowerMockito.when(multiBranchProject.getFullName()).thenReturn("p1");
-        PowerMockito.when(multiBranchProject.getName()).thenReturn("p1");
+        Mockito.when(OrganizationFactory.getInstance().getContainingOrg((ItemGroup)multiBranchProject)).thenReturn(organization);
+        Mockito.when(multiBranchProject.getFullName()).thenReturn("p1");
+        Mockito.when(multiBranchProject.getName()).thenReturn("p1");
         MultiBranchPipelineContainerImpl multiBranchPipelineContainer =
                 new MultiBranchPipelineContainerImpl(organization, orgFolder, organizationFolder);
 
@@ -86,12 +92,7 @@ public class OrganizationFolderTest{
     public void testOrgFolderRun(){
         OrganizationFolderPipelineImpl organizationFolder = new OrganizationFolderPipelineImpl(mockOrganization(), orgFolder, new Link("/a/b/")){};
 
-        OrganizationFolderRunImpl organizationFolderRun =  new OrganizationFolderRunImpl(organizationFolder, new Reachable() {
-            @Override
-            public Link getLink() {
-                return new Link("/a/b/");
-            }
-        });
+        OrganizationFolderRunImpl organizationFolderRun =  new OrganizationFolderRunImpl(organizationFolder, () -> new Link("/a/b/"));
 
         assertEquals(orgFolder.getName(), organizationFolderRun.getPipeline());
         assertEquals(organization.getName(), organizationFolderRun.getOrganization());
@@ -101,8 +102,10 @@ public class OrganizationFolderTest{
 
     @Test
     public void testOrganizationFolderFactory() throws Exception{
-        List<OrganizationFolderPipelineImpl.OrganizationFolderFactory> organizationFolderFactoryList = ExtensionList.lookup(OrganizationFolderPipelineImpl.OrganizationFolderFactory.class);
-        OrganizationFolderFactoryTestImpl organizationFolderFactoryTest = ((ExtensionList<OrganizationFolderPipelineImpl.OrganizationFolderFactory>) organizationFolderFactoryList).get(OrganizationFolderFactoryTestImpl.class);
+        List<OrganizationFolderPipelineImpl.OrganizationFolderFactory> organizationFolderFactoryList =
+            ExtensionList.lookup(OrganizationFolderPipelineImpl.OrganizationFolderFactory.class);
+        OrganizationFolderFactoryTestImpl organizationFolderFactoryTest =
+            ((ExtensionList<OrganizationFolderPipelineImpl.OrganizationFolderFactory>) organizationFolderFactoryList).get(OrganizationFolderFactoryTestImpl.class);
         assertNotNull(organizationFolderFactoryTest);
 
         OrganizationFolderPipelineImpl folderPipeline = organizationFolderFactoryTest
@@ -113,7 +116,7 @@ public class OrganizationFolderTest{
         assertNotNull(folderPipeline.getQueue().iterator());
 
         //Make sure the user does has permissions to that folder
-        PowerMockito.when(orgFolder.getACL()).thenReturn(new ACL() {
+        Mockito.when(orgFolder.getACL()).thenReturn(new ACL() {
             @Override
             public boolean hasPermission(Authentication arg0, Permission arg1) {
                 return true;
@@ -121,7 +124,7 @@ public class OrganizationFolderTest{
         });
 
         ScmResourceImpl scmResource = new ScmResourceImpl(orgFolder, folderPipeline);
-        StaplerRequest staplerRequest = PowerMockito.mock(StaplerRequest.class);
+        StaplerRequest staplerRequest = Mockito.mock(StaplerRequest.class);
         assertEquals("hello", scmResource.getContent(staplerRequest));
     }
 
@@ -131,19 +134,15 @@ public class OrganizationFolderTest{
         OrganizationFolderFactoryTestImpl organizationFolderFactoryTest = ((ExtensionList<OrganizationFolderPipelineImpl.OrganizationFolderFactory>) organizationFolderFactoryList).get(OrganizationFolderFactoryTestImpl.class);
         assertNotNull(organizationFolderFactoryTest);
 
-        OrganizationFolderPipelineImpl folderPipeline = organizationFolderFactoryTest.getFolder(orgFolder, new Reachable() {
-            @Override
-            public Link getLink() {
-                return organization.getLink().rel("/pipelines/");
-            }
-        }, mockOrganization());
+        OrganizationFolderPipelineImpl folderPipeline = organizationFolderFactoryTest
+            .getFolder(orgFolder, () -> organization.getLink().rel("/pipelines/"), mockOrganization());
         assertNotNull(folderPipeline);
 
         assertNotNull(folderPipeline.getQueue());
         assertNotNull(folderPipeline.getQueue().iterator());
 
         //Make sure the user does not have permissions to that folder
-        PowerMockito.when(orgFolder.getACL()).thenReturn(new ACL() {
+        Mockito.when(orgFolder.getACL()).thenReturn(new ACL() {
             @Override
             public boolean hasPermission(Authentication arg0, Permission arg1) {
                 return false;
@@ -151,7 +150,7 @@ public class OrganizationFolderTest{
         });
 
         ScmResourceImpl scmResource = new ScmResourceImpl(orgFolder, folderPipeline);
-        StaplerRequest staplerRequest = PowerMockito.mock(StaplerRequest.class);
+        StaplerRequest staplerRequest = Mockito.mock(StaplerRequest.class);
         assertEquals("hello", scmResource.getContent(staplerRequest));
     }
 
@@ -185,15 +184,17 @@ public class OrganizationFolderTest{
     }
 
     static OrganizationFolder mockOrgFolder(BlueOrganization organization){
-        OrganizationFolder orgFolder = PowerMockito.mock(OrganizationFolder.class);
+        OrganizationFolder orgFolder = Mockito.mock(OrganizationFolder.class);
 
         OrganizationFactory organizationFactory = mock(OrganizationFactory.class);
-        PowerMockito.mockStatic(OrganizationFactory.class);
-        PowerMockito.when(OrganizationFactory.getInstance()).thenReturn(organizationFactory);
+        if (organizationFactoryMockedStatic==null) {
+            organizationFactoryMockedStatic = Mockito.mockStatic(OrganizationFactory.class);
+        }
+        Mockito.when(OrganizationFactory.getInstance()).thenReturn(organizationFactory);
         when(organizationFactory.getContainingOrg((ItemGroup) orgFolder)).thenReturn(organization);
-        PowerMockito.when(orgFolder.getDisplayName()).thenReturn("vivek");
-        PowerMockito.when(orgFolder.getName()).thenReturn("vivek");
-        PowerMockito.when(orgFolder.getFullName()).thenReturn("vivek");
+        Mockito.when(orgFolder.getDisplayName()).thenReturn("vivek");
+        Mockito.when(orgFolder.getName()).thenReturn("vivek");
+        Mockito.when(orgFolder.getFullName()).thenReturn("vivek");
 
         return orgFolder;
     }

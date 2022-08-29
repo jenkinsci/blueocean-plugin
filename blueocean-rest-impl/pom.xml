@@ -134,6 +134,12 @@
             <artifactId>wiremock-jre8-standalone</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- only for ArtifactImplTest and write final field -->
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-reflect</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

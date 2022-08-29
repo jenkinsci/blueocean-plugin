@@ -22,7 +22,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @author Vivek Pandey
  */
-public abstract class BitbucketWireMockBase extends PipelineBaseTest{
+public abstract class BitbucketWireMockBase extends PipelineBaseTest {
 
     // By default the wiremock tests will run without proxy
     // The tests will use only the stubbed data and will fail if requests are made for missing data.

@@ -2,28 +2,20 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
-import hudson.model.Job;
 import hudson.util.RunList;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Arrays;
 
 import static org.junit.Assert.assertNotNull;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ Job.class, FreeStyleProject.class, FreeStyleBuild.class })
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class FreeStylePipelineTest {
 
     @Rule

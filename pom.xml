@@ -38,9 +38,8 @@
     <frontend-version>1.12.0</frontend-version>
     <node.version>10.13.0</node.version>
     <npm.version>6.14.4</npm.version>
-    <powermock.version>2.0.9</powermock.version>
     <hamcrest.version>2.2</hamcrest.version>
-    <mockito.version>3.10.0</mockito.version>
+    <mockito.version>4.7.0</mockito.version>
     <jacoco.version>0.8.6</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
@@ -206,6 +205,11 @@
           <scope>test</scope>
       </dependency>
       <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-inline</artifactId>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
           <groupId>org.hamcrest</groupId>
           <artifactId>hamcrest</artifactId>
           <version>${hamcrest.version}</version>
@@ -240,23 +244,6 @@
                   <artifactId>json</artifactId>
               </exclusion>
           </exclusions>
-      </dependency>
-
-      <!-- Needed for unirest -->
-      <dependency>
-          <groupId>org.powermock</groupId>
-          <artifactId>powermock-module-junit4-common</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.powermock</groupId>
-          <artifactId>powermock-module-junit4</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.powermock</groupId>
-          <artifactId>powermock-api-mockito2</artifactId>
-          <scope>test</scope>
       </dependency>
       <dependency>
           <groupId>org.jacoco</groupId>
@@ -614,50 +601,35 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.12.13</version>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy-agent</artifactId>
+            <version>1.12.13</version>
+        </dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <!--We need 1.x version untile powermock has decent support for mockito2-->
             <version>${mockito.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>hamcrest-core</artifactId>
-                    <groupId>org.hamcrest</groupId>
-                </exclusion>
-                <!-- Upper bound fix: powermock has later version -->
-                <exclusion>
-                    <groupId>org.objenesis</groupId>
-                    <artifactId>objenesis</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4-common</artifactId>
-            <version>${powermock.version}</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>${mockito.version}</version>
         </dependency>
+        <!-- some tests need to  write final field -->
         <dependency>
             <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito2</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-core</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
+            <artifactId>powermock-reflect</artifactId>
+            <version>2.0.9</version>
         </dependency>
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8-standalone</artifactId>
-            <version>2.28.0</version>
+            <version>2.33.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>

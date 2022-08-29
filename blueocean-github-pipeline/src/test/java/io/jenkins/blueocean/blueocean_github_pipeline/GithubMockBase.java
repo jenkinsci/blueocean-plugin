@@ -21,17 +21,12 @@ import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import jenkins.branch.MultiBranchProject;
-import jenkins.branch.OrganizationFolder;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.junit.After;
 import org.junit.Rule;
-import org.junit.runner.RunWith;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,14 +38,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.assertEquals;
-import static org.powermock.api.mockito.PowerMockito.*;
-
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mockStatic;
 /**
  * @author Vivek Pandey
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Stapler.class, OrganizationFolder.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public abstract class GithubMockBase extends PipelineBaseTest {
 
     // By default the wiremock tests will run without proxy
