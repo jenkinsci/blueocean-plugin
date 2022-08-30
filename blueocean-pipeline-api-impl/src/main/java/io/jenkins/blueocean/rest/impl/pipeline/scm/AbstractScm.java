@@ -14,8 +14,8 @@ import jenkins.model.ModifiableTopLevelItemGroup;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * @author Vivek Pandey
@@ -41,7 +41,7 @@ public abstract class AbstractScm extends Scm {
         };
     }
 
-    protected static @CheckForNull String getCredentialIdFromRequest(@Nonnull StaplerRequest request){
+    protected static @CheckForNull String getCredentialIdFromRequest(@NonNull StaplerRequest request){
         String credentialId = request.getParameter(CREDENTIAL_ID);
 
         if(credentialId == null){

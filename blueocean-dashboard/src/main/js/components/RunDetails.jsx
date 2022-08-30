@@ -19,7 +19,7 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetails');
 const translate = i18nTranslator('blueocean-dashboard');
 const webTranslate = i18nTranslator('blueocean-web');
 
-const classicConfigLink = pipeline => {
+const classicConfigLink = (pipeline) => {
     let link = null;
     if (Security.permit(pipeline).configure()) {
         let url = UrlBuilder.buildClassicConfigUrl(pipeline);
@@ -57,14 +57,11 @@ function getTestSummaryUrl(runDetails) {
 class RunDetails extends Component {
     constructor(props) {
         super(props);
-        this.state = { isVisible: true, actions: [] };
+        this.state = { isVisible: true };
     }
 
     componentWillMount() {
         this._fetchRun(this.props);
-        Extensions.store.getExtensions(['jenkins.run.actions'], Extensions.Utils.sortByOrdinal, (actions = []) => {
-            this.setState({ actions });
-        });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -91,7 +88,7 @@ class RunDetails extends Component {
                 runId: props.params.runId,
             });
 
-            this.context.activityService.fetchActivity(this.href, { useCache: true }).then(run => {
+            this.context.activityService.fetchActivity(this.href, { useCache: true }).then((run) => {
                 const testSummaryUrl = getTestSummaryUrl(run);
                 return testSummaryUrl && this.context.activityService.fetchTestSummary(testSummaryUrl);
             });
@@ -147,7 +144,7 @@ class RunDetails extends Component {
 
         const { router, location, params } = this.context;
         const { pipeline, setTitle, t, locale } = this.props;
-        const { isVisible, actions } = this.state;
+        const { isVisible } = this.state;
 
         if (!run || !pipeline) {
             this.props.setTitle(translate('common.pager.loading', { defaultValue: 'Loading...' }));
@@ -162,12 +159,15 @@ class RunDetails extends Component {
         }`;
         setTitle(computedTitle);
 
-        const switchRunDetails = newUrl => {
+        const switchRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
         };
 
         const base = { base: baseUrl };
+
+        const failureCount = Math.min(99, (testSummary && parseInt(testSummary.failed)) || 0);
+        const testsBadge = failureCount > 0 && <div className="TabBadgeIcon">{failureCount}</div>;
 
         const tabs = [
             <TabLink to="/pipeline" {...base}>
@@ -175,15 +175,21 @@ class RunDetails extends Component {
                     defaultValue: 'Pipeline',
                 })}
             </TabLink>,
+            <TabLink to="/changes" {...base}>
+                {t('rundetail.header.tab.changes', {
+                    defaultValue: 'Changes',
+                })}
+            </TabLink>,
+            <TabLink to="/tests" {...base}>
+                {t('rundetail.header.tab.tests', { defaultValue: 'Tests' })}
+                {testsBadge}
+            </TabLink>,
+            <TabLink to="/artifacts" {...base}>
+                {t('rundetail.header.tab.artifacts', {
+                    defaultValue: 'Artifacts',
+                })}
+            </TabLink>,
         ];
-
-        actions.map(descriptor => {
-            const action = new descriptor({pipeline, run: currentRun});
-            const badge = action.notification && <div className="TabBadgeIcon">{ action.notification }</div>;
-            tabs.push(
-                <TabLink to={'/' + action.name} { ...base }>{action.title}{badge}</TabLink>
-            );
-        });
 
         const iconButtons = [
             <ReplayButton className="icon-button dark" runnable={this.props.pipeline} latestRun={currentRun} onNavigation={switchRunDetails} autoNavigate />,

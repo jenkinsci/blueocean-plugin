@@ -13,9 +13,9 @@ import io.jenkins.blueocean.rest.model.BlueIssue;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -117,7 +117,7 @@ public class BlueJiraIssue extends BlueIssue {
     }
 
     @CheckForNull
-    static BlueIssue create(@Nonnull JiraSite site, @Nullable JiraIssue issue) {
+    static BlueIssue create(@NonNull JiraSite site, @Nullable JiraIssue issue) {
         if (issue == null) {
             return null;
         }

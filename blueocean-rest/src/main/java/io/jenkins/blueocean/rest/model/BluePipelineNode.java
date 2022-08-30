@@ -9,7 +9,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.POST;
 
-import javax.annotation.CheckForNull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import java.util.List;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_NODE;

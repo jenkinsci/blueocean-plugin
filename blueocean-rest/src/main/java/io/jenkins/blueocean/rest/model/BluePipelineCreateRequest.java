@@ -2,8 +2,8 @@ package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.Reachable;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import java.io.IOException;
 
@@ -30,6 +30,6 @@ public abstract class BluePipelineCreateRequest {
      *
      * @return created pipeline
      */
-    public abstract @CheckForNull BluePipeline create(@Nonnull BlueOrganization organization, @Nonnull Reachable parent) throws IOException;
+    public abstract @CheckForNull BluePipeline create(@NonNull BlueOrganization organization, @NonNull Reachable parent) throws IOException;
 
 }

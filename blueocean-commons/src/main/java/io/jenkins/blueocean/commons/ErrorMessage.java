@@ -3,7 +3,7 @@ package io.jenkins.blueocean.commons;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,7 +30,7 @@ public class ErrorMessage {
 
     public final int code;
 
-    public ErrorMessage(@Nonnull Integer code, @Nonnull String message) {
+    public ErrorMessage(@NonNull Integer code, @NonNull String message) {
         this.code=code;
         this.message = message;
     }

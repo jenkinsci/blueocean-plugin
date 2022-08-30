@@ -22,9 +22,9 @@ import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStep;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.function.Predicate;
 
 /**
@@ -32,7 +32,7 @@ import java.util.function.Predicate;
  */
 public class PipelineNodeUtil {
 
-    @Nonnull
+    @NonNull
     public static BlueRun.BlueRunResult getStatus(@Nullable ErrorAction errorAction){
         if(errorAction == null){
             return BlueRun.BlueRunResult.SUCCESS;
@@ -41,8 +41,8 @@ public class PipelineNodeUtil {
         }
     }
 
-    @Nonnull
-    public static BlueRun.BlueRunResult getStatus(@Nonnull Throwable error){
+    @NonNull
+    public static BlueRun.BlueRunResult getStatus(@NonNull Throwable error){
         if(error instanceof FlowInterruptedException){
             return BlueRun.BlueRunResult.ABORTED;
         }else{
@@ -50,8 +50,8 @@ public class PipelineNodeUtil {
         }
     }
 
-    @Nonnull
-    public static String getDisplayName(@Nonnull FlowNode node) {
+    @NonNull
+    public static String getDisplayName(@NonNull FlowNode node) {
         ThreadNameAction threadNameAction = node.getAction(ThreadNameAction.class);
         return threadNameAction != null
             ? threadNameAction.getThreadName()
@@ -151,7 +151,7 @@ public class PipelineNodeUtil {
      * @param nodeBlock agent or node block's {@link FlowNode}
      * @return cause of block if present, nul otherwise
      */
-    public static @CheckForNull String getCauseOfBlockage(@Nonnull FlowNode stage, @Nullable FlowNode nodeBlock) {
+    public static @CheckForNull String getCauseOfBlockage(@NonNull FlowNode stage, @Nullable FlowNode nodeBlock) {
         if(nodeBlock != null){
             //Check and see if this node block is inside this stage
             for(FlowNode p:nodeBlock.getParents()){
@@ -183,7 +183,7 @@ public class PipelineNodeUtil {
             return input.getAction(LogAction.class) != null;
     };
 
-    public static boolean isPausedForInputStep(@Nonnull StepAtomNode step, @Nullable InputAction inputAction){
+    public static boolean isPausedForInputStep(@NonNull StepAtomNode step, @Nullable InputAction inputAction){
         if(inputAction == null){
             return false;
         }

@@ -12,8 +12,7 @@ import java.io.InputStream;
 
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.powermock.api.mockito.PowerMockito.when;
-
+import static org.mockito.Mockito.when;
 public class HttpResponseTest {
     @Test
     public void testWithoutErrorDetails() {

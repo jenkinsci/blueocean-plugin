@@ -2,7 +2,7 @@ package io.jenkins.blueocean.preload;
 
 import java.io.StringWriter;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import hudson.Extension;
 import io.jenkins.blueocean.commons.ListsUtils;
@@ -18,7 +18,7 @@ import net.sf.json.util.JSONBuilder;
 @Extension
 public class OrganizationStatePreloader extends PageStatePreloader {
 
-    @Nonnull
+    @NonNull
     @Override
     public String getStatePropertyPath() {
         return "organization";

@@ -5,7 +5,7 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Collection;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE;
@@ -21,7 +21,7 @@ public interface BluePipelineItem extends Reachable {
     /**
      * @return the organization that owns this item
      */
-    @Nonnull
+    @NonNull
     BlueOrganization getOrganization();
 
     /**

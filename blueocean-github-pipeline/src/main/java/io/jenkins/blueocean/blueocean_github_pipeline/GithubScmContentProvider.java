@@ -24,7 +24,7 @@ import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -36,14 +36,14 @@ import java.util.Objects;
 @Extension(ordinal = -100)
 public class GithubScmContentProvider extends AbstractScmContentProvider {
 
-    @Nonnull
+    @NonNull
     @Override
     public String getScmId() {
         return GithubScm.ID;
     }
 
     @Override
-    public String getApiUrl(@Nonnull Item item) {
+    public String getApiUrl(@NonNull Item item) {
         if (item instanceof OrganizationFolder) {
             List<SCMNavigator> navigators = ((OrganizationFolder) item).getSCMNavigators();
             if ((!navigators.isEmpty() && navigators.get(0) instanceof GitHubSCMNavigator)) {
@@ -102,7 +102,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
     }
 
     @Override
-    public Object saveContent(@Nonnull StaplerRequest staplerRequest, @Nonnull Item item) {
+    public Object saveContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item) {
         JSONObject body;
         try {
             body = JSONObject.fromObject(IOUtils.toString(staplerRequest.getReader()));
@@ -125,7 +125,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
     }
 
     @SuppressWarnings("unchecked")
-    private Object saveContent(@Nonnull GithubScmSaveFileRequest githubRequest, @Nonnull Item item) {
+    private Object saveContent(@NonNull GithubScmSaveFileRequest githubRequest, @NonNull Item item) {
         GithubScmParamsFromItem scmParamsFromItem = new GithubScmParamsFromItem(item);
         String owner = scmParamsFromItem.getOwner();
         String repo = scmParamsFromItem.getRepo();
@@ -136,7 +136,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean support(@Nonnull Item item) {
+    public boolean support(@NonNull Item item) {
         if (isItemUsingGithubScm(item)) {
             String apiUrl = getApiUrl(item);
             return apiUrl == null || apiUrl.startsWith(GitHubSCMSource.GITHUB_URL );
@@ -145,7 +145,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
     }
 
     @SuppressWarnings("unchecked")
-    protected boolean isItemUsingGithubScm(@Nonnull Item item) {
+    protected boolean isItemUsingGithubScm(@NonNull Item item) {
         if (item instanceof MultiBranchProject) {
             List<SCMSource> sources = ((MultiBranchProject) item).getSCMSources();
             return (!sources.isEmpty() && sources.get(0) instanceof GitHubSCMSource);
@@ -163,7 +163,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
         }
 
         @Override
-        protected String owner(@Nonnull SCMSource scmSource) {
+        protected String owner(@NonNull SCMSource scmSource) {
             if (scmSource instanceof GitHubSCMSource) {
                 return ((GitHubSCMSource) scmSource).getRepoOwner();
             }
@@ -171,7 +171,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
         }
 
         @Override
-        protected String owner(@Nonnull SCMNavigator scmNavigator) {
+        protected String owner(@NonNull SCMNavigator scmNavigator) {
             if(scmNavigator instanceof GitHubSCMNavigator){
                 return ((GitHubSCMNavigator)scmNavigator).getRepoOwner();
             }
@@ -180,7 +180,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
         }
 
         @Override
-        protected String repo(@Nonnull SCMSource scmSource) {
+        protected String repo(@NonNull SCMSource scmSource) {
             if (scmSource instanceof GitHubSCMSource) {
                 return ((GitHubSCMSource) scmSource).getRepository();
             }
@@ -188,7 +188,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
         }
 
         @Override
-        protected String apiUrl(@Nonnull SCMSource scmSource) {
+        protected String apiUrl(@NonNull SCMSource scmSource) {
             if (scmSource instanceof GitHubSCMSource) {
                 return ((GitHubSCMSource) scmSource).getApiUri();
             }
@@ -196,7 +196,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
         }
 
         @Override
-        protected String apiUrl(@Nonnull SCMNavigator scmNavigator) {
+        protected String apiUrl(@NonNull SCMNavigator scmNavigator) {
             if(scmNavigator instanceof GitHubSCMNavigator){
                 return ((GitHubSCMNavigator)scmNavigator).getApiUri();
             }

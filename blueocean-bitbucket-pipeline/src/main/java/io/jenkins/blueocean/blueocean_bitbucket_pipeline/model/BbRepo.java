@@ -9,7 +9,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepository;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Collections;
 import java.util.Map;
 
@@ -58,7 +58,7 @@ public abstract class BbRepo {
      * @param parent {@link Reachable} parent
      * @return ScmRepository
      */
-    public ScmRepository toScmRepository(@Nonnull BitbucketApi api, @Nonnull final Reachable parent){
+    public ScmRepository toScmRepository(@NonNull BitbucketApi api, @NonNull final Reachable parent){
         final BbBranch defaultBranch = api.getDefaultBranch(getOrg().getKey(), getSlug());
         return new ScmRepository() {
             @Override

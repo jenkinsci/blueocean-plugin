@@ -1,22 +1,21 @@
 package io.jenkins.blueocean.service.embedded.analytics;
 
 import io.jenkins.blueocean.analytics.Analytics;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.powermock.api.mockito.PowerMockito.*;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Stapler.class)
 public class BrowserAndOperatingSystemAnalyticsPropertiesTest {
+
+    private MockedStatic<Stapler> staplerMockedStatic;
 
     @Test
     public void parsesUserAgentAndCreatesPropertiesForChrome() throws Exception {
@@ -46,10 +45,17 @@ public class BrowserAndOperatingSystemAnalyticsPropertiesTest {
     }
 
     private BrowserAndOperatingSystemAnalyticsProperties setup(String userAgent) {
-        StaplerRequest request = mock(StaplerRequest.class);
-        when(request.getHeader("User-Agent")).thenReturn(userAgent);
-        mockStatic(Stapler.class);
-        when(Stapler.getCurrentRequest()).thenReturn(request);
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
+        Mockito.when(request.getHeader("User-Agent")).thenReturn(userAgent);
+        staplerMockedStatic = Mockito.mockStatic(Stapler.class);
+        Mockito.when(Stapler.getCurrentRequest()).thenReturn(request);
         return new BrowserAndOperatingSystemAnalyticsProperties();
+    }
+
+    @After
+    public void cleanup() {
+        if (staplerMockedStatic!=null) {
+            staplerMockedStatic.close();
+        }
     }
 }

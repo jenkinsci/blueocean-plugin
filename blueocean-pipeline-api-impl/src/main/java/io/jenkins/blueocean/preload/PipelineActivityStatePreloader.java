@@ -35,7 +35,7 @@ import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -54,7 +54,7 @@ public class PipelineActivityStatePreloader extends RESTFetchPreloader {
     private static final int DEFAULT_LIMIT = 26;
 
     @Override
-    protected FetchData getFetchData(@Nonnull BlueUrlTokenizer blueUrl) {
+    protected FetchData getFetchData(@NonNull BlueUrlTokenizer blueUrl) {
         BluePipeline pipeline = getPipeline(blueUrl);
 
         if (pipeline != null) {
@@ -104,7 +104,7 @@ public class PipelineActivityStatePreloader extends RESTFetchPreloader {
         return null;
     }
 
-    private boolean addPipelineRuns(@Nonnull BlueUrlTokenizer blueUrl) {
+    private boolean addPipelineRuns(@NonNull BlueUrlTokenizer blueUrl) {
         if (blueUrl.lastPartIs(BlueUrlTokenizer.UrlPart.PIPELINE)) {
             // e.g. /blue/organizations/jenkins/f1%2Ff3%20with%20spaces%2Ff3%20pipeline/
             return true;

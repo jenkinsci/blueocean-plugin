@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.jenkinsci.plugins.pubsub.Events;
 import org.jenkinsci.plugins.pubsub.Message;
 import org.jenkinsci.plugins.pubsub.MessageException;
@@ -201,7 +201,7 @@ public class PipelineEventListener implements GraphListener {
         }
     }
 
-    private static void publishJobEvent(@Nonnull Run<?,?> run, @Nonnull Events.JobChannel event) {
+    private static void publishJobEvent(@NonNull Run<?,?> run, @NonNull Events.JobChannel event) {
         try {
             // TODO: What's the actual event we should send here?
             PubsubBus.getBus().publish(new RunMessage(run)

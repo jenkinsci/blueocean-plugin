@@ -64,8 +64,8 @@ import org.jenkinsci.plugins.gitclient.trilead.SmartCredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,7 +90,7 @@ class GitUtils {
      * @param credentials credential to use when accessing git
      * @return list of Errors. Empty list means success.
      */
-    static List<ErrorMessage.Error> validateCredentials(@Nonnull String uri, @Nullable StandardCredentials credentials) throws GitException{
+    static List<ErrorMessage.Error> validateCredentials(@NonNull String uri, @Nullable StandardCredentials credentials) throws GitException{
         List<ErrorMessage.Error> errors = new ArrayList<>();
         Git git = new Git(TaskListener.NULL, new EnvVars());
         try {
@@ -160,7 +160,7 @@ class GitUtils {
      * @param remoteUrl git repo url
      * @param credential credential to use when accessing git
      */
-    public static void validatePushAccess(@Nonnull Repository repo, @Nonnull String remoteUrl, @Nullable StandardCredentials credential) throws GitException {
+    public static void validatePushAccess(@NonNull Repository repo, @NonNull String remoteUrl, @Nullable StandardCredentials credential) throws GitException {
         try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo)) {
             // we need to perform an actual push, so we try a deletion of a very-unlikely-to-exist branch
             // which needs to have push permissions in order to get a 'branch not found' message

@@ -25,8 +25,8 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -61,7 +61,7 @@ public class BitbucketCloudApi extends BitbucketApi {
         return path;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public BbUser getUser() {
         try {
@@ -72,9 +72,9 @@ public class BitbucketCloudApi extends BitbucketApi {
         }
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public BbUser getUser(@Nonnull String userName) {
+    public BbUser getUser(@NonNull String userName) {
         try {
             InputStream inputStream = request.get(String.format("%s/%s",baseUrl+"users", encodePath(userName))).getContent();
             return om.readValue(inputStream, BbCloudUser.class);
@@ -83,7 +83,7 @@ public class BitbucketCloudApi extends BitbucketApi {
         }
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public BbPage<BbOrg> getOrgs(int pageNumber, int pageSize) {
         try {
@@ -125,9 +125,9 @@ public class BitbucketCloudApi extends BitbucketApi {
         }
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public BbOrg getOrg(@Nonnull String orgName) {
+    public BbOrg getOrg(@NonNull String orgName) {
         try {
             BbUser user = getUser();
             // If user org, get user and return BbCloudTeam model
@@ -141,9 +141,9 @@ public class BitbucketCloudApi extends BitbucketApi {
         }
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public BbRepo getRepo(@Nonnull String orgId, String repoSlug) {
+    public BbRepo getRepo(@NonNull String orgId, String repoSlug) {
         try {
             InputStream inputStream = request.get(String.format("%s/%s",baseUrl+"repositories/"+encodePath(orgId), repoSlug))
                     .getContent();
@@ -153,9 +153,9 @@ public class BitbucketCloudApi extends BitbucketApi {
         }
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public BbPage<BbRepo> getRepos(@Nonnull String orgId, int pageNumber, int pageSize) {
+    public BbPage<BbRepo> getRepos(@NonNull String orgId, int pageNumber, int pageSize) {
         try (InputStream inputStream = request.get(String.format("%s?page=%s&limit=%s",
                                                                  baseUrl+"repositories/"+encodePath(orgId),
                                                                  pageNumber, pageSize)).getContent()){
@@ -165,9 +165,9 @@ public class BitbucketCloudApi extends BitbucketApi {
         }
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public String getContent(@Nonnull String orgId, @Nonnull String repoSlug, @Nonnull String path, @Nonnull String commitId) {
+    public String getContent(@NonNull String orgId, @NonNull String repoSlug, @NonNull String path, @NonNull String commitId) {
         try {
             InputStream inputStream = request.get(String.format("%s/%s/%s/src/%s/%s",baseUrl+"repositories",encodePath(orgId),
                     repoSlug, commitId, path)).getContent();
@@ -177,13 +177,13 @@ public class BitbucketCloudApi extends BitbucketApi {
         }
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public BbSaveContentResponse saveContent(@Nonnull String orgId,
-                                             @Nonnull String repoSlug,
-                                             @Nonnull String path,
-                                             @Nonnull String content,
-                                             @Nonnull String commitMessage,
+    public BbSaveContentResponse saveContent(@NonNull String orgId,
+                                             @NonNull String repoSlug,
+                                             @NonNull String path,
+                                             @NonNull String content,
+                                             @NonNull String commitMessage,
                                              @Nullable String branch,
                                              @Nullable String sourceBranch,
                                              @Nullable String commitId) {
@@ -214,12 +214,12 @@ public class BitbucketCloudApi extends BitbucketApi {
     }
 
     @Override
-    public boolean fileExists(@Nonnull String orgId, @Nonnull String repoSlug, @Nonnull String path,  @Nonnull String branch) {
+    public boolean fileExists(@NonNull String orgId, @NonNull String repoSlug, @NonNull String path,  @NonNull String branch) {
         throw new NotImplementedException("Not implemented");
     }
 
     @Override
-    public BbBranch getBranch(@Nonnull String orgId, @Nonnull String repoSlug, @Nonnull String branch) {
+    public BbBranch getBranch(@NonNull String orgId, @NonNull String repoSlug, @NonNull String branch) {
         try {
             HttpResponse response = request.get(String.format("%s/%s/refs/branches/%s?fields=target.hash,target.repository.mainbranch.name,target.repository.*,target.repository.owner.*,target.repository.owner.links.avatar.href,name",
                     baseUrl+"repositories/"+encodePath(orgId),
@@ -234,14 +234,14 @@ public class BitbucketCloudApi extends BitbucketApi {
         }
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public BbBranch createBranch(@Nonnull String orgId, @Nonnull String repoSlug, Map<String, String> payload) {
+    public BbBranch createBranch(@NonNull String orgId, @NonNull String repoSlug, Map<String, String> payload) {
         throw new NotImplementedException("Not implemented");
     }
 
     @Override
-    public BbBranch getDefaultBranch(@Nonnull String orgId, @Nonnull String repoSlug) {
+    public BbBranch getDefaultBranch(@NonNull String orgId, @NonNull String repoSlug) {
         try {
             InputStream inputStream = request.get(String.format("%s/%s/?fields=mainbranch.*,mainbranch.target.*,mainbranch.target.repository.*,mainbranch.target.repository.mainbranch.name,mainbranch.target.repository.owner.*,mainbranch.target.repository.owner.links.avatar.*",
                     baseUrl+"repositories/"+encodePath(orgId),
@@ -256,20 +256,20 @@ public class BitbucketCloudApi extends BitbucketApi {
     }
 
     @Override
-    public boolean isEmptyRepo(@Nonnull String orgId, @Nonnull String repoSlug) {
+    public boolean isEmptyRepo(@NonNull String orgId, @NonNull String repoSlug) {
         throw new NotImplementedException("Not implemented");
     }
 
     @Extension
     public static class BitbucketCloudApiFactory extends BitbucketApiFactory {
         @Override
-        public boolean handles(@Nonnull String scmId) {
+        public boolean handles(@NonNull String scmId) {
             return scmId.equals(BitbucketCloudScm.ID);
         }
 
-        @Nonnull
+        @NonNull
         @Override
-        public BitbucketApi create(@Nonnull String apiUrl, @Nonnull StandardUsernamePasswordCredentials credentials) {
+        public BitbucketApi create(@NonNull String apiUrl, @NonNull StandardUsernamePasswordCredentials credentials) {
             return new BitbucketCloudApi(apiUrl, credentials);
         }
     }

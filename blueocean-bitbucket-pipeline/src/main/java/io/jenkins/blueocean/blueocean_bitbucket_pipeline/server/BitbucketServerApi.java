@@ -31,9 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.utils.URIBuilder;
@@ -51,7 +51,7 @@ public class BitbucketServerApi extends BitbucketApi {
     private final StandardUsernamePasswordCredentials credentials;
 
     //package private for testing
-    BitbucketServerApi(@Nonnull String hostUrl, @Nonnull StandardUsernamePasswordCredentials credentials) {
+    BitbucketServerApi(@NonNull String hostUrl, @NonNull StandardUsernamePasswordCredentials credentials) {
         super(hostUrl, credentials);
         this.baseUrl=apiUrl+"rest/api/1.0/";
         this.credentials = credentials;
@@ -62,7 +62,7 @@ public class BitbucketServerApi extends BitbucketApi {
      * @param apiUrl API url of Bitbucket server
      * @return version of Bitbucket server
      */
-    public @Nonnull static String getVersion(@Nonnull String apiUrl){
+    public @NonNull static String getVersion(@NonNull String apiUrl){
         try {
             apiUrl = ensureTrailingSlash(apiUrl);
 
@@ -97,7 +97,7 @@ public class BitbucketServerApi extends BitbucketApi {
     }
 
     @Override
-    public @Nonnull BbServerUser getUser(@Nonnull String userName){
+    public @NonNull BbServerUser getUser(@NonNull String userName){
         try {
             InputStream inputStream = request.get(String.format("%s/%s",baseUrl+"users", userName)).getContent();
             return om.readValue(inputStream, BbServerUser.class);
@@ -107,7 +107,7 @@ public class BitbucketServerApi extends BitbucketApi {
     }
 
     @Override
-    public @Nonnull
+    public @NonNull
     BbPage<BbOrg> getOrgs(int pageNumber, int pageSize){
         try {
             if(pageNumber <= 0){
@@ -135,8 +135,8 @@ public class BitbucketServerApi extends BitbucketApi {
     }
 
     @Override
-    public @Nonnull
-    BbOrg getOrg(@Nonnull String projectName){
+    public @NonNull
+    BbOrg getOrg(@NonNull String projectName){
         try {
             InputStream inputStream = request.get(String.format("%s/%s",baseUrl+"projects", projectName))
                     .getContent();
@@ -148,8 +148,8 @@ public class BitbucketServerApi extends BitbucketApi {
 
 
     @Override
-    public @Nonnull
-    BbPage<BbRepo> getRepos(@Nonnull String projectKey, int pageNumber, int pageSize){
+    public @NonNull
+    BbPage<BbRepo> getRepos(@NonNull String projectKey, int pageNumber, int pageSize){
         try {
             InputStream inputStream = request.get(String.format("%s?start=%s&limit=%s",baseUrl+"projects/"+projectKey+"/repos/", toStart(pageNumber, pageSize), pageSize))
                     .getContent();
@@ -159,9 +159,9 @@ public class BitbucketServerApi extends BitbucketApi {
         }
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public BbRepo getRepo(@Nonnull String orgId, @Nonnull String repoSlug) {
+    public BbRepo getRepo(@NonNull String orgId, @NonNull String repoSlug) {
         try {
             InputStream inputStream = request.get(String.format("%s/%s/repos/%s/",baseUrl+"projects", orgId, repoSlug))
                     .getContent();
@@ -172,19 +172,19 @@ public class BitbucketServerApi extends BitbucketApi {
     }
 
     @Override
-    public @Nonnull String getContent(@Nonnull String orgId, @Nonnull String repoSlug, @Nonnull String path, @Nonnull String commitId){
+    public @NonNull String getContent(@NonNull String orgId, @NonNull String repoSlug, @NonNull String path, @NonNull String commitId){
         List<String> content = new ArrayList<>();
         getAndBuildContent(orgId, repoSlug, path, commitId,0, 500, content); //default size as in bitbucket API
         return String.join("\n", content);
     }
 
     @Override
-    public @Nonnull
-    BbSaveContentResponse saveContent(@Nonnull String projectKey,
-                                      @Nonnull String repoSlug,
-                                      @Nonnull String path,
-                                      @Nonnull String content,
-                                      @Nonnull String commitMessage,
+    public @NonNull
+    BbSaveContentResponse saveContent(@NonNull String projectKey,
+                                      @NonNull String repoSlug,
+                                      @NonNull String path,
+                                      @NonNull String content,
+                                      @NonNull String commitMessage,
                                       @Nullable String branch,
                                       @Nullable String sourceBranch,
                                       @Nullable String commitId){
@@ -224,7 +224,7 @@ public class BitbucketServerApi extends BitbucketApi {
     }
 
     @Override
-    public boolean fileExists(@Nonnull String projectKey, @Nonnull String repoSlug, @Nonnull String path, @Nonnull String branch){
+    public boolean fileExists(@NonNull String projectKey, @NonNull String repoSlug, @NonNull String path, @NonNull String branch){
         try {
             URIBuilder uriBuilder = new URIBuilder(String.format("%s/%s/repos/%s/browse/%s",baseUrl+"projects",
                     projectKey, repoSlug, path));
@@ -241,7 +241,7 @@ public class BitbucketServerApi extends BitbucketApi {
 
     @Override
     public @CheckForNull
-    BbBranch getBranch(@Nonnull String orgId, @Nonnull String repoSlug, @Nonnull String branch){
+    BbBranch getBranch(@NonNull String orgId, @NonNull String repoSlug, @NonNull String branch){
         try {
             URIBuilder uriBuilder = new URIBuilder(String.format("%s/%s/repos/%s/branches/",baseUrl+"projects",
                     orgId, repoSlug));
@@ -263,8 +263,8 @@ public class BitbucketServerApi extends BitbucketApi {
     }
 
     @Override
-    @Nonnull
-    public BbBranch createBranch(@Nonnull String orgId, @Nonnull String repoSlug, Map<String, String> payload){
+    @NonNull
+    public BbBranch createBranch(@NonNull String orgId, @NonNull String repoSlug, Map<String, String> payload){
         try {
 
             return om.readValue(request.post(String.format("%s/%s/repos/%s/branches/", baseUrl + "projects",
@@ -277,7 +277,7 @@ public class BitbucketServerApi extends BitbucketApi {
 
     @Override
     public @CheckForNull
-    BbBranch getDefaultBranch(@Nonnull String orgId, @Nonnull String repoSlug){
+    BbBranch getDefaultBranch(@NonNull String orgId, @NonNull String repoSlug){
         try {
             HttpResponse response = request.get(String.format("%s/%s/repos/%s/branches/default",baseUrl+"projects",
                     orgId, repoSlug));
@@ -295,7 +295,7 @@ public class BitbucketServerApi extends BitbucketApi {
     }
 
     @Override
-    public boolean isEmptyRepo(@Nonnull String orgId, @Nonnull String repoSlug){
+    public boolean isEmptyRepo(@NonNull String orgId, @NonNull String repoSlug){
         try {
             URIBuilder uriBuilder = new URIBuilder(String.format("%s/%s/repos/%s/branches/default",baseUrl+"projects",
                     orgId, repoSlug));
@@ -308,7 +308,7 @@ public class BitbucketServerApi extends BitbucketApi {
         }
     }
 
-    private void getAndBuildContent(@Nonnull String projectKey, @Nonnull String repoSlug, @Nonnull String path, @Nonnull String commitId, int start, int limit, @Nonnull final List<String> lines){
+    private void getAndBuildContent(@NonNull String projectKey, @NonNull String repoSlug, @NonNull String path, @NonNull String commitId, int start, int limit, @NonNull final List<String> lines){
         try {
             InputStream inputStream = request.get(String.format("%s/%s/repos/%s/browse/%s?at=%s&start=%s&limit=%s",baseUrl+"projects",
                     projectKey, repoSlug, path, commitId, start, limit)).getContent();
@@ -358,20 +358,20 @@ public class BitbucketServerApi extends BitbucketApi {
      * @return true if supported false otherwise
      * @see #getVersion(String)
      */
-    public static boolean isSupportedVersion(@Nonnull String version){
+    public static boolean isSupportedVersion(@NonNull String version){
         return new VersionNumber(version).isNewerThanOrEqualTo(MINIMUM_SUPPORTED_VERSION);
     }
 
     @Extension
     public static class BitbucketServerApiFactory extends BitbucketApiFactory{
         @Override
-        public boolean handles(@Nonnull String scmId) {
+        public boolean handles(@NonNull String scmId) {
             return scmId.equals(BitbucketServerScm.ID);
         }
 
-        @Nonnull
+        @NonNull
         @Override
-        public BitbucketApi create(@Nonnull String apiUrl, @Nonnull StandardUsernamePasswordCredentials credentials) {
+        public BitbucketApi create(@NonNull String apiUrl, @NonNull StandardUsernamePasswordCredentials credentials) {
             return new BitbucketServerApi(apiUrl, credentials);
         }
 

@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
@@ -71,7 +71,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
     }
 
     @Override
-    public void parallelBranchStart(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode branchStartNode, @Nonnull ForkScanner scanner) {
+    public void parallelBranchStart(@NonNull FlowNode parallelStartNode, @NonNull FlowNode branchStartNode, @NonNull ForkScanner scanner) {
         if(stageStepsCollectionCompleted){ //skip
             return;
         }
@@ -84,14 +84,14 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
 
 
     @Override
-    public void parallelBranchEnd(@Nonnull FlowNode parallelStartNode, @Nonnull FlowNode branchEndNode, @Nonnull ForkScanner scanner) {
+    public void parallelBranchEnd(@NonNull FlowNode parallelStartNode, @NonNull FlowNode branchEndNode, @NonNull ForkScanner scanner) {
         if(!stageStepsCollectionCompleted && node != null && PipelineNodeUtil.isParallelBranch(node) && branchEndNode instanceof StepEndNode){
             resetSteps();
         }
     }
 
     @Override
-    public void chunkStart(@Nonnull FlowNode startNode, @CheckForNull FlowNode beforeBlock, @Nonnull ForkScanner scanner) {
+    public void chunkStart(@NonNull FlowNode startNode, @CheckForNull FlowNode beforeBlock, @NonNull ForkScanner scanner) {
         super.chunkStart(startNode, beforeBlock, scanner);
         if(PipelineNodeUtil.isStage(startNode) && !PipelineNodeUtil.isSyntheticStage(startNode)){
             stages.push(startNode);
@@ -99,7 +99,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
     }
 
     @Override
-    public void chunkEnd(@Nonnull FlowNode endNode, @CheckForNull FlowNode afterChunk, @Nonnull ForkScanner scanner) {
+    public void chunkEnd(@NonNull FlowNode endNode, @CheckForNull FlowNode afterChunk, @NonNull ForkScanner scanner) {
         super.chunkEnd(endNode, afterChunk, scanner);
         if(endNode instanceof StepEndNode && PipelineNodeUtil.isStage(((StepEndNode)endNode).getStartNode())){
             currentStage = ((StepEndNode)endNode).getStartNode();
@@ -126,7 +126,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
     }
 
     @Override
-    protected void handleChunkDone(@Nonnull MemoryFlowChunk chunk) {
+    protected void handleChunkDone(@NonNull MemoryFlowChunk chunk) {
         if(stageStepsCollectionCompleted){ //if its completed no further action
             return;
         }
@@ -150,7 +150,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
     }
 
     @Override
-    public void atomNode(@CheckForNull FlowNode before, @Nonnull FlowNode atomNode, @CheckForNull FlowNode after, @Nonnull ForkScanner scan) {
+    public void atomNode(@CheckForNull FlowNode before, @NonNull FlowNode atomNode, @CheckForNull FlowNode after, @NonNull ForkScanner scan) {
         if(stageStepsCollectionCompleted && !PipelineNodeUtil.isSyntheticStage(currentStage)){
             return;
         }

@@ -2,7 +2,7 @@ package io.jenkins.blueocean.rest;
 
 import io.jenkins.blueocean.commons.ServiceException;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -50,7 +50,7 @@ public class Utils {
         }
     }
 
-    public static String ensureTrailingSlash(@Nonnull String path){
+    public static String ensureTrailingSlash(@NonNull String path){
         return path.charAt(path.length()-1) == '/' ? path : path+"/";
     }
 

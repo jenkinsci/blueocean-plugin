@@ -16,7 +16,7 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.KnownCapabilities;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
@@ -72,7 +72,7 @@ public class FavoriteUtil {
      *               is computed using {@link LinkResolver#resolve(Object)}
      * @return resolved favorite object if found otherwise null
      */
-    public static BlueFavorite getFavorite(Item item, @Nonnull Reachable parent){
+    public static BlueFavorite getFavorite(Item item, @NonNull Reachable parent){
         if(item == null){
             return null;
         }

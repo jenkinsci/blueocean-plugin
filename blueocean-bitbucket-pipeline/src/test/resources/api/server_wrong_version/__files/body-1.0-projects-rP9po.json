@@ -1,0 +1,36 @@
+{
+  "size": 2,
+  "limit": 100,
+  "isLastPage": true,
+  "values": [
+    {
+      "key": "TEST",
+      "id": 1,
+      "name": "test1",
+      "public": false,
+      "type": "NORMAL",
+      "links": {
+        "self": [
+          {
+            "href": "http://localhost:7990/projects/TEST"
+          }
+        ]
+      }
+    },
+    {
+      "key": "TESTP",
+      "id": 22,
+      "name": "testproject1",
+      "public": false,
+      "type": "NORMAL",
+      "links": {
+        "self": [
+          {
+            "href": "http://localhost:7990/projects/TESTP"
+          }
+        ]
+      }
+    }
+  ],
+  "start": 0
+}

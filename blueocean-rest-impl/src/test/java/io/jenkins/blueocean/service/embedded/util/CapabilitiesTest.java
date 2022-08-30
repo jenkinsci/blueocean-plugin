@@ -11,7 +11,7 @@ import io.jenkins.blueocean.rest.annotation.Capability;
 import org.acegisecurity.AccessDeniedException;
 import org.junit.Test;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;

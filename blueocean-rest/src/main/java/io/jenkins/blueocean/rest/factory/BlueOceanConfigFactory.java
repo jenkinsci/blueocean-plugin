@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.rest.factory;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
@@ -18,7 +18,7 @@ public abstract class BlueOceanConfigFactory implements ExtensionPoint {
      * 
      * @return the current configuration
      */
-    @Nonnull
+    @NonNull
     public abstract BlueOceanConfig getConfig();
 
     /**

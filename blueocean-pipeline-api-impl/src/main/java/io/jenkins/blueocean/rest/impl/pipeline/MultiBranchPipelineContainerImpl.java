@@ -9,7 +9,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -42,7 +42,7 @@ public class MultiBranchPipelineContainerImpl extends BluePipelineContainer {
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public Iterator<BluePipeline> iterator() {
         List<BluePipeline> pipelines = new ArrayList<>();
         for(MultiBranchProject mbp:folder.getItems()){

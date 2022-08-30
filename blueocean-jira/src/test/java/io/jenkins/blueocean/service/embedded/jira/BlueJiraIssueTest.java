@@ -9,14 +9,12 @@ import hudson.plugins.jira.model.JiraIssue;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.rest.factory.BlueIssueFactory;
 import io.jenkins.blueocean.rest.model.BlueIssue;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,16 +28,23 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(JiraSite.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "javax.xml.*", "org.xml.*", "org.w3c.dom.*"})
 public class BlueJiraIssueTest {
 
     @Rule
     public JenkinsRule j = new JenkinsRule();
+
+
+    MockedStatic<JiraSite> jiraSiteMockedStatic;
+
+    @After
+    public void cleanup() {
+        if(jiraSiteMockedStatic!=null) {
+            jiraSiteMockedStatic.close();
+        }
+    }
 
     @Test
     public void findIssueKeys() throws MalformedURLException {
@@ -77,7 +82,7 @@ public class BlueJiraIssueTest {
         when(run.getParent()).thenReturn(job);
 
 
-        mockStatic(JiraSite.class);
+        jiraSiteMockedStatic = mockStatic(JiraSite.class);
         JiraSite site = mock(JiraSite.class);
         when(site.getIssuePattern()).thenReturn(JiraSite.DEFAULT_ISSUE_PATTERN);
 
@@ -116,7 +121,7 @@ public class BlueJiraIssueTest {
     public void issuesForJob() throws Exception {
         Job job = mock(Job.class);
 
-        mockStatic(JiraSite.class);
+        jiraSiteMockedStatic = mockStatic(JiraSite.class);
         JiraSite site = mock(JiraSite.class);
         when(JiraSite.get(job)).thenReturn(site);
 
@@ -154,7 +159,7 @@ public class BlueJiraIssueTest {
     public void issuesForJobNoAction() throws Exception {
         Job job = mock(Job.class);
 
-        mockStatic(JiraSite.class);
+        jiraSiteMockedStatic = mockStatic(JiraSite.class);
         JiraSite site = mock(JiraSite.class);
         when(JiraSite.get(job)).thenReturn(site);
         when(job.getAction(JiraJobAction.class)).thenReturn(null);
@@ -167,7 +172,7 @@ public class BlueJiraIssueTest {
     public void issuesForJobActionDoesNotHaveIssue() throws Exception {
         Job job = mock(Job.class);
 
-        mockStatic(JiraSite.class);
+        jiraSiteMockedStatic = mockStatic(JiraSite.class);
         JiraSite site = mock(JiraSite.class);
         when(JiraSite.get(job)).thenReturn(site);
         JiraJobAction action = new JiraJobAction(job, null);

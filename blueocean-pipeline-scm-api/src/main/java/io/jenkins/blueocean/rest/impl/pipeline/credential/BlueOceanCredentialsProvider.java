@@ -33,9 +33,9 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,11 +60,11 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
     private static final BlueOceanDomainRequirement PROXY_REQUIREMENT = new BlueOceanDomainRequirement();
     private static final Logger logger = LoggerFactory.getLogger(BlueOceanCredentialsProvider.class);
 
-    @Nonnull
+    @NonNull
     @Override
-    public <C extends Credentials> List<C> getCredentials(@Nonnull Class<C> type,
-                                                          @Nonnull ItemGroup itemGroup,
-                                                          @Nonnull
+    public <C extends Credentials> List<C> getCredentials(@NonNull Class<C> type,
+                                                          @NonNull ItemGroup itemGroup,
+                                                          @NonNull
                                                               Authentication authentication) {
         return getCredentials(type, itemGroup, authentication, Collections.emptyList());
     }
@@ -79,12 +79,12 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
         return IsSystemPropertyEnabled() && super.isEnabled(context);
     }
 
-    @Nonnull
-    public <C extends Credentials> List<C> getCredentials(@Nonnull final Class<C> type,
+    @NonNull
+    public <C extends Credentials> List<C> getCredentials(@NonNull final Class<C> type,
                                                           @Nullable ItemGroup itemGroup,
                                                           @Nullable
                                                               Authentication authentication,
-                                                          @Nonnull List<DomainRequirement> domainRequirements) {
+                                                          @NonNull List<DomainRequirement> domainRequirements) {
         if (!IsSystemPropertyEnabled()) {
             return Collections.emptyList();
         }
@@ -113,13 +113,13 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
         return result;
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public <C extends IdCredentials> ListBoxModel getCredentialIds(@Nonnull Class<C> type,
+    public <C extends IdCredentials> ListBoxModel getCredentialIds(@NonNull Class<C> type,
                                                                    @Nullable ItemGroup itemGroup,
                                                                    @Nullable Authentication authentication,
-                                                                   @Nonnull List<DomainRequirement> domainRequirements,
-                                                                   @Nonnull CredentialsMatcher matcher) {
+                                                                   @NonNull List<DomainRequirement> domainRequirements,
+                                                                   @NonNull CredentialsMatcher matcher) {
         if (!IsSystemPropertyEnabled()) {
             return new ListBoxModel();
         }
@@ -132,7 +132,7 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public String getDisplayName() {
         return Messages.BlueOceanCredentialsProvider_DisplayName();
     }
@@ -180,7 +180,7 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
         private transient StoreImpl store;
 
         @DataBoundConstructor
-        public FolderPropertyImpl(@Nonnull String user, @Nonnull String id, @Nonnull Domain domain) {
+        public FolderPropertyImpl(@NonNull String user, @NonNull String id, @NonNull Domain domain) {
             this.user = user;
             this.id = id;
             this.domain = domain;
@@ -194,15 +194,15 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
             return store;
         }
 
-        public @Nonnull String getUser() {
+        public @NonNull String getUser() {
             return user;
         }
 
-        public @Nonnull String getId() {
+        public @NonNull String getId() {
             return id;
         }
 
-        public @Nonnull Domain getDomain() {
+        public @NonNull Domain getDomain() {
             return domain;
         }
 
@@ -226,7 +226,7 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
             /**
              * {@inheritDoc}
              */
-            @Nonnull
+            @NonNull
             @Override
             public CredentialsStore getStore() {
                 return store;
@@ -274,7 +274,7 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
                 this.storeAction = new CredentialsStoreActionImpl(this);
             }
 
-            @Nonnull
+            @NonNull
             @Override
             public List<Domain> getDomains() {
                 return Collections.singletonList(domain);
@@ -286,14 +286,14 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
                 return storeAction;
             }
 
-            @Nonnull
+            @NonNull
             @Override
             public ModelObject getContext() {
                 return owner;
             }
 
             @Override
-            public boolean hasPermission(@Nonnull Authentication a, @Nonnull Permission permission) {
+            public boolean hasPermission(@NonNull Authentication a, @NonNull Permission permission) {
                 // its read only so for all permissions other than READ, we return false
                 if(permission == CREATE || permission == DELETE ||
                         permission == MANAGE_DOMAINS || permission == UPDATE){
@@ -302,9 +302,9 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
                 return owner.getACL().hasPermission(a,permission);
             }
 
-            @Nonnull
+            @NonNull
             @Override
-            public List<Credentials> getCredentials(@Nonnull Domain domain) {
+            public List<Credentials> getCredentials(@NonNull Domain domain) {
                 if(!IsSystemPropertyEnabled()) {
                     return Collections.emptyList();
                 }
@@ -329,18 +329,18 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
             }
 
             @Override
-            public boolean addCredentials(@Nonnull Domain domain, @Nonnull Credentials credentials) throws IOException {
+            public boolean addCredentials(@NonNull Domain domain, @NonNull Credentials credentials) throws IOException {
                 throw new UnsupportedOperationException("Not supported");
             }
 
             @Override
-            public boolean removeCredentials(@Nonnull Domain domain, @Nonnull Credentials credentials) throws IOException {
+            public boolean removeCredentials(@NonNull Domain domain, @NonNull Credentials credentials) throws IOException {
                 throw new UnsupportedOperationException("Not supported");
             }
 
             @Override
-            public boolean updateCredentials(@Nonnull Domain domain, @Nonnull Credentials current,
-                                             @Nonnull Credentials replacement) throws IOException {
+            public boolean updateCredentials(@NonNull Domain domain, @NonNull Credentials current,
+                                             @NonNull Credentials replacement) throws IOException {
                 throw new UnsupportedOperationException("Not supported");
             }
         }
@@ -352,7 +352,7 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
      * @param uri repo URL
      * @return {@link Domain} instance
      */
-    public static @Nonnull Domain createDomain(@Nonnull String uri){
+    public static @NonNull Domain createDomain(@NonNull String uri){
         return new Domain("blueocean-folder-credential-domain", Messages.BlueOceanCredentialsProvider_DomainDescription(),
                 CredentialsUtils.generateDomainSpecifications(uri));
     }

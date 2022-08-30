@@ -13,7 +13,7 @@ import jenkins.model.Jenkins;
 import org.kohsuke.stapler.StaplerRequest;
 import org.springframework.security.core.Authentication;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * @author Vivek Pandey
@@ -59,7 +59,7 @@ public class ScmResourceImpl extends BluePipelineScm {
         return self;
     }
 
-    private @Nonnull User checkPermission(){
+    private @NonNull User checkPermission(){
         ACL acl;
         if(item.getParent() != null && item.getParent() instanceof OrganizationFolder){
             acl = ((OrganizationFolder) item.getParent()).getACL();

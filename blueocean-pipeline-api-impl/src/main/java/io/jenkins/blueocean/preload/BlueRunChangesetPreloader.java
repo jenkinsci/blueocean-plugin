@@ -35,7 +35,7 @@ import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,7 +46,7 @@ public class BlueRunChangesetPreloader extends RESTFetchPreloader {
     private static final Logger LOGGER = Logger.getLogger(PipelineActivityStatePreloader.class.getName());
 
     @Override
-    protected FetchData getFetchData(@Nonnull BlueUrlTokenizer blueUrl) {
+    protected FetchData getFetchData(@NonNull BlueUrlTokenizer blueUrl) {
 
         if (!blueUrl.lastPartIs(BlueUrlTokenizer.UrlPart.PIPELINE_RUN_DETAIL_TAB, "changes")) {
             // Not interested in it

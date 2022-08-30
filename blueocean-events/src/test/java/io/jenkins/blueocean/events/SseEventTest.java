@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
@@ -406,7 +406,7 @@ public class SseEventTest {
 
         SSEConnection con = new SSEConnection(j.getURL(), "me", new ChannelSubscriber() {
             @Override
-            public void onMessage(@Nonnull Message message) {
+            public void onMessage(@NonNull Message message) {
                 System.out.println(message);
                 if("job".equals(message.get(jenkins_channel))) {
                     if ("org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject".equals(message.get(jenkins_object_type))) {

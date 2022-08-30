@@ -17,8 +17,8 @@ import org.jvnet.hudson.test.TestExtension;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.util.Map;
 
@@ -106,7 +106,7 @@ public class PipelineScmTest extends PipelineBaseTest {
 
     @TestExtension
     public static class TestScmContentProvider extends ScmContentProvider{
-        @Nonnull
+        @NonNull
         @Override
         public String getScmId() {
             return "hello";
@@ -114,13 +114,13 @@ public class PipelineScmTest extends PipelineBaseTest {
 
         @CheckForNull
         @Override
-        public String getApiUrl(@Nonnull Item item) {
+        public String getApiUrl(@NonNull Item item) {
             return "https://hello.example.com";
         }
 
         @CheckForNull
         @Override
-        public Object getContent(@Nonnull StaplerRequest staplerRequest, @Nonnull Item item) {
+        public Object getContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item) {
             return new ScmFile<TestContent>(){
 
                 @Override
@@ -132,7 +132,7 @@ public class PipelineScmTest extends PipelineBaseTest {
 
         @CheckForNull
         @Override
-        public Object saveContent(@Nonnull StaplerRequest staplerRequest, @Nonnull Item item) {
+        public Object saveContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item) {
             try {
                 JSONObject body = JSONObject.fromObject(IOUtils.toString(staplerRequest.getReader()));
                 final String data = (String) ((Map)body.get("content")).get("data");
@@ -148,7 +148,7 @@ public class PipelineScmTest extends PipelineBaseTest {
         }
 
         @Override
-        public boolean support(@Nonnull Item item) {
+        public boolean support(@NonNull Item item) {
             return item instanceof OrganizationFolder || item instanceof MultiBranchProject;
         }
     }

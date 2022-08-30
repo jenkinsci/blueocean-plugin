@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 
-import javax.annotation.CheckForNull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import java.util.Map;
 
 /**

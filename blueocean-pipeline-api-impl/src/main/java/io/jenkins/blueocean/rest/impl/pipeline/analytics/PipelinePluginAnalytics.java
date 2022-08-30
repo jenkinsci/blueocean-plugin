@@ -14,7 +14,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +22,7 @@ import java.util.Map;
 @Restricted(NoExternalUse.class)
 public class PipelinePluginAnalytics extends RunListener<WorkflowRun> {
     @Override
-    public void onCompleted(WorkflowRun workflowRun, @Nonnull TaskListener listener) {
+    public void onCompleted(WorkflowRun workflowRun, @NonNull TaskListener listener) {
         Analytics analytics = Analytics.get();
         if (analytics == null) {
             return;
