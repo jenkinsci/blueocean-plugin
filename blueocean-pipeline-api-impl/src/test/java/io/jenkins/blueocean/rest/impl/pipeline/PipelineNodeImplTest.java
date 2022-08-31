@@ -1,15 +1,10 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.sun.tools.javac.comp.Flow;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
-import org.apache.http.nio.protocol.PipeliningClientExchangeHandler;
 import org.jenkinsci.plugins.pipeline.modeldefinition.actions.RestartDeclarativePipelineAction;
-import org.jenkinsci.plugins.pipeline.modeldefinition.model.SkippedStageReason;
-import org.jenkinsci.plugins.pipeline.modeldefinition.model.Stage;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -24,7 +19,6 @@ import org.mockito.Mockito;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
