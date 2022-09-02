@@ -406,7 +406,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-branch-source</artifactId>
-            <version>2.6.0</version>
+            <version>1687.v7618247e672d</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
