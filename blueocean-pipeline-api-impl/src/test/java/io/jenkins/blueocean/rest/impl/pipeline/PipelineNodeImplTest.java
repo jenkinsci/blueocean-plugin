@@ -91,7 +91,6 @@ public class PipelineNodeImplTest {
         Mockito.when(parent.getLink()).thenReturn(link);
         Mockito.when(node.getId()).thenReturn("dummyId");
         Mockito.when(link.rel(node.getId())).thenReturn(link);
-        Mockito.when(node.getDisplayName()).thenReturn("DummyName");
 
         PipelineNodeImpl underTest = Mockito.mock(PipelineNodeImpl.class, Mockito.withSettings().useConstructor(node, parent, this.run));
         assertNotNull(underTest);
@@ -130,14 +129,10 @@ public class PipelineNodeImplTest {
         Mockito.when(parent.getLink()).thenReturn(link);
         Mockito.when(node.getId()).thenReturn("dummyId");
         Mockito.when(link.rel(node.getId())).thenReturn(link);
-        Mockito.when(node.getDisplayName()).thenReturn("DummyName");
 
         PipelineNodeImpl underTest = Mockito.mock(PipelineNodeImpl.class, Mockito.withSettings().useConstructor(node, parent, this.run));
         assertNotNull(underTest);
 
-        RestartDeclarativePipelineAction restartableAction = Mockito.mock(RestartDeclarativePipelineAction.class);
-        Mockito.when(this.run.getAction(RestartDeclarativePipelineAction.class)).thenReturn(restartableAction);
-        Mockito.when(restartableAction.isRestartEnabled()).thenReturn(false);
         assertFalse(underTest.isRestartable());
     }
 }
