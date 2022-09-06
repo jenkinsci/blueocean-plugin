@@ -103,11 +103,6 @@
             <artifactId>blueocean-pipeline-editor</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-jira</artifactId>
-            <optional>true</optional>
-        </dependency>
 
         <!-- TODO remove with next release -->
         <dependency>
