@@ -82,7 +82,7 @@
     "react-dom": "15.4.2",
     "react-i18next": "1.10.1",
     "react-router": "2.8.1",
-    "recharts": "1.0.0-alpha.4"
+    "recharts": "2.1.14"
   },
   "jenkinscd": {
     "export": [
