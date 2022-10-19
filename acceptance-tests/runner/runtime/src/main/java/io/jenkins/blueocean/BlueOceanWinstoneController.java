@@ -102,7 +102,6 @@ public class BlueOceanWinstoneController extends LocalController {
         cb.add(
                 "-Duser.language=en",
                 "-jar", war,
-                "--ajp13Port=-1",
                 "--httpPort=" + httpPort);
         cb.env.putAll(commonLaunchEnv());
         System.out.println("Starting Jenkins: " + cb.toString());
