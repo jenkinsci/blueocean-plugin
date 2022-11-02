@@ -4,7 +4,7 @@ import { mount } from 'enzyme';
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import { latestRuns } from './data/runs/latestRuns';
-import RunDetailsChanges from '../../main/js/components/RunDetailsChanges';
+import { RunDetailsChanges } from '../../main/js/components/RunDetailsChanges';
 
 const t = i18nTranslator('blueocean-dashboard');
 

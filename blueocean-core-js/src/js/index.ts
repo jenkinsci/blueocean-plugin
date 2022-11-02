@@ -71,7 +71,7 @@ window.JenkinsBlueOceanCoreJSSSEConnected = false;
 
 // Create and export the SSE connection that will be shared by other
 // Blue Ocean components via this package.
-export const sseConnection = sse.connect('jenkins-blueocean-core-js', function () {
+export const sseConnection = sse.connect('jenkins-blueocean-core-js', function() {
     // Declare SSE is fully loaded and ready for events.
     // Mostly used by our ATH to prevent actions from happening
     // too quickly
@@ -119,6 +119,7 @@ export const DEBUG = {
     disableMocksForI18n,
 };
 
+export { ComponentLink } from './utils/ComponentLink';
 export { TimeManager } from './utils/TimeManager';
 
 export { TimeHarmonizer, TimeHarmonizerUtil } from './components/TimeHarmonizer';

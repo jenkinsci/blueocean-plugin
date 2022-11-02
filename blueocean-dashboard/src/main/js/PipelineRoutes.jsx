@@ -1,6 +1,7 @@
 import { Route, Redirect, IndexRedirect } from 'react-router';
 import React from 'react';
-import { AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { AppConfig, NotFound } from '@jenkins-cd/blueocean-core-js';
+import Extensions from '@jenkins-cd/js-extensions';
 import { analytics } from './analytics';
 
 import Dashboard from './Dashboard';
@@ -13,9 +14,6 @@ import {
     PipelineTrends,
     RunDetails,
     RunDetailsPipeline,
-    RunDetailsChanges,
-    RunDetailsArtifacts,
-    RunDetailsTests,
 } from './components';
 import { CreatePipeline } from './creation';
 
@@ -127,6 +125,27 @@ function onLeaveCheckBackground() {
 
 const trends = AppConfig.isFeatureEnabled('trends');
 
+function getActions(extensionPoint, params, callback) {
+    Extensions.store.getExtensions([ extensionPoint ], Extensions.Utils.sortByOrdinal, (actions = []) => {
+        const action = actions.map(a => new a()).find(action => action.name === params.action);
+        if (action) {
+            callback(null, action.component);
+        } else {
+            callback(null, NotFound);
+        }
+    });
+}
+
+function getRunDetailsAction({ params }, callback) {
+    // TODO generify this
+    switch (params.action) {
+        case 'changes': analytics.trackPipelineRunChangesVisited(); break;
+        case 'tests': analytics.trackPipelineRunTestsVisited(); break;
+        case 'artifacts': analytics.trackPipelineRunArtifactsVisited(); break;
+    }
+    getActions('jenkins.run.actions', params, callback);
+}
+
 export default (
     <Route component={Dashboard} onEnter={onTopLevelRouteEnter} onChange={onRouteChange}>
         <Route path="organizations/:organization/pipelines" component={Pipelines} onEnter={analytics.trackDashboardVisited} />
@@ -143,9 +162,7 @@ export default (
                 <Route path="pipeline" component={RunDetailsPipeline} onEnter={analytics.trackPipelineRunVisited}>
                     <Route path=":node" component={RunDetailsPipeline} />
                 </Route>
-                <Route path="changes" component={RunDetailsChanges} onEnter={analytics.trackPipelineRunChangesVisited} />
-                <Route path="tests" component={RunDetailsTests} onEnter={analytics.trackPipelineRunTestsVisited} />
-                <Route path="artifacts" component={RunDetailsArtifacts} onEnter={analytics.trackPipelineRunArtifactsVisited} />
+                <Route path=":action" getComponents={getRunDetailsAction} />
             </Route>
 
             <Redirect from=":pipeline(/*)" to=":pipeline/activity" />
