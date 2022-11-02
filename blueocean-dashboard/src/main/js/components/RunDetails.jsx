@@ -5,7 +5,7 @@ import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
 import { Icon } from '@jenkins-cd/design-language';
 
-import { UrlBuilder, buildClassicConfigUrl } from '@jenkins-cd/blueocean-core-js';
+import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';

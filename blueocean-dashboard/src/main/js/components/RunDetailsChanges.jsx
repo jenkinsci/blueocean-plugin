@@ -13,8 +13,7 @@ if (ComponentLink === undefined) {
 
 const t = i18nTranslator('blueocean-dashboard');
 
-function NoChangesPlaceholder(props) {
-
+function NoChangesPlaceholder() {
     const columns = [
         { width: 750, isFlexible: true, head: { text: 40 }, cell: { text: 150 } },
         { width: 90, head: { text: 50 }, cell: { text: 60 } },
