@@ -1,9 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-import { pagerService, i18nTranslator, ComponentLink } from '@jenkins-cd/blueocean-core-js';
+import { pagerService, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import TestResults from './testing/TestResults';
 import TestService from './testing/TestService';
 import NoTestsPlaceholder from './testing/NoTestsPlaceholder';
+import { ComponentLink } from '../util/ComponentLink';
 
 const t = i18nTranslator('blueocean-dashboard');
 

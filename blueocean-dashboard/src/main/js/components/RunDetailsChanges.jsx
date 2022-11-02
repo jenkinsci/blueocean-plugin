@@ -4,7 +4,12 @@ import { CommitId, PlaceholderTable, ReadableDate, JTable, TableHeaderRow, Table
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
 import LinkifiedText from './LinkifiedText';
-import { ShowMoreButton, i18nTranslator, ComponentLink } from '@jenkins-cd/blueocean-core-js';
+import { ShowMoreButton, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { ComponentLink } from '../util/ComponentLink';
+
+if (ComponentLink === undefined) {
+    throw "ComponentLink is undefined";
+}
 
 const t = i18nTranslator('blueocean-dashboard');
 

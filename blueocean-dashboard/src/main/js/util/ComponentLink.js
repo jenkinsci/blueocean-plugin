@@ -1,5 +1,9 @@
-import { PropTypes, Component } from 'react';
+import { PropTypes } from 'react';
 import { SandboxedComponent } from '@jenkins-cd/js-extensions';
+
+if (SandboxedComponent === undefined) {
+    throw "SandboxedComponent is undefined";
+}
 
 export class ComponentLink {
     constructor(props) {
@@ -13,7 +17,7 @@ export class ComponentLink {
         const children = this.component;
         return class ViewRenderer extends SandboxedComponent {
             constructor(props) {
-                super();
+                super(props);
                 this.children = children;
             }
         };
