@@ -41,3 +41,13 @@ extensions:
 # Trends
   - component: components/trends/StageDurationChart
     extensionPoint: jenkins.pipeline.trends
+# Actions
+  - component: components/RunDetailsChanges
+    extensionPoint: jenkins.run.actions
+    ordinal: 100
+  - component: components/RunDetailsTests
+    extensionPoint: jenkins.run.actions
+    ordinal: 200
+  - component: components/RunDetailsArtifacts
+    extensionPoint: jenkins.run.actions
+    ordinal: 300
