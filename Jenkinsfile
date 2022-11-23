@@ -7,7 +7,7 @@ if (JENKINS_URL == 'https://ci.jenkins.io/') {
       [ platform: "linux", jdk: "11" ]
     ],
     // Tests were locking up and timing out on non-aci
-    useAci: true,
+    useContainerAgent: true,
     timeout: 90
   )
   return
