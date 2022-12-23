@@ -2,12 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { FileSize, JTable, TableRow, TableCell, TableHeaderRow } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/design-language';
 import { observer } from 'mobx-react';
-import { logging, UrlConfig, ShowMoreButton, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
-import { ComponentLink } from '../util/ComponentLink';
-
-if (ComponentLink === undefined) {
-    throw "ComponentLink is undefined";
-}
+import { ComponentLink, logging, UrlConfig, ShowMoreButton, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.artifacts');
 const t = i18nTranslator('blueocean-dashboard');
