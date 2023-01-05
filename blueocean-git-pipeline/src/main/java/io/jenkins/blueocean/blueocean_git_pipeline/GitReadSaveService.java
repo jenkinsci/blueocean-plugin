@@ -31,6 +31,7 @@ import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.User;
@@ -68,6 +69,7 @@ import org.slf4j.LoggerFactory;
 public class GitReadSaveService extends ScmContentProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(GitReadSaveService.class);
+    @SuppressFBWarnings(value={"NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"}, justification="https://github.com/spotbugs/spotbugs/issues/2044")
     @NonNull
     private static ReadSaveType TYPE = ReadSaveType.DEFAULT;
 

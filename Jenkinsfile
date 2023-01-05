@@ -3,7 +3,6 @@
 if (JENKINS_URL == 'https://ci.jenkins.io/') {
   buildPlugin(
     configurations: [
-      [ platform: "linux", jdk: "8" ],
       [ platform: "linux", jdk: "11" ]
     ],
     // Tests were locking up and timing out on non-aci
