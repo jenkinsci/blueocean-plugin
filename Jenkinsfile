@@ -29,7 +29,7 @@ envs = [
   'GIT_AUTHOR_EMAIL=hates@cake.com'
 ]
 
-jenkinsVersions = ['2.277.4']
+jenkinsVersions = ['2.361.4']
 
 node() {
   withCredentials(credentials) {
