@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
 public class GitReadSaveService extends ScmContentProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(GitReadSaveService.class);
-    @SuppressFBWarnings(value={"NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"}, justification="https://github.com/spotbugs/spotbugs/issues/2044")
+    @SuppressFBWarnings(value={"NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"}, justification="TYPE is mutated by setType https://github.com/spotbugs/spotbugs/issues/2044")
     @NonNull
     private static ReadSaveType TYPE = ReadSaveType.DEFAULT;
 

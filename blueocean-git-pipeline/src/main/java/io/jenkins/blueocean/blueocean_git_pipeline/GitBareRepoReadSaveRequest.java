@@ -165,7 +165,7 @@ class GitBareRepoReadSaveRequest extends GitReadSaveRequest {
         }
     }
 
-    @SuppressFBWarnings(value = "DCN_NULLPOINTER_EXCEPTION", justification = "Empty repository throws NPE")
+    @SuppressFBWarnings(value = "DCN_NULLPOINTER_EXCEPTION", justification = "TODO check if this NPE is still real, and if so fix it")
     private GitSCMFileSystem getFilesystem() throws IOException, InterruptedException {
         try {
             return (GitSCMFileSystem) SCMFileSystem.of( gitSource, new SCMHead( sourceBranch));
