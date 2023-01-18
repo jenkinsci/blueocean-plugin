@@ -130,11 +130,11 @@ public class BlueOceanWebURLBuilderTest {
         sampleRepo.git("checkout", "-b", "feature/ux-1");
         sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
             "   stage ('Build') { " +
-            "   echo ('Building');} " +
+            "   echo ('Building')}; " +
             "   stage ('Test') { " +
-            "   echo ('Testing');} " +
+            "   echo ('Testing')}; " +
             "   stage ('Deploy') { " +
-            "   echo ('Deploying');} " +
+            "   echo ('Deploying')}; " +
             "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content1");
@@ -144,11 +144,11 @@ public class BlueOceanWebURLBuilderTest {
         sampleRepo.git("checkout", "-b", "feature2");
         sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
             "   stage ('Build') { " +
-            "   echo ('Building');} " +
+            "   echo ('Building')}; " +
             "   stage ('Test') { " +
-            "   echo ('Testing');} " +
+            "   echo ('Testing')}; " +
             "   stage ('Deploy') { " +
-            "   echo ('Deploying');} " +
+            "   echo ('Deploying')}; " +
             "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content2");

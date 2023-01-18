@@ -105,11 +105,11 @@ public class BranchContainerImplTest extends PipelineBaseTest {
         sampleRepo.git("checkout", "-b", "feature/ux-1");
         sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
             "   stage ('Build') { " +
-            "   echo ('Building');} " +
+            "   echo ('Building')}; " +
             "   stage ('Test') { " +
-            "   echo ('Testing');} " +
+            "   echo ('Testing')}; " +
             "   stage ('Deploy') { " +
-            "   echo ('Deploying');} " +
+            "   echo ('Deploying')}; " +
             "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content1");
@@ -119,11 +119,11 @@ public class BranchContainerImplTest extends PipelineBaseTest {
         sampleRepo.git("checkout", "-b", "feature2");
         sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
             "   stage ('Build') { " +
-            "   echo ('Building');} " +
+            "   echo ('Building')}; " +
             "   stage ('Test') { " +
-            "   echo ('Testing');} " +
+            "   echo ('Testing')}; " +
             "   stage ('Deploy') { " +
-            "   echo ('Deploying');} " +
+            "   echo ('Deploying')}; " +
             "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content2");
@@ -132,11 +132,11 @@ public class BranchContainerImplTest extends PipelineBaseTest {
         sampleRepo.git("checkout", "-b", "feature4");
         sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
             "   stage ('Build') { " +
-            "   echo ('Building');} " +
+            "   echo ('Building')}; " +
             "   stage ('Test') { " +
-            "   echo ('Testing');} " +
+            "   echo ('Testing')}; " +
             "   stage ('Deploy') { " +
-            "   echo ('Deploying');} " +
+            "   echo ('Deploying')}; " +
             "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content234");

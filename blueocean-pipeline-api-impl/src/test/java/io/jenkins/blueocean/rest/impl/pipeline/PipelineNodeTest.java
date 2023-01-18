@@ -247,7 +247,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         String pipeline = "" +
             "node {\n" +
             "   stage ('dev') {" +                 //start
-            "     echo ('development');} " +
+            "     echo ('development')}; " +
 
             "   stage ('Build') { " +
             "     echo ('Building'); " +
@@ -388,7 +388,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         String pipeline = "" +
             "node {" +
             "   stage ('dev') {" +                 //start
-            "     echo ('development');} " +
+            "     echo ('development')}; " +
             "   stage ('Build') { " +
             "     echo ('Building'); " +
             "     stage('Packaging') {" +

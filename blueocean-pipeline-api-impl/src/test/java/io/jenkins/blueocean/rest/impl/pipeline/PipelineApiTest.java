@@ -41,7 +41,7 @@ public class PipelineApiTest extends PipelineBaseTest {
             "   stage ('Build') { " +
             "   semaphore 's'} " +
             "   stage ('Test') { " +
-            "   echo ('Testing');} " +
+            "   echo ('Testing')}; " +
             "}", false));
 
         WorkflowRun b1 = job1.scheduleBuild2(0).waitForStart();
@@ -83,9 +83,9 @@ public class PipelineApiTest extends PipelineBaseTest {
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
             "   stage ('Build1') { " +
-            "   sleep(60);}" +
+            "   sleep(60)};" +
             "   stage ('Test1') { " +
-            "   echo ('Testing');} " +
+            "   echo ('Testing')}; " +
             "}"));
 
         WorkflowRun b1 = job1.scheduleBuild2(0).waitForStart();
@@ -126,9 +126,9 @@ public class PipelineApiTest extends PipelineBaseTest {
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
             "   stage ('Build1') { " +
-            "   echo ('Building');} " +
+            "   echo ('Building')}; " +
             "   stage ('Test1') { " +
-            "   echo ('Testing');} " +
+            "   echo ('Testing')}; " +
             "}"));
 
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
@@ -145,9 +145,9 @@ public class PipelineApiTest extends PipelineBaseTest {
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
             "   stage ('Build1') { " +
-            "   sleep(120);}" +
+            "   sleep(120)};" +
             "   stage ('Test1') { " +
-            "   echo ('Testing');} " +
+            "   echo ('Testing')}; " +
             "}"));
 
         WorkflowRun b1 = job1.scheduleBuild2(0).waitForStart();
@@ -174,7 +174,7 @@ public class PipelineApiTest extends PipelineBaseTest {
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
             "   stage ('Build1') { " +
-            "   echo ('Building');} " +
+            "   echo ('Building')}; " +
             "   stage ('Test1') { " +
             "   echo ('Testing')} " +
             "}"));
@@ -200,9 +200,9 @@ public class PipelineApiTest extends PipelineBaseTest {
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
             "   stage ('Build1') { " +
-            "   echo ('Building');} " +
+            "   echo ('Building')}; " +
             "   stage ('Test1') { " +
-            "   echo ('Testing');} " +
+            "   echo ('Testing')}; " +
             "}"));
 
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
@@ -223,10 +223,10 @@ public class PipelineApiTest extends PipelineBaseTest {
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
             "   stage ('Build1') { " +
-            "   echo ('Building');} " +
+            "   echo ('Building')}; " +
             "   stage ('Test1') { " +
             "   sleep 10000      " +
-            "   echo ('Testing');} " +
+            "   echo ('Testing')}; " +
             "}"));
 
         job1.setConcurrentBuild(false);
@@ -249,9 +249,9 @@ public class PipelineApiTest extends PipelineBaseTest {
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
             "   stage ('Build1') { " +
-            "   sleep(60);} " +
+            "   sleep(60)}; " +
             "   stage ('Test1') { " +
-            "   echo ('Testing');} " +
+            "   echo ('Testing')}; " +
             "}"));
 
         Map response = get("/organizations/jenkins/pipelines/pipeline1/");

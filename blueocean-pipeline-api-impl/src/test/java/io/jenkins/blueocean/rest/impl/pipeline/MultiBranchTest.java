@@ -975,11 +975,11 @@ public class MultiBranchTest extends PipelineBaseTest {
         sampleRepo.git("checkout", "-b", "feature/ux-1");
         sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
             "   stage ('Build') { " +
-            "   echo ('Building');} " +
+            "   echo ('Building')}; " +
             "   stage ('Test') { " +
-            "   echo ('Testing');} " +
+            "   echo ('Testing')}; " +
             "   stage ('Deploy') { " +
-            "   echo ('Deploying');} " +
+            "   echo ('Deploying')}; " +
             "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content1");
@@ -989,11 +989,11 @@ public class MultiBranchTest extends PipelineBaseTest {
         sampleRepo.git("checkout", "-b", "feature2");
         sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
             "   stage ('Build') { " +
-            "   echo ('Building');} " +
+            "   echo ('Building')}; " +
             "   stage ('Test') { " +
-            "   echo ('Testing');} " +
+            "   echo ('Testing')}; " +
             "   stage ('Deploy') { " +
-            "   echo ('Deploying');} " +
+            "   echo ('Deploying')}; " +
             "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content2");
@@ -1031,11 +1031,11 @@ public class MultiBranchTest extends PipelineBaseTest {
         sampleRepo1.git("checkout", "-b", "abc");
         sampleRepo1.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
             "   stage ('Build') { " +
-            "   echo ('Building');} " +
+            "   echo ('Building')}; " +
             "   stage ('Test') { sleep 10000; " +
-            "   echo ('Testing');} " +
+            "   echo ('Testing')}; " +
             "   stage ('Deploy') { " +
-            "   echo ('Deploying');} " +
+            "   echo ('Deploying')}; " +
             "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo1.write("file", "subsequent content1");
@@ -1098,11 +1098,11 @@ public class MultiBranchTest extends PipelineBaseTest {
         sampleRepo1.git("checkout", "-b", "abc");
         sampleRepo1.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; " + "node {" +
                 "   stage ('Build') { " +
-                "   echo ('Building');} " +
+                "   echo ('Building')}; " +
                 "   stage ('Test') { sleep 10000; " +
-                "   echo ('Testing');} " +
+                "   echo ('Testing')}; " +
                 "   stage ('Deploy') { " +
-                "   echo ('Deploying');} " +
+                "   echo ('Deploying')}; " +
                 "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo1.write("file", "subsequent content1");
