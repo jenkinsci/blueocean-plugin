@@ -2195,6 +2195,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @Test
     public void stageTestJENKINS_40135() throws Exception {
         String script = "node {\n" +
+            // TODO is this test still meaningful after converting to block-scoped stage?
             "    stage('Stage 1') {}\n" +
             "    stage('Stage 2') {\n" +
             "       echo 'hello'}\n" +
@@ -2205,8 +2206,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
         j.assertBuildStatusSuccess(b1);
         List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
         Assert.assertEquals(2, nodes.size());
-        Assert.assertEquals("SUCCESS", nodes.get(0).get("result"));
-        Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
+        Assert.assertEquals("NOT_BUILT", nodes.get(0).get("result"));
+        Assert.assertEquals("NOT_BUILT", nodes.get(0).get("state"));
         Assert.assertEquals("SUCCESS", nodes.get(1).get("result"));
         Assert.assertEquals("FINISHED", nodes.get(1).get("state"));
     }
