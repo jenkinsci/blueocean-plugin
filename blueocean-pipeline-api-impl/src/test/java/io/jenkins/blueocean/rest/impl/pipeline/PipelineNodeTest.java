@@ -848,7 +848,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        job1.setDefinition(new CpsFlowDefinition("stage(\"Build\") {\n" +
+        job1.setDefinition(new CpsFlowDefinition("error 'huh? this test makes no sense to me'; stage(\"Build\") {\n" +
                                                      "    node {\n" +
                                                      "       sh \"echo here\"\n" +
                                                      "    }\n" +
