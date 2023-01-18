@@ -265,6 +265,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>pipeline-stage-step</artifactId>
+            <version>301.va_49d6669da_c9</version> <!-- TODO https://github.com/jenkinsci/pipeline-stage-step-plugin/pull/94 -->
+        </dependency>
+
+        <dependency>
             <groupId>org.jenkins-ci</groupId>
             <artifactId>symbol-annotation</artifactId>
             <version>1.23</version>
