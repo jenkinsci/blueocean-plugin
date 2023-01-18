@@ -806,7 +806,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @Test
     public void nodesFailureTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
-        job1.setDefinition(new CpsFlowDefinition("stage(\"Build\")\n" +
+        job1.setDefinition(new CpsFlowDefinition("stage(\"Build\") {\n" +
                                                      "    node {\n" +
                                                      "       sh \"echo here\"\n" +
                                                      "    }\n" +
@@ -2196,7 +2196,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
     public void stageTestJENKINS_40135() throws Exception {
         String script = "node {\n" +
             "    stage('Stage 1') {}\n" +
-            "    stage('Stage 2'} {\n" +
+            "    stage('Stage 2') {\n" +
             "       echo 'hello'}\n" +
             "}";
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
