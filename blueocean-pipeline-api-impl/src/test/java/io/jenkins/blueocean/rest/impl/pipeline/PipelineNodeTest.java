@@ -246,8 +246,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
     public void testBlockStage() throws Exception {
         String pipeline = "" +
             "node {\n" +
-            "   stage ('dev');" +                 //start
-            "     echo ('development'); " +
+            "   stage ('dev') {" +                 //start
+            "     echo ('development');} " +
 
             "   stage ('Build') { " +
             "     echo ('Building'); " +
@@ -384,66 +384,11 @@ public class PipelineNodeTest extends PipelineBaseTest {
     }
 
     @Test
-    public void testNonblockStageSteps() throws Exception {
-        String pipeline = "node {\n" +
-            "  stage 'Checkout'\n" +
-            "      echo 'checkingout'\n" +
-            "  stage 'Build'\n" +
-            "      echo 'building'\n" +
-            "  stage 'Archive'\n" +
-            "      echo 'archiving...'\n" +
-            "}";
-
-
-        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
-
-        job1.setDefinition(new CpsFlowDefinition(pipeline, false));
-
-        WorkflowRun b1 = job1.scheduleBuild2(0).get();
-        j.assertBuildStatusSuccess(b1);
-
-
-        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
-        List<FlowNode> stages = getStages(builder);
-        List<FlowNode> parallels = getParallelNodes(builder);
-
-        Assert.assertEquals(3, stages.size());
-        Assert.assertEquals(0, parallels.size());
-
-        //TODO: complete test
-        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
-        Assert.assertEquals(3, resp.size());
-
-        String checkoutId = (String) resp.get(0).get("id");
-        String buildId = (String) resp.get(0).get("id");
-        String archiveId = (String) resp.get(0).get("id");
-
-        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
-        Assert.assertEquals(3, resp.size());
-
-
-        Assert.assertNotNull(checkoutId);
-        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/" + checkoutId + "/steps/", List.class);
-        Assert.assertEquals(1, resp.size());
-
-
-        Assert.assertNotNull(buildId);
-        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/" + buildId + "/steps/", List.class);
-        Assert.assertEquals(1, resp.size());
-
-
-        Assert.assertNotNull(archiveId);
-        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/" + archiveId + "/steps/", List.class);
-        Assert.assertEquals(1, resp.size());
-    }
-
-
-    @Test
     public void testNestedBlockStage() throws Exception {
         String pipeline = "" +
             "node {" +
-            "   stage ('dev');" +                 //start
-            "     echo ('development'); " +
+            "   stage ('dev') {" +                 //start
+            "     echo ('development');} " +
             "   stage ('Build') { " +
             "     echo ('Building'); " +
             "     stage('Packaging') {" +
@@ -596,10 +541,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
     public void nodesWithFutureTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
         job1.setDefinition(new CpsFlowDefinition("node {\n" +
-                                                     "  stage 'build'\n" +
-                                                     "  sh 'echo s1'\n" +
-                                                     "  stage 'test'\n" +
-                                                     "  echo 'Hello World 2'\n" +
+                                                     "  stage('build') {\n" +
+                                                     "  sh 'echo s1'}\n" +
+                                                     "  stage('test') {\n" +
+                                                     "  echo 'Hello World 2'}\n" +
                                                      "}", false));
 
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
@@ -608,10 +553,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
         get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
 
         job1.setDefinition(new CpsFlowDefinition("node {\n" +
-                                                     "  stage 'build'\n" +
-                                                     "  sh 'echo s1'\n" +
-                                                     "  stage 'test'\n" +
-                                                     "  echo 'Hello World 2'\n" +
+                                                     "  stage('build') {\n" +
+                                                     "  sh 'echo s1'}\n" +
+                                                     "  stage('test') {\n" +
+                                                     "  echo 'Hello World 2'}\n" +
                                                      "}\n" +
                                                      "parallel firstBranch: {\n" +
                                                      "  echo 'Hello first'\n" +
@@ -624,10 +569,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
         j.assertBuildStatus(Result.SUCCESS, b2);
 
         job1.setDefinition(new CpsFlowDefinition("node {\n" +
-                                                     "  stage 'build'\n" +
-                                                     "  sh 'echo s1'\n" +
-                                                     "  stage 'test'\n" +
-                                                     "  echo 'Hello World 2'\n" +
+                                                     "  stage('build') {\n" +
+                                                     "  sh 'echo s1'}\n" +
+                                                     "  stage('test') {\n" +
+                                                     "  echo 'Hello World 2'}\n" +
                                                      "}\n" +
                                                      "parallel firstBranch: {\n" +
                                                      "  echo 'Hello first'\n" +
@@ -861,12 +806,12 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @Test
     public void nodesFailureTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
-        job1.setDefinition(new CpsFlowDefinition("stage \"Build\"\n" +
+        job1.setDefinition(new CpsFlowDefinition("stage(\"Build\")\n" +
                                                      "    node {\n" +
                                                      "       sh \"echo here\"\n" +
                                                      "    }\n" +
-                                                     "\n" +
-                                                     "stage \"Test\"\n" +
+                                                     "}\n" +
+                                                     "stage(\"Test\") {\n" +
                                                      "    parallel (\n" +
                                                      "        \"Firefox\" : {\n" +
                                                      "            node {\n" +
@@ -879,8 +824,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
                                                      "            }\n" +
                                                      "        }\n" +
                                                      "    )\n" +
-                                                     "\n" +
-                                                     "stage \"CrashyMcgee\"\n" +
+                                                     "}\n" +
+                                                     "stage(\"CrashyMcgee\") {\n" +
                                                      "  parallel (\n" +
                                                      "    \"SlowButSuccess\" : {\n" +
                                                      "        node {\n" +
@@ -893,22 +838,22 @@ public class PipelineNodeTest extends PipelineBaseTest {
                                                      "        }\n" +
                                                      "    }\n" +
                                                      "  )\n" +
+                                                     "}\n" +
                                                      "\n" +
-                                                     "\n" +
-                                                     "stage \"Deploy\"\n" +
+                                                     "stage(\"Deploy\") {\n" +
                                                      "    node {\n" +
                                                      "        sh \"echo deploying\"\n" +
-                                                     "    }", false));
+                                                     "    }}", false));
 
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        job1.setDefinition(new CpsFlowDefinition("throw stage \"Build\"\n" +
+        job1.setDefinition(new CpsFlowDefinition("stage(\"Build\") "\n" +
                                                      "    node {\n" +
                                                      "       sh \"echo here\"\n" +
                                                      "    }\n" +
-                                                     "\n" +
-                                                     "stage \"Test\"\n" +
+                                                     "}\n" +
+                                                     "stage(\"Test\") {\n" +
                                                      "    parallel (\n" +
                                                      "        \"Firefox\" : {\n" +
                                                      "            node {\n" +
@@ -921,8 +866,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
                                                      "            }\n" +
                                                      "        }\n" +
                                                      "    )\n" +
-                                                     "\n" +
-                                                     "stage \"CrashyMcgee\"\n" +
+                                                     "}\n" +
+                                                     "stage(\"CrashyMcgee\") {\n" +
                                                      "  parallel (\n" +
                                                      "    \"SlowButSuccess\" : {\n" +
                                                      "        node {\n" +
@@ -935,12 +880,12 @@ public class PipelineNodeTest extends PipelineBaseTest {
                                                      "        }\n" +
                                                      "    }\n" +
                                                      "  )\n" +
+                                                     "}\n" +
                                                      "\n" +
-                                                     "\n" +
-                                                     "stage \"Deploy\"\n" +
+                                                     "stage(\"Deploy\") {\n" +
                                                      "    node {\n" +
                                                      "        sh \"echo deploying\"\n" +
-                                                     "    }", false));
+                                                     "    }}", false));
 
         job1.scheduleBuild2(0);
         WorkflowRun b2 = job1.scheduleBuild2(0).get();
@@ -1379,12 +1324,12 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
 
 
-        job1.setDefinition(new CpsFlowDefinition("stage 'build'\n" +
+        job1.setDefinition(new CpsFlowDefinition("stage('build') {\n" +
                                                      "node{\n" +
                                                      "  echo \"Building...\"\n" +
                                                      "}\n" +
-                                                     "\n" +
-                                                     "stage 'test'\n" +
+                                                     "}\n" +
+                                                     "stage('test') {\n" +
                                                      "parallel 'unit':{\n" +
                                                      "  node{\n" +
                                                      "    echo \"Unit testing...\"\n" +
@@ -1399,11 +1344,11 @@ public class PipelineNodeTest extends PipelineBaseTest {
                                                      "    echo \"UI testing...\"\n" +
                                                      "  }\n" +
                                                      "}\n" +
-                                                     "\n" +
-                                                     "stage 'deploy'\n" +
+                                                     "}\n" +
+                                                     "stage('deploy') {\n" +
                                                      "node{\n" +
                                                      "  echo \"Deploying\"\n" +
-                                                     "}", false
+                                                     "}}", false
         ));
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatus(Result.FAILURE, b1);
@@ -1622,12 +1567,12 @@ public class PipelineNodeTest extends PipelineBaseTest {
     public void getPipelineJobRunStepLogTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
 
-        job1.setDefinition(new CpsFlowDefinition("stage 'build'\n" +
+        job1.setDefinition(new CpsFlowDefinition("stage('build') "\n" +
                                                      "node{\n" +
                                                      "  echo \"Building...\"\n" +
                                                      "}\n" +
-                                                     "\n" +
-                                                     "stage 'test'\n" +
+                                                     "}\n" +
+                                                     "stage('test') {\n" +
                                                      "parallel 'unit':{\n" +
                                                      "  node{\n" +
                                                      "    echo \"Unit testing...\"\n" +
@@ -1641,11 +1586,11 @@ public class PipelineNodeTest extends PipelineBaseTest {
                                                      "    echo \"UI testing...\"\n" +
                                                      "  }\n" +
                                                      "}\n" +
-                                                     "\n" +
-                                                     "stage 'deploy'\n" +
+                                                     "}\n" +
+                                                     "stage('deploy') {\n" +
                                                      "node{\n" +
                                                      "  echo \"Deploying\"\n" +
-                                                     "}", false));
+                                                     "}}", false));
 
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
@@ -2250,9 +2195,9 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @Test
     public void stageTestJENKINS_40135() throws Exception {
         String script = "node {\n" +
-            "    stage 'Stage 1'\n" +
-            "    stage 'Stage 2'\n" +
-            "       echo 'hello'\n" +
+            "    stage('Stage 1') {}\n" +
+            "    stage('Stage 2'} {\n" +
+            "       echo 'hello'}\n" +
             "}";
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
         job1.setDefinition(new CpsFlowDefinition(script, false));

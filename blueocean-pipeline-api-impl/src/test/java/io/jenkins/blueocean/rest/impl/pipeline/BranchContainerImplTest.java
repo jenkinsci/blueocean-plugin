@@ -93,9 +93,9 @@ public class BranchContainerImplTest extends PipelineBaseTest {
     private void setupScm() throws Exception {
         // create git repo
         sampleRepo.init();
-        sampleRepo.write("Jenkinsfile", "stage 'build'\n "+"node {echo 'Building'}\n"+
-            "stage 'test'\nnode { echo 'Testing'}\n"+
-            "stage 'deploy'\nnode { echo 'Deploying'}\n"
+        sampleRepo.write("Jenkinsfile", "stage('build') {\n "+"node {echo 'Building'}}\n"+
+            "stage('test') {\nnode { echo 'Testing'}}\n"+
+            "stage('deploy') {\nnode { echo 'Deploying'}}\n"
         );
         sampleRepo.write("file", "initial content");
         sampleRepo.git("add", "Jenkinsfile");
@@ -104,12 +104,12 @@ public class BranchContainerImplTest extends PipelineBaseTest {
         //create feature branch
         sampleRepo.git("checkout", "-b", "feature/ux-1");
         sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
-            "   stage ('Build'); " +
-            "   echo ('Building'); " +
-            "   stage ('Test'); " +
-            "   echo ('Testing'); " +
-            "   stage ('Deploy'); " +
-            "   echo ('Deploying'); " +
+            "   stage ('Build') { " +
+            "   echo ('Building');} " +
+            "   stage ('Test') { " +
+            "   echo ('Testing');} " +
+            "   stage ('Deploy') { " +
+            "   echo ('Deploying');} " +
             "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content1");
@@ -118,12 +118,12 @@ public class BranchContainerImplTest extends PipelineBaseTest {
         //create feature branch
         sampleRepo.git("checkout", "-b", "feature2");
         sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
-            "   stage ('Build'); " +
-            "   echo ('Building'); " +
-            "   stage ('Test'); " +
-            "   echo ('Testing'); " +
-            "   stage ('Deploy'); " +
-            "   echo ('Deploying'); " +
+            "   stage ('Build') { " +
+            "   echo ('Building');} " +
+            "   stage ('Test') { " +
+            "   echo ('Testing');} " +
+            "   stage ('Deploy') { " +
+            "   echo ('Deploying');} " +
             "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content2");
@@ -131,12 +131,12 @@ public class BranchContainerImplTest extends PipelineBaseTest {
 
         sampleRepo.git("checkout", "-b", "feature4");
         sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
-            "   stage ('Build'); " +
-            "   echo ('Building'); " +
-            "   stage ('Test'); " +
-            "   echo ('Testing'); " +
-            "   stage ('Deploy'); " +
-            "   echo ('Deploying'); " +
+            "   stage ('Build') { " +
+            "   echo ('Building');} " +
+            "   stage ('Test') { " +
+            "   echo ('Testing');} " +
+            "   stage ('Deploy') { " +
+            "   echo ('Deploying');} " +
             "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content234");

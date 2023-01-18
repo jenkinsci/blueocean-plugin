@@ -1461,12 +1461,12 @@ This API gives steps inside a pipeline node. For a Stage, the steps will include
 
 Given this pipeline script:
 
-    stage 'build'
+    stage('build') {
     node{
       echo "Building..."
-    }
+    }}
 
-    stage 'test'
+    stage('test') {
     parallel 'unit':{
       node{
         echo "Unit testing..."
@@ -1479,17 +1479,17 @@ Given this pipeline script:
       node{
         echo "UI testing..."
       }
-    }
+    }}
 
-    stage 'deploy'
+    stage('deploy') {
     node{
       echo "Deploying"
-    }
+    }}
 
-    stage 'deployToProd'
+    stage('deployToProd') {
     node{
       echo "Deploying to production"
-    }
+    }}
 
 
 Get steps of 'test' stage node:
