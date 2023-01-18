@@ -1603,9 +1603,9 @@ public class PipelineNodeTest extends PipelineBaseTest {
         String linkToLog = getActionLink(resp, "org.jenkinsci.plugins.workflow.actions.LogAction");
 
         assertNotNull(linkToLog);
-        assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/6/log/", linkToLog);
+        assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/7/log/", linkToLog);
         String output = get(linkToLog.substring("/blue/rest".length()), String.class);
-        Assert.assertNotNull(output);
+        assertEquals("Building...", output.trim());
     }
 
     @Test
