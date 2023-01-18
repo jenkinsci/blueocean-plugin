@@ -848,7 +848,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b1);
 
-        job1.setDefinition(new CpsFlowDefinition("stage(\"Build\") "\n" +
+        job1.setDefinition(new CpsFlowDefinition("stage(\"Build\") {\n" +
                                                      "    node {\n" +
                                                      "       sh \"echo here\"\n" +
                                                      "    }\n" +
@@ -1567,7 +1567,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
     public void getPipelineJobRunStepLogTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
 
-        job1.setDefinition(new CpsFlowDefinition("stage('build') "\n" +
+        job1.setDefinition(new CpsFlowDefinition("stage('build') {\n" +
                                                      "node{\n" +
                                                      "  echo \"Building...\"\n" +
                                                      "}\n" +
