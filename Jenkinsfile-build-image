@@ -1,0 +1,22 @@
+pipeline {
+  agent any
+
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
+    disableConcurrentBuilds()
+    disableResume()
+    timeout(time: 60, unit: "MINUTES")
+  }
+  
+  stages {
+    stage('Build docker build image') {
+      steps {
+        withDockerRegistry([credentialsId: '81012788-1be1-49e4-bfab-a882101f0442', url: ""]) {
+          sh('docker build --no-cache -t blueocean/blueocean:build_env --build-arg GID=$(id -g ${USER}) --build-arg UID=$(id -u ${USER}) - < Dockerfile.build')
+          sh('docker push blueocean/blueocean:build_env')
+        }
+      }
+    }
+  }  
+  
+}  
