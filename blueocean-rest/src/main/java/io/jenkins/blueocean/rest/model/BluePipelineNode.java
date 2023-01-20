@@ -22,11 +22,11 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_NO
  *
  * e.g.
  * <pre>
- * stage 'build'
+ * stage('build') {
  * node{
  *   echo "Building..."
- * }
- * stage 'test'
+ * }}
+ * stage('test') {
  * parallel 'unit':{
  *   node{
  *     echo "Unit testing..."
@@ -35,11 +35,11 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_NO
  *   node{
  *     echo "Integration testing..."
  *   }
- * }
- * stage 'deploy'
+ * }}
+ * stage('deploy') {
  * node{
  * echo "Deploying"
- * }
+ * }}
  *</pre>
  *
  * Above pipeline script is modeled as:
