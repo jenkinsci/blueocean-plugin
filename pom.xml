@@ -32,7 +32,7 @@
         when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions
         and  acceptance-tests/runner/scripts/args.sh
     -->
-    <jenkins.version>2.361.4</jenkins.version>
+    <jenkins.version>2.388-rc33317.343e0f4b_2297</jenkins.version> <!-- TODO https://github.com/jenkinsci/jenkins/pull/7599 -->
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.12.0</frontend-version>
     <node.version>10.13.0</node.version>
@@ -262,6 +262,12 @@
             <version>1766.v0b_f2a_f7d0b_1d</version>
             <scope>import</scope>
             <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-durable-task-step</artifactId>
+            <version>1226.v0ed1a_02b_02c2</version> <!-- TODO https://github.com/jenkinsci/workflow-durable-task-step-plugin/pull/287 -->
         </dependency>
 
         <dependency>

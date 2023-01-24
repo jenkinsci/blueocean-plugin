@@ -25,7 +25,6 @@ import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMRevisionAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.export.Exported;
@@ -181,17 +180,13 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     @Override
     public String getCauseOfBlockage() {
         for(Queue.Item i: Jenkins.get().getQueue().getItems()) {
-            if (i.task instanceof ExecutorStepExecution.PlaceholderTask) {
-                ExecutorStepExecution.PlaceholderTask task = (ExecutorStepExecution.PlaceholderTask) i.task;
-                Run r = task.runForDisplay();
-                if (r != null && r.equals(run)) {
-                    String cause = i.getCauseOfBlockage().getShortDescription();
-                    CauseOfBlockage causeOfBlockage = task.getCauseOfBlockage();
-                    if ( causeOfBlockage != null) {
-                        return causeOfBlockage.getShortDescription();
-                    }
-                    return cause;
+            if (run.equals(i.task.getOwnerExecutable())) {
+                String cause = i.getCauseOfBlockage().getShortDescription();
+                CauseOfBlockage causeOfBlockage = i.task.getCauseOfBlockage();
+                if (causeOfBlockage != null) {
+                    return causeOfBlockage.getShortDescription();
                 }
+                return cause;
             }
         }
         return null;
