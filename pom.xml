@@ -736,6 +736,7 @@
         <!-- TODO: java8 signature doesn't exist yet -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-maven-plugin</artifactId>
+        <version>1.22</version>
         <configuration>
           <skip>true</skip>
         </configuration>
