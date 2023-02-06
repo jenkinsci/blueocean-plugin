@@ -40,8 +40,8 @@
     "eslint-plugin-react": "4.3.0",
     "eslint-to-editorconfig": "1.2.0",
     "gulp": "3.9.1",
-    "gulp-mocha": "3.0.1",
-    "mocha": "3.1.0",
+    "gulp-mocha": "8.0.0",
+    "mocha": "10.2.0",
     "nock": "8.0.0",
     "react-addons-test-utils": "15.4.2",
     "reactify": "1.1.1"
