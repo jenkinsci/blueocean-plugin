@@ -259,7 +259,7 @@
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
             <artifactId>bom-2.361.x</artifactId>
-            <version>1766.v0b_f2a_f7d0b_1d</version>
+            <version>1798.vc671fe94856f</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>
@@ -736,6 +736,7 @@
         <!-- TODO: java8 signature doesn't exist yet -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-maven-plugin</artifactId>
+        <version>1.22</version>
         <configuration>
           <skip>true</skip>
         </configuration>
