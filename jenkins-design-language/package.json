@@ -88,7 +88,7 @@
     "gulp-sourcemaps": "2.1.1",
     "gulp-svgmin": "1.2.3",
     "gulp-typescript": "4.0.1",
-    "harp": "0.29.0",
+    "harp": "0.46.1",
     "jest": "19.0.2",
     "less": "2.7.2",
     "mockdate": "2.0.2",
