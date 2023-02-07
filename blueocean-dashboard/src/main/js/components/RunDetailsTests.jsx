@@ -1,21 +1,23 @@
 import React, { Component, PropTypes } from 'react';
-import { pagerService } from '@jenkins-cd/blueocean-core-js';
+import { pagerService, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import TestResults from './testing/TestResults';
 import TestService from './testing/TestService';
 import NoTestsPlaceholder from './testing/NoTestsPlaceholder';
+import { ComponentLink } from '../util/ComponentLink';
+
+const t = i18nTranslator('blueocean-dashboard');
 
 /**
  * Displays a list of tests from the supplied build run property.
  */
-export default class RunDetailsTests extends Component {
+export class RunDetailsTests extends Component {
     propTypes = {
         params: PropTypes.object,
         pipeline: PropTypes.object,
         isMultiBranch: PropTypes.bool,
         result: PropTypes.object,
         fetchTypeInfo: PropTypes.func,
-        t: PropTypes.func,
         locale: PropTypes.string,
         testSummary: PropTypes.object,
     };
@@ -29,7 +31,7 @@ export default class RunDetailsTests extends Component {
     }
 
     render() {
-        const { t, locale, testSummary } = this.props;
+        const { locale, testSummary } = this.props;
 
         let result;
         if (testSummary && (testSummary.total || testSummary.total > 0)) {
@@ -46,8 +48,15 @@ export default class RunDetailsTests extends Component {
                 </div>
             );
         } else {
-            result = <NoTestsPlaceholder t={this.props.t} />;
+            result = <NoTestsPlaceholder t={t} />;
         }
         return result;
     }
+}
+
+export default class RunDetailsTestsLink extends ComponentLink {
+    name = 'tests';
+    title = t('rundetail.header.tab.tests');
+    component = RunDetailsTests;
+    get notification() { return Math.min(99, (this.run.testSummary && parseInt(this.run.testSummary.failed)) || 0) || null; }
 }

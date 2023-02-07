@@ -2,12 +2,18 @@ import React, { Component, PropTypes } from 'react';
 import { FileSize, JTable, TableRow, TableCell, TableHeaderRow } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/design-language';
 import { observer } from 'mobx-react';
-import { logging, UrlConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { logging, UrlConfig, ShowMoreButton, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { ComponentLink } from '../util/ComponentLink';
+
+if (ComponentLink === undefined) {
+    throw "ComponentLink is undefined";
+}
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.artifacts');
+const t = i18nTranslator('blueocean-dashboard');
 
-const ZipFileDownload = (props) => {
-    const { zipFile, t } = props;
+const ZipFileDownload = props => {
+    const { zipFile } = props;
     if (!zipFile) {
         return null;
     }
@@ -26,14 +32,13 @@ const ZipFileDownload = (props) => {
 
 ZipFileDownload.propTypes = {
     zipFile: PropTypes.string,
-    t: PropTypes.func,
 };
 
 /**
  * Displays a list of artifacts from the supplied build run property.
  */
 @observer
-export default class RunDetailsArtifacts extends Component {
+export class RunDetailsArtifacts extends Component {
     componentWillMount() {
         this._fetchArtifacts(this.props);
     }
@@ -55,7 +60,7 @@ export default class RunDetailsArtifacts extends Component {
     }
 
     render() {
-        const { result, t } = this.props;
+        const { result } = this.props;
 
         if (!result || !this.pager || this.pager.pendingD) {
             return null;
@@ -66,7 +71,7 @@ export default class RunDetailsArtifacts extends Component {
 
         const nameLabel = t('rundetail.artifacts.header.name', { defaultValue: 'Name' });
         const sizeLabel = t('rundetail.artifacts.header.size', { defaultValue: 'Size' });
-        const displayLabel = t('rundetail.artifacts.button.display', { defaultValue: 'Display the artifact in new window' });
+        const displayLabel =  t('rundetail.artifacts.button.display', { defaultValue: 'Display the artifact in new window' });
         const downloadLabel = t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' });
         const openLabel = t('rundetail.artifacts.button.open', { defaultValue: 'Open the artifact' });
 
@@ -74,7 +79,7 @@ export default class RunDetailsArtifacts extends Component {
 
         const rootURL = UrlConfig.getJenkinsRootURL();
 
-        const artifactsRendered = artifacts.map((artifact) => {
+        const artifactsRendered = artifacts.map(artifact => {
             const urlArray = artifact.url.split('/');
             const fileName = urlArray[urlArray.length - 1];
             logger.debug('artifact - url:', artifact.url, 'artifact - fileName:', fileName);
@@ -104,10 +109,7 @@ export default class RunDetailsArtifacts extends Component {
                         </a>
                     </TableCell>
                     <TableCell>{artifactSize}</TableCell>
-                    <TableCell className="TableCell--actions">
-                        {displayLink}
-                        {downloadLink}
-                    </TableCell>
+                    <TableCell className="TableCell--actions">{displayLink}{downloadLink}</TableCell>
                 </TableRow>
             );
         });
@@ -150,5 +152,10 @@ RunDetailsArtifacts.contextTypes = {
 
 RunDetailsArtifacts.propTypes = {
     result: PropTypes.object,
-    t: PropTypes.func,
 };
+
+export default class RunDetailsArtifactsLink extends ComponentLink {
+    name = "artifacts";
+    title = t('rundetail.header.tab.artifacts');
+    component = RunDetailsArtifacts;
+}

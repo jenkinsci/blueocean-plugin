@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Run;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -102,29 +104,16 @@ public class RunSearch extends OmniSearch<BlueRun> {
     }
 
     @SuppressWarnings("unchecked")
-    public static Iterable<BlueRun> findRuns(Job job, final Link parent, int start, int limit){
-        final List<BlueRun> runs = new ArrayList<>();
-        Iterable<Job> pipelines;
-        if(job != null){
-            pipelines = Collections.singletonList(job);
-        }else{
-            pipelines = Jenkins.get().getItems(Job.class);
+    public static Iterable<BlueRun> findRuns(@NonNull Job job, final Link parent, int start, int limit){
+        Iterator<? extends Run> runIterator;
+        if (job instanceof LazyBuildMixIn.LazyLoadingJob) {
+            // TODO Job.getBuilds should work even for LazyLoadingJob
+            final LazyBuildMixIn lazyLoadMixin = ((LazyBuildMixIn.LazyLoadingJob) job).getLazyBuildMixIn();
+            runIterator = lazyLoadMixin.getRunMap().iterator();
+        } else {
+            runIterator = job.getBuilds().iterator();
         }
-
-        for (Job p : pipelines) {
-            Iterator<? extends Run> runIterator;
-            if (job instanceof LazyBuildMixIn.LazyLoadingJob) {
-                final LazyBuildMixIn lazyLoadMixin = ((LazyBuildMixIn.LazyLoadingJob) job).getLazyBuildMixIn();
-                runIterator = lazyLoadMixin.getRunMap().iterator();
-
-            }else{
-                runIterator = p.getBuilds().iterator();
-
-            }
-            runs.addAll(collectRuns(runIterator, parent, start, limit));
-        }
-
-        return runs;
+        return collectRuns(runIterator, parent, start, limit);
     }
 
     public static final String COLLECT_THREADS_KEY = "blueocean.collectRuns.threads";
@@ -209,6 +198,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
             executorService.shutdownNow();
         }
         LOGGER.debug("runs found:{}", runs.size());
+        runs.sort(Comparator.comparing((BlueRun r) -> Integer.valueOf(r.getId())).reversed());
         return runs;
     }
 

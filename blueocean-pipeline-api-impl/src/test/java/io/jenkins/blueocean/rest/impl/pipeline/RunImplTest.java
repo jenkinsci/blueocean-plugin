@@ -96,9 +96,9 @@ public class RunImplTest
         sampleRepo.write("Jenkinsfile", "node('remote') {\n" +
             "    ws {\n" +
             "       checkout scm\n" +
-            "       stage 'build'\n "+"node {echo 'Building'}\n"+
-            "       stage 'test'\nnode { echo 'Testing'}\n"+
-            "       stage 'deploy'\nnode { echo 'Deploying'}\n" +
+            "       stage('build') {\n "+"node {echo 'Building'}}\n"+
+            "       stage('test') {\nnode { echo 'Testing'}}\n"+
+            "       stage('deploy') {\nnode { echo 'Deploying'}}\n" +
             "       }\n" +
             "   }");
         sampleRepo.git("add", "Jenkinsfile");

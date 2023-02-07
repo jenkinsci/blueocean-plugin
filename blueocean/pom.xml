@@ -15,13 +15,6 @@
     <url>https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean/doc/BlueOcean.adoc</url>
     <description>Blue Ocean is a new project that rethinks the user experience of Jenkins. Designed from the ground up for Jenkins Pipeline and compatible with Freestyle jobs, Blue Ocean reduces clutter and increases clarity for every member of your team.</description>
 
-    <scm>
-        <connection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</connection>
-        <developerConnection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</developerConnection>
-        <url>https://github.com/jenkinsci/blueocean-plugin</url>
-        <tag>${scmTag}</tag>
-    </scm>
-
     <properties>
         <jetty.contextPath>/jenkins</jetty.contextPath>
     </properties>
@@ -103,11 +96,6 @@
             <artifactId>blueocean-pipeline-editor</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-jira</artifactId>
-            <optional>true</optional>
-        </dependency>
 
         <!-- TODO remove with next release -->
         <dependency>
@@ -120,11 +108,6 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-display-url</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>blueocean-autofavorite</artifactId>
         </dependency>
 
         <dependency>
