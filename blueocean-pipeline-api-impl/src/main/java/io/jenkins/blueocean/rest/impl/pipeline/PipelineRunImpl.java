@@ -1,5 +1,8 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Run;
@@ -33,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_RUN;
@@ -138,10 +142,22 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         return replayAction != null && replayAction.isRebuildEnabled();
     }
 
+    static final long PIPELINE_NODE_CONTAINER_CACHE_MAX_SIZE = Long.getLong("PIPELINE_NODE_CONTAINER_CACHE_MAX_SIZE", 10000);
+
+    private static Cache<String, PipelineNodeContainerImpl> PIPELINE_NODE_CONTAINER_LOADING_CACHE = Caffeine.newBuilder()
+        .maximumSize(PIPELINE_NODE_CONTAINER_CACHE_MAX_SIZE)
+        .expireAfterAccess(1, TimeUnit.DAYS)
+        .build();
+
     @Override
     @Navigable
     public BluePipelineNodeContainer getNodes() {
         if (run != null) {
+            // not using cache if run not completed
+            if (!run.isBuilding() ) {
+                bluePipelineNodeContainer =
+                    PIPELINE_NODE_CONTAINER_LOADING_CACHE.get(getLink().getHref(), s -> new PipelineNodeContainerImpl(run, getLink()));
+            }
             if(bluePipelineNodeContainer == null) {
                 bluePipelineNodeContainer = new PipelineNodeContainerImpl(run, getLink());
             }
