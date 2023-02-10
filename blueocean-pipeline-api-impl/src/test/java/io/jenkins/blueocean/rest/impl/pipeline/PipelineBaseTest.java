@@ -94,6 +94,8 @@ public abstract class PipelineBaseTest{
         this.jwtToken = getJwtToken(j.jenkins);
         this.crumb = getCrumb(j.jenkins );
 
+        PipelineRunImpl.clearCache();
+
         Unirest.setObjectMapper(new ObjectMapper() {
             public <T> T readValue(String value, Class<T> valueType) {
                 try {

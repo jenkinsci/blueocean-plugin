@@ -30,6 +30,7 @@ import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
+import org.kohsuke.accmod.Restricted;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.export.Exported;
 import org.slf4j.Logger;
@@ -148,6 +149,13 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         .maximumSize(PIPELINE_NODE_CONTAINER_CACHE_MAX_SIZE)
         .expireAfterAccess(1, TimeUnit.DAYS)
         .build();
+
+    /**
+     * for test purpose
+     */
+    static void clearCache() {
+        PIPELINE_NODE_CONTAINER_LOADING_CACHE.invalidateAll();
+    }
 
     @Override
     @Navigable
