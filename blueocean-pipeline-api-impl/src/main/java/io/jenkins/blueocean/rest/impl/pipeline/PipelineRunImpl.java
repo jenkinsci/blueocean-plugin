@@ -45,6 +45,9 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW
 @Capability(JENKINS_WORKFLOW_RUN)
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     private static final Logger logger = LoggerFactory.getLogger(PipelineRunImpl.class);
+
+    private BluePipelineNodeContainer bluePipelineNodeContainer;
+
     public PipelineRunImpl(WorkflowRun run, Reachable parent, BlueOrganization organization) {
         super(run, parent, organization);
     }
@@ -139,7 +142,10 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     @Navigable
     public BluePipelineNodeContainer getNodes() {
         if (run != null) {
-            return new PipelineNodeContainerImpl(run, getLink());
+            if(bluePipelineNodeContainer == null) {
+                bluePipelineNodeContainer = new PipelineNodeContainerImpl(run, getLink());
+            }
+            return bluePipelineNodeContainer;
         }
         return null;
     }
