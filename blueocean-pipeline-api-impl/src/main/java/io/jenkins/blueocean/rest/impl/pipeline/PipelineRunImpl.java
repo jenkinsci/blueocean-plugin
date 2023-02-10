@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Run;
@@ -33,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_RUN;
@@ -45,6 +48,9 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW
 @Capability(JENKINS_WORKFLOW_RUN)
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     private static final Logger logger = LoggerFactory.getLogger(PipelineRunImpl.class);
+
+    private BluePipelineNodeContainer bluePipelineNodeContainer;
+
     public PipelineRunImpl(WorkflowRun run, Reachable parent, BlueOrganization organization) {
         super(run, parent, organization);
     }
@@ -135,11 +141,55 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         return replayAction != null && replayAction.isRebuildEnabled();
     }
 
+    static final long PIPELINE_NODE_CONTAINER_CACHE_MAX_SIZE = Long.getLong("PIPELINE_NODE_CONTAINER_CACHE_MAX_SIZE", 10000);
+
+    static final int PIPELINE_NODE_CONTAINER_CACHE_HOURS = Integer.getInteger("PIPELINE_NODE_CONTAINER_CACHE_HOURS", 12);
+
+    private static Cache<String, PipelineNodeContainerImpl> PIPELINE_NODE_CONTAINER_LOADING_CACHE = Caffeine.newBuilder()
+        .maximumSize(PIPELINE_NODE_CONTAINER_CACHE_MAX_SIZE)
+        .expireAfterAccess(PIPELINE_NODE_CONTAINER_CACHE_HOURS, TimeUnit.HOURS)
+        .build();
+
+    /**
+     * for test purpose
+     */
+    static void clearCache() {
+        PIPELINE_NODE_CONTAINER_LOADING_CACHE.invalidateAll();
+    }
+
+
+    /**
+     * please note this method is called only with existing WorkflowRun
+     * look at the code in #getNodes there is a null check before calling all
+     * the code which will eventually use this method.
+     * this is used only because we do want to store WorkflowRun instance in the cache but only the id.
+     * this method will be only used for existing WorkflowRun
+     */
+    static WorkflowRun findRun(String externalizableId) {
+        Run run = Run.fromExternalizableId(externalizableId);
+        if (run == null) {
+            throw new NullPointerException("not run found for id `" + externalizableId + "` this should not happen here.");
+        }
+        if (!(run instanceof WorkflowRun)) {
+            throw new NullPointerException("run with id `" + externalizableId + "` cannot be an instance of WorkflowRun.");
+        }
+        return (WorkflowRun) run;
+    }
+
     @Override
     @Navigable
     public BluePipelineNodeContainer getNodes() {
         if (run != null) {
-            return new PipelineNodeContainerImpl(run, getLink());
+            // not using cache if not completed
+            if (!run.isLogUpdated() ) {
+                // cache key have the format /blue/rest/organizations/jenkins/pipelines/$jobname/branches/master/runs/2/
+                bluePipelineNodeContainer =
+                    PIPELINE_NODE_CONTAINER_LOADING_CACHE.get(getLink().getHref(), s -> new PipelineNodeContainerImpl(run, getLink()));
+            }
+            if(bluePipelineNodeContainer == null) {
+                bluePipelineNodeContainer = new PipelineNodeContainerImpl(run, getLink());
+            }
+            return bluePipelineNodeContainer;
         }
         return null;
     }
@@ -147,7 +197,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     @Override
     @Navigable
     public BluePipelineStepContainer getSteps() {
-        return new PipelineStepContainerImpl(run, getLink());
+        return new PipelineStepContainerImpl(run.getExternalizableId(), getLink());
     }
 
     @Override
