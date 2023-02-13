@@ -161,8 +161,9 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     @Navigable
     public BluePipelineNodeContainer getNodes() {
         if (run != null) {
-            // not using cache if run not completed
-            if (!run.isBuilding() ) {
+            // not using cache if not completed
+            if (!run.isLogUpdated() ) {
+                // cache key have the format /blue/rest/organizations/jenkins/pipelines/$jobname/branches/master/runs/2/
                 bluePipelineNodeContainer =
                     PIPELINE_NODE_CONTAINER_LOADING_CACHE.get(getLink().getHref(), s -> new PipelineNodeContainerImpl(run, getLink()));
             }

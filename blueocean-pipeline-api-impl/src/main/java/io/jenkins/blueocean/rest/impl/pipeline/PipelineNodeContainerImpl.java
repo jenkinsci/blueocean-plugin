@@ -17,14 +17,15 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
-    private final WorkflowRun run;
     private final Map<String, BluePipelineNode> nodeMap = new HashMap<>();
 
     private final List<BluePipelineNode> nodes;
     private final Link self;
 
+    private final String runParentName;
+
     public PipelineNodeContainerImpl(WorkflowRun run, Link parentLink) {
-        this.run = run;
+        this.runParentName = run.getParent().getName();
         this.self = parentLink.rel("nodes");
 
         WorkflowJob job = run.getParent();
@@ -47,11 +48,12 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
 
     @Override
     public BluePipelineNode get(String name) {
+
         if(nodeMap.get(name) != null){
             return nodeMap.get(name);
         }
         throw new ServiceException.NotFoundException(String.format("Stage %s not found in pipeline %s.",
-            name, run.getParent().getName()));
+            name, runParentName));
     }
 
     @Override
