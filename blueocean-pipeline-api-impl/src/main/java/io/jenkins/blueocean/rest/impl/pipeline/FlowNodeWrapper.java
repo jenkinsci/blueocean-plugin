@@ -89,7 +89,6 @@ public class FlowNodeWrapper {
         this.runExternalizableId = run.getExternalizableId();
     }
 
-
     public WorkflowRun getRun() {
         return PipelineRunImpl.findRun(runExternalizableId);
     }

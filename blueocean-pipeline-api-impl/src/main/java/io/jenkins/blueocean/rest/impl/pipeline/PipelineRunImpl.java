@@ -160,13 +160,24 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     }
 
 
-    public static WorkflowRun findRun(String externalizableId) {
-        String[] tree = externalizableId.split("#");
-        Item item = Jenkins.get().getItem(tree[0], Jenkins.get());
-        if (item instanceof WorkflowJob) {
-            return ((WorkflowJob)item).getBuild(tree[1]);
+    /**
+     * please note this method is called only with existing WorkflowRun
+     * look at the code in #getNodes there is a null check before calling all
+     * the code which will eventually use this method.
+     * this is used only because we do want to store WorkflowRun instance in the cache but only the id.
+     * this method will be only used for existing WorkflowRun
+     */
+    static WorkflowRun findRun(String externalizableId) {
+        Run run = Run.fromExternalizableId(externalizableId);
+        if (run == null) {
+            logger.error("not run found for id `{}` this should not happen here.", externalizableId);
+            return null;
         }
-        return null;
+        if (!(run instanceof WorkflowRun)) {
+            logger.error("run with id `{}` cannot be an instance of WorkflowRun.", externalizableId);
+            return null;
+        }
+        return (WorkflowRun) run;
     }
 
     @Override
