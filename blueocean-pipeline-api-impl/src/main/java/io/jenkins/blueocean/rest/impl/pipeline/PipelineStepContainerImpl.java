@@ -3,7 +3,6 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
-import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
 import java.util.Iterator;
 
@@ -13,31 +12,31 @@ import java.util.Iterator;
 public class PipelineStepContainerImpl extends BluePipelineStepContainer {
     private final FlowNodeWrapper node;
     private final Link self;
-    private final WorkflowRun run;
+    private final String runExternalizableId;
 
 
-    public PipelineStepContainerImpl(FlowNodeWrapper node, Link parentLink, WorkflowRun run) {
+    public PipelineStepContainerImpl(FlowNodeWrapper node, Link parentLink, String runExternalizableId) {
         this.self = parentLink.rel("steps");
         this.node = node;
-        this.run = run;
+        this.runExternalizableId = runExternalizableId;
 
     }
 
-    public PipelineStepContainerImpl(WorkflowRun run, Link parentLink) {
+    public PipelineStepContainerImpl(String runExternalizableId, Link parentLink) {
         this.self = parentLink.rel("steps");
         this.node = null;
-        this.run = run;
+        this.runExternalizableId = runExternalizableId;
     }
 
     @Override
     public BluePipelineStep get(String name) {
-        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(PipelineRunImpl.findRun(runExternalizableId));
         return  builder.getPipelineNodeStep(name, getLink());
     }
 
     @Override
     public Iterator<BluePipelineStep> iterator() {
-        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(PipelineRunImpl.findRun(runExternalizableId));
         return (node == null)
             ? builder.getPipelineNodeSteps(getLink()).iterator()
             : builder.getPipelineNodeSteps(node.getId(), getLink()).iterator();

@@ -65,7 +65,7 @@ public class FlowNodeWrapper {
     public final NodeType type;
     private final String displayName;
     private final InputStep inputStep;
-    private final WorkflowRun run;
+    private final String runExternalizableId;
     private String causeOfFailure;
 
     private List<FlowNodeWrapper> parents = new ArrayList<>();
@@ -86,12 +86,12 @@ public class FlowNodeWrapper {
         this.type = getNodeType(node);
         this.displayName = PipelineNodeUtil.getDisplayName(node);
         this.inputStep = inputStep;
-        this.run = run;
+        this.runExternalizableId = run.getExternalizableId();
     }
 
 
     public WorkflowRun getRun() {
-        return run;
+        return PipelineRunImpl.findRun(runExternalizableId);
     }
 
     public @Nonnull

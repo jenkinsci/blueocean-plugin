@@ -22,10 +22,10 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
     private final List<BluePipelineNode> nodes;
     private final Link self;
 
-    private final String runParentName;
+    private final String jobFullName;
 
     public PipelineNodeContainerImpl(WorkflowRun run, Link parentLink) {
-        this.runParentName = run.getParent().getName();
+        this.jobFullName = run.getParent().getFullName();
         this.self = parentLink.rel("nodes");
 
         WorkflowJob job = run.getParent();
@@ -53,7 +53,7 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
             return nodeMap.get(name);
         }
         throw new ServiceException.NotFoundException(String.format("Stage %s not found in pipeline %s.",
-            name, runParentName));
+            name, jobFullName));
     }
 
     @Override

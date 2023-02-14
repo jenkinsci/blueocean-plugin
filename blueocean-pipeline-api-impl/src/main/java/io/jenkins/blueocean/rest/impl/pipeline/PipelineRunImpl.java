@@ -1,9 +1,9 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import hudson.Extension;
+import hudson.model.Item;
 import hudson.model.Queue;
 import hudson.model.Run;
 import hudson.model.queue.CauseOfBlockage;
@@ -27,10 +27,10 @@ import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMRevisionAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
-import org.kohsuke.accmod.Restricted;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.export.Exported;
 import org.slf4j.Logger;
@@ -157,6 +157,16 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         PIPELINE_NODE_CONTAINER_LOADING_CACHE.invalidateAll();
     }
 
+
+    public static WorkflowRun findRun(String externalizableId) {
+        String[] tree = externalizableId.split("#");
+        Item item = Jenkins.get().getItem(tree[0], Jenkins.get());
+        if (item instanceof WorkflowJob) {
+            return ((WorkflowJob)item).getBuild(tree[1]);
+        }
+        return null;
+    }
+
     @Override
     @Navigable
     public BluePipelineNodeContainer getNodes() {
@@ -178,7 +188,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     @Override
     @Navigable
     public BluePipelineStepContainer getSteps() {
-        return new PipelineStepContainerImpl(run, getLink());
+        return new PipelineStepContainerImpl(run.getExternalizableId(), getLink());
     }
 
     @Override
