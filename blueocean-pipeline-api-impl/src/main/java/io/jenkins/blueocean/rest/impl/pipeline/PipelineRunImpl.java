@@ -145,9 +145,11 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
     static final long PIPELINE_NODE_CONTAINER_CACHE_MAX_SIZE = Long.getLong("PIPELINE_NODE_CONTAINER_CACHE_MAX_SIZE", 10000);
 
+    static final int PIPELINE_NODE_CONTAINER_CACHE_HOURS = Integer.getInteger("PIPELINE_NODE_CONTAINER_CACHE_HOURS", 12);
+
     private static Cache<String, PipelineNodeContainerImpl> PIPELINE_NODE_CONTAINER_LOADING_CACHE = Caffeine.newBuilder()
         .maximumSize(PIPELINE_NODE_CONTAINER_CACHE_MAX_SIZE)
-        .expireAfterAccess(1, TimeUnit.DAYS)
+        .expireAfterAccess(PIPELINE_NODE_CONTAINER_CACHE_HOURS, TimeUnit.HOURS)
         .build();
 
     /**
