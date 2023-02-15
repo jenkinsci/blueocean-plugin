@@ -3,7 +3,6 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import hudson.Extension;
-import hudson.model.Item;
 import hudson.model.Queue;
 import hudson.model.Run;
 import hudson.model.queue.CauseOfBlockage;
@@ -27,7 +26,6 @@ import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMRevisionAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
-import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
@@ -170,7 +168,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     static WorkflowRun findRun(String externalizableId) {
         Run run = Run.fromExternalizableId(externalizableId);
         if (run == null) {
-            throw new NullPointerException("not run found for id `" + externalizableId + "` this should not happen here.")
+            throw new NullPointerException("not run found for id `" + externalizableId + "` this should not happen here.");
         }
         if (!(run instanceof WorkflowRun)) {
             throw new NullPointerException("run with id `" + externalizableId + "` cannot be an instance of WorkflowRun.");
