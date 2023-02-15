@@ -170,12 +170,10 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     static WorkflowRun findRun(String externalizableId) {
         Run run = Run.fromExternalizableId(externalizableId);
         if (run == null) {
-            logger.error("not run found for id `{}` this should not happen here.", externalizableId);
-            return null;
+            throw new NullPointerException("not run found for id `" + externalizableId + "` this should not happen here.")
         }
         if (!(run instanceof WorkflowRun)) {
-            logger.error("run with id `{}` cannot be an instance of WorkflowRun.", externalizableId);
-            return null;
+            throw new NullPointerException("run with id `" + externalizableId + "` cannot be an instance of WorkflowRun.");
         }
         return (WorkflowRun) run;
     }
