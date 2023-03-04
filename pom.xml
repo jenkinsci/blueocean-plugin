@@ -25,7 +25,7 @@
   </licenses>
 
   <properties>
-    <revision>1.27.2</revision>
+    <revision>1.27.3</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <!--
