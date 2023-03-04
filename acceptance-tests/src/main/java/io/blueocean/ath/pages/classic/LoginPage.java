@@ -31,7 +31,7 @@ public class LoginPage implements WebDriverMixin {
             find("input[name=Submit]").click();
         } else {
             logger.info("Logging in via pre-2.128 style log in page");
-            find("//button[contains(text(), 'log')]").click();
+            find("//button[contains(text(), 'Sign')]").click();
         }
 
         find("//a[contains(@href, 'logout')]").isDisplayed();
