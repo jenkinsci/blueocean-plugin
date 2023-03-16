@@ -22,8 +22,16 @@ import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
+import org.jenkinsci.plugins.pipeline.StageStatus;
+import org.jenkinsci.plugins.pipeline.modeldefinition.Utils;
+import org.jenkinsci.plugins.pipeline.modeldefinition.actions.ExecutionModelAction;
 import org.jenkinsci.plugins.pipeline.modeldefinition.actions.RestartDeclarativePipelineAction;
+import org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage;
+import org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStages;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
+import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution;
+import org.jenkinsci.plugins.workflow.flow.FlowExecution;
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -184,12 +192,48 @@ public class PipelineNodeImpl extends BluePipelineNode {
     @Override
     public boolean isRestartable() {
         RestartDeclarativePipelineAction restartDeclarativePipelineAction =
-            getRun().getAction( RestartDeclarativePipelineAction.class );
-        if (restartDeclarativePipelineAction != null) {
-            List<String> restartableStages = restartDeclarativePipelineAction.getRestartableStages();
-            if (restartableStages != null) {
-                return restartableStages.contains(this.getDisplayName())
-                    && this.getStateObj() == BlueRun.BlueRunState.FINISHED;
+            this.run.getAction( RestartDeclarativePipelineAction.class );
+        if (this.getStateObj() == BlueRun.BlueRunState.FINISHED
+            && restartDeclarativePipelineAction != null) {
+            return isRestartable(this.getDisplayName());
+        }
+        return false;
+    }
+
+    /**
+     * @return the Pipeline execution
+     * @todo: This can be removed once https://github.com/jenkinsci/pipeline-model-definition-plugin/pull/596 is available.
+     */
+    @edu.umd.cs.findbugs.annotations.CheckForNull
+    private CpsFlowExecution getExecution() {
+        FlowExecutionOwner owner = ((FlowExecutionOwner.Executable) run).asFlowExecutionOwner();
+        if (owner == null) {
+            return null;
+        }
+        FlowExecution exec = owner.getOrNull();
+        return exec instanceof CpsFlowExecution ? (CpsFlowExecution) exec : null;
+    }
+
+    /**
+     * Returns whether a stage is restartable.
+     * @param stageName the stage name
+     * @return true is restartable, false otherwise
+     * @todo: This can be removed once https://github.com/jenkinsci/pipeline-model-definition-plugin/pull/596 is available.
+     */
+    private boolean isRestartable(String stageName) {
+        FlowExecution execution = getExecution();
+        if (execution != null) {
+            ExecutionModelAction execAction = run.getAction(ExecutionModelAction.class);
+            if (execAction != null) {
+                ModelASTStages stages = execAction.getStages();
+                if (stages != null) {
+                    for (ModelASTStage s : stages.getStages()) {
+                        if(s.getName().equals(stageName)) {
+                            return !Utils.stageHasStatusOf(s.getName(), execution,
+                                StageStatus.getSkippedForFailure(), StageStatus.getSkippedForUnstable());
+                        }
+                    }
+                }
             }
         }
         return false;
