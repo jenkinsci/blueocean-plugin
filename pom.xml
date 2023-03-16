@@ -25,7 +25,7 @@
   </licenses>
 
   <properties>
-    <revision>1.27.2</revision>
+    <revision>1.27.3</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <!--
@@ -754,12 +754,6 @@
       <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
-              <systemProperties>
-                  <property>
-                      <name>hudson.udp</name>
-                      <value>33849</value>
-                  </property>
-              </systemProperties>
               <reuseForks>true</reuseForks>
               <forkCount>${concurrency}</forkCount>
               <!--

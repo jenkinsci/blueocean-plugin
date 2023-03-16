@@ -39,8 +39,8 @@
     </dependency>
 
     <dependency>
-        <groupId>org.jenkins-ci.plugins</groupId>
-        <artifactId>pubsub-light</artifactId>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>pubsub-light</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -74,5 +74,21 @@
     </dependency>
 
   </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+                <!-- because test GithubOrgFolderPermissionsTest is using some bad static library
+                     it would be better to fix that but maybe next time -->
+              <reuseForks>false</reuseForks>
+            </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
 </project>
