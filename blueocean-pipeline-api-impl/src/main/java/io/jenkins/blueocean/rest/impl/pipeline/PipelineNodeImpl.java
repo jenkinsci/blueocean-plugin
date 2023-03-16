@@ -192,7 +192,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
     @Override
     public boolean isRestartable() {
         RestartDeclarativePipelineAction restartDeclarativePipelineAction =
-            this.run.getAction( RestartDeclarativePipelineAction.class );
+            getRun().getAction( RestartDeclarativePipelineAction.class );
         if (this.getStateObj() == BlueRun.BlueRunState.FINISHED
             && restartDeclarativePipelineAction != null) {
             return isRestartable(this.getDisplayName());
@@ -206,7 +206,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
      */
     @edu.umd.cs.findbugs.annotations.CheckForNull
     private CpsFlowExecution getExecution() {
-        FlowExecutionOwner owner = ((FlowExecutionOwner.Executable) run).asFlowExecutionOwner();
+        FlowExecutionOwner owner = ((FlowExecutionOwner.Executable) getRun()).asFlowExecutionOwner();
         if (owner == null) {
             return null;
         }
@@ -223,7 +223,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
     private boolean isRestartable(String stageName) {
         FlowExecution execution = getExecution();
         if (execution != null) {
-            ExecutionModelAction execAction = run.getAction(ExecutionModelAction.class);
+            ExecutionModelAction execAction = getRun().getAction(ExecutionModelAction.class);
             if (execAction != null) {
                 ModelASTStages stages = execAction.getStages();
                 if (stages != null) {
