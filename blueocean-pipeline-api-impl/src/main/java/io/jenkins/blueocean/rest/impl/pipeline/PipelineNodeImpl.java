@@ -57,6 +57,8 @@ public class PipelineNodeImpl extends BluePipelineNode {
     private final Link self;
     private final String runExternalizableId;
     private final Reachable parent;
+
+    private final boolean restartable;
     public static final int waitJobInqueueTimeout = Integer.getInteger("blueocean.wait.job.inqueue", 1000);
 
     public PipelineNodeImpl(FlowNodeWrapper node, Reachable parent, WorkflowRun run) {
@@ -67,6 +69,18 @@ public class PipelineNodeImpl extends BluePipelineNode {
         this.durationInMillis = node.getTiming().getTotalDurationMillis();
         this.self = parent.getLink().rel(node.getId());
         this.parent = parent;
+        // TODO move to use of https://github.com/jenkinsci/pipeline-model-definition-plugin/pull/596
+        RestartDeclarativePipelineAction restartDeclarativePipelineAction =
+            getRun().getAction( RestartDeclarativePipelineAction.class );
+        if (restartDeclarativePipelineAction != null) {
+            List<String> restartableStages = restartDeclarativePipelineAction.getRestartableStages();
+            if (restartableStages != null) {
+                restartable = restartableStages.contains(this.getDisplayName())
+                    && this.getStateObj() == BlueRun.BlueRunState.FINISHED;
+                return;
+            }
+        }
+        restartable = false;
     }
 
     @Override
@@ -183,16 +197,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public boolean isRestartable() {
-        RestartDeclarativePipelineAction restartDeclarativePipelineAction =
-            getRun().getAction( RestartDeclarativePipelineAction.class );
-        if (restartDeclarativePipelineAction != null) {
-            List<String> restartableStages = restartDeclarativePipelineAction.getRestartableStages();
-            if (restartableStages != null) {
-                return restartableStages.contains(this.getDisplayName())
-                    && this.getStateObj() == BlueRun.BlueRunState.FINISHED;
-            }
-        }
-        return false;
+        return restartable;
     }
 
     @Override
