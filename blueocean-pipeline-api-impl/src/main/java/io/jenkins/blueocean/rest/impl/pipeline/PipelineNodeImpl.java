@@ -65,6 +65,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
     private final Link self;
     private final String runExternalizableId;
     private final Reachable parent;
+    private final boolean restartable;
     public static final int waitJobInqueueTimeout = Integer.getInteger("blueocean.wait.job.inqueue", 1000);
 
     public PipelineNodeImpl(FlowNodeWrapper node, Reachable parent, WorkflowRun run) {
@@ -75,6 +76,16 @@ public class PipelineNodeImpl extends BluePipelineNode {
         this.durationInMillis = node.getTiming().getTotalDurationMillis();
         this.self = parent.getLink().rel(node.getId());
         this.parent = parent;
+        /*
+         * PipelineNodeImpl are created as long as the build is not finished. And 'isRestartable' will be systematically
+         * called after this is created. So we can store whether the stage is restartable or no here.
+         */
+        if(this.getStateObj() == BlueRun.BlueRunState.FINISHED) {
+            RestartDeclarativePipelineAction restartDeclarativePipelineAction = run.getAction(RestartDeclarativePipelineAction.class);
+            restartable = restartDeclarativePipelineAction != null && isRestartable(this.getDisplayName());
+        } else {
+            restartable = false;
+        }
     }
 
     @Override
@@ -191,13 +202,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public boolean isRestartable() {
-        RestartDeclarativePipelineAction restartDeclarativePipelineAction =
-            getRun().getAction( RestartDeclarativePipelineAction.class );
-        if (this.getStateObj() == BlueRun.BlueRunState.FINISHED
-            && restartDeclarativePipelineAction != null) {
-            return isRestartable(this.getDisplayName());
-        }
-        return false;
+        return restartable;
     }
 
     /**
