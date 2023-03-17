@@ -186,6 +186,7 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
 
                     Object.keys(convertedNodeForId).map((key, index) => {
                         //Check if this stage contains sequential stages and if so, replace it with the first one in the sequence
+                        // (TODO this logic can probably be deleted now)
                         if (originalNodeForId[key].firstParent === branchNode.id) {
                             for (var i = 0; i < currentNode.children.length; i++) {
                                 if (currentNode.children[i].id === branchNode.id) {

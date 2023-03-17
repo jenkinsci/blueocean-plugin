@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.25</version>
+    <version>4.53</version>
     <relativePath />
   </parent>
 
@@ -25,15 +25,14 @@
   </licenses>
 
   <properties>
-    <revision>1.25.9</revision>
+    <revision>1.27.3</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
-    <java.level>8</java.level>
     <!--
         when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions
         and  acceptance-tests/runner/scripts/args.sh
     -->
-    <jenkins.version>2.277.4</jenkins.version>
+    <jenkins.version>2.361.4</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.12.0</frontend-version>
     <node.version>10.13.0</node.version>
@@ -50,7 +49,7 @@
     <argLine>-Xmx2g -Xms2g -Djava.awt.headless=true -XX:+HeapDumpOnOutOfMemoryError -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
   </properties>
 
-  <scm>
+  <scm child.scm.connection.inherit.append.path="false" child.scm.developerConnection.inherit.append.path="false" child.scm.url.inherit.append.path="false">
     <connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
     <developerConnection>scm:git:https://github.com/${gitHubRepo}.git</developerConnection>
     <url>https://github.com/${gitHubRepo}</url>
@@ -259,8 +258,8 @@
 
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
-            <artifactId>bom-2.277.x</artifactId>
-            <version>984.vb5eaac999a7e</version>
+            <artifactId>bom-2.361.x</artifactId>
+            <version>1798.vc671fe94856f</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>
@@ -663,12 +662,18 @@
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.10.2</version>
+            <version>2.10.5</version>
         </dependency>
         <dependency>
             <groupId>com.google.errorprone</groupId>
             <artifactId>error_prone_annotations</artifactId>
             <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <!-- https://github.com/jenkinsci/bom/issues/1647 -->
+            <groupId>org.jenkins-ci.modules</groupId>
+            <artifactId>instance-identity</artifactId>
+            <version>116.vf8f487400980</version>
         </dependency>
     </dependencies>
   </dependencyManagement>
@@ -731,6 +736,7 @@
         <!-- TODO: java8 signature doesn't exist yet -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-maven-plugin</artifactId>
+        <version>1.22</version>
         <configuration>
           <skip>true</skip>
         </configuration>
@@ -748,12 +754,6 @@
       <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
-              <systemProperties>
-                  <property>
-                      <name>hudson.udp</name>
-                      <value>33849</value>
-                  </property>
-              </systemProperties>
               <reuseForks>true</reuseForks>
               <forkCount>${concurrency}</forkCount>
               <!--
