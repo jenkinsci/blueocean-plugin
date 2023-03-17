@@ -209,12 +209,9 @@ public class PipelineNodeImpl extends BluePipelineNode {
      * @return the Pipeline execution
      * @todo: This can be removed once https://github.com/jenkinsci/pipeline-model-definition-plugin/pull/596 is available.
      */
-    @edu.umd.cs.findbugs.annotations.CheckForNull
+    @CheckForNull
     private CpsFlowExecution getExecution() {
         FlowExecutionOwner owner = ((FlowExecutionOwner.Executable) getRun()).asFlowExecutionOwner();
-        if (owner == null) {
-            return null;
-        }
         FlowExecution exec = owner.getOrNull();
         return exec instanceof CpsFlowExecution ? (CpsFlowExecution) exec : null;
     }
