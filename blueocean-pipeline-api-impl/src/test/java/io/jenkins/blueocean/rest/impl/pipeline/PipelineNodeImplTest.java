@@ -1,24 +1,26 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import hudson.model.Result;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
-import org.jenkinsci.plugins.pipeline.modeldefinition.actions.RestartDeclarativePipelineAction;
-import org.jenkinsci.plugins.workflow.actions.StageAction;
-import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.apache.commons.io.IOUtils;
+import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -30,6 +32,9 @@ public class PipelineNodeImplTest {
 
     @Mock
     WorkflowRun run;
+
+    @Rule
+    public JenkinsRule j = new JenkinsRule();
 
     @Test
     public void getRun_NeverFound() throws Exception {
@@ -71,68 +76,55 @@ public class PipelineNodeImplTest {
     }
 
     @Issue("JENKINS-54250")
-    @Test public void getRun_isRestartable() throws Exception {
-        FlowNode flowNode = Mockito.mock(FlowNode.class);
-        NodeRunStatus nodeRunStatus = Mockito.mock(NodeRunStatus.class);
-        TimingInfo timingInfo = Mockito.mock(TimingInfo.class);
-        StageAction stageAction = Mockito.mock(StageAction.class);
+    @Test
+    public void getRun_isRestartable() throws Exception {
+        String jobName = "JENKINS-54250-restartFromStageEnabled";
+        WorkflowRun run = createAndRunJob(jobName, jobName + ".jenkinsfile");
 
-        Mockito.when(flowNode.getAction(StageAction.class)).thenReturn(stageAction);
-        Mockito.when(flowNode.getDisplayName()).thenReturn("DummyName");
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
-        FlowNodeWrapper node = Mockito.mock(FlowNodeWrapper.class, Mockito.withSettings().useConstructor(flowNode, nodeRunStatus, timingInfo, this.run));
+        FlowNodeWrapper node = nodes.stream().filter(flowNode -> "foo".equals(flowNode.getDisplayName())).findFirst().get();
 
         Reachable parent = Mockito.mock(Reachable.class);
         Link link = Mockito.mock(Link.class);
-
-        Mockito.when(node.getStatus()).thenReturn(nodeRunStatus);
-        Mockito.when(node.getTiming()).thenReturn(timingInfo);
-        Mockito.when(timingInfo.getTotalDurationMillis()).thenReturn(1000L);
         Mockito.when(parent.getLink()).thenReturn(link);
-        Mockito.when(node.getId()).thenReturn("dummyId");
         Mockito.when(link.rel(node.getId())).thenReturn(link);
 
-        PipelineNodeImpl underTest = Mockito.mock(PipelineNodeImpl.class, Mockito.withSettings().useConstructor(node, parent, this.run));
+        PipelineNodeImpl underTest = new PipelineNodeImpl(node, parent, run);
         assertNotNull(underTest);
-
-        RestartDeclarativePipelineAction restartableAction = Mockito.mock(RestartDeclarativePipelineAction.class);
-        List<String> restartableStages = Mockito.mock(List.class);
-        Mockito.when(this.run.getAction(RestartDeclarativePipelineAction.class)).thenReturn(restartableAction);
-        Mockito.when(restartableAction.isRestartEnabled()).thenReturn(true);
-        Mockito.when(restartableAction.getRestartableStages()).thenReturn(restartableStages);
-        Mockito.when(underTest.getDisplayName()).thenReturn("DummyName");
-        Mockito.when(restartableStages.contains(underTest.getDisplayName())).thenReturn(true);
-        Mockito.when(underTest.getStateObj()).thenReturn(BlueRun.BlueRunState.FINISHED);
-        Mockito.when(underTest.isRestartable()).thenCallRealMethod();
-
         assertTrue(underTest.isRestartable());
     }
 
     @Issue("JENKINS-54250")
-    @Test public void getRun_isNotRestartable() throws Exception {
-        FlowNode flowNode = Mockito.mock(FlowNode.class);
-        NodeRunStatus nodeRunStatus = Mockito.mock(NodeRunStatus.class);
-        TimingInfo timingInfo = Mockito.mock(TimingInfo.class);
-        StageAction stageAction = Mockito.mock(StageAction.class);
+    @Test
+    public void getRun_isNotRestartable() throws Exception {
+        String jobName = "JENKINS-54250-restartFromStageDisabled";
+        WorkflowRun run = createAndRunJob(jobName, jobName + ".jenkinsfile");
 
-        Mockito.when(flowNode.getAction(StageAction.class)).thenReturn(stageAction);
-        Mockito.when(flowNode.getDisplayName()).thenReturn("DummyName");
+        NodeGraphBuilder graph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
+        List<FlowNodeWrapper> nodes = graph.getPipelineNodes();
 
-        FlowNodeWrapper node = Mockito.mock(FlowNodeWrapper.class, Mockito.withSettings().useConstructor(flowNode, nodeRunStatus, timingInfo, this.run));
+        FlowNodeWrapper node = nodes.stream().filter(flowNode -> "foo".equals(flowNode.getDisplayName())).findFirst().get();
 
         Reachable parent = Mockito.mock(Reachable.class);
         Link link = Mockito.mock(Link.class);
-
-        Mockito.when(node.getStatus()).thenReturn(nodeRunStatus);
-        Mockito.when(node.getTiming()).thenReturn(timingInfo);
-        Mockito.when(timingInfo.getTotalDurationMillis()).thenReturn(1000L);
         Mockito.when(parent.getLink()).thenReturn(link);
-        Mockito.when(node.getId()).thenReturn("dummyId");
         Mockito.when(link.rel(node.getId())).thenReturn(link);
 
-        PipelineNodeImpl underTest = Mockito.mock(PipelineNodeImpl.class, Mockito.withSettings().useConstructor(node, parent, this.run));
+        PipelineNodeImpl underTest = new PipelineNodeImpl(node, parent, run);
         assertNotNull(underTest);
-
         assertFalse(underTest.isRestartable());
     }
+
+    private WorkflowRun createAndRunJob(String jobName, String jenkinsFileName) throws Exception {
+        WorkflowJob job = j.createProject(WorkflowJob.class, jobName);
+
+        URL resource = getClass().getResource(jenkinsFileName);
+        String jenkinsFile = IOUtils.toString(resource, StandardCharsets.UTF_8);
+        job.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+        j.assertBuildStatus(Result.SUCCESS, job.scheduleBuild2(0));
+        return job.getLastBuild();
+    }
+
 }
