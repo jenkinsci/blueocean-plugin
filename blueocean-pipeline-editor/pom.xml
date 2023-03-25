@@ -66,6 +66,13 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>sonar</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <!-- RequireUpperBoundDeps with github-branch-source -->
+                <exclusion>
+                    <groupId>com.squareup.okhttp3</groupId>
+                    <artifactId>okhttp</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
