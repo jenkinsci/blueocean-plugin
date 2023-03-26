@@ -51,7 +51,7 @@
     "jsonwebtoken": "7.1.9",
     "mobx": "2.6.0",
     "mobx-utils": "1.1.2",
-    "moment": "2.19.3",
+    "moment": "2.29.2",
     "moment-duration-format": "2.2.2",
     "pem-jwk": "1.5.1",
     "react": "15.4.2",
