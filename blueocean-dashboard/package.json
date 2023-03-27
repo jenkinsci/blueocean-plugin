@@ -73,7 +73,7 @@
     "mobx": "2.6.0",
     "mobx-react": "3.5.7",
     "mobx-utils": "1.1.2",
-    "moment": "2.19.3",
+    "moment": "2.29.2",
     "moment-duration-format": "2.2.2",
     "react": "15.4.2",
     "react-addons-css-transition-group": "15.4.2",

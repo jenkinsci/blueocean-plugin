@@ -50,7 +50,7 @@
     "@jenkins-cd/js-extensions": "0.0.44",
     "linkifyjs": "2.1.4",
     "lodash.debounce": "4.0.8",
-    "moment": "2.19.3",
+    "moment": "2.29.2",
     "moment-duration-format": "2.2.2",
     "react": "15.4.2",
     "react-addons-css-transition-group": "15.4.2",
