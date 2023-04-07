@@ -32,7 +32,7 @@
         when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions
         and  acceptance-tests/runner/scripts/args.sh
     -->
-    <jenkins.version>2.388-rc33317.343e0f4b_2297</jenkins.version> <!-- TODO https://github.com/jenkinsci/jenkins/pull/7599 -->
+    <jenkins.version>2.389</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.12.0</frontend-version>
     <node.version>10.13.0</node.version>
@@ -259,15 +259,9 @@
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
             <artifactId>bom-2.361.x</artifactId>
-            <version>1798.vc671fe94856f</version>
+            <version>1968.vb_14a_29e76128</version>
             <scope>import</scope>
             <type>pom</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-durable-task-step</artifactId>
-            <version>1226.v0ed1a_02b_02c2</version> <!-- TODO https://github.com/jenkinsci/workflow-durable-task-step-plugin/pull/287 -->
         </dependency>
 
         <dependency>
@@ -674,12 +668,6 @@
             <groupId>com.google.errorprone</groupId>
             <artifactId>error_prone_annotations</artifactId>
             <version>2.5.1</version>
-        </dependency>
-        <dependency>
-            <!-- https://github.com/jenkinsci/bom/issues/1647 -->
-            <groupId>org.jenkins-ci.modules</groupId>
-            <artifactId>instance-identity</artifactId>
-            <version>116.vf8f487400980</version>
         </dependency>
     </dependencies>
   </dependencyManagement>
