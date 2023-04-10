@@ -37,7 +37,6 @@
     <frontend-version>1.12.0</frontend-version>
     <node.version>10.13.0</node.version>
     <npm.version>6.14.4</npm.version>
-    <hamcrest.version>2.2</hamcrest.version>
     <mockito.version>4.7.0</mockito.version>
     <jacoco.version>0.8.6</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
@@ -190,7 +189,6 @@
       <dependency>
           <groupId>commons-codec</groupId>
           <artifactId>commons-codec</artifactId>
-          <version>1.15</version>
           <scope>provided</scope>
       </dependency>
       <dependency>
@@ -206,31 +204,6 @@
       <dependency>
           <groupId>org.mockito</groupId>
           <artifactId>mockito-inline</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.hamcrest</groupId>
-          <artifactId>hamcrest</artifactId>
-          <version>${hamcrest.version}</version>
-          <scope>test</scope>
-      </dependency>
-      <!-- This is needed in order to force junit4 and JTH tests to use newer hamcrest version -->
-      <dependency>
-          <groupId>org.hamcrest</groupId>
-          <artifactId>hamcrest-core</artifactId>
-          <version>${hamcrest.version}</version>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.hamcrest</groupId>
-          <artifactId>hamcrest-library</artifactId>
-          <version>${hamcrest.version}</version>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <version>4.13.2</version>
           <scope>test</scope>
       </dependency>
       <dependency>
@@ -262,12 +235,6 @@
             <version>1968.vb_14a_29e76128</version>
             <scope>import</scope>
             <type>pom</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jenkins-ci</groupId>
-            <artifactId>symbol-annotation</artifactId>
-            <version>1.23</version>
         </dependency>
 
         <!-- Module versions -->
