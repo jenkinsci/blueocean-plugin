@@ -453,17 +453,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.114.2</version>
+            <version>1.303-400.v35c2d8258028</version>
         </dependency>
         <dependency>
             <groupId>io.jenkins.plugins</groupId>
             <artifactId>okhttp-api</artifactId>
-            <version>3.12.12.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>3.12.12</version>
+            <version>4.9.3-108.v0feda04578cf</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -693,26 +688,7 @@
           </plugins>
       </pluginManagement>
     <plugins>
-      <plugin>
-        <!-- TODO: java8 signature doesn't exist yet -->
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <version>1.22</version>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-      <!-- Disable InjectedTest -->
-      <plugin>
-          <groupId>org.jenkins-ci.tools</groupId>
-          <artifactId>maven-hpi-plugin</artifactId>
-          <configuration>
-              <disabledTestInjection>true</disabledTestInjection>
-              <dependencyResolution>${hpi.dependencyResolution}</dependencyResolution>
-          </configuration>
-      </plugin>
-
-      <plugin>
+      <plugin> <!-- TODO could probably all be deleted -->
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
               <reuseForks>true</reuseForks>
