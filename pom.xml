@@ -499,9 +499,9 @@
             <version>3.12.12</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
+            <groupId>io.jenkins.plugins</groupId>
+            <artifactId>commons-lang3-api</artifactId>
+            <version>3.12.0-36.vd97de6465d5b_</version>
         </dependency>
         <dependency>
             <groupId>oro</groupId>
