@@ -780,6 +780,28 @@
               </systemPropertyVariables>
           </configuration>
       </plugin>
+        <plugin>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>enforce-banned-dependencies</id>
+                    <goals>
+                        <goal>enforce</goal>
+                    </goals>
+                    <configuration>
+                        <rules>
+                            <bannedDependencies>
+                                <excludes>
+                                    <exclude>org.apache.commons:commons-lang3</exclude>
+                                    <exclude>com.squareup.okhttp3:okhttp</exclude>
+                                </excludes>
+                                <searchTransitive>false</searchTransitive>
+                            </bannedDependencies>
+                        </rules>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
     </plugins>
   </build>
 
