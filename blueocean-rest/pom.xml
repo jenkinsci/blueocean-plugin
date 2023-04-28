@@ -102,6 +102,12 @@
                                         <allowedImport>hudson.ExtensionList</allowedImport>
                                     </allowedImports>
                                 </restrictImports>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>org.apache.commons:commons-lang3</exclude>
+                                    </excludes>
+                                    <searchTransitive>false</searchTransitive>
+                                </bannedDependencies>
                             </rules>
                         </configuration>
                     </execution>
