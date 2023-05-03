@@ -406,6 +406,13 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-branch-source</artifactId>
             <version>2.6.0</version>
+            <exclusions>
+                <!-- commons-lang3 is provided by commons-lang3-api plugin -->
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-lang3</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -459,6 +466,11 @@
                     <groupId>org.objenesis</groupId>
                     <artifactId>objenesis</artifactId>
                 </exclusion>
+                <!-- commons-lang3 is provided by commons-lang3-api plugin -->
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-lang3</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -487,6 +499,13 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-api</artifactId>
             <version>1.114.2</version>
+            <exclusions>
+                <!-- commons-lang3 is provided by commons-lang3-api plugin -->
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-lang3</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.jenkins.plugins</groupId>
@@ -494,14 +513,9 @@
             <version>3.12.12.2</version>
         </dependency>
         <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>3.12.12</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
+            <groupId>io.jenkins.plugins</groupId>
+            <artifactId>commons-lang3-api</artifactId>
+            <version>3.12.0-36.vd97de6465d5b_</version>
         </dependency>
         <dependency>
             <groupId>oro</groupId>
@@ -766,6 +780,28 @@
               </systemPropertyVariables>
           </configuration>
       </plugin>
+        <plugin>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>enforce-banned-dependencies</id>
+                    <goals>
+                        <goal>enforce</goal>
+                    </goals>
+                    <configuration>
+                        <rules>
+                            <bannedDependencies>
+                                <excludes>
+                                    <exclude>org.apache.commons:commons-lang3</exclude>
+                                    <exclude>com.squareup.okhttp3:okhttp</exclude>
+                                </excludes>
+                                <searchTransitive>false</searchTransitive>
+                            </bannedDependencies>
+                        </rules>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
     </plugins>
   </build>
 
