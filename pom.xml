@@ -764,7 +764,6 @@
                         <rules>
                             <bannedDependencies>
                                 <excludes>
-                                    <!-- TODO very likely wrong -->
                                     <exclude>org.apache.commons:commons-lang3</exclude>
                                 </excludes>
                                 <searchTransitive>false</searchTransitive>
