@@ -259,7 +259,7 @@
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
             <artifactId>bom-2.361.x</artifactId>
-            <version>1798.vc671fe94856f</version>
+            <version>2059.v69eec68eb_b_b_e</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>
@@ -496,28 +496,6 @@
             <version>1.24</version>
         </dependency>
         <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>github-api</artifactId>
-            <version>1.114.2</version>
-            <exclusions>
-                <!-- commons-lang3 is provided by commons-lang3-api plugin -->
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-lang3</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>io.jenkins.plugins</groupId>
-            <artifactId>okhttp-api</artifactId>
-            <version>3.12.12.2</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jenkins.plugins</groupId>
-            <artifactId>commons-lang3-api</artifactId>
-            <version>3.12.0-36.vd97de6465d5b_</version>
-        </dependency>
-        <dependency>
             <groupId>oro</groupId>
             <artifactId>oro</artifactId>
             <version>2.0.8</version>
@@ -683,12 +661,6 @@
             <artifactId>error_prone_annotations</artifactId>
             <version>2.5.1</version>
         </dependency>
-        <dependency>
-            <!-- https://github.com/jenkinsci/bom/issues/1647 -->
-            <groupId>org.jenkins-ci.modules</groupId>
-            <artifactId>instance-identity</artifactId>
-            <version>116.vf8f487400980</version>
-        </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -792,8 +764,8 @@
                         <rules>
                             <bannedDependencies>
                                 <excludes>
+                                    <!-- TODO very likely wrong -->
                                     <exclude>org.apache.commons:commons-lang3</exclude>
-                                    <exclude>com.squareup.okhttp3:okhttp</exclude>
                                 </excludes>
                                 <searchTransitive>false</searchTransitive>
                             </bannedDependencies>
