@@ -122,6 +122,11 @@
             <artifactId>pipeline-build-step</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.jenkins.plugins</groupId>
+            <artifactId>caffeine-api</artifactId>
+        </dependency>
+
         <!-- Test plugins -->
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
