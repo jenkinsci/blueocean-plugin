@@ -417,7 +417,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-bitbucket-branch-source</artifactId>
-            <version>2.9.11</version>
+            <version>805.v7f97d29dc0f5</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
