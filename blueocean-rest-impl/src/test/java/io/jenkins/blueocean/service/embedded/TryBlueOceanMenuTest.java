@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.service.embedded;
 
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.htmlunit.html.HtmlAnchor;
+import org.htmlunit.html.HtmlPage;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
