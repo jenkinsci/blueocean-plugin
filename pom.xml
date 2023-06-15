@@ -217,13 +217,7 @@
       <!-- This is needed in order to force junit4 and JTH tests to use newer hamcrest version -->
       <dependency>
           <groupId>org.hamcrest</groupId>
-          <artifactId>hamcrest-core</artifactId>
-          <version>${hamcrest.version}</version>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.hamcrest</groupId>
-          <artifactId>hamcrest-library</artifactId>
+          <artifactId>hamcrest</artifactId>
           <version>${hamcrest.version}</version>
           <scope>test</scope>
       </dependency>
