@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.66</version>
+    <version>4.67</version>
     <relativePath />
   </parent>
 
@@ -476,7 +476,7 @@
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
             <artifactId>jenkins-test-harness</artifactId>
-            <version>2010.v1888f1a_cd45a_</version>
+            <version>${jenkins-test-harness.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
