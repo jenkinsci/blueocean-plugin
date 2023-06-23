@@ -3,7 +3,7 @@
 if (JENKINS_URL == 'https://ci.jenkins.io/') {
   buildPlugin(
     configurations: [
-      [ platform: "linux", jdk: "11" ]
+      [ platform: "linux", jdk: "17" ]
     ],
     // Tests were locking up and timing out on non-aci
     useContainerAgent: true,
