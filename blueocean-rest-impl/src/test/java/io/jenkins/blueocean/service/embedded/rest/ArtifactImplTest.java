@@ -12,6 +12,7 @@ import org.powermock.reflect.Whitebox;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -20,6 +21,7 @@ public class ArtifactImplTest {
     @Test
     public void findUniqueArtifactsWithSameName() throws IllegalAccessException, NoSuchFieldException {
         //mock artifacts
+        assumeTrue("TODO in Java 12+ final cannot be removed", Runtime.version().feature() < 12);
         FieldUtils.removeFinalModifier(Run.Artifact.class.getField("relativePath"));
         Run.Artifact artifact1 = mock(Run.Artifact.class);
         Run.Artifact artifact2 = mock(Run.Artifact.class);
