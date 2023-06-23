@@ -399,7 +399,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-branch-source</artifactId>
-            <version>2.6.0</version>
+            <version>1728.v859147241f49</version>
             <exclusions>
                 <!-- commons-lang3 is provided by commons-lang3-api plugin -->
                 <exclusion>
