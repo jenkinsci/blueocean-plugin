@@ -170,7 +170,7 @@ public class GithubScm extends AbstractScm {
     @GET
     @WebMethod(name = "repository")
     @TreeResponse
-    public GithubRepository getRepository(@QueryParameter String jobName, @QueryParameter String apiUrl) {
+    public GithubRepository getRepository(@QueryParameter String jobName) {
         Item item = Jenkins.get().getItem( jobName);
         if (item == null){
             throw new ServiceException.NotFoundException(String.format("Job %s not found", jobName));
@@ -186,7 +186,7 @@ public class GithubScm extends AbstractScm {
         String accessToken = credential.getPassword().getPlainText();
 
         try {
-            String url = String.format("%s/repos/%s/%s", apiUrl, repoOwner, repoName);
+            String url = String.format("%s/repos/%s/%s", gitHubSCMSource.getApiUri(), repoOwner, repoName);
             GHRepository ghRepository = HttpRequest.get(url).withAuthorizationToken(accessToken).to(GHRepository.class);
             return new GithubRepository(ghRepository, credential, this);
         } catch (IOException e) {
