@@ -164,7 +164,6 @@ public class GithubScm extends AbstractScm {
     /**
      *
      * @param jobName the job name
-     * @param apiUrl github api url
      * @return GHRepository used by the job
      */
     @GET
