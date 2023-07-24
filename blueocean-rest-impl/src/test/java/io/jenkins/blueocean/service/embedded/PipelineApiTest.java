@@ -18,6 +18,7 @@ import hudson.model.Job;
 import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Project;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.StringParameterDefinition;
 import hudson.model.StringParameterValue;
@@ -381,6 +382,9 @@ public class PipelineApiTest extends BaseTest {
 
         // we can't actually guarantee that jenkins will stop it
         assertTrue(resp.get("result").equals("ABORTED") || resp.get("result").equals("UNKNOWN"));
+
+        // whether it was stopped or not, we need to wait for completion before tearing down the test
+        j.waitForCompletion(b);
     }
 
 
@@ -410,7 +414,7 @@ public class PipelineApiTest extends BaseTest {
     }
 
     @Test
-    public void findAllPipelineTest() throws IOException, ExecutionException, InterruptedException {
+    public void findAllPipelineTest() throws Exception {
         MockFolder folder1 = j.createFolder("folder1");
         j.createFolder("afolder");
         Project p1 = folder1.createProject(FreeStyleProject.class, "test1");
@@ -424,6 +428,7 @@ public class PipelineApiTest extends BaseTest {
         List<Map> resp = get("/search?q=type:pipeline", List.class);
 
         assertEquals(6, resp.size());
+        j.assertBuildStatusSuccess(j.waitForCompletion(b1));
     }
 
     @Test
@@ -449,7 +454,7 @@ public class PipelineApiTest extends BaseTest {
     }
 
     @Test
-    public void findPipelineRunsForAllPipelineTest() throws IOException, ExecutionException, InterruptedException {
+    public void findPipelineRunsForAllPipelineTest() throws Exception {
         FreeStyleProject p1 = j.createFreeStyleProject("pipeline11");
         FreeStyleProject p2 = j.createFreeStyleProject("pipeline22");
         p1.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
@@ -472,6 +477,12 @@ public class PipelineApiTest extends BaseTest {
             String pipeline = (String) p.get("pipeline");
             assertNotNull(pipeline);
             validateRun(buildMap.get(pipeline).pop(), p);
+        }
+        for (FreeStyleBuild b : p1builds) {
+            j.assertBuildStatusSuccess(j.waitForCompletion(b));
+        }
+        for (FreeStyleBuild b : p2builds) {
+            j.assertBuildStatusSuccess(j.waitForCompletion(b));
         }
     }
 
@@ -517,8 +528,8 @@ public class PipelineApiTest extends BaseTest {
         p1.addProperty(new ParametersDefinitionProperty(new StringParameterDefinition("test","test")));
         p1.getBuildersList().add(new Shell("echo hello!\nsleep 300"));
 
-        p1.scheduleBuild2(0).waitForStart();
-        p1.scheduleBuild2(0).waitForStart();
+        FreeStyleBuild b1 = p1.scheduleBuild2(0).waitForStart();
+        FreeStyleBuild b2 = p1.scheduleBuild2(0).waitForStart();
         Jenkins.get().getQueue().schedule(p1, 0, new ParametersAction(new StringParameterValue("test","test1")), new CauseAction(new Cause.UserIdCause()));
         Jenkins.get().getQueue().schedule(p1, 0, new ParametersAction(new StringParameterValue("test","test2")), new CauseAction(new Cause.UserIdCause()));
 
@@ -531,6 +542,11 @@ public class PipelineApiTest extends BaseTest {
 
         Run r = QueueUtil.getRun(p1, Long.parseLong((String)((Map)queue.get(0)).get("id")));
         assertNull(r); //its not moved out of queue yet
+
+        b1.doStop();
+        b2.doStop();
+        j.assertBuildStatus(Result.ABORTED, j.waitForCompletion(b1));
+        j.assertBuildStatus(Result.ABORTED, j.waitForCompletion(b2));
     }
 
     @Test
@@ -547,8 +563,8 @@ public class PipelineApiTest extends BaseTest {
         p3.getBuildersList().add(new Shell("echo hello!\nsleep 100000"));
 
         // Kick off the first two jobs
-        p1.scheduleBuild2(0).waitForStart();
-        p2.scheduleBuild2(0).waitForStart();
+        FreeStyleBuild b1 = p1.scheduleBuild2(0).waitForStart();
+        FreeStyleBuild b2 = p2.scheduleBuild2(0).waitForStart();
 
         // Run the third pipeline
         Map r = request().crumb( crumb ).post("/organizations/jenkins/pipelines/pipeline3/runs/").build(Map.class);
@@ -572,6 +588,11 @@ public class PipelineApiTest extends BaseTest {
         }
 
         assertEquals(0, build.size());
+
+        b1.doStop();
+        b2.doStop();
+        j.assertBuildStatus(Result.ABORTED, j.waitForCompletion(b1));
+        j.assertBuildStatus(Result.ABORTED, j.waitForCompletion(b2));
     }
 
     @Test

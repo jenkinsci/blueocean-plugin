@@ -38,18 +38,18 @@ public class LinkResolverTest extends PipelineBaseTest {
         Project p3 = folder3.createProject(FreeStyleProject.class, "test3");
 
         WorkflowJob pipelineJob1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
-        pipelineJob1.setDefinition(new CpsFlowDefinition("stage \"Build\"\n" +
+        pipelineJob1.setDefinition(new CpsFlowDefinition("stage(\"Build\") {\n" +
             "    node {\n" +
             "       sh \"echo here\"\n" +
             "    }\n" +
-            "\n"));
+            "}\n"));
 
         WorkflowJob pipelineJob2 = folder2.createProject(WorkflowJob.class, "pipeline2");
-        pipelineJob2.setDefinition(new CpsFlowDefinition("stage \"Build\"\n" +
+        pipelineJob2.setDefinition(new CpsFlowDefinition("stage(\"Build\") {\n" +
             "    node {\n" +
             "       sh \"echo here\"\n" +
             "    }\n" +
-            "\n"));
+            "}\n"));
 
 
         Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/",LinkResolver.resolveLink(pipelineJob1).getHref());
@@ -69,12 +69,12 @@ public class LinkResolverTest extends PipelineBaseTest {
     public void resolveNodeLink() throws Exception {
         {
             WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
-            job1.setDefinition(new CpsFlowDefinition("stage \"Build\"\n" +
+            job1.setDefinition(new CpsFlowDefinition("stage(\"Build\") {\n" +
                 "    node {\n" +
                 "       sh \"echo here\"\n" +
                 "    }\n" +
-                "\n" +
-                "stage \"Test\"\n" +
+                "}\n" +
+                "stage (\"Test\") {\n" +
                 "    parallel (\n" +
                 "        \"Firefox\" : {\n" +
                 "            node {\n" +
@@ -87,8 +87,8 @@ public class LinkResolverTest extends PipelineBaseTest {
                 "            }\n" +
                 "        }\n" +
                 "    )\n" +
-                "\n" +
-                "stage \"CrashyMcgee\"\n" +
+                "}\n" +
+                "stage(\"CrashyMcgee\") {\n" +
                 "  parallel (\n" +
                 "    \"SlowButSuccess\" : {\n" +
                 "        node {\n" +
@@ -101,12 +101,12 @@ public class LinkResolverTest extends PipelineBaseTest {
                 "        }\n" +
                 "    }\n" +
                 "  )\n" +
+                "}\n" +
                 "\n" +
-                "\n" +
-                "stage \"Deploy\"\n" +
+                "stage(\"Deploy\") {\n" +
                 "    node {\n" +
                 "        sh \"echo deploying\"\n" +
-                "    }"));
+                "    }}"));
 
             WorkflowRun b1 = job1.scheduleBuild2(0).get();
             j.assertBuildStatusSuccess(b1);

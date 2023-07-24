@@ -3,11 +3,10 @@
 if (JENKINS_URL == 'https://ci.jenkins.io/') {
   buildPlugin(
     configurations: [
-      [ platform: "linux", jdk: "8" ],
-      [ platform: "linux", jdk: "11" ]
+      [ platform: "linux", jdk: "17" ]
     ],
     // Tests were locking up and timing out on non-aci
-    useAci: true,
+    useContainerAgent: true,
     timeout: 90
   )
   return
@@ -30,7 +29,7 @@ envs = [
   'GIT_AUTHOR_EMAIL=hates@cake.com'
 ]
 
-jenkinsVersions = ['2.277.4']
+jenkinsVersions = ['2.361.4']
 
 node() {
   withCredentials(credentials) {

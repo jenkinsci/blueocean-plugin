@@ -24,6 +24,7 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.EnvVars;
 import hudson.model.TaskListener;
 import hudson.model.User;
@@ -164,6 +165,7 @@ class GitBareRepoReadSaveRequest extends GitReadSaveRequest {
         }
     }
 
+    @SuppressFBWarnings(value = "DCN_NULLPOINTER_EXCEPTION", justification = "TODO check if this NPE is still real, and if so fix it")
     private GitSCMFileSystem getFilesystem() throws IOException, InterruptedException {
         try {
             return (GitSCMFileSystem) SCMFileSystem.of( gitSource, new SCMHead( sourceBranch));

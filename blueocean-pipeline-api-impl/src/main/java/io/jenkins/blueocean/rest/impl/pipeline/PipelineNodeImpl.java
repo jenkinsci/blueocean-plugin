@@ -22,8 +22,16 @@ import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
+import org.jenkinsci.plugins.pipeline.StageStatus;
+import org.jenkinsci.plugins.pipeline.modeldefinition.Utils;
+import org.jenkinsci.plugins.pipeline.modeldefinition.actions.ExecutionModelAction;
 import org.jenkinsci.plugins.pipeline.modeldefinition.actions.RestartDeclarativePipelineAction;
+import org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage;
+import org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStages;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
+import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution;
+import org.jenkinsci.plugins.workflow.flow.FlowExecution;
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -55,18 +63,29 @@ public class PipelineNodeImpl extends BluePipelineNode {
     private final Long durationInMillis;
     private final NodeRunStatus status;
     private final Link self;
-    private final WorkflowRun run;
+    private final String runExternalizableId;
     private final Reachable parent;
+    private final boolean restartable;
     public static final int waitJobInqueueTimeout = Integer.getInteger("blueocean.wait.job.inqueue", 1000);
 
     public PipelineNodeImpl(FlowNodeWrapper node, Reachable parent, WorkflowRun run) {
         this.node = node;
-        this.run = run;
+        this.runExternalizableId = run.getExternalizableId();
         this.edges = buildEdges(node.edges);
         this.status = node.getStatus();
         this.durationInMillis = node.getTiming().getTotalDurationMillis();
         this.self = parent.getLink().rel(node.getId());
         this.parent = parent;
+        /*
+         * PipelineNodeImpl are created as long as the build is not finished. And 'isRestartable' will be systematically
+         * called after this is created. So we can store whether the stage is restartable or no here.
+         */
+        if(this.getStateObj() == BlueRun.BlueRunState.FINISHED) {
+            RestartDeclarativePipelineAction restartDeclarativePipelineAction = run.getAction(RestartDeclarativePipelineAction.class);
+            restartable = restartDeclarativePipelineAction != null && restartDeclarativePipelineAction.isRestartEnabled() && isRestartable(this.getDisplayName());
+        } else {
+            restartable = false;
+        }
     }
 
     @Override
@@ -153,7 +172,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public BluePipelineStepContainer getSteps() {
-        return new PipelineStepContainerImpl(node, self, run);
+        return new PipelineStepContainerImpl(node, self, this.runExternalizableId);
     }
 
     @Override
@@ -177,15 +196,46 @@ public class PipelineNodeImpl extends BluePipelineNode {
                                                   this);
     }
 
+    private WorkflowRun getRun() {
+        return PipelineRunImpl.findRun(runExternalizableId);
+    }
+
     @Override
     public boolean isRestartable() {
-        RestartDeclarativePipelineAction restartDeclarativePipelineAction =
-            this.run.getAction( RestartDeclarativePipelineAction.class );
-        if (restartDeclarativePipelineAction != null) {
-            List<String> restartableStages = restartDeclarativePipelineAction.getRestartableStages();
-            if (restartableStages != null) {
-                return restartableStages.contains(this.getDisplayName())
-                    && this.getStateObj() == BlueRun.BlueRunState.FINISHED;
+        return restartable;
+    }
+
+    /**
+     * @return the Pipeline execution
+     * @todo: This can be removed once https://github.com/jenkinsci/pipeline-model-definition-plugin/pull/596 is available.
+     */
+    @CheckForNull
+    private CpsFlowExecution getExecution() {
+        FlowExecutionOwner owner = ((FlowExecutionOwner.Executable) getRun()).asFlowExecutionOwner();
+        FlowExecution exec = owner.getOrNull();
+        return exec instanceof CpsFlowExecution ? (CpsFlowExecution) exec : null;
+    }
+
+    /**
+     * Returns whether a stage is restartable.
+     * @param stageName the stage name
+     * @return true is restartable, false otherwise
+     * @todo: This can be removed once https://github.com/jenkinsci/pipeline-model-definition-plugin/pull/596 is available.
+     */
+    private boolean isRestartable(String stageName) {
+        FlowExecution execution = getExecution();
+        if (execution != null) {
+            ExecutionModelAction execAction = getRun().getAction(ExecutionModelAction.class);
+            if (execAction != null) {
+                ModelASTStages stages = execAction.getStages();
+                if (stages != null) {
+                    for (ModelASTStage s : stages.getStages()) {
+                        if(s.getName().equals(stageName)) {
+                            return !Utils.stageHasStatusOf(s.getName(), execution,
+                                StageStatus.getSkippedForFailure(), StageStatus.getSkippedForUnstable());
+                        }
+                    }
+                }
             }
         }
         return false;
@@ -204,15 +254,16 @@ public class PipelineNodeImpl extends BluePipelineNode {
     public HttpResponse restart(StaplerRequest request) {
         try
         {
+            WorkflowRun run = getRun();
             JSONObject body = JSONObject.fromObject( IOUtils.toString( request.getReader() ) );
             boolean restart = body.getBoolean( "restart" );
             if ( restart && isRestartable() ) {
                 LOGGER.debug( "submitInputStep, restart: {}, step: {}", restart, this.getDisplayName() );
 
                 RestartDeclarativePipelineAction restartDeclarativePipelineAction =
-                    this.run.getAction( RestartDeclarativePipelineAction.class );
+                    run.getAction( RestartDeclarativePipelineAction.class );
                 Queue.Item item = restartDeclarativePipelineAction.run( this.getDisplayName() );
-                BluePipeline bluePipeline = BluePipelineFactory.getPipelineInstance( this.run.getParent(), this.parent );
+                BluePipeline bluePipeline = BluePipelineFactory.getPipelineInstance(run.getParent(), this.parent);
                 BlueQueueItem queueItem = QueueUtil.getQueuedItem( bluePipeline.getOrganization(), item, run.getParent());
 
                 if (queueItem != null) { // If the item is still queued

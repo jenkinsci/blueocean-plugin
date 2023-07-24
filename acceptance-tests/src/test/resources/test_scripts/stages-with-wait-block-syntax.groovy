@@ -17,5 +17,5 @@ node {
         sh 'echo yeah > foo.txt'
         archiveArtifacts 'foo.txt'
     }
-    stage 'NoSteps'
+    stage('NoSteps') {}
 }

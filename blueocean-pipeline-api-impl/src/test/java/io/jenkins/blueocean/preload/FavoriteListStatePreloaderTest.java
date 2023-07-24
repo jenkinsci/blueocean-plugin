@@ -118,9 +118,9 @@ public class FavoriteListStatePreloaderTest extends PipelineBaseTest {
 
     private void initRepo(GitSampleRepoRule sampleRepo, String primaryBranchName) throws Exception {
         sampleRepo.init();
-        sampleRepo.write("Jenkinsfile", "stage 'build'\n " + "node {echo 'Building'}\n" +
-            "stage 'test'\nnode { echo 'Testing'}\n" +
-            "stage 'deploy'\nnode { echo 'Deploying'}\n"
+        sampleRepo.write("Jenkinsfile", "stage('build') {\n " + "node {echo 'Building'}}\n" +
+            "stage('test') {\nnode { echo 'Testing'}}\n" +
+            "stage('deploy') {\nnode { echo 'Deploying'}}\n"
         );
         sampleRepo.write("file", "initial content");
         sampleRepo.git("add", "Jenkinsfile");

@@ -938,9 +938,9 @@ public class MultiBranchTest extends PipelineBaseTest {
     private void setupParameterizedScm() throws Exception {
         // create git repo
         sampleRepo2.init();
-        sampleRepo2.write("Jenkinsfile", "stage 'build'\n "+"node {echo 'Building'}\n"+
-                "stage 'test'\nnode { echo 'Testing'}\n"+
-                "stage 'deploy'\nnode { echo 'Deploying'}\n"
+        sampleRepo2.write("Jenkinsfile", "stage('build') {\n "+"node {echo 'Building'}}\n"+
+                "stage('test') {\nnode { echo 'Testing'}}\n"+
+                "stage('deploy') {\nnode { echo 'Deploying'}}\n"
         );
         sampleRepo2.write("file", "initial content");
         sampleRepo2.git("add", "Jenkinsfile");
@@ -963,9 +963,9 @@ public class MultiBranchTest extends PipelineBaseTest {
     private void setupScm() throws Exception {
         // create git repo
         sampleRepo.init();
-        sampleRepo.write("Jenkinsfile", "stage 'build'\n "+"node {echo 'Building'}\n"+
-            "stage 'test'\nnode { echo 'Testing'}\n"+
-            "stage 'deploy'\nnode { echo 'Deploying'}\n"
+        sampleRepo.write("Jenkinsfile", "stage('build') {\n "+"node {echo 'Building'}}\n"+
+            "stage('test') {\nnode { echo 'Testing'}}\n"+
+            "stage('deploy') {\nnode { echo 'Deploying'}}\n"
         );
         sampleRepo.write("file", "initial content");
         sampleRepo.git("add", "Jenkinsfile");
@@ -974,12 +974,12 @@ public class MultiBranchTest extends PipelineBaseTest {
         //create feature branch
         sampleRepo.git("checkout", "-b", "feature/ux-1");
         sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
-            "   stage ('Build'); " +
-            "   echo ('Building'); " +
-            "   stage ('Test'); " +
-            "   echo ('Testing'); " +
-            "   stage ('Deploy'); " +
-            "   echo ('Deploying'); " +
+            "   stage ('Build') { " +
+            "   echo ('Building')}; " +
+            "   stage ('Test') { " +
+            "   echo ('Testing')}; " +
+            "   stage ('Deploy') { " +
+            "   echo ('Deploying')}; " +
             "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content1");
@@ -988,12 +988,12 @@ public class MultiBranchTest extends PipelineBaseTest {
         //create feature branch
         sampleRepo.git("checkout", "-b", "feature2");
         sampleRepo.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
-            "   stage ('Build'); " +
-            "   echo ('Building'); " +
-            "   stage ('Test'); " +
-            "   echo ('Testing'); " +
-            "   stage ('Deploy'); " +
-            "   echo ('Deploying'); " +
+            "   stage ('Build') { " +
+            "   echo ('Building')}; " +
+            "   stage ('Test') { " +
+            "   echo ('Testing')}; " +
+            "   stage ('Deploy') { " +
+            "   echo ('Deploying')}; " +
             "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content2");
@@ -1018,10 +1018,10 @@ public class MultiBranchTest extends PipelineBaseTest {
     public void getPipelineJobrRuns() throws Exception {
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         sampleRepo1.init();
-        sampleRepo1.write("Jenkinsfile", "stage 'build'\n "+"node {echo 'Building'}\n"+
-            "stage 'test'\nnode { echo 'Testing'}\n" +
-            "sleep 10000 \n"+
-            "stage 'deploy'\nnode { echo 'Deploying'}\n"
+        sampleRepo1.write("Jenkinsfile", "stage('build') {\n "+"node {echo 'Building'}}\n"+
+            "stage('test') {\nnode { echo 'Testing'}\n" +
+            "sleep 10000 }\n"+
+            "stage('deploy') {\nnode { echo 'Deploying'}}\n"
         );
         sampleRepo1.write("file", "initial content");
         sampleRepo1.git("add", "Jenkinsfile");
@@ -1030,12 +1030,12 @@ public class MultiBranchTest extends PipelineBaseTest {
         //create feature branch
         sampleRepo1.git("checkout", "-b", "abc");
         sampleRepo1.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; "+"node {" +
-            "   stage ('Build'); " +
-            "   echo ('Building'); " +
-            "   stage ('Test'); sleep 10000; " +
-            "   echo ('Testing'); " +
-            "   stage ('Deploy'); " +
-            "   echo ('Deploying'); " +
+            "   stage ('Build') { " +
+            "   echo ('Building')}; " +
+            "   stage ('Test') { sleep 10000; " +
+            "   echo ('Testing')}; " +
+            "   stage ('Deploy') { " +
+            "   echo ('Deploying')}; " +
             "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo1.write("file", "subsequent content1");
@@ -1085,10 +1085,10 @@ public class MultiBranchTest extends PipelineBaseTest {
         j.jenkins.setQuietPeriod(0);
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         sampleRepo1.init();
-        sampleRepo1.write("Jenkinsfile", "stage 'build'\n " + "node {echo 'Building'}\n" +
-                "stage 'test'\nnode { echo 'Testing'}\n" +
-                "sleep 10000 \n" +
-                "stage 'deploy'\nnode { echo 'Deploying'}\n"
+        sampleRepo1.write("Jenkinsfile", "stage('build') {\n " + "node {echo 'Building'}}\n" +
+                "stage('test') {\nnode { echo 'Testing'}\n" +
+                "sleep 10000}\n" +
+                "stage('deploy') {\nnode { echo 'Deploying'}}\n"
         );
         sampleRepo1.write("file", "initial content");
         sampleRepo1.git("add", "Jenkinsfile");
@@ -1097,12 +1097,12 @@ public class MultiBranchTest extends PipelineBaseTest {
         //create feature branch
         sampleRepo1.git("checkout", "-b", "abc");
         sampleRepo1.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; " + "node {" +
-                "   stage ('Build'); " +
-                "   echo ('Building'); " +
-                "   stage ('Test'); sleep 10000; " +
-                "   echo ('Testing'); " +
-                "   stage ('Deploy'); " +
-                "   echo ('Deploying'); " +
+                "   stage ('Build') { " +
+                "   echo ('Building')}; " +
+                "   stage ('Test') { sleep 10000; " +
+                "   echo ('Testing')}; " +
+                "   stage ('Deploy') { " +
+                "   echo ('Deploying')}; " +
                 "}");
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo1.write("file", "subsequent content1");

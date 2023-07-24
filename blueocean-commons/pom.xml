@@ -20,8 +20,8 @@
       <artifactId>jackson2-api</artifactId>
     </dependency>
       <dependency>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-lang3</artifactId>
+          <groupId>io.jenkins.plugins</groupId>
+          <artifactId>commons-lang3-api</artifactId>
       </dependency>
   </dependencies>
 
