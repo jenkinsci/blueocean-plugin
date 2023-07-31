@@ -517,7 +517,7 @@
         <dependency>
             <groupId>io.github.olamy.ua-parser</groupId>
             <artifactId>uap-java</artifactId>
-            <version>1.6.0-SNAPSHOT</version>
+            <version>1.6.0</version>
             <exclusions>
               <!-- commons-collections comes from jenkins core -->
               <exclusion>
