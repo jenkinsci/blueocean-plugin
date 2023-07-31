@@ -237,6 +237,18 @@
             <type>pom</type>
         </dependency>
 
+        <dependency>
+            <groupId>io.jenkins.plugins</groupId>
+            <artifactId>snakeyaml-api</artifactId>
+            <version>2.0-100.v5c28c7cb_1e67</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jenkins-ci</groupId>
+            <artifactId>symbol-annotation</artifactId>
+            <version>1.23</version>
+        </dependency>
+
         <!-- Module versions -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -506,12 +518,16 @@
         <dependency>
             <groupId>com.github.ua-parser</groupId>
             <artifactId>uap-java</artifactId>
-            <version>1.5.2</version>
+            <version>1.5.4</version>
             <exclusions>
               <!-- commons-collections comes from jenkins core -->
               <exclusion>
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
+              </exclusion>
+              <exclusion> <!-- from io.jenkins.plugins:snakeyaml-api -->
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
               </exclusion>
             </exclusions>
         </dependency>
