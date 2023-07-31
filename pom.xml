@@ -32,12 +32,11 @@
         when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions
         and  acceptance-tests/runner/scripts/args.sh
     -->
-    <jenkins.version>2.361.4</jenkins.version>
+    <jenkins.version>2.401.3</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.12.0</frontend-version>
     <node.version>10.13.0</node.version>
     <npm.version>6.14.4</npm.version>
-    <hamcrest.version>2.2</hamcrest.version>
     <mockito.version>4.7.0</mockito.version>
     <jacoco.version>0.8.6</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
@@ -190,7 +189,6 @@
       <dependency>
           <groupId>commons-codec</groupId>
           <artifactId>commons-codec</artifactId>
-          <version>1.15</version>
           <scope>provided</scope>
       </dependency>
       <dependency>
@@ -206,25 +204,6 @@
       <dependency>
           <groupId>org.mockito</groupId>
           <artifactId>mockito-inline</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.hamcrest</groupId>
-          <artifactId>hamcrest</artifactId>
-          <version>${hamcrest.version}</version>
-          <scope>test</scope>
-      </dependency>
-      <!-- This is needed in order to force junit4 and JTH tests to use newer hamcrest version -->
-      <dependency>
-          <groupId>org.hamcrest</groupId>
-          <artifactId>hamcrest</artifactId>
-          <version>${hamcrest.version}</version>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <version>4.13.2</version>
           <scope>test</scope>
       </dependency>
       <dependency>
@@ -252,16 +231,10 @@
 
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
-            <artifactId>bom-2.361.x</artifactId>
+            <artifactId>bom-2.401.x</artifactId>
             <version>2102.v854b_fec19c92</version>
             <scope>import</scope>
             <type>pom</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jenkins-ci</groupId>
-            <artifactId>symbol-annotation</artifactId>
-            <version>1.23</version>
         </dependency>
 
         <!-- Module versions -->
@@ -712,26 +685,7 @@
           </plugins>
       </pluginManagement>
     <plugins>
-      <plugin>
-        <!-- TODO: java8 signature doesn't exist yet -->
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <version>1.22</version>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-      <!-- Disable InjectedTest -->
-      <plugin>
-          <groupId>org.jenkins-ci.tools</groupId>
-          <artifactId>maven-hpi-plugin</artifactId>
-          <configuration>
-              <disabledTestInjection>true</disabledTestInjection>
-              <dependencyResolution>${hpi.dependencyResolution}</dependencyResolution>
-          </configuration>
-      </plugin>
-
-      <plugin>
+      <plugin> <!-- TODO could probably all be deleted -->
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
               <reuseForks>true</reuseForks>
