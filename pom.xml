@@ -516,9 +516,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.ua-parser</groupId>
+            <groupId>io.github.olamy.ua-parser</groupId>
             <artifactId>uap-java</artifactId>
-            <version>1.5.4</version>
+            <version>1.6.0-SNAPSHOT</version>
             <exclusions>
               <!-- commons-collections comes from jenkins core -->
               <exclusion>
