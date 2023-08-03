@@ -15,15 +15,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 @Extension
 public class BrowserAndOperatingSystemAnalyticsProperties extends AdditionalAnalyticsProperties {
-
-    private static Parser PARSER;
-    static {
-        try {
-            PARSER = new Parser();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-    }
+    private static final Parser PARSER = new Parser();
 
     @Override
     public Map<String, Object> properties(TrackRequest req) {
