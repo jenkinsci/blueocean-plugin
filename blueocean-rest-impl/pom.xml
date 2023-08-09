@@ -91,17 +91,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.ua-parser</groupId>
-            <artifactId>uap-java</artifactId>
-            <exclusions>
-              <exclusion> <!-- from io.jenkins.plugins:snakeyaml-api -->
-                <groupId>org.yaml</groupId>
-                <artifactId>snakeyaml</artifactId>
-              </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
             <groupId>org.jenkins-ci.main</groupId>
             <artifactId>jenkins-test-harness-tools</artifactId>
         </dependency>
