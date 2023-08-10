@@ -237,6 +237,12 @@
             <type>pom</type>
         </dependency>
 
+        <dependency>
+            <groupId>org.jenkins-ci</groupId>
+            <artifactId>symbol-annotation</artifactId>
+            <version>1.23</version>
+        </dependency>
+
         <!-- Module versions -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -482,19 +488,6 @@
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-databind</artifactId>
                 </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.ua-parser</groupId>
-            <artifactId>uap-java</artifactId>
-            <version>1.5.2</version>
-            <exclusions>
-              <!-- commons-collections comes from jenkins core -->
-              <exclusion>
-                <groupId>commons-collections</groupId>
-                <artifactId>commons-collections</artifactId>
-              </exclusion>
             </exclusions>
         </dependency>
 
