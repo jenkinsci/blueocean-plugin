@@ -682,12 +682,10 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
               <reuseForks>true</reuseForks>
-              <forkCount>${concurrency}</forkCount>
               <!--
               The following line is the one that's a must. Without it, will get jacoco complexity failures.
               -->
               <argLine>-Djava.awt.headless=true ${argLine}</argLine>
-              <rerunFailingTestsCount>0</rerunFailingTestsCount>
               <systemPropertyVariables>
                   <jacoco-agent.destfile>${project.build.directory}/code-coverage/jacoco.exec</jacoco-agent.destfile>
               </systemPropertyVariables>
