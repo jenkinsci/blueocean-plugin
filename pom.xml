@@ -232,7 +232,7 @@
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
             <artifactId>bom-2.401.x</artifactId>
-            <version>2102.v854b_fec19c92</version>
+            <version>2278.v47b_4508e256a</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>
@@ -479,24 +479,6 @@
             <version>0.9.3</version>
         </dependency>
         <dependency>
-            <groupId>org.jvnet.hudson.plugins</groupId>
-            <artifactId>favorite</artifactId>
-            <version>2.3.1</version>
-            <exclusions>
-                <!-- Upper bound fix: Remove it once token-micro plugin is fixed to remove dependency on asm-tree
-                     PR https://github.com/jenkinsci/token-macro-plugin/pull/31. Fix to be available in 2.4.0.
-                -->
-                <exclusion>
-                    <groupId>org.ow2.asm</groupId>
-                    <artifactId>asm</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.ow2.asm</groupId>
-                    <artifactId>asm-tree</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>io.keen</groupId>
             <artifactId>keen-client-api-java</artifactId>
             <version>5.6.0</version>
@@ -514,11 +496,6 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>sonar</artifactId>
             <version>2.13.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>ant</artifactId>
-            <version>1.11</version>
         </dependency>
 
         <!-- Test dependencies -->
