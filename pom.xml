@@ -37,7 +37,6 @@
     <frontend-version>1.12.0</frontend-version>
     <node.version>10.13.0</node.version>
     <npm.version>6.14.4</npm.version>
-    <jacoco.version>0.8.6</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
@@ -210,13 +209,6 @@
                   <artifactId>json</artifactId>
               </exclusion>
           </exclusions>
-      </dependency>
-      <dependency>
-          <groupId>org.jacoco</groupId>
-          <artifactId>org.jacoco.agent</artifactId>
-          <classifier>runtime</classifier>
-          <version>${jacoco.version}</version>
-          <scope>test</scope>
       </dependency>
   </dependencies>
 
@@ -551,58 +543,9 @@
                       <failOnError>${access-modifier-checker.failOnError}</failOnError>
                   </configuration>
               </plugin>
-              <plugin>
-                  <groupId>org.jacoco</groupId>
-                  <artifactId>jacoco-maven-plugin</artifactId>
-                  <version>${jacoco.version}</version>
-                  <configuration>
-                      <haltOnFailure>${jacoco.haltOnFailure}</haltOnFailure>
-                      <destFile>${project.build.directory}/code-coverage/jacoco.exec</destFile>
-                      <!-- Sets the path to the file which contains the execution data. -->
-                      <dataFile>${project.build.directory}/code-coverage/jacoco.exec</dataFile>
-                      <!-- Sets the output directory for the code coverage report. -->
-                      <outputDirectory>${project.build.directory}/code-coverage/report</outputDirectory>
-                  </configuration>
-
-                  <executions>
-                      <execution>
-                          <id>default-instrument</id>
-                          <goals>
-                              <goal>instrument</goal>
-                          </goals>
-                      </execution>
-                      <execution>
-                          <id>default-restore-instrumented-classes</id>
-                          <goals>
-                              <goal>restore-instrumented-classes</goal>
-                          </goals>
-                      </execution>
-
-                      <execution>
-                          <id>default-report</id>
-                          <phase>prepare-package</phase>
-                          <goals>
-                              <goal>report</goal>
-                          </goals>
-                      </execution>
-                  </executions>
-              </plugin>
           </plugins>
       </pluginManagement>
     <plugins>
-      <plugin> <!-- TODO could probably all be deleted -->
-          <artifactId>maven-surefire-plugin</artifactId>
-          <configuration>
-              <reuseForks>true</reuseForks>
-              <!--
-              The following line is the one that's a must. Without it, will get jacoco complexity failures.
-              -->
-              <argLine>-Djava.awt.headless=true ${argLine}</argLine>
-              <systemPropertyVariables>
-                  <jacoco-agent.destfile>${project.build.directory}/code-coverage/jacoco.exec</jacoco-agent.destfile>
-              </systemPropertyVariables>
-          </configuration>
-      </plugin>
         <plugin>
             <artifactId>maven-enforcer-plugin</artifactId>
             <executions>
