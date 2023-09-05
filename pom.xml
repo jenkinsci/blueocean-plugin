@@ -478,7 +478,7 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <version>1.12.13</version>
+            <version>1.14.7</version>
         </dependency>
         <dependency>
             <groupId>net.bytebuddy</groupId>
