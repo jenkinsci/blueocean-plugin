@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.72</version>
+    <version>4.73</version>
     <relativePath />
   </parent>
 
@@ -34,6 +34,7 @@
     -->
     <jenkins.version>2.401.3</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
+    <byte-buddy.version>1.14.7</byte-buddy.version>
     <frontend-version>1.12.0</frontend-version>
     <node.version>10.13.0</node.version>
     <npm.version>6.14.4</npm.version>
@@ -218,7 +219,7 @@
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
             <artifactId>bom-2.401.x</artifactId>
-            <version>2329.v078520e55c19</version>
+            <version>2401.v7a_d68f8d0b_09</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>
@@ -350,11 +351,6 @@
 
         <!-- Other -->
         <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>cloudbees-bitbucket-branch-source</artifactId>
-            <version>2.9.11</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
             <version>3.5.0</version>
@@ -478,12 +474,12 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <version>1.14.7</version>
+            <version>${byte-buddy.version}</version>
         </dependency>
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy-agent</artifactId>
-            <version>1.12.13</version>
+            <version>${byte-buddy.version}</version>
         </dependency>
         <!-- some tests need to  write final field -->
         <dependency>
