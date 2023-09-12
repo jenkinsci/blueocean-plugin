@@ -65,7 +65,7 @@ node() {
           stage('Building BlueOcean') {
             timeout(time: 90, unit: 'MINUTES') {
               try {
-                sh "mvn clean install -T1C -V -B -DcleanNode -ntp -Dmaven.test.failure.ignore -s settings.xml -e -Dmaven.artifact.threads=30"
+                sh "mvn clean install -T1C -Pci -V -B -DcleanNode -ntp -Dmaven.test.failure.ignore -s settings.xml -e -Dmaven.artifact.threads=30"
               } finally {
                 junit testResults: '**/target/surefire-reports/TEST-*.xml', allowEmptyResults: true
                 junit testResults: '**/target/jest-reports/*.xml', allowEmptyResults: true

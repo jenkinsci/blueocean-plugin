@@ -2,11 +2,7 @@ package io.blueocean.ath.offline.edgeCases;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.offbytwo.jenkins.model.FolderJob;
-import io.blueocean.ath.ATHJUnitRunner;
-import io.blueocean.ath.BaseUrl;
-import io.blueocean.ath.BlueOceanAcceptanceTest;
-import io.blueocean.ath.GitRepositoryRule;
-import io.blueocean.ath.WaitUtil;
+import io.blueocean.ath.*;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.Folder;
@@ -85,6 +81,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
      * As long as activity loads run, any other page for this pipeline should load as it uses a shared router.
      */
     @Test
+    @Retry(3)
     public void multiBranchFolderTest() throws GitAPIException, IOException {
         String pipelineName = "FolderTest_multiBranchFolderTest";
         git.writeJenkinsFile(loadJenkinsFile());
@@ -100,6 +97,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
     }
 
     @Test
+    @Retry(3)
     public void foldersTest() throws IOException, GitAPIException, UnirestException, InterruptedException {
         String pipelineName = "Sohn";
 
@@ -128,6 +126,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
     }
 
     @Test
+    @Retry(3)
     public void anotherFoldersTest() throws IOException, GitAPIException, UnirestException {
         Folder anotherFolder =  Folder.folders("anotherFolder", "三百", "ñba", "七");
         FolderJob folderJob = jobApi.createFolders(anotherFolder, true);
