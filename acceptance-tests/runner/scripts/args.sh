@@ -32,6 +32,9 @@ case $i in
     -ld|--local-dev)
     export LOCAL_DEV=true
     ;;
+    -ci|--ci-bo)
+    export CI_BO=true
+    ;;
     --no-selenium)
     RUN_SELENIUM=false
     ;;
@@ -74,6 +77,12 @@ if [ "${DEV_JENKINS}" == "true" ]; then
     # allowing you to iterate on your acceptance test dode without constantly
     # having to restart Jenkins.
     PROFILES="-P runDevRunner"
+    TEST_TO_RUN=""
+fi
+
+if [ "${CI_BO}" == "true" ]; then
+    # Use ci profile which can exclude some flaky tests
+    PROFILES="-P runTests -P ci"
     TEST_TO_RUN=""
 fi
 
