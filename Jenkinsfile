@@ -76,7 +76,7 @@ node() {
 
           jenkinsVersions.each { version ->
             stage("ATH - Jenkins ${version}") {
-              timeout(time: 150, unit: 'MINUTES') {
+              timeout(time: 90, unit: 'MINUTES') {
                 dir('acceptance-tests') {
                   sh "bash -x ./run.sh -v=${version} --host=${ip} --no-selenium -ci --settings='-s ${env.WORKSPACE}/settings.xml'"
                   junit '**/target/surefire-reports/*.xml'
