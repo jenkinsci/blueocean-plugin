@@ -11,7 +11,7 @@ PLUGINS=""
 AGGREGATOR_DIR=""
 DEV_JENKINS=false
 PROFILES="-P runTests"
-JENKINS_JAVA_OPTS="-Djava.util.logging.config.file=./logging.properties -Dio.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider.enabled=true"
+JENKINS_JAVA_OPTS="-Djava.util.logging.config.file=./logging.properties -Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true -Dio.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider.enabled=true"
 TEST_TO_RUN=""
 
 for i in "$@"
