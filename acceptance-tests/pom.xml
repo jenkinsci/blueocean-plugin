@@ -297,6 +297,9 @@
                             <artifactId>maven-surefire-plugin</artifactId>
                             <configuration>
                                 <excludedGroups>flaky</excludedGroups>
+                                <systemPropertyVariables>
+                                    <ath.defaultRetry>3</ath.defaultRetry>
+                                </systemPropertyVariables>
 <!--                                <rerunFailingTestsCount>2</rerunFailingTestsCount>-->
                             </configuration>
                         </plugin>
