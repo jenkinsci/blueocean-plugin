@@ -14,6 +14,7 @@
         <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
         <slf4j.version>1.7.32</slf4j.version>
         <selenium.version>3.141.59</selenium.version> <!-- 3.141.59 4.0.0-alpha-6 -->
+        <webDriverDefaultTimeout>30000</webDriverDefaultTimeout>
     </properties>
 
 
@@ -298,7 +299,8 @@
                             <configuration>
                                 <excludedGroups>flaky</excludedGroups>
                                 <systemPropertyVariables>
-                                    <ath.defaultRetry>3</ath.defaultRetry>
+                                    <ath.defaultRetry>4</ath.defaultRetry>
+                                    <webDriverDefaultTimeout>${webDriverDefaultTimeout}</webDriverDefaultTimeout>
                                 </systemPropertyVariables>
 <!--                                <rerunFailingTestsCount>2</rerunFailingTestsCount>-->
                             </configuration>
