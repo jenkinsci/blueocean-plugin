@@ -147,7 +147,7 @@ public class ParallelNavigationTest {
                 By.xpath("//*[text()=\"This step will fail because the user is not authorised to click OK\"]"));
             logger.info("Found failed input step error message");
             //wait.until(By.cssSelector( ".btn.inputStepSubmit" ) ).click();
-            wait.until(By.xpath("//button[@class='btn inputStepSubmit']"), 60000).click();
+            wait.until(By.xpath("//button[@class='btn inputStepSubmit']")).click();
             logger.info("Clicked the inputStepSubmit button");
         } finally {
             mbpFactory.pipeline(navTestWithFailedInputStep).deleteThisPipeline(navTestWithFailedInputStep);
