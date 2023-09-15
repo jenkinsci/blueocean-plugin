@@ -69,7 +69,7 @@ while true; do
 done
 
 
-EXECUTION="env JENKINS_JAVA_OPTS=\"${JENKINS_JAVA_OPTS}\" ${ATH_SERVER_HOST} ${ATH_SERVER_PORT} BROWSER=phantomjs LOCAL_SNAPSHOTS=${LOCAL_SNAPSHOTS} ${PLUGINS} PLUGINS_DIR=../runtime-plugins/runtime-deps/target/plugins-combined PATH=\"./target/phantomjs-maven-plugin/phantomjs-2.1.1-linux-x86_64/bin/:${PATH}\" mvn -Dhudson.model.UsageStatistics.disabled=true -ntp -DwebDriverDefaultTimeout=120000 -B -Dmaven.test.failure.ignore ${MAVEN_SETTINGS} test ${PROFILES} ${TEST_TO_RUN}"
+EXECUTION="env JENKINS_JAVA_OPTS=\"${JENKINS_JAVA_OPTS}\" ${ATH_SERVER_HOST} ${ATH_SERVER_PORT} BROWSER=phantomjs LOCAL_SNAPSHOTS=${LOCAL_SNAPSHOTS} ${PLUGINS} PLUGINS_DIR=../runtime-plugins/runtime-deps/target/plugins-combined PATH=\"./target/phantomjs-maven-plugin/phantomjs-2.1.1-linux-x86_64/bin/:${PATH}\" mvn -Dhudson.model.UsageStatistics.disabled=true -ntp -B -Dmaven.test.failure.ignore ${MAVEN_SETTINGS} test ${PROFILES} ${TEST_TO_RUN}"
 
 echo ""
 echo "> ${EXECUTION}"
