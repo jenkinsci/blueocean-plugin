@@ -172,7 +172,8 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
         eachNotifier.fireTestStarted();
         List<Throwable> failures = new ArrayList<>();
         try {
-            int n = retry == null ? Integer.getInteger("ath.defaultRetry",1) : retry.value();
+            int defaultRetry = Integer.getInteger("ath.defaultRetry",1);
+            int n = retry == null ? defaultRetry : Math.max(retry.value(), defaultRetry);
 
             for (int i = 0; i < n; i++) {
                 try {
