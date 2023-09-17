@@ -82,7 +82,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
          */
         if(this.getStateObj() == BlueRun.BlueRunState.FINISHED) {
             RestartDeclarativePipelineAction restartDeclarativePipelineAction = run.getAction(RestartDeclarativePipelineAction.class);
-            restartable = restartDeclarativePipelineAction != null && isRestartable(this.getDisplayName());
+            restartable = restartDeclarativePipelineAction != null && restartDeclarativePipelineAction.isRestartEnabled() && isRestartable(this.getDisplayName());
         } else {
             restartable = false;
         }

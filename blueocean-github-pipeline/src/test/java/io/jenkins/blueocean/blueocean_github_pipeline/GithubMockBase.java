@@ -83,7 +83,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
                         }
 
                     })
-    );
+    , false);
 
     protected final List<StubMapping> perTestStubMappings = new ArrayList<>();
 

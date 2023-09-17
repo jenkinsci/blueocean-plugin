@@ -19,7 +19,6 @@ import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
-import org.jenkinsci.plugins.workflow.support.steps.ExecutorStep;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -193,7 +192,7 @@ public class PipelineNodeUtil {
     }
 
     /**
-     * Determine if the given {@link FlowNode} is the initial {@link StepStartNode} for an {@link ExecutorStep}.
+     * Determine if the given {@link FlowNode} is the initial {@link StepStartNode} for an {@code ExecutorStep}.
      *
      * @param node a possibly null {@link FlowNode}
      * @return true if {@code node} is the non-body start of the agent execution.
@@ -205,7 +204,7 @@ public class PipelineNodeUtil {
                 if (stepStartNode.getDescriptor() != null) {
                     StepDescriptor sd = stepStartNode.getDescriptor();
                     return sd != null &&
-                        ExecutorStep.DescriptorImpl.class.equals(sd.getClass()) &&
+                        sd.getFunctionName().equals("node") &&
                         !stepStartNode.isBody();
                 }
             }

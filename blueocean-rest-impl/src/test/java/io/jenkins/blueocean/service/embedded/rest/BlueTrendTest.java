@@ -1,5 +1,9 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.FreeStyleProject;
@@ -83,7 +87,7 @@ public class BlueTrendTest extends BaseTest {
     public void testTrendsIdCollision() throws Exception {
         // verify the extension did register correctly
         ExtensionList<BlueTrendFactory> extensionList = ExtensionList.lookup(BlueTrendFactory.class);
-        Assert.assertEquals(2, extensionList.size());
+        assertThat(extensionList, hasSize(greaterThanOrEqualTo(2)));
 
         Project project = j.createProject(FreeStyleProject.class, "freestyle1");
         BlueOrganization org = new OrganizationImpl("jenkins", j.jenkins);

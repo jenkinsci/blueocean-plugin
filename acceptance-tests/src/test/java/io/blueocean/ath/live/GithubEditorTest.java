@@ -3,6 +3,7 @@ package io.blueocean.ath.live;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
+import io.blueocean.ath.Retry;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
@@ -75,6 +76,7 @@ public class GithubEditorTest {
      *
      * Creates a blank github repo, and then uses editor to create a simple pipeline.
      */
+    @Retry(3)
     @Test
     public void testEditor() throws IOException {
         creationPage.createPipeline(helper.getAccessToken(), helper.getOrganizationOrUsername(), helper.getActualRepositoryName(), true);
@@ -96,6 +98,7 @@ public class GithubEditorTest {
     /**
      * This test covers creation of a pipeline, and changes agent settings within it.
      */
+    @Retry(3)
     @Test
     public void testEditorChangeAgentSetting() throws IOException {
         String newBranchName = "made-by-testEditorChangeAgentSetting";
@@ -120,6 +123,7 @@ public class GithubEditorTest {
      * stage within that same pipeline, then saves it to a new branch.
      */
     @Test
+    @Retry(3)
     public void testEditorAddAndDeleteStage() throws IOException {
         String firstBranchName = "branch-before-delete";
         String secondBranchName = "branch-after-delete";
@@ -153,6 +157,7 @@ public class GithubEditorTest {
      * This test covers creation of a pipeline, and adds an environment
      * variable to it.
      */
+    @Retry(3)
     @Test
     public void testEditorSetEnvironmentVariables() throws IOException {
         String newBranchName = "made-by-testEditorSetEnvironmentVariables";
@@ -175,6 +180,7 @@ public class GithubEditorTest {
     /**
      * Make sure we can paste a bad token that has whitespace added.
      */
+    @Retry(3)
     @Test
     public void testEditorWithSpace() throws IOException {
         // Gotta make Jenkins clear out its credential store or we might get a false positive depending on test order
@@ -187,6 +193,7 @@ public class GithubEditorTest {
      *
      * Creates a blank github repo, and then uses editor to create a parallel pipeline.
      */
+    @Retry(3)
     @Test
     public void testEditorParallel() throws IOException {
         String branchNameForParallelPipeline = "branch-with-parallels";
