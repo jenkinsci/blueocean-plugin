@@ -20,8 +20,8 @@
       <artifactId>jackson2-api</artifactId>
     </dependency>
       <dependency>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-lang3</artifactId>
+          <groupId>io.jenkins.plugins</groupId>
+          <artifactId>commons-lang3-api</artifactId>
       </dependency>
   </dependencies>
 
@@ -31,7 +31,6 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>${jacoco.version}</version>
           <configuration>
             <excludes>
               <!-- Dont run code coverage for imported stapler classes -->
