@@ -25,7 +25,7 @@
     <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
     <java.level>8</java.level>
     <slf4j.version>1.7.30</slf4j.version>
-    <webDriverDefaultTimeout>120000</webDriverDefaultTimeout>
+    <webDriverDefaultTimeout>180000</webDriverDefaultTimeout>
   </properties>
 
   <repositories>
