@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -70,7 +73,7 @@ public class RestartStageTest extends PipelineBaseTest
                                       + "/runs/1/nodes/" + res.get( "id" ) + "/restart",
                                   restartMap);
 
-        assertEquals( QueuedBlueRun.class.getName(), restartResult.get( "_class" ) );
+        assertThat(restartResult.get("_class"), anyOf(is(QueuedBlueRun.class.getName()), is(PipelineRunImpl.class.getName())));
         int id = Integer.parseInt((String)restartResult.get( "id" ));
 
         // depending on build still in queue or not when guessing the build number
