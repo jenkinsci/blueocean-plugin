@@ -1,6 +1,9 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import static org.junit.Assert.*;
+
 import com.cloudbees.hudson.plugins.folder.AbstractFolderProperty;
+import com.cloudbees.hudson.plugins.folder.computed.ComputedFolder;
 import com.cloudbees.jenkins.GitHubWebHook;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.CredentialsScope;
@@ -11,7 +14,6 @@ import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.Item;
-import hudson.model.TopLevelItem;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -26,6 +28,10 @@ import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecifi
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
@@ -43,24 +49,19 @@ import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
+import org.jvnet.hudson.test.BuildWatcher;
 import org.jvnet.hudson.test.TestExtension;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Vivek Pandey
  */
 public class GithubPipelineCreateRequestTest extends GithubMockBase {
+
+    @ClassRule
+    public static BuildWatcher watcher = new BuildWatcher();
 
     @Override
     @After
@@ -364,6 +365,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
     }
 
     @Test
+    @Ignore
     public void testOrgFolderIndexing() throws Exception {
         User user = login();
         OrganizationFolder orgFolder = j.jenkins.createProject(OrganizationFolder.class, "p");
@@ -377,6 +379,18 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
                 .build(Map.class);
 
         assertNotNull(map);
+        for (var f : j.jenkins.allItems(ComputedFolder.class)) {
+            var c = f.getComputation();
+            // TODO indexing actually contacts github.com, and hangs due to rate limits
+            c.doStop();
+            System.err.println(f + " ---%<---");
+            long p = 0;
+            while (!c.getLogText().isComplete()) {
+                p = c.getLogText().writeLogTo(p, System.err);
+            }
+            System.err.println(f + " --->%---");
+        }
+        j.waitUntilNoActivity();
     }
 
     public static class TestOrganizationFolder extends OrganizationFolderPipelineImpl {
