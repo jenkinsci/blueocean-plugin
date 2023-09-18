@@ -170,8 +170,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M9</version>
+                    <version>3.1.2</version>
                     <configuration>
+                        <systemPropertyVariables>
+                            <ath.defaultRetry>4</ath.defaultRetry>
+                            <webDriverDefaultTimeout>240000</webDriverDefaultTimeout>
+                        </systemPropertyVariables>
                         <useModulePath>false</useModulePath>
                         <trimStackTrace>false</trimStackTrace>
                         <argLine>
