@@ -337,6 +337,9 @@ public class MultiBranchTest extends PipelineBaseTest {
                 .build(Map.class);
 
         assertNotNull(map);
+        // Wait for activity to finish before exiting the test
+        // Avoid intermittent failures from DirectoryNotEmptyException
+        j.waitUntilNoActivity();
     }
 
 
