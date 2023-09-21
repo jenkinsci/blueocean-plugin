@@ -318,6 +318,8 @@ public class MultiBranchTest extends PipelineBaseTest {
 
     @Test
     public void multiBranchPipelineIndex() throws Exception {
+        // Skip test to avoid intermittent test failures with DirectoryNotEmptyException
+        // Assume.assumeTrue(runAllTests());
         User user = login();
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
