@@ -335,6 +335,13 @@ public class MultiBranchTest extends PipelineBaseTest {
                 .build(Map.class);
 
         assertNotNull(map);
+        // Cancel jobs in the queue so that waitUntilNoActivity waits less.
+        // Wait for activity to finish before exiting the test.
+        // Avoid intermittent failures from DirectoryNotEmptyException.
+        for (Queue.Item i : j.jenkins.getQueue().getItems()) {
+            j.jenkins.getQueue().cancel(i);
+        }
+        j.waitUntilNoActivity();
     }
 
 
