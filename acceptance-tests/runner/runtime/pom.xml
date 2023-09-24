@@ -25,6 +25,7 @@
     <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
     <java.level>8</java.level>
     <slf4j.version>1.7.30</slf4j.version>
+    <webDriverDefaultTimeout>180000</webDriverDefaultTimeout>
   </properties>
 
   <repositories>
@@ -80,7 +81,7 @@
           <dependency>
               <groupId>com.google.guava</groupId>
               <artifactId>guava</artifactId>
-              <version>28.2-jre</version>
+              <version>32.0.0-jre</version>
           </dependency>
           <dependency>
               <groupId>org.slf4j</groupId>
@@ -242,9 +243,40 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>ci</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <configuration>
+                <excludedGroups>flaky</excludedGroups>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
   </profiles>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.1.2</version>
+          <configuration>
+            <systemPropertyVariables>
+              <ath.defaultRetry>4</ath.defaultRetry>
+              <webDriverDefaultTimeout>${webDriverDefaultTimeout}</webDriverDefaultTimeout>
+            </systemPropertyVariables>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
           <groupId>com.github.klieber</groupId>

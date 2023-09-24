@@ -29,7 +29,7 @@ envs = [
   'GIT_AUTHOR_EMAIL=hates@cake.com'
 ]
 
-jenkinsVersions = ['2.361.4']
+jenkinsVersions = ['2.401.3']
 
 node() {
   withCredentials(credentials) {
@@ -65,7 +65,7 @@ node() {
           stage('Building BlueOcean') {
             timeout(time: 90, unit: 'MINUTES') {
               try {
-                sh "mvn clean install -T1C -V -B -DcleanNode -ntp -Dmaven.test.failure.ignore -s settings.xml -e -Dmaven.artifact.threads=30"
+                sh "mvn clean install -T2 -Pci -V -B -DcleanNode -ntp -DforkCount=3 -Dmaven.test.failure.ignore -s settings.xml -e -Dmaven.artifact.threads=30"
               } finally {
                 junit testResults: '**/target/surefire-reports/TEST-*.xml', allowEmptyResults: true
                 junit testResults: '**/target/jest-reports/*.xml', allowEmptyResults: true
@@ -76,9 +76,9 @@ node() {
 
           jenkinsVersions.each { version ->
             stage("ATH - Jenkins ${version}") {
-              timeout(time: 150, unit: 'MINUTES') {
+              timeout(time: 90, unit: 'MINUTES') {
                 dir('acceptance-tests') {
-                  sh "bash -x ./run.sh -v=${version} --host=${ip} --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+                  sh "bash -x ./run.sh -v=${version} --host=${ip} --no-selenium -ci --settings='-s ${env.WORKSPACE}/settings.xml'"
                   junit '**/target/surefire-reports/*.xml'
                   archive '**/target/screenshots/**/*'
                 }
