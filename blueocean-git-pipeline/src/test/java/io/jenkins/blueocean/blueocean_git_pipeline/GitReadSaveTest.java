@@ -49,6 +49,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -293,6 +294,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
             )).build(String.class);
     }
 
+    @Ignore("TODO no longer works due to `Unable to negotiate key exchange for server host key algorithms`; https://github.com/jenkinsci/blueocean-test-ssh-server/blob/blueocean-test-ssh-server-0.0.2/pom.xml#L147 is pretty old, and shaded")
     @Test
     public void bareRepoReadWriteOverSSH() throws Exception {
         Assume.assumeFalse(Functions.isWindows()); // can't really run this on windows
@@ -302,6 +304,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, remote, repoForSSH, masterPipelineScript);
     }
 
+    @Ignore("TODO as above")
     @Test
     public void bareRepoReadWriteNoEmail() throws Exception {
         Assume.assumeFalse(Functions.isWindows()); // can't really run this on windows
