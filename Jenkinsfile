@@ -58,6 +58,7 @@ node() {
           }
 
           stage('Building JS Libraries') {
+            sh "pwd"
             sh 'node -v && npm -v'
             sh 'npm --prefix ./js-extensions run build'
           }
