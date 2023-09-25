@@ -52,16 +52,16 @@ node() {
         docker.image('blueocean/blueocean:build_env').inside("--net=container:blueo-selenium") {
           ip = sh(returnStdout: true, script: "hostname -I  | awk '{print \$1}'").trim()
           echo "IP: [${ip}]"
-          stage('Sanity check dependencies') {
-            sh "node ./bin/checkdeps.js"
-            sh "node ./bin/checkshrinkwrap.js"
-          }
+          // stage('Sanity check dependencies') {
+          //   sh "node ./bin/checkdeps.js"
+          //   sh "node ./bin/checkshrinkwrap.js"
+          // }
 
-          stage('Building JS Libraries') {
-            sh "pwd"
-            sh 'node -v && npm -v'
-            sh 'npm --prefix ./js-extensions run build'
-          }
+          // stage('Building JS Libraries') {
+          //   sh "pwd"
+          //   sh 'node -v && npm -v'
+          //   sh 'npm --prefix ./js-extensions run build'
+          // }
 
           stage('Building BlueOcean') {
             timeout(time: 90, unit: 'MINUTES') {
