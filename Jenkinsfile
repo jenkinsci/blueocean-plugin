@@ -44,6 +44,8 @@ node() {
           sh 'mv $MAVEN_SETTINGS settings.xml'
         }
         sh 'mv $BO_ATH_KEY_FILE acceptance-tests/bo-ath.key'
+        sh 'id'
+        sh 'whoami'
         sh "./acceptance-tests/runner/scripts/start-selenium.sh"
         sh "./acceptance-tests/runner/scripts/start-bitbucket-server.sh"
       }
