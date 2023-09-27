@@ -69,7 +69,7 @@ node() {
             timeout(time: 90, unit: 'MINUTES') {
               try {
                 sh 'id'
-                sh 'whoami'
+                //sh 'whoami'
                 sh 'pwd'
                 sh "mvn clean install -T2 -Pci -V -B -DcleanNode -ntp -DforkCount=3 -Dmaven.test.failure.ignore -s settings.xml -e -Dmaven.artifact.threads=30"
               } finally {
