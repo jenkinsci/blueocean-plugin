@@ -2,6 +2,7 @@ JENKINS_VERSION=2.401.3
 SELENIUM_VERSION=2.53
 
 MAVEN_SETTINGS=""
+MAVEN_LOCAL_REPO="$HOME/.m2/repository"
 LOCAL_SNAPSHOTS=false
 export LOCAL_DEV=false
 RUN_SELENIUM=true
@@ -40,6 +41,9 @@ case $i in
     ;;
     --settings=*)
     MAVEN_SETTINGS="${i#*=}"
+    ;;
+    --maven-local-repo=*)
+    MAVEN_LOCAL_REPO="${i#*=}"
     ;;
     -h=*|--host=*)
     ATH_SERVER_HOST="${i#*=}"
