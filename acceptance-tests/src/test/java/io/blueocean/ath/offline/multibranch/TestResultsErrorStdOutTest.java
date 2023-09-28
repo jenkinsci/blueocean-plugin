@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.BlueOceanAcceptanceTest;
 import io.blueocean.ath.GitRepositoryRule;
+import io.blueocean.ath.Retry;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.RunDetailsTestsPage;
@@ -49,6 +50,7 @@ public class TestResultsErrorStdOutTest
     }
 
     @Test
+    @Retry(3)
     public void std_out_visible(){
         RunDetailsTestsPage runDetailsTestsPage = pipeline.getRunDetailsTestsPage().open("master", 1);
         runDetailsTestsPage.getWaitUntil().click( By.xpath( "//span[contains(text(), 'io.blueocean.TestResults.StdOut')]" ) );

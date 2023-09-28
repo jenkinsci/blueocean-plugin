@@ -8,6 +8,7 @@ import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.service.embedded.OrganizationFactoryImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
+import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 import net.sf.json.JSONArray;
@@ -110,7 +111,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         assertEquals(6, res.size());
     }
 
-    private void createGithubPipeline(String jwt, boolean shouldSucceed) {
+    private void createGithubPipeline(String jwt, boolean shouldSucceed) throws Exception {
         String pipelineName = "cloudbeers";
         Map resp = new RequestBuilder(baseUrl)
                 .status(shouldSucceed ? 201 : 403)
@@ -128,6 +129,9 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
             Assert.assertTrue(item instanceof WorkflowMultiBranchProject);
             Map r = get("/organizations/"+ getOrgName() + "/pipelines/"+pipelineName+"/");
             assertEquals(pipelineName, r.get("name"));
+            MultiBranchProject<?, ?> p = (MultiBranchProject<?, ?>) item;
+            p.scheduleBuild2(0).getFuture().get();
+            j.waitUntilNoActivity();
         }
         else {
             assertEquals(403, resp.get("code"));
