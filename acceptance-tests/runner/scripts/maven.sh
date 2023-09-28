@@ -22,9 +22,9 @@ assemble-plugins() {
     fi
     echo "Assembling ATH dependency plugins (non Blue Ocean) ..."
     pushd runner/runtime-plugins
-    mvn clean install -B -DskipTests -ntp
+    mvn clean install -B -DskipTests -ntp -Dmaven.repo.local=$MAVEN_LOCAL_REPO
     pushd runtime-deps
-    mvn hpi:assemble-dependencies -DuseJpiExtension=true -B -DjenkinsCoreVersionOverride=$JENKINS_VERSION -ntp
+    mvn hpi:assemble-dependencies -DuseJpiExtension=true -B -DjenkinsCoreVersionOverride=$JENKINS_VERSION -ntp -Dmaven.repo.local=$MAVEN_LOCAL_REPO
     popd
     popd
 

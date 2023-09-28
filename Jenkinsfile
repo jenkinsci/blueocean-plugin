@@ -71,7 +71,7 @@ node() {
                 sh 'id'
                 //sh 'whoami'
                 sh 'pwd'
-                sh "mvn clean install -T2 -Pci -V -B -DcleanNode -ntp -DforkCount=3 -Dmaven.test.failure.ignore -s settings.xml -e -Dmaven.artifact.threads=30"
+                sh "mvn clean install -T2 -Pci -V -B -DcleanNode -ntp -DforkCount=3 -Dmaven.test.failure.ignore -s settings.xml -e -Dmaven.repo.local=/tmp/m2 -Dmaven.artifact.threads=30"
               } finally {
                 junit testResults: '**/target/surefire-reports/TEST-*.xml', allowEmptyResults: true
                 junit testResults: '**/target/jest-reports/*.xml', allowEmptyResults: true
@@ -85,7 +85,7 @@ node() {
               timeout(time: 90, unit: 'MINUTES') {
                 dir('acceptance-tests') {
                   sh "id"
-                  sh "bash -x ./run.sh -v=${version} --host=${ip} --no-selenium -ci --settings='-s ${env.WORKSPACE}/settings.xml'"
+                  sh "bash -x ./run.sh -v=${version} --host=${ip} --no-selenium -ci --settings='-s ${env.WORKSPACE}/settings.xml' --maven-local-repo=/tmp/m2"
                   junit '**/target/surefire-reports/*.xml'
                   archive '**/target/screenshots/**/*'
                 }
