@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class SmartWebElement implements WebElement {
     private static Logger logger = LoggerFactory.getLogger(SmartWebElement.class);
-    public static final int DEFAULT_TIMEOUT = Integer.getInteger("webDriverDefaultTimeout", 3000);
+    public static final int DEFAULT_TIMEOUT = WaitUtil.DEFAULT_TIMEOUT;
     public static final int RETRY_COUNT = 3;
 
     private WebDriver driver;

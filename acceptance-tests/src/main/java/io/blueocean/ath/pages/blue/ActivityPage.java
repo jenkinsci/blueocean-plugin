@@ -62,13 +62,13 @@ public class ActivityPage {
 
     public ActivityPage checkUrl() {
         wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 120000);
-        wait.until(By.cssSelector("article.activity"), 60000);
+        wait.until(By.cssSelector("article.activity"));
         return this;
     }
 
     public ActivityPage checkUrl(String filter) {
         wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity?branch=" + URLEncoder.encode(URLEncoder.encode(filter))), 30000);
-        wait.until(By.cssSelector("article.activity"), 60000);
+        wait.until(By.cssSelector("article.activity"));
         return this;
     }
 
@@ -134,7 +134,7 @@ public class ActivityPage {
 
     public void checkBasicDomElements() {
         wait.retryAction("check that we are on the activity page", 3, driver -> {
-            wait.until(By.cssSelector("article.activity"), 5000);
+            wait.until(By.cssSelector("article.activity"));
             logger.info("checkBasicDomElements: Activity tab found");
             return true;
         });
