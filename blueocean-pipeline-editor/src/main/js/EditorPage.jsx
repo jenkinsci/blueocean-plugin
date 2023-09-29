@@ -318,7 +318,7 @@ class PipelineLoader extends React.Component {
             // the team is wrong and do match the github org used so get the branch by searching
             // github repo from the job
             if (scmId == 'github') {
-                repositoryUrl = `${orgRestUrl}scm/github/repository?jobName=${repo}&apiUrl=${apiUrl}`;
+                repositoryUrl = `${orgRestUrl}scm/github/repository?jobName=${repo}`;
             } else if (apiUrl) {
                 repositoryUrl += `?apiUrl=${apiUrl}`;
             }
