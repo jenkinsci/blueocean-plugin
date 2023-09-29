@@ -89,7 +89,7 @@ public class GitUtilsTest extends PipelineBaseTest {
         Assert.assertTrue(secondText.equals(text));
 
         gitClient.add().addFilepattern("test.txt").call();
-        gitClient.commit().setMessage(secondText).call();
+        gitClient.commit().setMessage(secondText).setSign(false).call();
         GitUtils.push(repoUrl, cloneRepo, null, "refs/heads/master", "refs/heads/master");
 
         // Assert the remote was updated
