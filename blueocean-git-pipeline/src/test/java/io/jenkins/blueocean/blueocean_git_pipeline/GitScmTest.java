@@ -228,7 +228,7 @@ public class GitScmTest extends PipelineBaseTest {
     }
 
     @Test
-    public void shouldCreateGitMbp() throws IOException, UnirestException {
+    public void shouldCreateGitMbp() throws Exception {
         login();
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
@@ -242,6 +242,7 @@ public class GitScmTest extends PipelineBaseTest {
                 .build(Map.class);
 
         assertEquals("demo", resp.get("name"));
+        j.waitUntilNoActivity();
     }
 
     @Test
