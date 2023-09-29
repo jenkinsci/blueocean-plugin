@@ -385,8 +385,12 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
             c.doStop();
             System.err.println(f + " ---%<---");
             long p = 0;
-            while (!c.getLogText().isComplete()) {
-                p = c.getLogText().writeLogTo(p, System.err);
+            try {
+                while (!c.getLogText().isComplete()) {
+                    p = c.getLogText().writeLogTo(p, System.err);
+                }
+            } catch (IOException x) {
+                x.printStackTrace();
             }
             System.err.println(f + " --->%---");
         }
