@@ -73,6 +73,10 @@ class CloneProgressMonitor implements ProgressMonitor {
         return cancel;
     }
 
+    @Override
+    public void showDuration(boolean enabled) {
+    }
+
     /**
      * Call this for the percentage complete
      * @return a number 0-100
