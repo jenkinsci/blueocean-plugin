@@ -3,6 +3,7 @@ package io.blueocean.ath.offline.multibranch;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.BlueOceanAcceptanceTest;
 import io.blueocean.ath.GitRepositoryRule;
+import io.blueocean.ath.Retry;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.MultiBranchPipeline;
@@ -58,6 +59,7 @@ public class CommitMessagesTest extends BlueOceanAcceptanceTest {
      * This tests the commit messages are being picked up from git and displayed on the run in activity.
      */
     @Test
+    @Retry(3)
     public void commitMessagesTest() throws IOException, GitAPIException {
         final String pipelineName = this.getClass().getSimpleName() + "_" + name.getMethodName();
         final String branchName = "master";

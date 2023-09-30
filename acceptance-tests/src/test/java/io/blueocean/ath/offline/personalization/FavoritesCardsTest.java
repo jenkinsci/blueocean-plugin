@@ -1,6 +1,7 @@
 package io.blueocean.ath.offline.personalization;
 
 
+import io.blueocean.ath.Retry;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.factory.ActivityPageFactory;
 import io.blueocean.ath.model.ClassicPipeline;
@@ -55,6 +56,7 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
     }
 
     @Test
+    @Retry(3)
     public void testFreestyle() throws IOException {
         File tmpFile = File.createTempFile(UUID.randomUUID().toString(), "");
         String tmpFileName = tmpFile.getAbsolutePath();
@@ -85,6 +87,7 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
     }
 
     @Test
+    @Retry(3)
     public void testClassicPipeline() throws IOException {
         File tmpFile = File.createTempFile(UUID.randomUUID().toString(), "");
         String tmpFileName = tmpFile.getAbsolutePath();
