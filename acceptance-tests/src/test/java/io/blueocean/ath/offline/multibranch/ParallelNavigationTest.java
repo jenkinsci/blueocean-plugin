@@ -93,6 +93,7 @@ public class ParallelNavigationTest {
      * One at a time, the proceed button will be clicked.
      */
     @Test
+    @Retry(3)
     public void parallelNavigationTestInput() throws IOException, GitAPIException, InterruptedException {
         // Create navTestWithInput
         logger.info("Creating pipeline {}", navTestWithInput);
@@ -123,6 +124,7 @@ public class ParallelNavigationTest {
      * This checks that an error is shown in the UI for a failed input step
      */
     @Test
+    @Retry(3)
     public void failedInputStep() throws IOException, GitAPIException, InterruptedException {
         try
         {
@@ -157,6 +159,7 @@ public class ParallelNavigationTest {
      * This checks that the log is visible when a run fails with no steps or stages
      */
     @Test
+    @Retry(3)
     public void testLogVisibilityWhenNoStepsOrStages() throws IOException, GitAPIException, InterruptedException {
         // Create navTestWithNoStepsNoStages
         logger.info("Creating pipeline " + navTestWithNoStepsNoStages);
@@ -180,6 +183,7 @@ public class ParallelNavigationTest {
      * This checks that href attr of the alert error for unsupported inputs leads to the correct classic url
      */
     @Test
+    @Retry(3)
     public void testInputParamGoToClassicLink() throws IOException, GitAPIException, InterruptedException {
         // Create navTestInputParamGoToClassicLink
         logger.info("Creating pipeline " + navTestInputParamGoToClassicLink);
