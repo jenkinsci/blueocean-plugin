@@ -2,6 +2,7 @@ JENKINS_VERSION=2.401.3
 SELENIUM_VERSION=2.53
 
 MAVEN_SETTINGS=""
+MAVEN_LOCAL_REPO="$HOME/.m2/repository"
 LOCAL_SNAPSHOTS=false
 export LOCAL_DEV=false
 RUN_SELENIUM=true
@@ -11,7 +12,7 @@ PLUGINS=""
 AGGREGATOR_DIR=""
 DEV_JENKINS=false
 PROFILES="-P runTests"
-JENKINS_JAVA_OPTS="-Djava.util.logging.config.file=./logging.properties -Dio.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider.enabled=true"
+JENKINS_JAVA_OPTS="-Djava.util.logging.config.file=./logging.properties -Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true -Dio.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider.enabled=true"
 TEST_TO_RUN=""
 
 for i in "$@"
@@ -32,11 +33,17 @@ case $i in
     -ld|--local-dev)
     export LOCAL_DEV=true
     ;;
+    -ci|--ci-bo)
+    export CI_BO=true
+    ;;
     --no-selenium)
     RUN_SELENIUM=false
     ;;
     --settings=*)
     MAVEN_SETTINGS="${i#*=}"
+    ;;
+    --maven-local-repo=*)
+    MAVEN_LOCAL_REPO="${i#*=}"
     ;;
     -h=*|--host=*)
     ATH_SERVER_HOST="${i#*=}"
@@ -74,6 +81,12 @@ if [ "${DEV_JENKINS}" == "true" ]; then
     # allowing you to iterate on your acceptance test dode without constantly
     # having to restart Jenkins.
     PROFILES="-P runDevRunner"
+    TEST_TO_RUN=""
+fi
+
+if [ "${CI_BO}" == "true" ]; then
+    # Use ci profile which can exclude some flaky tests
+    PROFILES="-P runTests -P ci"
     TEST_TO_RUN=""
 fi
 

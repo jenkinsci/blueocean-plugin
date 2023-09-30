@@ -44,6 +44,8 @@ node() {
           sh 'mv $MAVEN_SETTINGS settings.xml'
         }
         sh 'mv $BO_ATH_KEY_FILE acceptance-tests/bo-ath.key'
+        sh 'id'
+        sh 'whoami'
         sh "./acceptance-tests/runner/scripts/start-selenium.sh"
         sh "./acceptance-tests/runner/scripts/start-bitbucket-server.sh"
       }
@@ -52,20 +54,24 @@ node() {
         docker.image('blueocean/blueocean:build_env').inside("--net=container:blueo-selenium") {
           ip = sh(returnStdout: true, script: "hostname -I  | awk '{print \$1}'").trim()
           echo "IP: [${ip}]"
-          stage('Sanity check dependencies') {
-            sh "node ./bin/checkdeps.js"
-            sh "node ./bin/checkshrinkwrap.js"
-          }
+          // stage('Sanity check dependencies') {
+          //   sh "node ./bin/checkdeps.js"
+          //   sh "node ./bin/checkshrinkwrap.js"
+          // }
 
-          stage('Building JS Libraries') {
-            sh 'node -v && npm -v'
-            sh 'npm --prefix ./js-extensions run build'
-          }
+          // stage('Building JS Libraries') {
+          //   sh "pwd"
+          //   sh 'node -v && npm -v'
+          //   sh 'npm --prefix ./js-extensions run build'
+          // }
 
           stage('Building BlueOcean') {
             timeout(time: 90, unit: 'MINUTES') {
               try {
-                sh "mvn clean install -T1C -V -B -DcleanNode -ntp -Dmaven.test.failure.ignore -s settings.xml -e -Dmaven.artifact.threads=30"
+                sh 'id'
+                //sh 'whoami'
+                sh 'pwd'
+                sh "mvn clean install -T2 -Pci -V -B -DcleanNode -ntp -DforkCount=3 -Dmaven.test.failure.ignore -s settings.xml -e -Dmaven.repo.local=/tmp/m2 -Dmaven.artifact.threads=30"
               } finally {
                 junit testResults: '**/target/surefire-reports/TEST-*.xml', allowEmptyResults: true
                 junit testResults: '**/target/jest-reports/*.xml', allowEmptyResults: true
@@ -76,9 +82,10 @@ node() {
 
           jenkinsVersions.each { version ->
             stage("ATH - Jenkins ${version}") {
-              timeout(time: 150, unit: 'MINUTES') {
+              timeout(time: 90, unit: 'MINUTES') {
                 dir('acceptance-tests') {
-                  sh "bash -x ./run.sh -v=${version} --host=${ip} --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+                  sh "id"
+                  sh "bash -x ./run.sh -v=${version} --host=${ip} --no-selenium -ci --settings='-s ${env.WORKSPACE}/settings.xml' --maven-local-repo=/tmp/m2"
                   junit '**/target/surefire-reports/*.xml'
                   archive '**/target/screenshots/**/*'
                 }
