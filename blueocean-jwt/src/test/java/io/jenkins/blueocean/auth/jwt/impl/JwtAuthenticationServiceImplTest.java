@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.auth.jwt.impl;
 
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.util.Cookie;
+import org.htmlunit.Page;
+import org.htmlunit.util.Cookie;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import net.sf.json.JSONObject;
