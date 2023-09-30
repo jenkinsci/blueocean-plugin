@@ -14,6 +14,7 @@
         <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
         <slf4j.version>1.7.32</slf4j.version>
         <selenium.version>3.141.59</selenium.version> <!-- 3.141.59 4.0.0-alpha-6 -->
+        <webDriverDefaultTimeout>180000</webDriverDefaultTimeout>
     </properties>
 
 
@@ -169,8 +170,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M9</version>
+                    <version>3.1.2</version>
                     <configuration>
+                        <systemPropertyVariables>
+                            <ath.defaultRetry>4</ath.defaultRetry>
+                            <webDriverDefaultTimeout>240000</webDriverDefaultTimeout>
+                        </systemPropertyVariables>
                         <useModulePath>false</useModulePath>
                         <trimStackTrace>false</trimStackTrace>
                         <argLine>
@@ -285,6 +290,27 @@
                         </configuration>
                     </plugin>
                 </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>ci</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <configuration>
+                                <excludedGroups>flaky</excludedGroups>
+                                <systemPropertyVariables>
+                                    <ath.defaultRetry>4</ath.defaultRetry>
+                                    <webDriverDefaultTimeout>240000</webDriverDefaultTimeout>
+                                </systemPropertyVariables>
+<!--                                <rerunFailingTestsCount>2</rerunFailingTestsCount>-->
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
             </build>
         </profile>
     </profiles>
