@@ -92,7 +92,7 @@
     "jest": "19.0.2",
     "less": "2.7.2",
     "mockdate": "2.0.2",
-    "node-sass": "4.11.0",
+    "node-sass": "7.0.0",
     "normalize.css": "5.0.0",
     "octicons": "4.4.0",
     "react-addons-test-utils": "15.4.2",
