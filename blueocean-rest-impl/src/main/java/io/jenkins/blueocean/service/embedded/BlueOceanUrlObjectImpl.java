@@ -23,11 +23,7 @@ public class BlueOceanUrlObjectImpl extends BlueOceanUrlObject {
 
     @Override
     public @NonNull String getDisplayName() {
-        if (this.mappedUrl.equals(BlueOceanUrlMapperImpl.getLandingPagePath())) {
-            return Messages.BlueOceanUrlAction_DisplayName();
-        } else {
-            return Messages.BlueOceanUrlAction_GenericDisplayName();
-        }
+        return Messages.BlueOceanUrlAction_DisplayName();
     }
 
     @Override
