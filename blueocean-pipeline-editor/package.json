@@ -48,7 +48,7 @@
     "gulp-typescript": "4.0.1",
     "jest": "19.0.2",
     "jest-cli": "19.0.2",
-    "jsdom": "7.2.2",
+    "jsdom": "16.5.0",
     "mocha": "2.4.5",
     "nock": "8.0.0",
     "react-addons-test-utils": "15.4.2",
