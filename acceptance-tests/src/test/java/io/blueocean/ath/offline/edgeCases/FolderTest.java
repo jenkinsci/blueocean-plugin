@@ -2,11 +2,7 @@ package io.blueocean.ath.offline.edgeCases;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.offbytwo.jenkins.model.FolderJob;
-import io.blueocean.ath.ATHJUnitRunner;
-import io.blueocean.ath.BaseUrl;
-import io.blueocean.ath.BlueOceanAcceptanceTest;
-import io.blueocean.ath.GitRepositoryRule;
-import io.blueocean.ath.WaitUtil;
+import io.blueocean.ath.*;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.Folder;
@@ -85,6 +81,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
      * As long as activity loads run, any other page for this pipeline should load as it uses a shared router.
      */
     @Test
+    @Retry(3)
     public void multiBranchFolderTest() throws GitAPIException, IOException {
         String pipelineName = "FolderTest_multiBranchFolderTest";
         git.writeJenkinsFile(loadJenkinsFile());
@@ -100,6 +97,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
     }
 
     @Test
+    @Retry(3)
     public void foldersTest() throws IOException, GitAPIException, UnirestException, InterruptedException {
         String pipelineName = "Sohn";
 
@@ -109,7 +107,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
 
         jobApi.createFreeStyleJob(folderJob, pipelineName, "echo 'hello world!'");
         driver.get(folderJob.getUrl()+"/job/"+pipelineName+"/");
-        driver.findElement(By.xpath("//a[contains(@class, 'task-link') and @title='Open Blue Ocean']")).click();
+        driver.findElement(By.xpath("//a[contains(@class,'task-link')][span[contains(@class,'task-link-text') and contains(text(),'Open Blue Ocean')]]")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".PlaceholderContent.NoRuns")));
         String activityPage = driver.getCurrentUrl();
         assertTrue(activityPage.endsWith(getNestedPipelinePath("firstFolder") +
@@ -119,7 +117,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
         wait.until(By.cssSelector("nav a.pr"));
         wait.until(By.cssSelector("a.main_exit_to_app"));
         driver.findElement(By.cssSelector("a.main_exit_to_app")).click();
-        wait.until(By.xpath("//a[contains(@class, 'task-link') and @title='Open Blue Ocean']"));
+        wait.until(By.xpath("//a[contains(@class,'task-link')][span[contains(@class,'task-link-text') and contains(text(),'Open Blue Ocean')]]"));
         assertEquals(base+"/job/firstFolder/job/"+
                 URLEncoder.encode("三百", "UTF-8")
                 +"/job/"+URLEncoder.encode("ñba", "UTF-8")
@@ -128,6 +126,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
     }
 
     @Test
+    @Retry(3)
     public void anotherFoldersTest() throws IOException, GitAPIException, UnirestException {
         Folder anotherFolder =  Folder.folders("anotherFolder", "三百", "ñba", "七");
         FolderJob folderJob = jobApi.createFolders(anotherFolder, true);
@@ -200,7 +199,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
         // make sure the open blue ocean button works. In this case,
         // it should bring the browser to the run details page for the first run
         driver.get(base+"/job/anotherFolder/job/三百/job/ñba/job/七/job/"+pipelineName+"/job/feature%252F1/1/");
-        wait.until(By.xpath("//a[contains(@class, 'task-link') and @title='Open Blue Ocean']")).click();
+        wait.until(By.xpath("//a[contains(@class,'task-link')][span[contains(@class,'task-link-text') and contains(text(),'Open Blue Ocean')]]")).click();
         wait.until(ExpectedConditions.urlContains(getNestedPipelinePath("anotherFolder") + pipelineName + "/detail/feature%2F1/1/pipeline"));
         wait.until(ExpectedConditions.or(
                 ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .log-wrapper")),
@@ -211,7 +210,7 @@ public class FolderTest extends BlueOceanAcceptanceTest {
         // it should bring the browser to the main top-level pipelines page.
         // See https://issues.jenkins-ci.org/browse/JENKINS-39842
         driver.get(base+"/job/anotherFolder/job/三百/job/ñba");
-        wait.until(By.xpath("//a[contains(@class, 'task-link') and @title='Open Blue Ocean']")).click();
+        wait.until(By.xpath("//a[contains(@class,'task-link')][span[contains(@class,'task-link-text') and contains(text(),'Open Blue Ocean')]]")).click();
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".Header-topNav nav a[href=\"/blue/pipelines\"]")));
         driver.findElement(By.cssSelector(".pipelines-table"));

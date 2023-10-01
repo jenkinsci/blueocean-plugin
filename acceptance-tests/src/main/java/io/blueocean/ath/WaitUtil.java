@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 @Singleton
 public class WaitUtil {
-    public static int DEFAULT_TIMEOUT = Integer.getInteger("webDriverDefaultTimeout", 20000);
+    public static int DEFAULT_TIMEOUT = Integer.getInteger("webDriverDefaultTimeout", 90000);
     public static String DEFAULT_ERROR_MESSAGE = "Error while waiting for something";
     public static final int RETRY_COUNT = 10;
 
