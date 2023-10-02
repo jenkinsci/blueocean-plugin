@@ -130,7 +130,7 @@
         <dependency>
             <groupId>com.github.eirslett</groupId>
             <artifactId>frontend-plugin-core</artifactId>
-            <version>1.0</version>
+            <version>1.14.0</version>
         </dependency>
         <!--Needed to preempt wiremock from loading older version and breaking, that breaking serialization -->
         <dependency>
