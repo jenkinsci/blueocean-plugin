@@ -32,7 +32,7 @@
         when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions
         and  acceptance-tests/runner/scripts/args.sh
     -->
-    <jenkins.version>2.401.3</jenkins.version>
+    <jenkins.version>2.428</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <byte-buddy.version>1.14.7</byte-buddy.version>
     <frontend-version>1.12.0</frontend-version>
@@ -218,7 +218,7 @@
 
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
-            <artifactId>bom-2.401.x</artifactId>
+            <artifactId>bom-weekly</artifactId>
             <version>2401.v7a_d68f8d0b_09</version>
             <scope>import</scope>
             <type>pom</type>
