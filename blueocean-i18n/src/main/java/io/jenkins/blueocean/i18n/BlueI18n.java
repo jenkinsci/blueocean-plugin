@@ -140,7 +140,9 @@ public class BlueI18n implements ApiRoutable {
         }
 
         try {
-            ResourceBundle resourceBundle = ResourceBundle.getBundle(bundleParams.bundleName, locale, plugin.classLoader);
+            // We don't want to fall back to the default locale.
+            var control = ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT);
+            ResourceBundle resourceBundle = ResourceBundle.getBundle(bundleParams.bundleName, locale, plugin.classLoader, control);
             JSONObject bundleJSON = new JSONObject();
             for (String key : resourceBundle.keySet()) {
                 bundleJSON.put(key, resourceBundle.getString(key));
