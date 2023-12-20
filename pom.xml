@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.73</version>
+    <version>4.74</version>
     <relativePath />
   </parent>
 
@@ -35,7 +35,6 @@
     <jenkins.version>2.401.3</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <byte-buddy.version>1.14.7</byte-buddy.version>
-    <frontend-version>1.12.0</frontend-version>
     <node.version>10.13.0</node.version>
     <npm.version>6.14.4</npm.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
