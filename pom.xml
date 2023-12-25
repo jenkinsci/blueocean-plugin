@@ -495,7 +495,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>async-http-client</artifactId>
-            <version>1.7.24.1</version>
+            <version>1.9.40.0</version>
             <scope>test</scope>
         </dependency>
 
