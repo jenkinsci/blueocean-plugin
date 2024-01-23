@@ -86,6 +86,8 @@ public class GitReadSaveTest extends PipelineBaseTest {
     private final Logger logger = Logger.getLogger(getClass().getName());
 
     private SSHServer sshd;
+    
+    private static IP_ADDRESS = InetAddress.getLoopbackAddress().getHostAddress();
 
     public GitReadSaveTest() {
     }
@@ -193,12 +195,16 @@ public class GitReadSaveTest extends PipelineBaseTest {
             sshd.start();
         }
     }
+    
+    private String getAddress() {
+        return Boolean.getBoolean("java.net.preferIPv6Addresses") ? String.format("[%s]", IP_ADDRESS) : IP_ADDRESS;
+    }
 
     @After
     public void stopSSHServer() throws InterruptedException, IOException {
         if (sshd != null) {
-            String ssh = "ssh -p " + sshd.getPort() + " bob@127.0.0.1";
-            String remote = "ssh://bob@127.0.0.1:" + sshd.getPort() + "" + repoForSSH.getRoot().getCanonicalPath();
+            String ssh = "ssh -p " + sshd.getPort() + " bob@" + getAddress();
+            String remote = "ssh://bob@" + getAddress() + ":" + sshd.getPort() + "" + repoForSSH.getRoot().getCanonicalPath();
             logger.fine(ssh + " // remote: " + remote);
             sshd.stop();
             sshd = null;
@@ -224,7 +230,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
     public void testGitScmValidate() throws Exception {
         Assume.assumeFalse(Functions.isWindows()); // can't really run this on windows
         startSSH();
-        String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
+        String userHostPort = "bob@" + getAddress() + ":" + sshd.getPort();
         String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath();
 
         User bob = login();
