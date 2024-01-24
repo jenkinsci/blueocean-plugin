@@ -59,6 +59,7 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
@@ -86,8 +87,8 @@ public class GitReadSaveTest extends PipelineBaseTest {
     private final Logger logger = Logger.getLogger(getClass().getName());
 
     private SSHServer sshd;
-    
-    private static IP_ADDRESS = InetAddress.getLoopbackAddress().getHostAddress();
+
+    private static String IP_ADDRESS = InetAddress.getLoopbackAddress().getHostAddress();
 
     public GitReadSaveTest() {
     }
@@ -195,7 +196,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
             sshd.start();
         }
     }
-    
+
     private String getAddress() {
         return Boolean.getBoolean("java.net.preferIPv6Addresses") ? String.format("[%s]", IP_ADDRESS) : IP_ADDRESS;
     }
