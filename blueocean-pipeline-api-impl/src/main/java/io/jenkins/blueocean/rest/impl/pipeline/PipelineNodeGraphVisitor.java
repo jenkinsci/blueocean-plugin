@@ -584,16 +584,18 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         pipelineActionsNodes = new HashSet<>();
         if (!nodes.isEmpty()) {
             DownstreamBuildAction action = run.getAction(DownstreamBuildAction.class);
-            for (DownstreamBuildAction.DownstreamBuild downstreamBuild : action.getDownstreamBuilds()) {
-                if (nodes.contains(downstreamBuild.getFlowNodeId())) {
-                    Run<?, ?> downstream = downstreamBuild.getBuild();
-                    if (downstream != null) {
-                        Link link = LinkResolver.resolveLink(downstream);
-                        String description = downstream.getDescription();
-                        if (description == null) {
-                            description = downstream.getFullDisplayName();
+            if (action != null) {
+                for (DownstreamBuildAction.DownstreamBuild downstreamBuild : action.getDownstreamBuilds()) {
+                    if (nodes.contains(downstreamBuild.getFlowNodeId())) {
+                        Run<?, ?> downstream = downstreamBuild.getBuild();
+                        if (downstream != null) {
+                            Link link = LinkResolver.resolveLink(downstream);
+                            String description = downstream.getDescription();
+                            if (description == null) {
+                                description = downstream.getFullDisplayName();
+                            }
+                            drainedActions.add(new NodeDownstreamBuildAction(link, description));
                         }
-                        drainedActions.add(new NodeDownstreamBuildAction(link, description));
                     }
                 }
             }
