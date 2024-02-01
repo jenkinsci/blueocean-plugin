@@ -15,7 +15,7 @@ import { ParameterApi } from './rest/ParameterApi';
 export { ParametersRunButton } from './ParametersRunButton';
 /**
  * all input types that we know of mapping against the component
- * @type {{BooleanParameterDefinition: Boolean, ChoiceParameterDefinition: Choice, TextParameterDefinition: String, StringParameterDefinition: Text, PasswordParameterDefinition: Password}}
+ * @type {{BooleanParameterDefinition: Boolean, ChoiceParameterDefinition: Choice, TextParameterDefinition: String, StringParameterDefinition: Text, PasswordParameterDefinition: Password, GitParameterDefinition: Text}}
  */
 export const supportedInputTypesMapping = {
     BooleanParameterDefinition: Boolean,
@@ -23,6 +23,7 @@ export const supportedInputTypesMapping = {
     TextParameterDefinition: Text,
     StringParameterDefinition: String,
     PasswordParameterDefinition: Password,
+    GitParameterDefinition: String
 };
 /**
  * all input types that we know of
