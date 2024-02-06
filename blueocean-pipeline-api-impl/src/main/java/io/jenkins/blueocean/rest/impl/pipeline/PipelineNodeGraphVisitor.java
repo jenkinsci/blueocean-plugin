@@ -115,6 +115,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         this.run = run;
         this.inputAction = run.getAction(InputAction.class);
         this.pipelineActions = new HashSet<>();
+        this.pipelineActionsNodes = new HashSet<>();
         this.pendingActionsForBranches = new HashMap<>();
         declarative = run.getAction(ExecutionModelAction.class) != null;
         FlowExecution execution = run.getExecution();
