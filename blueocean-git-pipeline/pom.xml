@@ -38,6 +38,13 @@
       <artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
       <!-- TODO this is hard to manage; if needed, should be in BOM -->
       <version>6.8.0.202311291450-r</version>
+      <exclusions>
+        <exclusion>
+          <!-- Provided by Jenkins core -->
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- test dependencies -->
