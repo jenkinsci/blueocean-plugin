@@ -544,13 +544,13 @@ public class PipelineApiTest extends BaseTest {
         Run r = QueueUtil.getRun(p1, Long.parseLong((String)((Map)queue.get(0)).get("id")));
         assertNull(r); //its not moved out of queue yet
 
+        for (Queue.Item i : j.jenkins.getQueue().getItems()) {
+            j.jenkins.getQueue().cancel(i);
+        }
         b1.doStop();
         b2.doStop();
         j.assertBuildStatus(Result.ABORTED, j.waitForCompletion(b1));
         j.assertBuildStatus(Result.ABORTED, j.waitForCompletion(b2));
-        for (Queue.Item i : j.jenkins.getQueue().getItems()) {
-            j.jenkins.getQueue().cancel(i);
-        }
         j.waitUntilNoActivity();
     }
 
