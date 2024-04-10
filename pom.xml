@@ -34,7 +34,7 @@
     -->
     <jenkins.version>2.426.1</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
-    <byte-buddy.version>1.14.7</byte-buddy.version>
+    <byte-buddy.version>1.14.9</byte-buddy.version>
     <node.version>10.13.0</node.version>
     <npm.version>6.14.4</npm.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
