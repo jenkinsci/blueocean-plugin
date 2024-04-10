@@ -38,7 +38,7 @@
     <node.version>10.13.0</node.version>
     <npm.version>6.14.4</npm.version>
     <!-- TODO: Remove this and related dependencyManagement entries once it is included in the BOM. -->
-    <pipeline-model-definition.version>2.2197.vb_d144259a_8a_9</pipeline-model-definition.version>
+    <pipeline-model-definition.version>2.2198.v41dd8ef6dd56</pipeline-model-definition.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
