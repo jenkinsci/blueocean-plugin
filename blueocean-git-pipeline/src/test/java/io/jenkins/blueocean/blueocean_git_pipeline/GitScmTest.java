@@ -1,6 +1,8 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
+import hudson.model.Computer;
+import hudson.model.Executor;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.User;
@@ -15,6 +17,7 @@ import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 import jenkins.plugins.git.GitSampleRepoRule;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -25,6 +28,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
 import org.jvnet.hudson.test.MockFolder;
+import org.jvnet.hudson.test.RemainingActivityListener;
 import org.jvnet.hudson.test.TestExtension;
 
 import java.io.IOException;
@@ -62,6 +66,27 @@ public class GitScmTest extends PipelineBaseTest {
     public void setup() throws Exception{
         super.setup();
         setupScm();
+    }
+
+    /**
+     * Seems active only for {@link #shouldFailOnValidation4}.
+     * Could become another mode for {@link RemainingActivityListener}.
+     */
+    @After
+    public void killIndexing() throws InterruptedException {
+        WAIT: while (true) {
+            for (Computer c : Jenkins.get().getComputers()) {
+                for (Executor x : c.getAllExecutors()) {
+                    if (!x.isIdle()) {
+                        System.err.println("Killing " + x.getCurrentExecutable());
+                        x.interrupt();
+                        Thread.sleep(1000);
+                        continue WAIT;
+                    }
+                }
+            }
+            break;
+        }
     }
 
     private Map createCredentials(User user, Map credRequest) throws UnirestException {

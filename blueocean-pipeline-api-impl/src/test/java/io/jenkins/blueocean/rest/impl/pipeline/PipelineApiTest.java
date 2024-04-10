@@ -9,6 +9,7 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
 import hudson.model.Run;
+import hudson.model.queue.QueueTaskFuture;
 import hudson.tasks.Shell;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -231,8 +232,8 @@ public class PipelineApiTest extends PipelineBaseTest {
 
         job1.setConcurrentBuild(false);
 
-        WorkflowRun r = job1.scheduleBuild2(0).waitForStart();
-        job1.scheduleBuild2(0);
+        WorkflowRun b1 = job1.scheduleBuild2(0).waitForStart();
+        QueueTaskFuture<WorkflowRun> b2f = job1.scheduleBuild2(0);
 
 
         List l = request().get("/organizations/jenkins/pipelines/pipeline1/runs").build(List.class);
@@ -240,6 +241,10 @@ public class PipelineApiTest extends PipelineBaseTest {
         Assert.assertEquals(2, l.size());
         Assert.assertEquals("io.jenkins.blueocean.service.embedded.rest.QueuedBlueRun", ((Map) l.get(0)).get("_class"));
         Assert.assertEquals("io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl", ((Map) l.get(1)).get("_class"));
+
+        b2f.cancel(true);
+        b1.doStop();
+        j.waitForCompletion(b1);
     }
 
     @Test
