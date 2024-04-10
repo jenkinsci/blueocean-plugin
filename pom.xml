@@ -32,7 +32,7 @@
         when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions
         and  acceptance-tests/runner/scripts/args.sh
     -->
-    <jenkins.version>2.401.3</jenkins.version>
+    <jenkins.version>2.426.1</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <byte-buddy.version>1.14.7</byte-buddy.version>
     <node.version>10.13.0</node.version>
