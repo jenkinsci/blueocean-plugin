@@ -20,7 +20,6 @@ export function sanitizePosition(input: Position) {
 }
 
 function makePosition(position: Position) {
-    // eslint-disable-next-line max-len, unused-var
     return function simplePositionFunction(
         selfWidth: number,
         selfHeight: number,

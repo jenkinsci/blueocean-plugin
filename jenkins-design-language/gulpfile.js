@@ -70,45 +70,26 @@ const config = {
     },
 };
 
-// Default to all
-
-var builder = require('@jenkins-cd/js-builder');
-
-builder.src([
-    'src/js',
-    'less',
-    'dist' // for icons & fonts; NOTE: would be nice to find another way to do this as files in dist creates issues for jest & eslint
-]);
-
-builder.tests(config.test.sources);
-
-// redefine 'lint' to check only react and test sources (avoid dist)
-builder.defineTask("lint", () => (
-    gulp.src([config.react.sources, config.test.sources])
-        .pipe(lint())
-        .pipe(lint.format())
-        .pipe(lint.failAfterError())
-));
-
-
-gulp.task("default", gulp.series("lint", "test", "build", "validate"));
-
-// Build all
-
-gulp.task("build", gulp.series("compile-typescript", "compile-react", "less", "copy"));
-
 // Watch all
 
-gulp.task("watch", gulp.series("build", () => {
+gulp.task("watch", ["build"], () => {
    gulp.watch(config.react.sources, ["compile-react"]);
    gulp.watch(config.less.watch, ["less"]);
-}));
+});
 
 // Watch only styles, for when you're using Storybook
 
-gulp.task("watch-styles", gulp.series("build", () => {
+gulp.task("watch-styles", ["build"], () => {
    gulp.watch(config.less.watch, ["less"]);
-}));
+});
+
+// Default to all
+
+gulp.task("default", ["lint", "test", "build", "validate"]);
+
+// Build all
+
+gulp.task("build", ["compile-typescript", "compile-react", "less", "copy"]);
 
 // Compile react sources
 
@@ -186,6 +167,25 @@ gulp.task("validate", () => {
         }
     }
 });
+
+var builder = require('@jenkins-cd/js-builder');
+
+builder.src([
+    'src/js',
+    'less',
+    'dist' // for icons & fonts; NOTE: would be nice to find another way to do this as files in dist creates issues for jest & eslint
+]);
+
+builder.tests(config.test.sources);
+
+// redefine 'lint' to check only react and test sources (avoid dist)
+gulp.task("lint", () => (
+    gulp.src([config.react.sources, config.test.sources])
+        .pipe(lint())
+        .pipe(lint.format())
+        .pipe(lint.failAfterError())
+));
+
 
 //
 // Create the main bundle.
