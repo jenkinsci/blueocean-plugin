@@ -37,6 +37,7 @@
     <byte-buddy.version>1.14.9</byte-buddy.version>
     <node.version>20.12.1</node.version>
     <npm.version>10.5.0</npm.version>
+    <!-- TODO: Remove this and related dependencyManagement entries once it is included in the BOM. -->
     <pipeline-model-definition.version>2.2198.v41dd8ef6dd56</pipeline-model-definition.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
