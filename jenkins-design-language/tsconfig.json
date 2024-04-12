@@ -12,7 +12,6 @@
         "noImplicitReturns": true,
         "noImplicitThis": true,
         "strictNullChecks": true,
-        "suppressImplicitAnyIndexErrors": true,
 		"noUnusedLocals": true,
 		"lib": [
 			"dom",
