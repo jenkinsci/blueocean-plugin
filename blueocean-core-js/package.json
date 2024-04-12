@@ -88,7 +88,7 @@
     "gulp-sourcemaps": "1.6.0",
     "gulp-typescript": "4.0.1",
     "jest": "19.0.2",
-    "jest-cli": "19.0.2",
+    "jest-cli": "^23.6.0",
     "less": "2.7.2",
     "nock": "9.0.14",
     "react-addons-test-utils": "15.4.2",
@@ -128,5 +128,9 @@
       "json",
       "node"
     ]
+  },
+  "overrides": {
+    "graceful-fs": "^4.2.11",
+    "gulp-jest": "^4.0.2"
   }
 }

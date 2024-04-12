@@ -11,3 +11,6 @@ max_line_length = 160
 
 [*.md]
 trim_trailing_whitespace = false
+
+[package.json]
+indent_size = 2

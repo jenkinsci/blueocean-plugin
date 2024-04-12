@@ -24,5 +24,8 @@
     "bundle": [
       "src/main/js/rollbar.js"
     ]
+  },
+  "overrides": {
+    "graceful-fs": "^4.2.11"
   }
 }

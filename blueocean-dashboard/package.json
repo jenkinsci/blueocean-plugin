@@ -129,5 +129,8 @@
         "tsify"
       ]
     ]
+  },
+  "overrides": {
+    "graceful-fs": "^4.2.11"
   }
 }
