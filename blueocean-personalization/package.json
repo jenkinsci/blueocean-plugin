@@ -74,6 +74,13 @@
       "react-router@any"
     ]
   },
+  "jest": {
+    "testMatch": [
+      "**/__tests__/**/*.[jt]s?(x)",
+      "**/?(*.)+(spec|test).[jt]s?(x)",
+      "**/*-(spec).[jt]s?(x)"
+    ]
+  },
   "overrides": {
     "graceful-fs": "^4.2.11",
     "jest-cli": "^23.6.0",

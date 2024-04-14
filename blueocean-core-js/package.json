@@ -83,19 +83,20 @@
     "gulp-babel": "6.1.2",
     "gulp-copy": "0.0.2",
     "gulp-eslint": "3.0.1",
+    "gulp-jest": "^4.0.2",
     "gulp-less": "3.1.0",
     "gulp-rename": "1.2.2",
     "gulp-sourcemaps": "1.6.0",
     "gulp-typescript": "4.0.1",
-    "jest": "19.0.2",
+    "jest": "^23.6.0",
     "jest-cli": "^23.6.0",
     "less": "2.7.2",
-    "nock": "9.0.14",
+    "nock": "^13.5.4",
     "react-addons-test-utils": "15.4.2",
     "reactify": "1.1.1",
     "run-sequence": "1.2.2",
     "sinon": "1.17.6",
-    "ts-jest": "19.0.2",
+    "ts-jest": "^23.10.5",
     "tsify": "4.0.0",
     "typescript": "2.7.2",
     "watchify": "3.7.0"
@@ -127,10 +128,15 @@
       "jsx",
       "json",
       "node"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.[jt]s?(x)",
+      "**/?(*.)+(spec|test).[jt]s?(x)",
+      "**/*-(spec).[jt]s?(x)"
     ]
   },
   "overrides": {
     "graceful-fs": "^4.2.11",
-    "gulp-jest": "^4.0.2"
+    "jest-cli": "^23.6.0"
   }
 }
