@@ -50,9 +50,10 @@ export default class Pipeline extends Component {
         this.debounceFetchNodes = debounce((karaokeOut) => {
             logger.debug('sse fetch it', this.karaoke);
             if (karaokeOut) {
-                this.pager.fetchNodesOnly({});
+                this.pager.fetchNodesOnly();
             } else {
-                this.pager.fetchNodes({});
+                const { node } = this.props.params;
+                this.pager.fetchNodes({ node });
             }
         }, 200);
     }
