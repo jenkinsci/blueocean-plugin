@@ -35,7 +35,6 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>git-client</artifactId>
-      <version>4.8.0-rc3649.35a_620610408</version>
     </dependency>
     <!-- JGit JSch dependency that was previously in git client plugin -->
     <!-- https://issues.jenkins.io/browse/JENKINS-70559 class not found exception -->
