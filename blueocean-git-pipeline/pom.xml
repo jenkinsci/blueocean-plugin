@@ -32,17 +32,13 @@
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>git</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.jenkins-ci.plugins</groupId>
-      <artifactId>git-client</artifactId>
-    </dependency>
     <!-- JGit JSch dependency that was previously in git client plugin -->
     <!-- https://issues.jenkins.io/browse/JENKINS-70559 class not found exception -->
     <dependency>
       <groupId>org.eclipse.jgit</groupId>
       <artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
       <!-- TODO this is hard to manage; if needed, should be in BOM -->
-      <version>6.10.0.202406032230-r</version>
+      <version>6.9.0.202403050737-r</version>
     </dependency>
 
     <!-- test dependencies -->
