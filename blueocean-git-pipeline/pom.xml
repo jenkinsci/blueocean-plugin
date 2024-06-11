@@ -18,6 +18,7 @@
     <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
   </properties>
 
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
