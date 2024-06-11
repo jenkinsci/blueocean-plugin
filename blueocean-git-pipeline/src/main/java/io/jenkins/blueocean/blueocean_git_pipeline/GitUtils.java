@@ -138,6 +138,9 @@ class GitUtils {
     private static boolean checkCauseNotAuthenticated( GitException e) {
        if(e.getCause() instanceof TransportException){
            TransportException te = (TransportException)e.getCause();
+           if(StringUtils.contains(te.getMessage(), "Cannot log in ")) {
+               return true;
+           }
            IllegalStateException stateException = getIllegalStateException(te.getCause());
            if(stateException!=null){
                return StringUtils.contains(stateException.getMessage(), "not authenticated.");
