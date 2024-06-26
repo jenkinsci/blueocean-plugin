@@ -41,5 +41,10 @@
       "react-dom@any",
       "react-router@any"
     ]
+  },
+  "overrides": {
+    "graceful-fs": "^4.2.11",
+    "jest-cli": "^23.6.0",
+    "gulp-jest": "^4.0.2"
   }
 }
