@@ -8,7 +8,7 @@ import io.jenkins.blueocean.service.embedded.analytics.JobAnalyticsExclude;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
-@Extension
+@Extension // TODO as in MatrixProjectImpl
 @Restricted(NoExternalUse.class)
 public final class MatrixAnalyticsCheck implements JobAnalyticsCheck {
     @Override
@@ -24,7 +24,7 @@ public final class MatrixAnalyticsCheck implements JobAnalyticsCheck {
     /**
      * Exclude any jobs that are children of a MatrixProject
      */
-    @Extension
+    @Extension // TODO as in MatrixProjectImpl
     @Restricted(NoExternalUse.class)
     public final static class ExcludeImpl implements JobAnalyticsExclude {
         @Override

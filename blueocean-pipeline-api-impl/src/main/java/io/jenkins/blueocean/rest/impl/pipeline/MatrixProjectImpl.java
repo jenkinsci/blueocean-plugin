@@ -32,6 +32,7 @@ public class MatrixProjectImpl extends PipelineFolderImpl {
         this.matrixProject = folder;
     }
 
+    // TODO consider @OptionalExtension(plugin = "matrix-project") and make the dep optional
     @Extension(ordinal = 1)
     public static class PipelineFactoryImpl extends BluePipelineFactory{
 
