@@ -209,8 +209,6 @@ public class RunImplTest
         // Replay this - with limited retry
         String replayURL = String.format("/organizations/jenkins/pipelines/%s/runs/%s/replay/", p.getName(), idOfSecondRun);
         try {
-            Thread.sleep(200);
-
             request().crumb( getCrumb( j.jenkins ) ).post(replayURL).build(String.class);
         } catch (Exception e) {
             Thread.sleep(200);
