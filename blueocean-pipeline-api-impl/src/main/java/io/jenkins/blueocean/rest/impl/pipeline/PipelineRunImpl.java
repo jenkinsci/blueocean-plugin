@@ -229,7 +229,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
     @Override
     public String getCauseOfBlockage() {
-        for(Queue.Item i: Jenkins.get().getQueue().getItems()) {
+        for(Queue.Item i: Jenkins.get().getQueue().getBuildableItems()) {
             if (run.equals(i.task.getOwnerExecutable())) {
                 String cause = i.getCauseOfBlockage().getShortDescription();
                 CauseOfBlockage causeOfBlockage = i.task.getCauseOfBlockage();
