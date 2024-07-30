@@ -166,7 +166,7 @@ public class EditorPage {
      * @param numberOfParallels number of parallel branches we want to create.
      */
     public void parallelPipeline(int numberOfParallels) {
-        logger.info("Editing a parallel pipeline");
+        logger.info("Creating a parallel pipeline from scratch");
         for (int i = 1; i < numberOfParallels; i++) {
             logger.info("Create stage Parallel-" + i);
             // The "add" Button will always have the id pipeline-node-hittarget-2-add
