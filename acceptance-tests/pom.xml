@@ -152,7 +152,7 @@
         <dependency>
             <groupId>com.cdancy</groupId>
             <artifactId>bitbucket-rest</artifactId>
-            <version>2.3.0</version>
+            <version>2.7.2</version>
         </dependency>
         <!-- end guava -->
         <dependency>
