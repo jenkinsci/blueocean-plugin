@@ -46,13 +46,13 @@
     "gulp": "3.9.1",
     "gulp-mocha": "2.2.0",
     "gulp-typescript": "4.0.1",
-    "jest": "19.0.2",
-    "jest-cli": "19.0.2",
+    "jest": "^23.6.0",
+    "jest-cli": "^23.6.0",
     "jsdom": "16.5.0",
     "mocha": "2.4.5",
     "nock": "8.0.0",
     "react-addons-test-utils": "15.4.2",
-    "ts-jest": "19.0.2",
+    "ts-jest": "^23.10.5",
     "tsify": "4.0.0",
     "typescript": "3.3.3333"
   },
@@ -115,5 +115,9 @@
         }
       ]
     ]
+  },
+  "overrides": {
+    "graceful-fs": "^4.2.11",
+    "gulp-jest": "^4.0.2"
   }
 }
