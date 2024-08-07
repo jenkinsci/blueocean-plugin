@@ -119,6 +119,7 @@ export const DEBUG = {
     disableMocksForI18n,
 };
 
+export { ComponentLink } from './utils/ComponentLink';
 export { TimeManager } from './utils/TimeManager';
 
 export { TimeHarmonizer, TimeHarmonizerUtil } from './components/TimeHarmonizer';
