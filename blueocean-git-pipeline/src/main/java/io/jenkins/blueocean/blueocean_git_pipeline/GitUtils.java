@@ -71,6 +71,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -405,7 +406,7 @@ class GitUtils {
         final DirCache inCoreIndex = DirCache.newInCore();
         final DirCacheBuilder dcBuilder = inCoreIndex.builder();
         try (final ObjectInserter inserter = repo.newObjectInserter()) {
-            long lastModified = System.currentTimeMillis();
+            Instant lastModified = Instant.now();
 
             try {
                 if (contents != null) {
