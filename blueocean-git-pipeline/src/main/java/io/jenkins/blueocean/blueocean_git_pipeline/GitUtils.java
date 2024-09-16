@@ -344,7 +344,7 @@ class GitUtils {
             final CommitBuilder commit = new CommitBuilder();
             commit.setAuthor(author);
             commit.setCommitter(author);
-            commit.setEncoding(Constants.CHARACTER_ENCODING);
+            commit.setEncoding(StandardCharsets.UTF_8);
             commit.setMessage(message);
             //headId can be null if the repository has no commit yet
             if (headId != null) {
