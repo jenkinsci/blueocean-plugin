@@ -542,7 +542,7 @@ public class GraphBuilderTest extends PipelineBaseTest {
         return job.getLastBuild();
     }
 
-    private WorkflowJob createJob(String jobName, String jenkinsFileName) throws java.io.IOException {
+    private WorkflowJob createJob(String jobName, String jenkinsFileName) throws Exception {
         WorkflowJob job = j.createProject(WorkflowJob.class, jobName);
 
         URL resource = getClass().getResource(jenkinsFileName);

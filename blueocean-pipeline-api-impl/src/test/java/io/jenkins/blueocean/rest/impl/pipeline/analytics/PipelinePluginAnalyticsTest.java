@@ -71,7 +71,7 @@ public class PipelinePluginAnalyticsTest extends PipelineBaseTest {
         Assert.assertEquals("runResult", "SUCCESS", properties.get("runResult"));
     }
 
-    private void createAndRunPipeline(String jenkinsFileName) throws java.io.IOException, InterruptedException, java.util.concurrent.ExecutionException {
+    private void createAndRunPipeline(String jenkinsFileName) throws Exception {
         // Create the pipeline and run it
         WorkflowJob scriptedSingle = createWorkflowJobWithJenkinsfile(getClass(), jenkinsFileName);
         WorkflowRun scriptedSingleRun = scriptedSingle.scheduleBuild2(0, new CauseAction()).waitForStart();
