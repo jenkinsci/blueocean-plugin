@@ -14,7 +14,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.MockFolder;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -28,7 +27,7 @@ public class LinkResolverTest extends PipelineBaseTest {
     }
 
     @Test
-    public void nestedFolderJobLinkResolveTest() throws IOException {
+    public void nestedFolderJobLinkResolveTest() throws Exception {
         Project f = j.createFreeStyleProject("fstyle1");
         MockFolder folder1 = j.createFolder("folder1");
         Project p1 = folder1.createProject(FreeStyleProject.class, "test1");
