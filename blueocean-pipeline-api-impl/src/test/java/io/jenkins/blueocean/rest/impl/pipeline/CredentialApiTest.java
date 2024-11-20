@@ -31,7 +31,7 @@ import static org.junit.Assert.assertNotNull;
 public class CredentialApiTest extends PipelineBaseTest {
 
     @Test
-    public void listCredentials() throws IOException {
+    public void listCredentials() throws Exception {
         SystemCredentialsProvider.ProviderImpl system = ExtensionList.lookup(CredentialsProvider.class).get(SystemCredentialsProvider.ProviderImpl.class);
         CredentialsStore systemStore = system.getStore(j.getInstance());
         systemStore.addDomain(new Domain("domain1", null, null));
@@ -59,7 +59,7 @@ public class CredentialApiTest extends PipelineBaseTest {
     }
 
     @Test
-    public void listAllCredentials() throws IOException {
+    public void listAllCredentials() throws Exception {
         SystemCredentialsProvider.ProviderImpl system = ExtensionList.lookup(CredentialsProvider.class).get(SystemCredentialsProvider.ProviderImpl.class);
         CredentialsStore systemStore = system.getStore(j.getInstance());
         systemStore.addDomain(new Domain("domain1", null, null));

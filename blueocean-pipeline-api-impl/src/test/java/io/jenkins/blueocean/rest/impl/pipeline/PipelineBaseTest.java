@@ -647,7 +647,7 @@ public abstract class PipelineBaseTest{
         return login("bob", "Bob Smith", "bob@jenkins-ci.org");
     }
 
-    protected WorkflowJob createWorkflowJobWithJenkinsfile(Class<?> contextClass, String jenkinsFileName) throws java.io.IOException {
+    protected WorkflowJob createWorkflowJobWithJenkinsfile(Class<?> contextClass, String jenkinsFileName) throws Exception {
         WorkflowJob p = j.createProject(WorkflowJob.class, "project-" + UUID.randomUUID());
         URL resource = contextClass.getResource(jenkinsFileName);
         String jenkinsFile = IOUtils.toString(resource, StandardCharsets.UTF_8);
