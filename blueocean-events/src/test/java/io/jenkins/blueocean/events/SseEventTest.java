@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import jenkins.branch.BranchProperty;
@@ -135,7 +134,7 @@ public class SseEventTest {
     }
 
     @Test
-    public void pipelineWithInput() throws IOException, ExecutionException, InterruptedException, TimeoutException {
+    public void pipelineWithInput() throws Exception {
         final OneShotEvent success = new OneShotEvent();
 
         String script = "node {\n" +
