@@ -62,17 +62,13 @@
         </head>
 
         <body>
-            <div id="loadbar">
+            <div id="loadbar" data-is-development-mode="${it.developmentMode}">
                 <div class="font-loader-text">
                     loading
                     <h1>BlueOcean</h1>
                 </div>
             </div>
-            <script>
-                window.isDevelopmentMode = ${it.developmentMode};
-                function lb(c,t){setTimeout(function(){document.getElementById('loadbar').classList.add(c)},t)}
-                lb('go',10);lb('long',1000);lb('longer',6000);
-            </script>
+            <st:adjunct includes="io.jenkins.blueocean.BlueOceanUI.loadbar"/>
             <!-- App root -->
             <div id="root" class="container-fluid">
                 <noscript>
