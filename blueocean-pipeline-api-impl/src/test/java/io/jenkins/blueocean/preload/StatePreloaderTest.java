@@ -32,6 +32,7 @@ import org.jsoup.nodes.Document;
 import org.junit.Assert;
 import org.junit.Test;
 import org.xml.sax.SAXException;
+import net.sf.json.JSONObject;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -55,10 +56,11 @@ public class StatePreloaderTest extends PipelineBaseTest {
         BlueOceanUrlMapper mapper = BlueOceanUrlMapper.all().get(0);
         String projectBlueUrl = j.jenkins.getRootUrl() + mapper.getUrl(freestyleProject);
         Document doc = Jsoup.connect(projectBlueUrl + "/activity/").get();
-        String script = doc.select("head script").toString();
+        String script = doc.select("head script#blueocean-page-state-preload-decorator-data").html().toString();
+        JSONObject json = JSONObject.fromObject(script);
 
-        Assert.assertTrue(script.contains(String.format("setState('prefetchdata.%s',", PipelineStatePreloader.class.getSimpleName())));
-        Assert.assertTrue(script.contains(String.format("setState('prefetchdata.%s',", PipelineActivityStatePreloader.class.getSimpleName())));
+        Assert.assertTrue(json.containsKey(String.format("prefetchdata.%s", PipelineStatePreloader.class.getSimpleName())));
+        Assert.assertTrue(json.containsKey(String.format("prefetchdata.%s", PipelineActivityStatePreloader.class.getSimpleName())));
         Assert.assertTrue(script.contains("\"restUrl\":\"/blue/rest/organizations/jenkins/pipelines/freestyle/runs/?start=0&limit=26\""));
     }
 }
