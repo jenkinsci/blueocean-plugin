@@ -46,8 +46,8 @@
   },
   "dependencies": {
     "@jenkins-cd/blueocean-material-icons": "0.0.8",
-    "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/js-extensions": "0.0.44",
+    "@jenkins-cd/js-modules": "0.0.10",
     "linkifyjs": "2.1.4",
     "lodash.debounce": "4.0.8",
     "moment": "2.19.3",
@@ -83,23 +83,24 @@
     "gulp-concat": "2.6.0",
     "gulp-copy": "0.0.2",
     "gulp-eslint": "3.0.1",
+    "gulp-jest": "^4.0.2",
     "gulp-less": "3.1.0",
     "gulp-rename": "1.2.2",
     "gulp-sourcemaps": "2.1.1",
     "gulp-svgmin": "1.2.3",
-    "gulp-typescript": "4.0.1",
+    "gulp-typescript": "^6.0.0-alpha.1",
     "harp": "0.46.1",
-    "jest": "19.0.2",
+    "jest": "^23.6.0",
     "less": "2.7.2",
     "mockdate": "2.0.2",
-    "node-sass": "7.0.0",
     "normalize.css": "5.0.0",
     "octicons": "4.4.0",
     "react-addons-test-utils": "15.4.2",
     "run-sequence": "1.2.2",
-    "ts-jest": "19.0.2",
+    "sass": "^1.74.1",
+    "ts-jest": "^23.10.5",
     "tsify": "4.0.0",
-    "typescript": "3.3.3333",
+    "typescript": "^5.4.5",
     "watchify": "3.11.1"
   },
   "jenkinscd": {
@@ -143,5 +144,10 @@
         "tsify"
       ]
     ]
+  },
+  "overrides": {
+    "graceful-fs": "^4.2.11",
+    "jest-cli": "^23.6.0",
+    "gulp-jest": "^4.0.2"
   }
 }

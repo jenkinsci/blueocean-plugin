@@ -33,11 +33,10 @@ describe('Fetch', () => {
 
             it('with empty response body', () => {
                 nockServer.get('/success/empty').reply(200, null);
-
                 requestUrl += '/success/empty';
 
                 return Fetch.fetchJSON(requestUrl).then(response => {
-                    assert.isOk(response);
+                    assert.isNull(response);
                 });
             });
         });
@@ -45,7 +44,6 @@ describe('Fetch', () => {
         describe('4xx failure', () => {
             it('with simple object response body', () => {
                 nockServer.get('/failure/simple').reply(400, { message: 'validation' });
-
                 requestUrl += '/failure/simple';
 
                 return Fetch.fetchJSON(requestUrl).then(
