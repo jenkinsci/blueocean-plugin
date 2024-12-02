@@ -16,15 +16,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class FavoriteListStatePreloaderTest extends PipelineBaseTest {
 
@@ -66,15 +63,13 @@ public class FavoriteListStatePreloaderTest extends PipelineBaseTest {
             .asString();
 
         Document doc = Jsoup.parse(response.getBody());
-        String script = doc.select("head script").toString();
-        Optional<String> preloadLine = Arrays.stream(script.split("\n")).filter(s -> s.trim().startsWith("setState('favoritesList'")).findFirst();
-        if (!preloadLine.isPresent()) fail("preloadLine missing in page");
+        String script = doc.select("head script#blueocean-page-state-preload-decorator-data").html().toString();
+        JSONObject json = JSONObject.fromObject(script);
 
-        Pattern pa = Pattern.compile("^\\s*setState\\('favoritesList',\\s*(.*)\\);$");
-        final Matcher matcher = pa.matcher(preloadLine.get());
-        if (!matcher.find()) fail("invalid preload line: " + preloadLine.get());
+        Assert.assertTrue(json.containsKey("favoritesList"));
+        JSONArray favoritesList = json.getJSONArray("favoritesList");
 
-        final String data = matcher.group(1);
+        final String data = favoritesList.toString();
         Assert.assertTrue("master branch not include or not primary", data.contains("{\"name\":\"p-master/master\",\"primary\":true}"));
         Assert.assertTrue("feature2 branch not include or primary", data.contains("{\"name\":\"p-master/feature2\",\"primary\":false}"));
         Assert.assertTrue("feature4 branch not include or primary", data.contains("{\"name\":\"p-master/feature4\",\"primary\":false}"));

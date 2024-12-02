@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.commons.stapler.export;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Controls the output behaviour.
  *
@@ -10,6 +12,7 @@ public class ExportConfig {
      * @deprecated
      *      Use getter and setter
      */
+    @SuppressFBWarnings(value="PA_PUBLIC_PRIMITIVE_ATTRIBUTE", justification="Preserve API compatibility")
     public boolean prettyPrint;
 
     private ClassAttributeBehaviour classAttribute = ClassAttributeBehaviour.IF_NEEDED;

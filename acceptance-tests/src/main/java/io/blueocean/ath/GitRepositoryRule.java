@@ -51,7 +51,7 @@ public class GitRepositoryRule extends ExternalResource {
             Ref ref = client.branchCreate().setName(prefix + i).call();
             refs.add(ref);
         }
-        logger.info("Created " + number + " branches " + prefix + "[1-" + (number + 1) + "]");
+        logger.info("Created " + number + " branches " + prefix + "[1-" + number + "]");
 
         return refs;
     }

@@ -71,6 +71,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -138,6 +139,9 @@ class GitUtils {
     private static boolean checkCauseNotAuthenticated( GitException e) {
        if(e.getCause() instanceof TransportException){
            TransportException te = (TransportException)e.getCause();
+           if(StringUtils.contains(te.getMessage(), "Cannot log in ")) {
+               return true;
+           }
            IllegalStateException stateException = getIllegalStateException(te.getCause());
            if(stateException!=null){
                return StringUtils.contains(stateException.getMessage(), "not authenticated.");
@@ -340,7 +344,7 @@ class GitUtils {
             final CommitBuilder commit = new CommitBuilder();
             commit.setAuthor(author);
             commit.setCommitter(author);
-            commit.setEncoding(Constants.CHARACTER_ENCODING);
+            commit.setEncoding(StandardCharsets.UTF_8);
             commit.setMessage(message);
             //headId can be null if the repository has no commit yet
             if (headId != null) {
@@ -402,7 +406,7 @@ class GitUtils {
         final DirCache inCoreIndex = DirCache.newInCore();
         final DirCacheBuilder dcBuilder = inCoreIndex.builder();
         try (final ObjectInserter inserter = repo.newObjectInserter()) {
-            long lastModified = System.currentTimeMillis();
+            Instant lastModified = Instant.now();
 
             try {
                 if (contents != null) {

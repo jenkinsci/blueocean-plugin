@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.74</version>
+    <version>4.81</version>
     <relativePath />
   </parent>
 
@@ -25,18 +25,20 @@
   </licenses>
 
   <properties>
-    <revision>1.27.11</revision>
+    <revision>1.27.17</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <!--
         when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions
         and  acceptance-tests/runner/scripts/args.sh
     -->
-    <jenkins.version>2.401.3</jenkins.version>
+    <jenkins.version>2.426.3</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
-    <byte-buddy.version>1.14.7</byte-buddy.version>
+    <byte-buddy.version>1.14.9</byte-buddy.version>
     <node.version>10.13.0</node.version>
     <npm.version>6.14.4</npm.version>
+    <!-- TODO: Remove this and related dependencyManagement entries once it is included in the BOM. -->
+    <pipeline-model-definition.version>2.2198.v41dd8ef6dd56</pipeline-model-definition.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
@@ -217,8 +219,8 @@
 
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
-            <artifactId>bom-2.401.x</artifactId>
-            <version>2661.vb_b_60650f6d97</version>
+            <artifactId>bom-2.426.x</artifactId>
+            <version>2961.v1f472390972e</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>
@@ -352,7 +354,7 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
-            <version>3.5.0</version>
+            <version>3.9.2</version>
         </dependency>
 
         <!-- Other -->
@@ -374,7 +376,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jira</artifactId>
-            <version>3.0.14</version>
+            <version>3.12</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -423,7 +425,7 @@
         <dependency>
             <groupId>org.bitbucket.b_c</groupId>
             <artifactId>jose4j</artifactId>
-            <version>0.9.3</version>
+            <version>0.9.6</version>
         </dependency>
         <dependency>
             <groupId>io.keen</groupId>
@@ -514,16 +516,26 @@
             <artifactId>handy-uri-templates</artifactId>
             <version>2.1.8</version>
         </dependency>
-        <!-- enforcer RequireUpperBoundDeps -->
+        <!-- TODO: Remove these and associated property once included in BOM -->
         <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.10.5</version>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-api</artifactId>
+            <version>${pipeline-model-definition.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.errorprone</groupId>
-            <artifactId>error_prone_annotations</artifactId>
-            <version>2.5.1</version>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-definition</artifactId>
+            <version>${pipeline-model-definition.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-extensions</artifactId>
+            <version>${pipeline-model-definition.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-stage-tags-metadata</artifactId>
+            <version>${pipeline-model-definition.version}</version>
         </dependency>
     </dependencies>
   </dependencyManagement>

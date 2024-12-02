@@ -122,6 +122,7 @@ public class GithubScmSaveFileRequest{
      *
      *  @return If new branch is created, sha of content.path on the new branch otherwise null
      */
+    @SuppressFBWarnings(value = "NP_UNWRITTEN_FIELD", justification = "Fields populated reflectively when deserializing JSON to Java")
     private String createBranchIfNotPresent(String apiUrl, String owner, String repoName, String accessToken) throws IOException {
         //If no branch is provided or auto branch create flag is false then skip creation of branch
         if(StringUtils.isBlank(content.getBranch())

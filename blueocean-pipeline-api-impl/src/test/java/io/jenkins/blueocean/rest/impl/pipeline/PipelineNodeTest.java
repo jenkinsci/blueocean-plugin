@@ -2311,9 +2311,9 @@ public class PipelineNodeTest extends PipelineBaseTest {
         assertEquals("exit 1", steps.get(0).get("displayDescription"));
         assertEquals("17", steps.get(1).get("id"));
         assertEquals("hello stable", steps.get(1).get("displayDescription"));
-        assertEquals("47", steps.get(2).get("id"));
+        assertEquals("50", steps.get(2).get("id"));
         assertEquals("Hello World from post", steps.get(2).get("displayDescription"));
-        assertEquals("48", steps.get(3).get("id"));
+        assertEquals("51", steps.get(3).get("id"));
         assertEquals("Wait for interactive input", steps.get(3).get("displayName"));
     }
 

@@ -1,0 +1,21 @@
+name: Jenkins Security Scan
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+  workflow_dispatch:
+
+permissions:
+  security-events: write
+  contents: read
+  actions: read
+
+jobs:
+  security-scan:
+    uses: jenkins-infra/jenkins-security-scan/.github/workflows/jenkins-security-scan.yaml@v2
+    with:
+      java-cache: 'maven' # Optionally enable use of a build dependency cache. Specify 'maven' or 'gradle' as appropriate.
+      # java-version: 21 # Optionally specify what version of Java to set up for the build, or remove to use a recent default.
