@@ -26,6 +26,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>cloudbees-bitbucket-branch-source</artifactId>
+      <version>930.v254546a_cf702</version>
       <exclusions>
         <!-- Upper bound fix: later version of jsch is picked from git-plugin's transitive dependency -->
         <exclusion>
