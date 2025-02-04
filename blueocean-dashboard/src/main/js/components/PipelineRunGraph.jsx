@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { PipelineGraph } from '@jenkins-cd/pipeline-graph-widget';
+import { PipelineGraph } from '@werkt/pipeline-graph-widget';
 
 import { convertJenkinsNodeGraph } from './GraphNodeConverter';
 
