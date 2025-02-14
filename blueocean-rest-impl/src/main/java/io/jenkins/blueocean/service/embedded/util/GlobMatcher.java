@@ -1,23 +1,20 @@
 package io.jenkins.blueocean.service.embedded.util;
 
-import org.apache.oro.text.GlobCompiler;
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.Perl5Matcher;
+import java.nio.file.FileSystems;
+import java.nio.file.PathMatcher;
 
 /**
- * Matches glob string patters
+ * Matches case-insensitive glob string patterns
  * See https://en.wikipedia.org/wiki/Glob_(programming)
  */
 public final class GlobMatcher {
 
-    private static final GlobCompiler GLOB_COMPILER = new GlobCompiler();
-    private static final Perl5Matcher MATCHER = new Perl5Matcher();
-    private final Pattern pattern;
+    private final PathMatcher matcher;
 
     public GlobMatcher(String patternStr) {
         try {
-            this.pattern = GLOB_COMPILER.compile(patternStr, GlobCompiler.CASE_INSENSITIVE_MASK);
+            String multiDirUpperGlobPattern = patternStr.replaceAll("\\*", "**").toUpperCase();
+            this.matcher = FileSystems.getDefault().getPathMatcher("glob:" + multiDirUpperGlobPattern);
         } catch (Throwable e) {
             throw new IllegalArgumentException(String.format("bad pattern '%s'", patternStr), e);
         }
@@ -28,6 +25,7 @@ public final class GlobMatcher {
      * @return matches pattern or not
      */
     public boolean matches(String input) {
-        return MATCHER.matches(input, pattern);
+        String upperInput = input.toUpperCase();
+        return matcher.matches(FileSystems.getDefault().getPath(upperInput));
     }
 }
