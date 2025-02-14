@@ -18,7 +18,8 @@
     "test:fast": "gulp test:fast",
     "mvnbuild": "gulp lint build bundle",
     "mvnbuild:fast": "gulp bundle",
-    "mvntest": "gulp test"
+    "mvntest": "gulp test",
+    "preinstall": "npx npm-force-resolutions"
   },
   "author": "Cliff Meyers <cmeyers@cloudbees.com> (https://www.cloudbees.com/)",
   "contributors": [
@@ -99,6 +100,9 @@
     "tsify": "4.0.0",
     "typescript": "2.7.2",
     "watchify": "3.7.0"
+  },
+  "resolutions": {
+    "isemail": "2.1.2"
   },
   "jenkinscd": {
     "export": [
