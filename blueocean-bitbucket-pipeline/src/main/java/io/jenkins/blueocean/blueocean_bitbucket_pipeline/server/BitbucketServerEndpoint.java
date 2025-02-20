@@ -10,6 +10,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
@@ -66,7 +67,12 @@ public class BitbucketServerEndpoint extends ScmServerEndpoint {
                     Messages.bbserver_version_validation_error(
                             version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION));
         }
-        return ( req, rsp, node ) -> rsp.setStatus( 200);
+        return new HttpResponse() {
+            @Override
+            public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) {
+                rsp.setStatus(200);
+            }
+        };
     }
 
     @WebMethod(name="") @DELETE

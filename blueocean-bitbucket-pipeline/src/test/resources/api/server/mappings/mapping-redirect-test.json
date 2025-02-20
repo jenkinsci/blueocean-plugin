@@ -1,5 +1,5 @@
 {
-  "id" : "d5434dae-88c5-3cdd-a506-11adb708a1ad",
+  "id" : "89db82a7-cfcd-4332-9cfb-9a767920fbf0",
   "request" : {
     "url" : "/rest/api/1.0/test-redirect",
     "method" : "GET"
@@ -19,5 +19,5 @@
       "Date" : "Wed, 12 Jul 2017 09:54:11 GMT"
     }
   },
-  "uuid" : "d5434dae-88c5-3cdd-a506-11adb708a1ad"
+  "uuid" : "89db82a7-cfcd-4332-9cfb-9a767920fbf0"
 }

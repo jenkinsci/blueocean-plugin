@@ -6,6 +6,7 @@ import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import hudson.Extension;
+import hudson.model.Descriptor;
 import hudson.model.Item;
 import hudson.model.User;
 import hudson.tasks.Mailer;
@@ -334,9 +335,13 @@ public class GithubScm extends AbstractScm {
             String credentialId = createCredentialId(getUri());
             StandardUsernamePasswordCredentials githubCredential =
                 CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
-            final StandardUsernamePasswordCredentials credential =
-                new UsernamePasswordCredentialsImpl(CredentialsScope.USER, credentialId, getCredentialDescription(),
+            final StandardUsernamePasswordCredentials credential;
+            try {
+                credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, credentialId, getCredentialDescription(),
                     authenticatedUser.getId(), accessToken);
+            } catch (Descriptor.FormException e) {
+                throw new RuntimeException(e);
+            }
 
             if(githubCredential == null) {
                 CredentialsUtils.createCredentialsInUserStore(

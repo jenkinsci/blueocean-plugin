@@ -9,6 +9,7 @@ import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
+import hudson.model.Descriptor;
 import hudson.model.User;
 import hudson.util.HttpResponses;
 import io.jenkins.blueocean.commons.DigestUtils;
@@ -314,12 +315,16 @@ public class GitScm extends AbstractScm {
         // Un-normalized repositoryUrl so the description matches user input.
         String description = String.format("%s for %s", CREDENTIAL_DESCRIPTION_PW, repositoryUrl);
 
-        final StandardUsernamePasswordCredentials newCredential =
-            new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
+        final StandardUsernamePasswordCredentials newCredential;
+        try {
+            newCredential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
                                                 credentialId,
                                                 description,
                                                 requestUsername,
                                                 requestPassword);
+        } catch (Descriptor.FormException e) {
+            throw new RuntimeException(e);
+        }
 
         try {
             if (existingCredential == null) {

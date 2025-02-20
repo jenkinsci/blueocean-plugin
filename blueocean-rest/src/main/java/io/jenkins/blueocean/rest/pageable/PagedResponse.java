@@ -9,6 +9,7 @@ import org.kohsuke.stapler.interceptor.Interceptor;
 import org.kohsuke.stapler.interceptor.InterceptorAnnotation;
 
 import javax.servlet.ServletException;
+import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
@@ -51,7 +52,9 @@ public @interface PagedResponse {
             }
             final Pageable<?> resp = (Pageable<?>) target.invoke(request, response, instance, arguments);
 
-            return (HttpResponse) ( req, rsp, node ) -> {
+            return new HttpResponse() {
+              @Override
+              public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
                 int start = (req.getParameter("start") != null) ? Integer.parseInt(req.getParameter("start")) : 0;
                 int limit = (req.getParameter("limit") != null) ? Integer.parseInt(req.getParameter("limit")) : DEFAULT_LIMIT;
 
@@ -78,6 +81,7 @@ public @interface PagedResponse {
                 rsp.setHeader("Link", "<" + url + separator + "start=" + (start + limit) + "&limit="+limit + ">; rel=\"next\"");
 
                 Export.doJson(req, rsp, page);
+              }
             };
         }
 
