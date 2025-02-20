@@ -15,6 +15,7 @@ permissions:
 
 jobs:
   security-scan:
+    if: false  # TODO pending JENKINS-75178
     uses: jenkins-infra/jenkins-security-scan/.github/workflows/jenkins-security-scan.yaml@v2
     with:
       java-cache: 'maven' # Optionally enable use of a build dependency cache. Specify 'maven' or 'gradle' as appropriate.
