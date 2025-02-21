@@ -151,8 +151,8 @@ public final class Links extends HashMap<String,Link>{
     }
 
     private String getBasePath(){
-        String path = Stapler.getCurrentRequest().getPathInfo();
-        String contextPath = Stapler.getCurrentRequest().getContextPath().trim();
+        String path = Stapler.getCurrentRequest2().getPathInfo();
+        String contextPath = Stapler.getCurrentRequest2().getContextPath().trim();
 
         if(!contextPath.isEmpty() || !contextPath.equals("/")){
             int i = path.indexOf(contextPath);

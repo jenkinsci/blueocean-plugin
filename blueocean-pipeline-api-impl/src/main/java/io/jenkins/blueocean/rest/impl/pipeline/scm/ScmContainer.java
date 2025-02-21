@@ -25,7 +25,7 @@ public class ScmContainer extends Container<Scm> implements OrganizationRoute {
     private static final String URL_NAME="scm";
 
     public ScmContainer() {
-        Ancestor ancestor = Stapler.getCurrentRequest().findAncestor(BlueOrganization.class);
+        Ancestor ancestor = Stapler.getCurrentRequest2().findAncestor(BlueOrganization.class);
         BlueOrganization organization = null;
         if(ancestor != null){
             organization = (BlueOrganization) ancestor.getObject();

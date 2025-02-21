@@ -15,7 +15,7 @@ import io.jenkins.blueocean.rest.model.BlueTestResult.Status;
 import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.util.Iterator;
 import java.util.function.Predicate;
@@ -58,7 +58,7 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
         if (resolved.summary == null || resolved.results == null) {
             throw new NotFoundException("no tests");
         }
-        StaplerRequest request = Stapler.getCurrentRequest();
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
         if (request != null) {
             String status = request.getParameter("status");
             String state = request.getParameter("state");

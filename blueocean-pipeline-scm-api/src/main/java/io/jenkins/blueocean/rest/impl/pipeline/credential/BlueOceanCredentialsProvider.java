@@ -29,7 +29,7 @@ import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -207,7 +207,7 @@ public class BlueOceanCredentialsProvider extends CredentialsProvider {
         }
 
         @Override
-        public AbstractFolderProperty<?> reconfigure(StaplerRequest req, JSONObject form) throws FormException {
+        public AbstractFolderProperty<?> reconfigure(StaplerRequest2 req, JSONObject form) throws FormException {
             return this;
         }
 

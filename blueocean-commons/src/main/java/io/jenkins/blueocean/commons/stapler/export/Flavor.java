@@ -23,7 +23,7 @@
 
 package io.jenkins.blueocean.commons.stapler.export;
 
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerResponse2;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -54,7 +54,7 @@ public enum Flavor {
         this.contentType = contentType;
     }
 
-    public DataWriter createDataWriter(Object bean, StaplerResponse rsp) throws IOException {
+    public DataWriter createDataWriter(Object bean, StaplerResponse2 rsp) throws IOException {
         return createDataWriter(bean,rsp.getWriter());
     }
     public DataWriter createDataWriter(Object bean, Writer w) throws IOException {

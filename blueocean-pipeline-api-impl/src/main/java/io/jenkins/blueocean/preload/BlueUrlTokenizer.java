@@ -27,7 +27,7 @@ import hudson.model.Run;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -142,18 +142,18 @@ public class BlueUrlTokenizer {
     }
 
     /**
-     * Parse the {@link Stapler#getCurrentRequest() current Stapler request} and return a {@link BlueUrlTokenizer} instance
+     * Parse the {@link Stapler#getCurrentRequest2() current Stapler request} and return a {@link BlueUrlTokenizer} instance
      * iff the URL is a Blue Ocean UI URL.
      *
      * @return A {@link BlueUrlTokenizer} instance iff the URL is a Blue Ocean UI URL, otherwise {@code null}.
-     * @throws IllegalStateException Called outside the scope of an active {@link StaplerRequest}.
+     * @throws IllegalStateException Called outside the scope of an active {@link StaplerRequest2}.
      */
     public static @CheckForNull
     BlueUrlTokenizer parseCurrentRequest() throws IllegalStateException {
-        StaplerRequest currentRequest = Stapler.getCurrentRequest();
+        StaplerRequest2 currentRequest = Stapler.getCurrentRequest2();
 
         if (currentRequest == null) {
-            throw new IllegalStateException("Illegal call to BlueoceanUrl.parseCurrentRequest outside the scope of an active StaplerRequest.");
+            throw new IllegalStateException("Illegal call to BlueoceanUrl.parseCurrentRequest outside the scope of an active StaplerRequest2.");
         }
 
         String path = currentRequest.getOriginalRequestURI();

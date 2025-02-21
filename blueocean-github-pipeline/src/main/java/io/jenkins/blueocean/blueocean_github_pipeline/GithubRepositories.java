@@ -8,7 +8,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositories;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepository;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class GithubRepositories extends ScmRepositories {
         this.credential = credentials;
         this.parent = parent;
 
-        StaplerRequest request = Stapler.getCurrentRequest();
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
         int pageNumber = 0;
         if (request.getParameter("pageNumber") != null) {
             pageNumber = Integer.parseInt(request.getParameter("pageNumber"));

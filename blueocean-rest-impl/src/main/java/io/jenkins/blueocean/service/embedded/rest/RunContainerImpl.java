@@ -24,7 +24,7 @@ import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,7 +105,7 @@ public class RunContainerImpl extends BlueRunContainer {
      * @return Queue item.
      */
     @Override
-    public BlueRun create(StaplerRequest request) {
+    public BlueRun create(StaplerRequest2 request) {
         job.checkPermission(Item.BUILD);
         if (job instanceof Queue.Task) {
             ScheduleResult scheduleResult;
@@ -141,7 +141,7 @@ public class RunContainerImpl extends BlueRunContainer {
         }
     }
 
-    private List<ParameterValue> getParameterValue(@NonNull StaplerRequest request) {
+    private List<ParameterValue> getParameterValue(@NonNull StaplerRequest2 request) {
         List<ParameterValue> values = new ArrayList<>();
         List<ParameterDefinition> pdsInRequest = new ArrayList<>();
         ParametersDefinitionProperty pp = (ParametersDefinitionProperty) job.getProperty(ParametersDefinitionProperty.class);

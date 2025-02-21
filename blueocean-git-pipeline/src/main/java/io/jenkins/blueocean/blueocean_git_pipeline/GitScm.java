@@ -35,7 +35,7 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.json.JsonBody;
 
 import java.io.IOException;
@@ -148,8 +148,8 @@ public class GitScm extends AbstractScm {
         return "";
     }
 
-    protected StaplerRequest getStaplerRequest() {
-        StaplerRequest request = Stapler.getCurrentRequest();
+    protected StaplerRequest2 getStaplerRequest2() {
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
         Objects.requireNonNull(request, "Must be called in HTTP request context");
         return request;
     }
@@ -165,7 +165,7 @@ public class GitScm extends AbstractScm {
     }
 
     protected StandardCredentials getCredentialForCurrentRequest() {
-        final StaplerRequest request = getStaplerRequest();
+        final StaplerRequest2 request = getStaplerRequest2();
 
         String credentialId = null;
 

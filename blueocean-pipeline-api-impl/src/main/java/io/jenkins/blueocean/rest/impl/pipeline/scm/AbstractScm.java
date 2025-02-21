@@ -13,8 +13,8 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import java.io.IOException;
 import jenkins.model.ModifiableTopLevelItemGroup;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -39,14 +39,14 @@ public abstract class AbstractScm extends Scm {
     protected HttpResponse createResponse(final String credentialId) {
         return new HttpResponse() {
           @Override
-          public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException {
+          public void generateResponse(StaplerRequest2 req, StaplerResponse2 rsp, Object node) throws IOException {
             rsp.setStatus(200);
             rsp.getWriter().print(JsonConverter.toJson( MapsHelper.of("credentialId", credentialId)));
           }
         };
     }
 
-    protected static @CheckForNull String getCredentialIdFromRequest(@NonNull StaplerRequest request){
+    protected static @CheckForNull String getCredentialIdFromRequest(@NonNull StaplerRequest2 request){
         String credentialId = request.getParameter(CREDENTIAL_ID);
 
         if(credentialId == null){

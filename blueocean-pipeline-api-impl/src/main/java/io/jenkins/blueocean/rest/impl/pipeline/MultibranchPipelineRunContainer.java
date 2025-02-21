@@ -13,7 +13,7 @@ import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +66,7 @@ public class MultibranchPipelineRunContainer extends BlueRunContainer{
         List<BluePipeline> branches;
 
         // Check for branch filter
-        StaplerRequest req = Stapler.getCurrentRequest();
+        StaplerRequest2 req = Stapler.getCurrentRequest2();
         String branchFilter = null;
         if (req != null) {
             branchFilter = req.getParameter("branch");
@@ -108,7 +108,7 @@ public class MultibranchPipelineRunContainer extends BlueRunContainer{
     }
 
     @Override
-    public BlueRun create(StaplerRequest request) {
+    public BlueRun create(StaplerRequest2 request) {
         blueMbPipeline.mbp.checkPermission(Item.BUILD);
         Queue.Item queueItem = blueMbPipeline.mbp.scheduleBuild2(0, new CauseAction(new Cause.UserIdCause()));
         if(queueItem == null){ // possible mbp.isBuildable() was false due to no sources fetched yet

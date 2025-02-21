@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 import org.jvnet.hudson.test.WithoutJenkins;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.mockito.MockedStatic;
@@ -124,7 +124,7 @@ public class OrganizationFolderTest{
         });
 
         ScmResourceImpl scmResource = new ScmResourceImpl(orgFolder, folderPipeline);
-        StaplerRequest staplerRequest = Mockito.mock(StaplerRequest.class);
+        StaplerRequest2 staplerRequest = Mockito.mock(StaplerRequest2.class);
         assertEquals("hello", scmResource.getContent(staplerRequest));
     }
 
@@ -150,7 +150,7 @@ public class OrganizationFolderTest{
         });
 
         ScmResourceImpl scmResource = new ScmResourceImpl(orgFolder, folderPipeline);
-        StaplerRequest staplerRequest = Mockito.mock(StaplerRequest.class);
+        StaplerRequest2 staplerRequest = Mockito.mock(StaplerRequest2.class);
         assertEquals("hello", scmResource.getContent(staplerRequest));
     }
 
@@ -168,12 +168,12 @@ public class OrganizationFolderTest{
         }
 
         @Override
-        public Object getContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item) {
+        public Object getContent(@NonNull StaplerRequest2 staplerRequest, @NonNull Item item) {
             return "hello";
         }
 
         @Override
-        public Object saveContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item) {
+        public Object saveContent(@NonNull StaplerRequest2 staplerRequest, @NonNull Item item) {
             return null;
         }
 

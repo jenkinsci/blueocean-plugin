@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.POST;
 
@@ -15,5 +15,5 @@ public abstract class BlueRunContainer extends Container<BlueRun> {
     @POST
     @WebMethod(name = "")
     @TreeResponse
-    public abstract BlueRun create(StaplerRequest request);
+    public abstract BlueRun create(StaplerRequest2 request);
 }

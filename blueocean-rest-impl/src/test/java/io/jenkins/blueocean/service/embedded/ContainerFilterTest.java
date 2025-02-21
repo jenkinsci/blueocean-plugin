@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestExtension;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.mockito.MockedStatic;
 
 import java.io.IOException;
@@ -32,10 +32,10 @@ public class ContainerFilterTest extends BaseTest{
 
     @Test
     public void testPagedFilter() throws IOException {
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         when(request.getParameter("filter")).thenReturn("itemgroup-only");
         try (MockedStatic<Stapler> mockedStatic = mockStatic(Stapler.class)) {
-            when(Stapler.getCurrentRequest()).thenReturn(request);
+            when(Stapler.getCurrentRequest2()).thenReturn(request);
 
             List<Item> items = new ArrayList<>();
             MockFolder folder = j.createFolder("folder");

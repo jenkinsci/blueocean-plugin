@@ -19,7 +19,7 @@ import jenkins.branch.MultiBranchProject;
 import net.sf.json.JSONObject;
 import org.junit.Test;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.mockito.Mockito;
 
 import java.io.BufferedReader;
@@ -38,7 +38,7 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock {
     @Test
     public void getContent() throws UnirestException, IOException {
         String credentialId = createCredential(BitbucketCloudScm.ID);
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
         MultiBranchProject mbp = mockMbp(credentialId);
 
         ScmFile<GitContent> content = (ScmFile<GitContent>) new BitbucketCloudScmContentProvider().getContent(staplerRequest, mbp);
@@ -56,7 +56,7 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock {
 
         String aliceCredentialId = createCredential(BitbucketCloudScm.ID, "cloud", alice);
 
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
 
         MultiBranchProject mbp = mockMbp(aliceCredentialId, alice);
 
@@ -74,7 +74,7 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock {
     @Test
     public void newContent() throws UnirestException, IOException {
         String credentialId = createCredential(BitbucketCloudScm.ID);
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
         MultiBranchProject mbp = mockMbp(credentialId);
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("VGhpcyBpcyB0ZXN0IGNvbnRlbnQgaW4gbmV3IGZpbGUK")
@@ -126,7 +126,7 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock {
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
         String aliceCredentialId = createCredential(BitbucketCloudScm.ID, alice);
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
         MultiBranchProject mbp = mockMbp(aliceCredentialId, alice);
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K")
@@ -155,10 +155,10 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock {
         fail("Should have failed with PreConditionException");
     }
 
-    private StaplerRequest mockStapler() {
+    private StaplerRequest2 mockStapler() {
         mockStatic(Stapler.class);
-        StaplerRequest staplerRequest = mock(StaplerRequest.class);
-        when(Stapler.getCurrentRequest()).thenReturn(staplerRequest);
+        StaplerRequest2 staplerRequest = mock(StaplerRequest2.class);
+        when(Stapler.getCurrentRequest2()).thenReturn(staplerRequest);
         when(staplerRequest.getRequestURI()).thenReturn("http://localhost:8080/jenkins/blue/rest/");
         when(staplerRequest.getParameter("path")).thenReturn("Jenkinsfile");
         when(staplerRequest.getParameter("repo")).thenReturn("demo1");

@@ -10,7 +10,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.springframework.security.core.Authentication;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -35,7 +35,7 @@ public class ScmResourceImpl extends BluePipelineScm {
     }
 
     @Override
-    public Object getContent(StaplerRequest request) {
+    public Object getContent(StaplerRequest2 request) {
         ScmContentProvider scmContentProvider = ScmContentProvider.resolve(item);
 
         if(scmContentProvider != null){
@@ -45,7 +45,7 @@ public class ScmResourceImpl extends BluePipelineScm {
     }
 
     @Override
-    public Object saveContent(StaplerRequest staplerRequest) {
+    public Object saveContent(StaplerRequest2 staplerRequest) {
         ScmContentProvider scmContentProvider = ScmContentProvider.resolve(item);
 
         if(scmContentProvider != null){

@@ -7,7 +7,7 @@ import io.jenkins.blueocean.dev.RunBundleWatches;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +70,7 @@ public class BlueOceanUI {
      * @return The language string.
      */
     public String getLang() {
-        StaplerRequest currentRequest = Stapler.getCurrentRequest();
+        StaplerRequest2 currentRequest = Stapler.getCurrentRequest2();
 
         if (currentRequest != null) {
             Locale locale = currentRequest.getLocale();

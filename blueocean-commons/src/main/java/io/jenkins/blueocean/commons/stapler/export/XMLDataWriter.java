@@ -25,7 +25,7 @@ package io.jenkins.blueocean.commons.stapler.export;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerResponse2;
 
 import java.lang.reflect.Type;
 import java.util.Stack;
@@ -64,7 +64,7 @@ final class XMLDataWriter implements DataWriter {
         // TODO: support pretty printing
     }
 
-    XMLDataWriter(Object bean, StaplerResponse rsp, ExportConfig config) throws IOException {
+    XMLDataWriter(Object bean, StaplerResponse2 rsp, ExportConfig config) throws IOException {
         this(bean,rsp.getWriter(),config);
     }
 

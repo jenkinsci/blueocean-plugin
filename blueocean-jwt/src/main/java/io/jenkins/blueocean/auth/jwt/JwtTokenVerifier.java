@@ -5,7 +5,7 @@ import hudson.ExtensionPoint;
 import io.jenkins.blueocean.auth.jwt.impl.JwtTokenVerifierImpl.JwtAuthentication;
 import org.springframework.security.core.Authentication;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * If an incoming HTTP request contains JWT token, pick that up, verifies the integrity, then

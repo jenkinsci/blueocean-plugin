@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -149,8 +149,8 @@ public class GithubScmTest {
 
             String guser = "{\n  \"login\": \"joe\",\n  \"id\": 1, \"email\": \"joe@example.com\", \"created_at\": \"2008-01-14T04:33:35Z\"}";
 
-            StaplerRequest request = mock(StaplerRequest.class);
-            when(Stapler.getCurrentRequest()).thenReturn(request);
+            StaplerRequest2 request = mock(StaplerRequest2.class);
+            when(Stapler.getCurrentRequest2()).thenReturn(request);
 
             when(HttpRequest.getInputStream(httpURLConnectionMock)).thenReturn(new ByteArrayInputStream(guser.getBytes(StandardCharsets.UTF_8)));
 
@@ -172,8 +172,8 @@ public class GithubScmTest {
     @Test
     public void getOrganizations() {
         try (MockedStatic<Stapler> staplerMockedStatic = mockStatic(Stapler.class)) {
-            StaplerRequest staplerRequest = mock(StaplerRequest.class);
-            when(Stapler.getCurrentRequest()).thenReturn(staplerRequest);
+            StaplerRequest2 staplerRequest = mock(StaplerRequest2.class);
+            when(Stapler.getCurrentRequest2()).thenReturn(staplerRequest);
         }
     }
 

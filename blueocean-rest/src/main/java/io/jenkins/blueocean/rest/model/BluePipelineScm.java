@@ -2,7 +2,7 @@ package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.annotation.Capability;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
 import org.kohsuke.stapler.verb.PUT;
@@ -26,7 +26,7 @@ public abstract class BluePipelineScm extends Resource {
     @WebMethod(name = "content")
     @GET
     @TreeResponse
-    public abstract Object getContent(StaplerRequest request);
+    public abstract Object getContent(StaplerRequest2 request);
 
     /**
      * Save a file to this SCM repository attached to this pipeline. Creates a new one if it doesn't exist.
@@ -38,5 +38,5 @@ public abstract class BluePipelineScm extends Resource {
     @PUT
     @WebMethod(name="content")
     @TreeResponse
-    public abstract Object saveContent(StaplerRequest request);
+    public abstract Object saveContent(StaplerRequest2 request);
 }

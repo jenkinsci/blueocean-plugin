@@ -58,7 +58,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,7 +157,7 @@ public class GitReadSaveService extends ScmContentProvider {
 
     }
 
-    private GitReadSaveRequest makeSaveRequest(Item item, StaplerRequest req) {
+    private GitReadSaveRequest makeSaveRequest(Item item, StaplerRequest2 req) {
         String branch = req.getParameter("branch");
         return makeSaveRequest(item,
                                branch,
@@ -183,7 +183,7 @@ public class GitReadSaveService extends ScmContentProvider {
     }
 
     @Override
-    public Object getContent(@NonNull StaplerRequest req, @NonNull Item item) {
+    public Object getContent(@NonNull StaplerRequest2 req, @NonNull Item item) {
         item.checkPermission(Item.READ);
         User user = User.current();
         if (user == null) {
@@ -208,7 +208,7 @@ public class GitReadSaveService extends ScmContentProvider {
     }
 
     @Override
-    public Object saveContent(@NonNull StaplerRequest req, @NonNull Item item) {
+    public Object saveContent(@NonNull StaplerRequest2 req, @NonNull Item item) {
         item.checkPermission(Item.CONFIGURE);
         User user = User.current();
         if (user == null) {

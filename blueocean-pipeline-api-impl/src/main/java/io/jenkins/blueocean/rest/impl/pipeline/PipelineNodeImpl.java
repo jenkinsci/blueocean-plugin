@@ -36,14 +36,14 @@ import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.export.Exported;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -249,11 +249,11 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     @Override
-    public HttpResponse submitInputStep(StaplerRequest request) {
+    public HttpResponse submitInputStep(StaplerRequest2 request) {
         return null;
     }
 
-    public HttpResponse restart(StaplerRequest request) {
+    public HttpResponse restart(StaplerRequest2 request) {
         try
         {
             WorkflowRun run = getRun();
@@ -271,7 +271,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
                 if (queueItem != null) { // If the item is still queued
                     return new HttpResponse() {
                       @Override
-                      public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException {
+                      public void generateResponse(StaplerRequest2 req, StaplerResponse2 rsp, Object node) throws IOException {
                         rsp.setStatus( HttpServletResponse.SC_OK );
                         rsp.getOutputStream().print( Export.toJson( queueItem.toRun() ) );
                       }
@@ -282,7 +282,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
                 if (restartRun != null) {
                     return new HttpResponse() {
                       @Override
-                      public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException {
+                      public void generateResponse(StaplerRequest2 req, StaplerResponse2 rsp, Object node) throws IOException {
                         rsp.setStatus( HttpServletResponse.SC_OK );
                         rsp.getOutputStream().print( Export.toJson( new PipelineRunImpl(restartRun, parent,
                                                                                         bluePipeline.getOrganization()) ) );

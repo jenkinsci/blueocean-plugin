@@ -17,7 +17,7 @@ import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -52,7 +52,7 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
     @Override
     public Object getTarget() {
 
-        StaplerRequest request = Stapler.getCurrentRequest();
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
 
         if(request.getOriginalRestOfPath().startsWith("/rest/")) {
             /**
@@ -78,7 +78,7 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
         }
 
         // frontend uses this to determine when to reload
-        Stapler.getCurrentResponse().setHeader("X-Blueocean-Refresher", Jenkins.SESSION_HASH);
+        Stapler.getCurrentResponse2().setHeader("X-Blueocean-Refresher", Jenkins.SESSION_HASH);
 
         return app;
     }

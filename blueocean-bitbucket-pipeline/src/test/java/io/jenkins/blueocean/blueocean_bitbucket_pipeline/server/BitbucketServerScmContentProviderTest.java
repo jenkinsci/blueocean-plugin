@@ -19,7 +19,7 @@ import jenkins.branch.MultiBranchProject;
 import net.sf.json.JSONObject;
 import org.junit.Test;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.mockito.Mockito;
 
 import java.io.BufferedReader;
@@ -40,7 +40,7 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
     @Test
     public void getContent() throws UnirestException, IOException {
         String credentialId = createCredential(BitbucketServerScm.ID);
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
         MultiBranchProject mbp = mockMbp(credentialId);
 
         ScmFile<GitContent> content = (ScmFile<GitContent>) new BitbucketServerScmContentProvider().getContent(staplerRequest, mbp);
@@ -58,7 +58,7 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
 
         String aliceCredentialId = createCredential(BitbucketServerScm.ID, alice);
 
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
 
         MultiBranchProject mbp = mockMbp(aliceCredentialId, alice);
 
@@ -75,7 +75,7 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
     @Test
     public void newContent() throws UnirestException, IOException {
         String credentialId = createCredential(BitbucketServerScm.ID);
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
         MultiBranchProject mbp = mockMbp(credentialId);
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K")
@@ -111,7 +111,7 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
         String aliceCredentialId = createCredential(BitbucketServerScm.ID, alice);
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
         MultiBranchProject mbp = mockMbp(aliceCredentialId, alice);
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K")
@@ -143,7 +143,7 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
     @Test
     public void handleSaveErrorsWithEmptyStatusLine() throws UnirestException, IOException {
         String credentialId = createCredential(BitbucketServerScm.ID);
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
         MultiBranchProject mbp = mockMbp(credentialId);
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K")
@@ -177,7 +177,7 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
     @Test
     public void updateContent() throws UnirestException, IOException {
         String credentialId = createCredential(BitbucketServerScm.ID);
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
         MultiBranchProject mbp = mockMbp(credentialId);
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K")
@@ -220,10 +220,10 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
         assertFalse(provider.support(mbp));
     }
 
-    private StaplerRequest mockStapler() {
+    private StaplerRequest2 mockStapler() {
         mockStatic(Stapler.class);
-        StaplerRequest staplerRequest = mock(StaplerRequest.class);
-        when(Stapler.getCurrentRequest()).thenReturn(staplerRequest);
+        StaplerRequest2 staplerRequest = mock(StaplerRequest2.class);
+        when(Stapler.getCurrentRequest2()).thenReturn(staplerRequest);
         when(staplerRequest.getRequestURI()).thenReturn("http://localhost:8080/jenkins/blue/rest/");
         when(staplerRequest.getParameter("path")).thenReturn("Jenkinsfile");
         when(staplerRequest.getParameter("repo")).thenReturn("pipeline-demo-test");
