@@ -11,7 +11,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepository;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositoryContainer;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public class BitbucketRepositoryContainer extends ScmRepositoryContainer {
 
         public BitbucketRepositories() {
             this.self = BitbucketRepositoryContainer.this.getLink().rel("repositories");
-            StaplerRequest request = Stapler.getCurrentRequest();
+            StaplerRequest2 request = Stapler.getCurrentRequest2();
             int pageNumber = 0;
 
             if (!StringUtils.isBlank(request.getParameter("pageNumber"))) {

@@ -50,7 +50,7 @@ public abstract class AbstractAnalytics extends Analytics {
             }
         }
         // Background requests do not have userId
-        if (Stapler.getCurrentRequest() != null) {
+        if (Stapler.getCurrentRequest2() != null) {
             String identity = identity();
             allProps.put("userId", identity);
         }

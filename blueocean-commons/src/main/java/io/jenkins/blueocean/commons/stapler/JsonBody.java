@@ -4,9 +4,9 @@ import io.jenkins.blueocean.commons.JsonConverter;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.AnnotationHandler;
 import org.kohsuke.stapler.InjectedParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
@@ -61,7 +61,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface JsonBody {
     class Handler extends AnnotationHandler {
         @Override
-        public Object parse(StaplerRequest request, Annotation a, Class type, String parameterName) throws ServletException {
+        public Object parse(StaplerRequest2 request, Annotation a, Class type, String parameterName) throws ServletException {
             /*
                 TODO: exception thrown here results in error page rendered in HTML.
                 To fix this, change oops.jelly in Jenkins to recognize the Accept header and serve JSON if

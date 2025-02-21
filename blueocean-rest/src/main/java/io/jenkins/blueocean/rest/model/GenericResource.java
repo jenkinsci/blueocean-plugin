@@ -71,7 +71,7 @@ public class GenericResource<T> extends Resource {
 
     @Override
     public Link getLink() {
-        return (self !=null) ? self.getLink() : new Link(Stapler.getCurrentRequest().getPathInfo());
+        return (self !=null) ? self.getLink() : new Link(Stapler.getCurrentRequest2().getPathInfo());
     }
 
     private Object getResource(String token, Method m){

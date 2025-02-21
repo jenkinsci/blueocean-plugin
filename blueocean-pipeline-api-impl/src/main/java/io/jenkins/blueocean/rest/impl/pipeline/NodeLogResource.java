@@ -6,13 +6,13 @@ import org.apache.commons.io.output.CountingOutputStream;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.kohsuke.stapler.AcceptHeader;
 import org.kohsuke.stapler.Header;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.framework.io.CharSpool;
 import org.kohsuke.stapler.framework.io.LineEndNormalizingWriter;
 import org.kohsuke.stapler.framework.io.WriterOutputStream;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -32,7 +32,7 @@ public class NodeLogResource {
         this.steps = node.getSteps();
     }
 
-    public void doIndex(StaplerRequest req, StaplerResponse rsp, @Header("Accept") AcceptHeader accept) {
+    public void doIndex(StaplerRequest2 req, StaplerResponse2 rsp, @Header("Accept") AcceptHeader accept) {
         String download = req.getParameter("download");
 
         if("true".equalsIgnoreCase(download)) {

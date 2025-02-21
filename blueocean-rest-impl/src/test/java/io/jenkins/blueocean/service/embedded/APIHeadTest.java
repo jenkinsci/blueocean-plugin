@@ -10,7 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.TestExtension;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -90,7 +90,7 @@ public class APIHeadTest extends BaseTest {
         @Override
         @SuppressWarnings("unchecked")
         public Iterator<String> iterator() {
-            StaplerResponse response = Stapler.getCurrentResponse();
+            StaplerResponse2 response = Stapler.getCurrentResponse2();
             response.setHeader("Cache-Control", "max-age=10");
             return new ArrayList<String>().iterator();
         }

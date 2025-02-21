@@ -28,7 +28,7 @@ import hudson.util.HttpResponses;
 import io.jenkins.blueocean.RootRoutable;
 import io.jenkins.blueocean.commons.MapsHelper;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.GET;
@@ -45,7 +45,7 @@ public class RepositoryCloneProgressEndpoint implements RootRoutable {
 
     @GET
     @WebMethod(name="")
-    public HttpResponse getProgress(StaplerRequest req) {
+    public HttpResponse getProgress(StaplerRequest2 req) {
         String repositoryUrl = req.getOriginalRestOfPath();
         CloneProgressMonitor progress = CloneProgressMonitor.get(repositoryUrl);
         if (progress == null) {
@@ -56,7 +56,7 @@ public class RepositoryCloneProgressEndpoint implements RootRoutable {
 
     @DELETE
     @WebMethod(name="")
-    public HttpResponse cancelClone(StaplerRequest req) {
+    public HttpResponse cancelClone(StaplerRequest2 req) {
         String repositoryUrl = req.getOriginalRestOfPath();
         CloneProgressMonitor progress = CloneProgressMonitor.get(repositoryUrl);
         if (progress != null) {

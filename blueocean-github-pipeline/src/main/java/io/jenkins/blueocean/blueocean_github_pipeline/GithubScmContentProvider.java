@@ -22,7 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
@@ -102,7 +102,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
     }
 
     @Override
-    public Object saveContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item) {
+    public Object saveContent(@NonNull StaplerRequest2 staplerRequest, @NonNull Item item) {
         JSONObject body;
         try {
             body = JSONObject.fromObject(IOUtils.toString(staplerRequest.getReader()));
@@ -210,7 +210,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
                 throw new ServiceException.UnauthorizedException("No logged in user found");
             }
 
-            StaplerRequest request = Stapler.getCurrentRequest();
+            StaplerRequest2 request = Stapler.getCurrentRequest2();
             String scmId = request.getParameter("scmId");
 
             //get credential for this user
