@@ -4,6 +4,7 @@ import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfig
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
+import hudson.model.Descriptor;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -211,8 +212,13 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
 
         validate(userName, password, apiUrl);
 
-        final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
+        final StandardUsernamePasswordCredentials credential;
+        try {
+            credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
                 createCredentialId(apiUrl), "Bitbucket server credentials", userName, password);
+        } catch (Descriptor.FormException e) {
+            throw new RuntimeException(e);
+        }
 
         //if credentials are wrong, this call will fail with 401 error
         validateCredential(apiUrl, credential);

@@ -10,9 +10,11 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
+import java.io.IOException;
 import jenkins.model.ModifiableTopLevelItemGroup;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -35,9 +37,12 @@ public abstract class AbstractScm extends Scm {
     }
 
     protected HttpResponse createResponse(final String credentialId) {
-        return (req, rsp, node ) -> {
+        return new HttpResponse() {
+          @Override
+          public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException {
             rsp.setStatus(200);
             rsp.getWriter().print(JsonConverter.toJson( MapsHelper.of("credentialId", credentialId)));
+          }
         };
     }
 
