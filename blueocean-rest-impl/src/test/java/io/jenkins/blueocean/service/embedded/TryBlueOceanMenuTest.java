@@ -20,8 +20,8 @@ public class TryBlueOceanMenuTest extends BaseTest{
     public void testOpenBlueOcean() throws IOException, SAXException {
         JenkinsRule.WebClient webClient = j.createWebClient();
         HtmlPage page = webClient.getPage(j.getInstance());
-        HtmlAnchor anchor = page.getAnchorByText(Messages.BlueOceanUrlAction_DisplayName());
-        Assert.assertEquals("/jenkins/blue/organizations/jenkins/pipelines/", anchor.getHrefAttribute());
+        HtmlAnchor anchor = page.getAnchorByHref("/jenkins/blue/organizations/jenkins/pipelines/");
+        Assert.assertEquals(Messages.BlueOceanUrlAction_DisplayName(), anchor.getTextContent());
         assertThat(anchor.getAttribute("class"), containsString("task-link"));
     }
 }
