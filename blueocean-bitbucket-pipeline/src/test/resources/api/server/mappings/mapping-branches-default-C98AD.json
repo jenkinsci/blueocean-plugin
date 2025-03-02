@@ -1,5 +1,5 @@
 {
-  "id" : "3cb8ad8e-bf64-3779-b249-1c1ca33c783a",
+  "id" : "c8935a42-83a8-48dd-8a37-cd5fdbdfd91d",
   "request" : {
     "url" : "/rest/api/1.0/projects/TESTP/repos/empty-repo-test/branches/default",
     "method" : "GET"
@@ -20,5 +20,5 @@
       "Date" : "Wed, 21 Jun 2017 18:05:02 GMT"
     }
   },
-  "uuid" : "3cb8ad8e-bf64-3779-b249-1c1ca33c783a"
+  "uuid" : "c8935a42-83a8-48dd-8a37-cd5fdbdfd91d"
 }

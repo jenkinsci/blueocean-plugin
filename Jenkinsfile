@@ -8,7 +8,7 @@ if (JENKINS_URL == 'https://ci.jenkins.io/') {
     ],
     // Tests were locking up and timing out on non-aci
     useContainerAgent: true,
-    timeout: 90
+    timeout: 120
   )
   return
 }

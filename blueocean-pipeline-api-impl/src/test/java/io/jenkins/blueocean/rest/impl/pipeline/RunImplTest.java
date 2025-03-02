@@ -209,16 +209,16 @@ public class RunImplTest
         // Replay this - with limited retry
         String replayURL = String.format("/organizations/jenkins/pipelines/%s/runs/%s/replay/", p.getName(), idOfSecondRun);
         try {
-            Thread.sleep(200);
+            Thread.sleep(500);
 
             request().crumb( getCrumb( j.jenkins ) ).post(replayURL).build(String.class);
         } catch (Exception e) {
-            Thread.sleep(200);
+            Thread.sleep(500);
             request().post(replayURL).build(String.class);
         }
 
         // Sleep to make sure the build actually gets launched.
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         WorkflowRun r3 = p.getLastBuild();
 
         j.waitForMessage("Still waiting to schedule task", r3);
@@ -376,7 +376,7 @@ public class RunImplTest
 
         SemaphoreStep.success("wait-a/1", null);
         // Sleep to make sure we get the a branch end node...
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         pipeline = request().get(String.format("/organizations/jenkins/pipelines/%s/", p.getName())).build(Map.class);
         latestRun = (Map) pipeline.get("latestRun");
