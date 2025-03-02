@@ -7,7 +7,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.impl.pipeline.ScmContentProvider;
 import jenkins.branch.MultiBranchProject;
 import org.apache.commons.lang.StringUtils;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -20,7 +20,7 @@ import java.util.List;
 public abstract class AbstractScmContentProvider extends ScmContentProvider {
 
     @Override
-    public Object getContent(@NonNull StaplerRequest request, @NonNull Item item) {
+    public Object getContent(@NonNull StaplerRequest2 request, @NonNull Item item) {
         String path = StringUtils.defaultIfEmpty(request.getParameter("path"), null);
         String type = StringUtils.defaultIfEmpty(request.getParameter("type"), null);
         String repo = StringUtils.defaultIfEmpty(request.getParameter("repo"), null);

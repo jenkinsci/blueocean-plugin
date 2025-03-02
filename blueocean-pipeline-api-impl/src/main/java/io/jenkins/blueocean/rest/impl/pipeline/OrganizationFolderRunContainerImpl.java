@@ -9,7 +9,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Collections;
@@ -37,7 +37,7 @@ public class OrganizationFolderRunContainerImpl extends BlueRunContainer {
     }
 
     @Override
-    public BlueRun create(StaplerRequest request) {
+    public BlueRun create(StaplerRequest2 request) {
         pipeline.folder.checkPermission(Item.BUILD);
         Queue.Item queueItem = pipeline.folder.scheduleBuild2(0, new CauseAction(new Cause.UserIdCause()));
         if(queueItem == null){ // possible folder.isBuildable() was false due to no repo fetched yet

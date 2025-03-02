@@ -26,7 +26,7 @@ import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.junit.After;
 import org.junit.Rule;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -210,10 +210,10 @@ public abstract class GithubMockBase extends PipelineBaseTest {
         return mbp;
     }
 
-    protected StaplerRequest mockStapler(){
+    protected StaplerRequest2 mockStapler(){
         mockStatic(Stapler.class);
-        StaplerRequest staplerRequest = mock(StaplerRequest.class);
-        when(Stapler.getCurrentRequest()).thenReturn(staplerRequest);
+        StaplerRequest2 staplerRequest = mock(StaplerRequest2.class);
+        when(Stapler.getCurrentRequest2()).thenReturn(staplerRequest);
         when(staplerRequest.getRequestURI()).thenReturn("http://localhost:8080/jenkins/blue/rest/");
         when(staplerRequest.getParameter("path")).thenReturn("Jenkinsfile");
         when(staplerRequest.getParameter("repo")).thenReturn("PR-demo");

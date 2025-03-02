@@ -3,7 +3,7 @@ package io.jenkins.blueocean.rest.model;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import net.sf.json.JSONObject;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.POST;
@@ -31,7 +31,7 @@ public abstract class BluePipelineContainer extends Container<BluePipeline>{
      */
     @POST
     @WebMethod(name = "")
-    public  CreateResponse create(@JsonBody JSONObject body, StaplerRequest staplerRequest) throws IOException{
+    public  CreateResponse create(@JsonBody JSONObject body, StaplerRequest2 staplerRequest) throws IOException{
         ErrorMessage err = new ErrorMessage(400, "Failed to create Git pipeline");
 
         if(body.get("name") == null){
