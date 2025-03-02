@@ -14,7 +14,7 @@ import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.junit.Test;
 import org.jvnet.hudson.test.TestExtension;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.export.Exported;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -120,7 +120,7 @@ public class PipelineScmTest extends PipelineBaseTest {
 
         @CheckForNull
         @Override
-        public Object getContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item) {
+        public Object getContent(@NonNull StaplerRequest2 staplerRequest, @NonNull Item item) {
             return new ScmFile<TestContent>(){
 
                 @Override
@@ -132,7 +132,7 @@ public class PipelineScmTest extends PipelineBaseTest {
 
         @CheckForNull
         @Override
-        public Object saveContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item) {
+        public Object saveContent(@NonNull StaplerRequest2 staplerRequest, @NonNull Item item) {
             try {
                 JSONObject body = JSONObject.fromObject(IOUtils.toString(staplerRequest.getReader()));
                 final String data = (String) ((Map)body.get("content")).get("data");

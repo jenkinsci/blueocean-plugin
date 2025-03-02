@@ -11,7 +11,7 @@ import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.junit.Test;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.mockito.Mockito;
 
 import java.io.BufferedReader;
@@ -30,7 +30,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     public void getContentForOrgFolder() throws UnirestException {
         String credentialId = createGithubCredential(user);
 
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
 
         MultiBranchProject mbp = mockMbp(credentialId, user, GithubScm.DOMAIN_NAME);
 
@@ -46,7 +46,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     public void getContentForOrgFolderGHE() throws UnirestException {
         String credentialId = createGithubEnterpriseCredential();
 
-        StaplerRequest staplerRequest = mockStapler(GithubEnterpriseScm.ID);
+        StaplerRequest2 staplerRequest = mockStapler(GithubEnterpriseScm.ID);
 
         MultiBranchProject mbp = mockMbp(credentialId, user, GithubEnterpriseScm.DOMAIN_NAME);
 
@@ -61,7 +61,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     public void getContentForMbp() throws UnirestException {
         String credentialId = createGithubCredential(user);
 
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
 
         MultiBranchProject mbp = mockMbp(credentialId, user, GithubScm.DOMAIN_NAME);
 
@@ -76,7 +76,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     public void getContentForMbpGHE() throws UnirestException {
         String credentialId = createGithubEnterpriseCredential();
 
-        StaplerRequest staplerRequest = mockStapler(GithubEnterpriseScm.ID);
+        StaplerRequest2 staplerRequest = mockStapler(GithubEnterpriseScm.ID);
 
         MultiBranchProject mbp = mockMbp(credentialId, user, GithubEnterpriseScm.DOMAIN_NAME);
 
@@ -96,7 +96,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
         String aliceCredentialId = createGithubCredential(alice);
 
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
 
         MultiBranchProject mbp = mockMbp(aliceCredentialId, user, GithubScm.DOMAIN_NAME);
 
@@ -118,7 +118,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
         String aliceCredentialId = createGithubEnterpriseCredential(alice);
 
-        StaplerRequest staplerRequest = mockStapler(GithubEnterpriseScm.ID);
+        StaplerRequest2 staplerRequest = mockStapler(GithubEnterpriseScm.ID);
 
         MultiBranchProject mbp = mockMbp(aliceCredentialId, user, GithubEnterpriseScm.DOMAIN_NAME);
 
@@ -140,7 +140,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
         String aliceCredentialId = createGithubCredential(alice);
 
-        StaplerRequest staplerRequest = mockStapler(GithubEnterpriseScm.ID);
+        StaplerRequest2 staplerRequest = mockStapler(GithubEnterpriseScm.ID);
 
         MultiBranchProject mbp = mockMbp(aliceCredentialId, alice, GithubEnterpriseScm.DOMAIN_NAME);
 
@@ -162,7 +162,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
         String aliceCredentialId = createGithubEnterpriseCredential(alice);
 
-        StaplerRequest staplerRequest = mockStapler(GithubEnterpriseScm.ID);
+        StaplerRequest2 staplerRequest = mockStapler(GithubEnterpriseScm.ID);
 
         MultiBranchProject mbp = mockMbp(aliceCredentialId, alice, GithubEnterpriseScm.DOMAIN_NAME);
 
@@ -180,7 +180,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     public void saveContentToOrgFolder() throws UnirestException, IOException {
         String credentialId = createGithubCredential(user);
 
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
                 .branch("test1").message("another commit").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
@@ -213,7 +213,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     public void saveContentToOrgFolderGHE() throws UnirestException, IOException {
         String credentialId = createGithubEnterpriseCredential();
 
-        StaplerRequest staplerRequest = mockStapler(GithubEnterpriseScm.ID);
+        StaplerRequest2 staplerRequest = mockStapler(GithubEnterpriseScm.ID);
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
                 .branch("test1").message("another commit").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
@@ -252,7 +252,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
         String aliceCredentialId = createGithubCredential(alice);
 
 
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
                 .branch("test1").message("another commit").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
@@ -292,7 +292,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
         String aliceCredentialId = createGithubEnterpriseCredential(alice);
 
 
-        StaplerRequest staplerRequest = mockStapler(GithubEnterpriseScm.ID);
+        StaplerRequest2 staplerRequest = mockStapler(GithubEnterpriseScm.ID);
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
                 .branch("test1").message("another commit").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
@@ -328,7 +328,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     public void saveContentToMbp() throws UnirestException, IOException {
         String credentialId = createGithubCredential(user);
 
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
                 .branch("test1").message("another commit").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
@@ -361,7 +361,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     public void saveContentNewBranchToMbp() throws UnirestException, IOException {
         String credentialId = createGithubCredential(user);
 
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
                 .branch("test2").message("another commit").sourceBranch("master").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
@@ -395,7 +395,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     public void saveContentToMbpGHE() throws UnirestException, IOException {
         String credentialId = createGithubEnterpriseCredential();
 
-        StaplerRequest staplerRequest = mockStapler(GithubEnterpriseScm.ID);
+        StaplerRequest2 staplerRequest = mockStapler(GithubEnterpriseScm.ID);
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
                 .branch("test1").message("another commit").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
@@ -432,7 +432,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
         String aliceCredentialId = createGithubCredential(alice);
 
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
                 .branch("test1").message("another commit").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
@@ -473,7 +473,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
         String aliceCredentialId = createGithubEnterpriseCredential(alice);
 
-        StaplerRequest staplerRequest = mockStapler(GithubEnterpriseScm.ID);
+        StaplerRequest2 staplerRequest = mockStapler(GithubEnterpriseScm.ID);
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
                 .branch("test1").message("another commit").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
@@ -509,7 +509,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     public void saveContentToMbpMissingBranch() throws UnirestException, IOException {
         String credentialId = createGithubCredential(user);
 
-        StaplerRequest staplerRequest = mockStapler();
+        StaplerRequest2 staplerRequest = mockStapler();
 
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
                 .branch("test2").message("another commit").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
@@ -564,13 +564,13 @@ public class GithubScmContentProviderTest extends GithubMockBase{
         assertFalse("github provider should not support github enterprise org folder", provider.support(mbp));
     }
 
-    protected StaplerRequest mockStapler(){
+    protected StaplerRequest2 mockStapler(){
         return mockStapler("github");
     }
-    private StaplerRequest mockStapler(String scmId){
+    private StaplerRequest2 mockStapler(String scmId){
         mockStatic(Stapler.class);
-        StaplerRequest staplerRequest = mock(StaplerRequest.class);
-        when(Stapler.getCurrentRequest()).thenReturn(staplerRequest);
+        StaplerRequest2 staplerRequest = mock(StaplerRequest2.class);
+        when(Stapler.getCurrentRequest2()).thenReturn(staplerRequest);
         when(staplerRequest.getRequestURI()).thenReturn("http://localhost:8080/jenkins/blue/rest/");
         when(staplerRequest.getParameter("path")).thenReturn("Jenkinsfile");
         when(staplerRequest.getParameter("repo")).thenReturn("PR-demo");

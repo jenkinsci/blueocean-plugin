@@ -5,7 +5,7 @@ import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Item;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -29,7 +29,7 @@ public abstract class ContainerFilter implements ExtensionPoint {
     public abstract Predicate<Item> getFilter();
 
     /**
-     * Filters the item list based on the current StaplerRequest
+     * Filters the item list based on the current StaplerRequest2
      */
     public static <T extends Item>  Collection<T> filter(Collection<T> items) {
         String[] filterNames =  filterNames();
@@ -101,7 +101,7 @@ public abstract class ContainerFilter implements ExtensionPoint {
     }
 
     private static String[] filterNames(){
-        StaplerRequest req = Stapler.getCurrentRequest();
+        StaplerRequest2 req = Stapler.getCurrentRequest2();
         if (req == null) {
             return new String[0];
         }

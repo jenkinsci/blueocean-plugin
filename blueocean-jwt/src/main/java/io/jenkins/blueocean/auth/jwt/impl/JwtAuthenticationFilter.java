@@ -10,13 +10,13 @@ import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
 import org.springframework.security.core.Authentication;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 import static io.jenkins.blueocean.commons.BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION_PROPERTY;
@@ -113,6 +113,6 @@ public class JwtAuthenticationFilter implements Filter {
      * Returns true if the current request had a valid JWT token.
      */
     public static boolean didRequestHaveValidatedJwtToken() {
-        return Boolean.TRUE.equals(Stapler.getCurrentRequest().getAttribute(JWT_TOKEN_VALIDATED));
+        return Boolean.TRUE.equals(Stapler.getCurrentRequest2().getAttribute(JWT_TOKEN_VALIDATED));
     }
 }

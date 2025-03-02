@@ -4,6 +4,7 @@ import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfig
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
+import hudson.model.Descriptor;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -22,7 +23,7 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.json.JsonBody;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -47,7 +48,7 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
 
     @Override
     public Object getState() {
-        StaplerRequest request = Stapler.getCurrentRequest();
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
         Objects.requireNonNull(request, "Must be called in HTTP request context");
         String method = request.getMethod();
         if (!"POST".equalsIgnoreCase(method)) {
@@ -109,7 +110,7 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
 
     @Override
     public Container<ScmOrganization> getOrganizations() {
-        StaplerRequest request = Stapler.getCurrentRequest();
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
         Objects.requireNonNull(request, "This request must be made in HTTP context");
         String method = request.getMethod();
         if (!"POST".equalsIgnoreCase(method)) {
@@ -211,8 +212,13 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
 
         validate(userName, password, apiUrl);
 
-        final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
+        final StandardUsernamePasswordCredentials credential;
+        try {
+            credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
                 createCredentialId(apiUrl), "Bitbucket server credentials", userName, password);
+        } catch (Descriptor.FormException e) {
+            throw new RuntimeException(e);
+        }
 
         //if credentials are wrong, this call will fail with 401 error
         validateCredential(apiUrl, credential);
@@ -333,17 +339,17 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
 
     protected abstract @NonNull String getDomainId();
 
-    protected StaplerRequest getStaplerRequest(){
-        StaplerRequest request = Stapler.getCurrentRequest();
+    protected StaplerRequest2 getStaplerRequest2(){
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
         Objects.requireNonNull(request, "Must be called in HTTP request context");
         return request;
     }
 
     protected @NonNull String getApiUrlParameter(){
-        return getApiUrlParameter(getStaplerRequest());
+        return getApiUrlParameter(getStaplerRequest2());
     }
 
-    private @NonNull String getApiUrlParameter(StaplerRequest request){
+    private @NonNull String getApiUrlParameter(StaplerRequest2 request){
         String apiUrl =  request.getParameter("apiUrl");
         // Ensure apiUrl is not blank/null, otherwise BitbucketEndpointConfiguration.normalizeServerUrl() will
         // return bitbucket cloud API

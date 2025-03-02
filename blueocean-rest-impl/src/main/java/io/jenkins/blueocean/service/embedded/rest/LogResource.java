@@ -3,12 +3,12 @@ package io.jenkins.blueocean.service.embedded.rest;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.console.AnnotatedLargeText;
 import io.jenkins.blueocean.commons.ServiceException;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.framework.io.CharSpool;
 import org.kohsuke.stapler.framework.io.LineEndNormalizingWriter;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -31,11 +31,11 @@ public class LogResource{
         this.appenderLogReader = logAppender.getLog();
     }
 
-    public void doIndex(StaplerRequest req, StaplerResponse rsp){
+    public void doIndex(StaplerRequest2 req, StaplerResponse2 rsp){
         writeLog(req,rsp);
     }
 
-    private void writeLog(StaplerRequest req, StaplerResponse rsp) {
+    private void writeLog(StaplerRequest2 req, StaplerResponse2 rsp) {
         try {
             String download = req.getParameter("download");
 
@@ -52,7 +52,7 @@ public class LogResource{
         }
     }
 
-    private void writeLogs(StaplerRequest req, StaplerResponse rsp) throws IOException {
+    private void writeLogs(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException {
         long threshold = DEFAULT_LOG_THRESHOLD * 1024;
 
         String s = req.getParameter("thresholdInKB");
@@ -93,7 +93,7 @@ public class LogResource{
 
     }
 
-    private Writer createWriter(StaplerRequest req, StaplerResponse rsp, long size) throws IOException {
+    private Writer createWriter(StaplerRequest2 req, StaplerResponse2 rsp, long size) throws IOException {
         // when sending big text, try compression. don't bother if it's small
         if(size >4096)
             return rsp.getCompressedWriter(req);

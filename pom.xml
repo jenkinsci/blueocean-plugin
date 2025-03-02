@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.81</version>
+    <version>5.7</version>
     <relativePath />
   </parent>
 
@@ -32,13 +32,13 @@
         when changing jenkins core version please remember to change it in Jenkinsfile as well jenkinsVersions
         and  acceptance-tests/runner/scripts/args.sh
     -->
-    <jenkins.version>2.426.3</jenkins.version>
+    <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
+    <jenkins.baseline>2.479</jenkins.baseline>
+    <jenkins.version>${jenkins.baseline}.3</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
-    <byte-buddy.version>1.14.9</byte-buddy.version>
+    <byte-buddy.version>1.17.1</byte-buddy.version>
     <node.version>10.13.0</node.version>
     <npm.version>6.14.4</npm.version>
-    <!-- TODO: Remove this and related dependencyManagement entries once it is included in the BOM. -->
-    <pipeline-model-definition.version>2.2198.v41dd8ef6dd56</pipeline-model-definition.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
@@ -219,8 +219,8 @@
 
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
-            <artifactId>bom-2.426.x</artifactId>
-            <version>2961.v1f472390972e</version>
+            <artifactId>bom-${jenkins.baseline}.x</artifactId>
+            <version>3893.v213a_42768d35</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>
@@ -365,16 +365,6 @@
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>blueocean-autofavorite</artifactId>
-            <version>1.2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>blueocean-display-url</artifactId>
-            <version>2.4.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jira</artifactId>
             <version>3.12</version>
             <exclusions>
@@ -435,13 +425,6 @@
             </exclusions>
         </dependency>
 
-        <!-- used in blueocean-pipeline-editor test -->
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>sonar</artifactId>
-            <version>2.13.1</version>
-        </dependency>
-
         <!-- Test dependencies -->
         <dependency>
             <groupId>com.mashape.unirest</groupId>
@@ -484,9 +467,9 @@
             <version>2.0.9</version>
         </dependency>
         <dependency>
-            <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-jre8-standalone</artifactId>
-            <version>2.35.1</version>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-standalone</artifactId>
+            <version>3.12.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -510,27 +493,6 @@
             <groupId>com.damnhandy</groupId>
             <artifactId>handy-uri-templates</artifactId>
             <version>2.1.8</version>
-        </dependency>
-        <!-- TODO: Remove these and associated property once included in BOM -->
-        <dependency>
-            <groupId>org.jenkinsci.plugins</groupId>
-            <artifactId>pipeline-model-api</artifactId>
-            <version>${pipeline-model-definition.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkinsci.plugins</groupId>
-            <artifactId>pipeline-model-definition</artifactId>
-            <version>${pipeline-model-definition.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkinsci.plugins</groupId>
-            <artifactId>pipeline-model-extensions</artifactId>
-            <version>${pipeline-model-definition.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkinsci.plugins</groupId>
-            <artifactId>pipeline-stage-tags-metadata</artifactId>
-            <version>${pipeline-model-definition.version}</version>
         </dependency>
     </dependencies>
   </dependencyManagement>
