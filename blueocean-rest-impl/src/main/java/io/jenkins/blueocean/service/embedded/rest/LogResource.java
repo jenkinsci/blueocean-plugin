@@ -72,20 +72,23 @@ public class LogResource{
 
         long r = logText.writeLogTo(offset,spool);
 
-        Writer w = createWriter(req, rsp, r - offset);
-        spool.writeTo(new LineEndNormalizingWriter(w));
-        if(!logText.isComplete()) {
+        // write the headers before we deliver 32k of data through the response
+        // ignore the appenderLogReader, because it does not seem to be reset, and makes no sense
+        if (!logText.isComplete()) {
             rsp.addHeader("X-More-Data", "true");
-        }else{
-            int text = appenderLogReader.read();
-            while(text != -1){
-                w.write(text);
-                r++;
-                text = appenderLogReader.read();
-            }
         }
         rsp.addHeader("X-Text-Size", String.valueOf(r));
         rsp.addHeader("X-Text-Delivered", String.valueOf(r - offset));
+
+        Writer w = createWriter(req, rsp, r - offset);
+        spool.writeTo(new LineEndNormalizingWriter(w));
+        if(logText.isComplete()) {
+            int text = appenderLogReader.read();
+            while(text != -1){
+                w.write(text);
+                text = appenderLogReader.read();
+            }
+        }
         w.close();
 
     }

@@ -28,7 +28,7 @@ class LogLine extends PureComponent {
         const lineChunks = makeReactChildren(tokenized);
 
         return (
-            <p id={`${prefix}log-${index + 1}`}>
+            <span id={`${prefix}log-${index + 1}`} className="log-row">
                 <div className="log-boxes">
                     <a
                         className="linenumber"
@@ -39,7 +39,7 @@ class LogLine extends PureComponent {
                     />
                     {React.createElement(Linkify, { className: 'line ansi-color' }, ...lineChunks)}
                 </div>
-            </p>
+            </span>
         );
     }
 }
