@@ -1,11 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom';
-import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
+import { Router, Route, useRouterHistory, IndexRedirect } from 'react-router'; // Removed link it is not used
 import { createHistory } from 'history';
 import {
     logging,
     i18nTranslator,
-    AppConfig,
     Security,
     UrlConfig,
     Utils,
@@ -17,7 +16,7 @@ import {
     User,
     loadingIndicator,
     LoginButton,
-} from '@jenkins-cd/blueocean-core-js';
+} from '@jenkins-cd/blueocean-core-js';// Removed Appconfig it is not used anywhere
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { Provider, configureStore, combineReducers } from './redux';
@@ -28,7 +27,7 @@ import { BackendConnectFailure } from './components/BackendConnectFailure';
 import { DevelopmentFooter } from './DevelopmentFooter';
 import { useStrict } from 'mobx';
 import { Icon } from '@jenkins-cd/design-language';
-import ErrorUtils from './ErrorUtils';
+//import ErrorUtils from './ErrorUtils'; Declared but not used
 
 useStrict(true);
 
@@ -133,7 +132,7 @@ App.contextTypes = {
     location: PropTypes.object.isRequired,
 };
 
-const closeHandler = props => props.onClose || {};
+// const closeHandler = props => props.onClose || {}; Removed it not used any where in the code
 function makeRoutes(routes) {
     // Build up our list of top-level routes RR will ignore any non-route stuff put into this list.
     const appRoutes = [

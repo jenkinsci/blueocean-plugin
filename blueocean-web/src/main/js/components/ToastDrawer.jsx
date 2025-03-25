@@ -1,7 +1,7 @@
 /**
  * Created by cmeyers on 8/23/16.
  */
-import React, { Component, PropTypes } from 'react';
+import React, { Component} from 'react'; // Removed PropTypes it is not 
 import { observer } from 'mobx-react';
 
 import { Toaster } from '@jenkins-cd/design-language';
