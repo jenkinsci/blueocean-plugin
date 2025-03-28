@@ -107,7 +107,7 @@ export class TruncatingLabel extends Component {
         }
 
         return (
-            <div style={mergedStyle} className={'TruncatingLabel ' + className} title={this.innerText}>
+            <div style={mergedStyle} className={'TruncatingLabel ' + className} title={this.completeText}>
                 {this.innerText}
             </div>
         );
