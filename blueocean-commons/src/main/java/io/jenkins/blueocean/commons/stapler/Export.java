@@ -18,12 +18,12 @@ import io.jenkins.blueocean.commons.stapler.export.TreePruner;
 import io.jenkins.blueocean.commons.stapler.export.TreePruner.ByDepth;
 import jenkins.model.Jenkins;
 import jenkins.security.SecureRequester;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -97,7 +97,7 @@ public class Export {
      * @throws IOException if cannot be written
      * @throws ServletException if something goes wrong processing the request
      */
-    public static void doJson(StaplerRequest req, StaplerResponse rsp, Object bean) throws IOException, ServletException {
+    public static void doJson(StaplerRequest2 req, StaplerResponse2 rsp, Object bean) throws IOException, ServletException {
         if (req.getParameter("jsonp") == null || permit(req, bean)) {
             rsp.setHeader("X-Jenkins", Jenkins.VERSION);
             rsp.setHeader("X-Jenkins-Session", Jenkins.SESSION_HASH);
@@ -114,7 +114,7 @@ public class Export {
         return new ExportConfig().withExportInterceptor(new BlueOceanExportInterceptor());
     }
 
-    private static boolean permit(StaplerRequest req, Object bean) {
+    private static boolean permit(StaplerRequest2 req, Object bean) {
         for (SecureRequester r : ExtensionList.lookup(SecureRequester.class)) {
             if (r.permit(req, bean)) {
                 return true;
@@ -123,7 +123,7 @@ public class Export {
         return false;
     }
 
-    private static void serveExposedBean(StaplerRequest req, StaplerResponse resp, Object exposedBean, ExportConfig config) throws ServletException, IOException {
+    private static void serveExposedBean(StaplerRequest2 req, StaplerResponse2 resp, Object exposedBean, ExportConfig config) throws ServletException, IOException {
         Flavor flavor = config.getFlavor();
         String pad=null;
         resp.setContentType(flavor.contentType);

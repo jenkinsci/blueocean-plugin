@@ -13,12 +13,12 @@ import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
 
@@ -46,7 +46,7 @@ public class FavoriteContainerImpl extends BlueFavoriteContainer {
 
     @Override
     public Iterator<BlueFavorite> iterator() {
-        StaplerRequest request = Stapler.getCurrentRequest();
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
         int start=0;
         int limit = PagedResponse.DEFAULT_LIMIT;
 
@@ -95,7 +95,7 @@ public class FavoriteContainerImpl extends BlueFavoriteContainer {
      * Delete all of the user's favorites.
      */
     @WebMethod(name = "") @DELETE
-    public void doDelete(StaplerResponse resp) throws Favorites.FavoriteException {
+    public void doDelete(StaplerResponse2 resp) throws Favorites.FavoriteException {
         for (final Item favorite: Favorites.getFavorites(user.user)) {
             Favorites.removeFavorite(user.user, favorite);
         }

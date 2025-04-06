@@ -6,7 +6,7 @@ import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.rest.ApiRoutable;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.POST;
 
@@ -24,7 +24,7 @@ public class AnalyticsRoute implements ApiRoutable {
 
     @POST
     @WebMethod(name = "track")
-    public void track(StaplerRequest staplerRequest) throws IOException {
+    public void track(StaplerRequest2 staplerRequest) throws IOException {
         Analytics analytics = Analytics.get();
         if (analytics == null) {
             return;

@@ -33,7 +33,7 @@ import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStepExecution;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.framework.io.ByteBuffer;
 import org.springframework.security.core.Authentication;
 
@@ -188,7 +188,7 @@ public class PipelineStepImpl extends BluePipelineStep {
     }
 
     @Override
-    public HttpResponse submitInputStep(StaplerRequest request) {
+    public HttpResponse submitInputStep(StaplerRequest2 request) {
         JSONObject body;
         try {
             body = JSONObject.fromObject(IOUtils.toString(request.getReader()));
@@ -243,7 +243,7 @@ public class PipelineStepImpl extends BluePipelineStep {
         }
     }
 
-    private Object parseValue(InputStepExecution execution, JSONArray parameters, StaplerRequest request) throws IOException, InterruptedException {
+    private Object parseValue(InputStepExecution execution, JSONArray parameters, StaplerRequest2 request) throws IOException, InterruptedException {
         Map<String, Object> mapResult = new HashMap<>();
 
         InputStep input = execution.getInput();

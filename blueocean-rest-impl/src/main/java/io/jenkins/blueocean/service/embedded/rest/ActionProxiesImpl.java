@@ -96,6 +96,6 @@ public class ActionProxiesImpl extends BlueActionProxy {
 
     // Should be called only in request context
     private static boolean isTreeRequest(){
-        return StringUtils.isNotBlank(Stapler.getCurrentRequest().getParameter("tree"));
+        return StringUtils.isNotBlank(Stapler.getCurrentRequest2().getParameter("tree"));
     }
 }

@@ -24,6 +24,7 @@
 
 import React, { Component } from 'react';
 import { sseConnection, Fullscreen, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import log from "loglevel";
 
 const translate = i18nTranslator('blueocean-web');
 
@@ -40,7 +41,7 @@ export class BackendConnectFailure extends Component {
         // Connection error handling...
         const thisComponent = this;
         sseConnection.onError(e => {
-            // Check the connection...
+            log.info("SSE Connection", e);
             sseConnection.waitConnectionOk(connectionStatus => {
                 if (connectionStatus.connectError) {
                     // Connection "broken" ...

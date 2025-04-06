@@ -3,12 +3,12 @@ package io.jenkins.blueocean.rest.pageable;
 import io.jenkins.blueocean.commons.stapler.Export;
 import org.kohsuke.stapler.CancelRequestHandlingException;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.interceptor.Interceptor;
 import org.kohsuke.stapler.interceptor.InterceptorAnnotation;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -37,7 +37,7 @@ public @interface PagedResponse {
     class Processor extends Interceptor {
 
         @Override
-        public Object invoke(StaplerRequest request, StaplerResponse response, Object instance, Object[] arguments)
+        public Object invoke(StaplerRequest2 request, StaplerResponse2 response, Object instance, Object[] arguments)
             throws IllegalAccessException, InvocationTargetException, ServletException {
 
             String method = request.getMethod();
@@ -54,7 +54,7 @@ public @interface PagedResponse {
 
             return new HttpResponse() {
               @Override
-              public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
+              public void generateResponse(StaplerRequest2 req, StaplerResponse2 rsp, Object node) throws IOException, ServletException {
                 int start = (req.getParameter("start") != null) ? Integer.parseInt(req.getParameter("start")) : 0;
                 int limit = (req.getParameter("limit") != null) ? Integer.parseInt(req.getParameter("limit")) : DEFAULT_LIMIT;
 
@@ -105,7 +105,7 @@ public @interface PagedResponse {
             return sb.toString();
         }
 
-        private boolean postRouteMatches(StaplerRequest request, Pattern pattern) {
+        private boolean postRouteMatches(StaplerRequest2 request, Pattern pattern) {
             String method = request.getMethod();
             if (!"POST".equalsIgnoreCase(method))
                 return false;

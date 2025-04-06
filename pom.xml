@@ -25,7 +25,7 @@
   </licenses>
 
   <properties>
-    <revision>1.27.17</revision>
+    <revision>1.27.18</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <!--
@@ -36,7 +36,7 @@
     <jenkins.baseline>2.479</jenkins.baseline>
     <jenkins.version>${jenkins.baseline}.3</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
-    <byte-buddy.version>1.17.1</byte-buddy.version>
+    <byte-buddy.version>1.17.2</byte-buddy.version>
     <node.version>10.13.0</node.version>
     <npm.version>6.14.4</npm.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
@@ -491,7 +491,7 @@
             -->
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.15.3</version>
+            <version>1.18.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>

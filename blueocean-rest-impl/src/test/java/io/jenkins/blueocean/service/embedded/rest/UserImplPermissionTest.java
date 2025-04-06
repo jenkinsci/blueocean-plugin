@@ -35,7 +35,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import org.acegisecurity.AccessDeniedException;
 import org.acegisecurity.Authentication;
@@ -45,8 +45,8 @@ import org.junit.After;
 import org.junit.AssumptionViolatedException;
 import org.junit.Before;
 import org.junit.Test;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
 import org.mockito.MockedStatic;
@@ -257,7 +257,7 @@ public class UserImplPermissionTest {
         }
 
         @Override
-        public TopLevelItem doCreateItem(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
+        public TopLevelItem doCreateItem(StaplerRequest2 req, StaplerResponse2 rsp) throws IOException, ServletException {
             return null;
         }
 

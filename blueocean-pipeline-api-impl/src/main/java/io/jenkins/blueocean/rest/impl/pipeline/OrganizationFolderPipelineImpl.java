@@ -33,8 +33,8 @@ import jenkins.model.Jenkins;
 import jenkins.scm.api.metadata.AvatarMetadataAction;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 
@@ -270,12 +270,12 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
 
         @Override
         public void getUrl() {
-            StaplerRequest req = Stapler.getCurrentRequest();
+            StaplerRequest2 req = Stapler.getCurrentRequest2();
             String s = req.getParameter("s");
             if (s == null) {
                 s = Integer.toString(DEFAULT_ICON_SIZE);
             }
-            StaplerResponse resp = Stapler.getCurrentResponse();
+            StaplerResponse2 resp = Stapler.getCurrentResponse2();
             try {
                 resp.setHeader("Cache-Control", "max-age=" + TimeUnit.DAYS.toDays(7));
                 resp.sendRedirect(action.getAvatarImageOf(s));
