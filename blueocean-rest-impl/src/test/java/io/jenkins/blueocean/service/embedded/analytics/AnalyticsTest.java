@@ -33,13 +33,6 @@ public class AnalyticsTest {
         Assert.assertTrue(Analytics.get() instanceof NullAnalytics);
     }
 
-    // Re-enable when we want to use keen
-    // @Test
-    public void enableUsageStats() {
-        UsageStatistics.DISABLED = false;
-        Assert.assertFalse(Analytics.get() instanceof KeenAnalyticsImpl);
-    }
-
     @Test
     public void trackWithNullAnalyticsDoesNotExplode() throws Exception {
         new NullAnalytics().track(new TrackRequest("bob", null));
