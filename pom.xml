@@ -420,7 +420,7 @@
         <dependency>
             <groupId>io.keen</groupId>
             <artifactId>keen-client-api-java</artifactId>
-            <version>5.6.0</version>
+            <version>6.0.0</version>
             <exclusions>
                 <!-- upper bound fix, git plugin pulls in later versions -->
                 <exclusion>
