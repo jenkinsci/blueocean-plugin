@@ -20,21 +20,17 @@ public class NodeRunStatus {
     public final BlueRun.BlueRunState state;
 
     public NodeRunStatus(@NonNull FlowNode endNode) {
-        Result result = null;
         ErrorAction errorAction = endNode.getError();
         WarningAction warningAction = endNode.getPersistentAction(WarningAction.class);
         if (errorAction != null) {
-            if(errorAction.getError() instanceof FlowInterruptedException) {
+            Result result = null;
+            if (errorAction.getError() instanceof FlowInterruptedException) {
                 result = ((FlowInterruptedException) errorAction.getError()).getResult();
             }
-            if(result == null || result != Result.ABORTED) {
-                this.result = BlueRun.BlueRunResult.FAILURE;
-            } else {
-                this.result = BlueRun.BlueRunResult.ABORTED;
-            }
+            this.result = result != null ? new NodeRunStatus(result).result : BlueRun.BlueRunResult.FAILURE;
             this.state = endNode.isActive() ? BlueRun.BlueRunState.RUNNING : BlueRun.BlueRunState.FINISHED;
         } else if (warningAction != null) {
-            this.result = new NodeRunStatus(GenericStatus.fromResult(warningAction.getResult())).result;
+            this.result = new NodeRunStatus(warningAction.getResult()).result;
             this.state = endNode.isActive() ? BlueRun.BlueRunState.RUNNING : BlueRun.BlueRunState.FINISHED;
         } else if (QueueItemAction.getNodeState(endNode) == QueueItemAction.QueueState.QUEUED) {
             this.result = BlueRun.BlueRunResult.UNKNOWN;
@@ -110,6 +106,28 @@ public class NodeRunStatus {
                 // Shouldn't happen, above includes all statuses
                 this.result = BlueRun.BlueRunResult.NOT_BUILT;
                 this.state = BlueRun.BlueRunState.QUEUED;
+        }
+    }
+
+    private NodeRunStatus(Result result) {
+        if (result == Result.SUCCESS) {
+            this.result = BlueRun.BlueRunResult.SUCCESS;
+            this.state =  BlueRun.BlueRunState.FINISHED;
+        } else if (result == Result.UNSTABLE) {
+            this.result = BlueRun.BlueRunResult.UNSTABLE;
+            this.state =  BlueRun.BlueRunState.FINISHED;
+        } else if (result == Result.FAILURE) {
+            this.result = BlueRun.BlueRunResult.FAILURE;
+            this.state =  BlueRun.BlueRunState.FINISHED;
+        } else if (result == Result.NOT_BUILT) {
+            this.result = BlueRun.BlueRunResult.NOT_BUILT;
+            this.state = BlueRun.BlueRunState.NOT_BUILT;
+        } else if (result == Result.ABORTED) {
+            this.result = BlueRun.BlueRunResult.ABORTED;
+            this.state =  BlueRun.BlueRunState.FINISHED;
+        } else {
+            this.result = BlueRun.BlueRunResult.UNKNOWN;
+            this.state = BlueRun.BlueRunState.RUNNING;
         }
     }
 }
