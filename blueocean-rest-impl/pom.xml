@@ -86,11 +86,6 @@
         </dependency>
 
         <dependency>
-            <groupId>io.keen</groupId>
-            <artifactId>keen-client-api-java</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.jenkins-ci.main</groupId>
             <artifactId>jenkins-test-harness-tools</artifactId>
         </dependency>

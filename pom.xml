@@ -417,18 +417,6 @@
             <artifactId>jose4j</artifactId>
             <version>0.9.6</version>
         </dependency>
-        <dependency>
-            <groupId>io.keen</groupId>
-            <artifactId>keen-client-api-java</artifactId>
-            <version>5.6.0</version>
-            <exclusions>
-                <!-- upper bound fix, git plugin pulls in later versions -->
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
         <!-- Test dependencies -->
         <dependency>
