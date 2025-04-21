@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import hudson.model.FreeStyleProject;
 import hudson.model.Label;
 import hudson.model.Queue;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
@@ -44,6 +45,7 @@ public class RunImplTest
     @ClassRule
     public static BuildWatcher buildWatcher = new BuildWatcher();
 
+    @Override
     @Before
     public void setup() throws Exception{
         super.setup();
@@ -172,6 +174,12 @@ public class RunImplTest
             m = request().get(url).build(Map.class);
         }
 
+        // give another second to complete the job, not only latest state
+        Thread.sleep(500);
+        // assert the build result is valued as expected by the Jenkinsfile
+        Assert.assertEquals(Result.UNSTABLE, r.getResult());
+
+        m = request().get(url).build(Map.class);
         // Ensure that the run has finished and was marked as unstable when completed
         Assert.assertEquals("FINISHED", m.get("state"));
         Assert.assertEquals("UNSTABLE", m.get("result"));

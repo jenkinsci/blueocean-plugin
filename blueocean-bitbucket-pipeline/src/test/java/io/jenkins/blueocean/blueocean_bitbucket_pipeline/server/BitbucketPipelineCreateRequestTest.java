@@ -1,9 +1,9 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
-import com.cloudbees.jenkins.plugins.bitbucket.BranchDiscoveryTrait;
-import com.cloudbees.jenkins.plugins.bitbucket.ForkPullRequestDiscoveryTrait;
-import com.cloudbees.jenkins.plugins.bitbucket.OriginPullRequestDiscoveryTrait;
+import com.cloudbees.jenkins.plugins.bitbucket.trait.BranchDiscoveryTrait;
+import com.cloudbees.jenkins.plugins.bitbucket.trait.ForkPullRequestDiscoveryTrait;
+import com.cloudbees.jenkins.plugins.bitbucket.trait.OriginPullRequestDiscoveryTrait;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.jenkins.blueocean.commons.MapsHelper;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
