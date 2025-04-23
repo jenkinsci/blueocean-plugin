@@ -2,9 +2,9 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSourceBuilder;
-import com.cloudbees.jenkins.plugins.bitbucket.BranchDiscoveryTrait;
-import com.cloudbees.jenkins.plugins.bitbucket.ForkPullRequestDiscoveryTrait;
-import com.cloudbees.jenkins.plugins.bitbucket.OriginPullRequestDiscoveryTrait;
+import com.cloudbees.jenkins.plugins.bitbucket.trait.BranchDiscoveryTrait;
+import com.cloudbees.jenkins.plugins.bitbucket.trait.ForkPullRequestDiscoveryTrait;
+import com.cloudbees.jenkins.plugins.bitbucket.trait.OriginPullRequestDiscoveryTrait;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -69,8 +69,8 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
                 .withTrait(new BranchDiscoveryTrait(true, true)) //take all branches
                 .withTrait(new ForkPullRequestDiscoveryTrait(strategies, new ForkPullRequestDiscoveryTrait.TrustTeamForks()))
                 .withTrait(new OriginPullRequestDiscoveryTrait(strategies))
-                .withTrait(new CleanBeforeCheckoutTrait())
-                .withTrait(new CleanAfterCheckoutTrait())
+                .withTrait(new CleanBeforeCheckoutTrait(null))
+                .withTrait(new CleanAfterCheckoutTrait(null))
                 .withTrait(new LocalBranchTrait())
                 .build();
 

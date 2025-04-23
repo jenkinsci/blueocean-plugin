@@ -202,8 +202,8 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
             //get credential for this user
             AbstractBitbucketScm scm;
             final BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(item);
-            if(BitbucketEndpointConfiguration.normalizeServerUrl(apiUrl)
-                    .startsWith(BitbucketEndpointConfiguration.normalizeServerUrl(BitbucketCloudScm.API_URL))
+            if(AbstractBitbucketScm.normalizeApiUrl(apiUrl)
+                    .startsWith(AbstractBitbucketScm.normalizeApiUrl(BitbucketCloudScm.API_URL))
                     //tests might add scmId to indicate which Scm should be used to find credential
                     //We have to do this because apiUrl might be of WireMock server and not Github
                     || (StringUtils.isNotBlank(scmId) && scmId.equals(BitbucketCloudScm.ID))) {
@@ -219,7 +219,7 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
             }
 
             //pick up github credential from user's store
-            StandardUsernamePasswordCredentials credential = scm.getCredential(BitbucketEndpointConfiguration.normalizeServerUrl(apiUrl));
+            StandardUsernamePasswordCredentials credential = scm.getCredential(AbstractBitbucketScm.normalizeApiUrl(apiUrl));
             if(credential == null){
                 throw new ServiceException.PreconditionRequired("Can't access content from Bitbucket: no credential found");
             }

@@ -361,6 +361,10 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
 
     @Restricted(NoExternalUse.class)
     public static @NonNull String normalizeApiUrl(@NonNull String apiUrl){
-        return BitbucketEndpointConfiguration.normalizeServerUrl(apiUrl);
+        String serverUrl = BitbucketEndpointConfiguration.normalizeServerUrl(apiUrl);
+        if(serverUrl == null){
+            throw new ServiceException.UnexpectedErrorException("apiUrl is empty or is not a valid URL");
+        }
+        return apiUrl;
     }
 }
