@@ -70,13 +70,12 @@ public class NodeLogResource {
                     }
                 }
             }
-            Writer writer;
             if (count > 0) {
-                writer = (count > 4096) ? rsp.getCompressedWriter(req) : rsp.getWriter();
+                try (Writer writer = rsp.getWriter()) {
                 spool.flush();
                 spool.writeTo(new LineEndNormalizingWriter(writer));
                 rsp.addHeader("X-Text-Size",String.valueOf(count));
-                writer.close();
+                }
             }
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException("Error reading log");

@@ -72,7 +72,7 @@ public class LogResource{
 
         long r = logText.writeLogTo(offset,spool);
 
-        Writer w = createWriter(req, rsp, r - offset);
+        try (Writer w = rsp.getWriter()) {
         spool.writeTo(new LineEndNormalizingWriter(w));
         if(!logText.isComplete()) {
             rsp.addHeader("X-More-Data", "true");
@@ -86,16 +86,6 @@ public class LogResource{
         }
         rsp.addHeader("X-Text-Size", String.valueOf(r));
         rsp.addHeader("X-Text-Delivered", String.valueOf(r - offset));
-        w.close();
-
+        }
     }
-
-    private Writer createWriter(StaplerRequest2 req, StaplerResponse2 rsp, long size) throws IOException {
-        // when sending big text, try compression. don't bother if it's small
-        if(size >4096)
-            return rsp.getCompressedWriter(req);
-        else
-            return rsp.getWriter();
-    }
-
 }
