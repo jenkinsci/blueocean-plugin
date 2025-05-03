@@ -127,7 +127,7 @@ public class Export {
         Flavor flavor = config.getFlavor();
         String pad=null;
         resp.setContentType(flavor.contentType);
-        Writer w = resp.getCompressedWriter(req);
+        try (Writer w = resp.getWriter()) {
 
         if (flavor== Flavor.JSON || flavor== Flavor.JSONP) { // for compatibility reasons, accept JSON for JSONP as well.
             pad = req.getParameter("jsonp");
@@ -168,7 +168,7 @@ public class Export {
         }
 
         if(pad!=null) w.write(')');
-        w.close();
+        }
     }
 
     private static void writeOne(TreePruner pruner, DataWriter dw, Object item) throws IOException {
