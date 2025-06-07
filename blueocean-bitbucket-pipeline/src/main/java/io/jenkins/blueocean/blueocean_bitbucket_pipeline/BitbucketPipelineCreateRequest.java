@@ -63,9 +63,12 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
         Set<ChangeRequestCheckoutStrategy> strategies = new HashSet<>();
         strategies.add(ChangeRequestCheckoutStrategy.MERGE);
 
-        BitbucketSCMSource bitbucketSCMSource = new BitbucketSCMSourceBuilder(null, scmConfig.getUri(), computeCredentialId(scmConfig),
-                (String)scmConfig.getConfig().get("repoOwner"),
-                (String)scmConfig.getConfig().get("repository"))
+        BitbucketSCMSource bitbucketSCMSource = new BitbucketSCMSourceBuilder(null,
+                    scmConfig.getUri(),
+                    computeCredentialId(scmConfig),
+                    (String)scmConfig.getConfig().get("repoOwner"),
+                    (String)scmConfig.getConfig().get("repository"),
+                    null)
                 .withTrait(new BranchDiscoveryTrait(true, true)) //take all branches
                 .withTrait(new ForkPullRequestDiscoveryTrait(strategies, new ForkPullRequestDiscoveryTrait.TrustTeamForks()))
                 .withTrait(new OriginPullRequestDiscoveryTrait(strategies))
