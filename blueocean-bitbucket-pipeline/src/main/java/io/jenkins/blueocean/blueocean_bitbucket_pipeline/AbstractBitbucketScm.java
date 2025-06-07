@@ -361,9 +361,6 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
 
     @Restricted(NoExternalUse.class)
     public static @NonNull String normalizeApiUrl(@NonNull String apiUrl){
-        if (StringUtils.isBlank(apiUrl)) {
-            return null;
-        }
         try {
             URI uri = new URI(apiUrl).normalize();
             String scheme = uri.getScheme();
