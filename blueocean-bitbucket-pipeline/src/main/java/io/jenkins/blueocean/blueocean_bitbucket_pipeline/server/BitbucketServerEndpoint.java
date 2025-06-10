@@ -1,6 +1,6 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
-import com.cloudbees.jenkins.plugins.bitbucket.endpoints.AbstractBitbucketEndpoint;
+import com.cloudbees.jenkins.plugins.bitbucket.api.endpoint.BitbucketEndpoint;
 import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.Messages;
 import io.jenkins.blueocean.commons.DigestUtils;
@@ -27,10 +27,10 @@ public class BitbucketServerEndpoint extends ScmServerEndpoint {
     private final String apiUrl;
     private final String name;
 
-    public BitbucketServerEndpoint(AbstractBitbucketEndpoint endpoint, Reachable parent) {
-        this.id = DigestUtils.sha256Hex(endpoint.getServerUrl());
-        this.apiUrl = endpoint.getServerUrl();
-        this.name = StringUtils.isBlank(endpoint.getDisplayName()) ?  endpoint.getServerUrl() : endpoint.getDisplayName();
+    public BitbucketServerEndpoint(BitbucketEndpoint endpoint, Reachable parent) {
+        this.id = DigestUtils.sha256Hex(endpoint.getServerURL());
+        this.apiUrl = endpoint.getServerURL();
+        this.name = StringUtils.isBlank(endpoint.getDisplayName()) ?  endpoint.getServerURL() : endpoint.getDisplayName();
         this.self = parent.getLink().rel(id);
     }
 
