@@ -95,7 +95,7 @@
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.85</version>
+            <version>1.327</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
