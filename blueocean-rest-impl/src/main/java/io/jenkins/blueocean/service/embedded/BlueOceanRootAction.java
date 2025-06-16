@@ -14,7 +14,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.model.Jenkins;
-import org.acegisecurity.Authentication;
+import org.springframework.security.core.Authentication;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest2;
@@ -67,8 +67,8 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
              *
              * @see Jenkins#getTarget()
              */
-            Authentication a = Jenkins.getAuthentication();
-            if(!Jenkins.get().getACL().hasPermission(a,Jenkins.READ)){
+            Authentication a = Jenkins.getAuthentication2();
+            if(!Jenkins.get().getACL().hasPermission2(a,Jenkins.READ)){
                 throw new ServiceException.ForbiddenException("Forbidden");
             }
         }else{
