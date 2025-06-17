@@ -37,12 +37,11 @@ import java.util.Map;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import jakarta.servlet.ServletException;
 
-import org.acegisecurity.AccessDeniedException;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.GrantedAuthority;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
-import org.junit.AssumptionViolatedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.kohsuke.stapler.StaplerRequest2;
@@ -56,7 +55,6 @@ import org.mockito.stubbing.Answer;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import hudson.model.Node;
 import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
 import hudson.model.User;
@@ -95,7 +93,7 @@ public class UserImplPermissionTest {
             public String getName() {
                 return "some_user";
             }
-            public GrantedAuthority[] getAuthorities() { return null; }
+            public Collection<? extends GrantedAuthority> getAuthorities() { return null; }
             public Object getCredentials() { return null; }
             public Object getDetails() { return null; }
             public Object getPrincipal() { return null; }
@@ -105,34 +103,22 @@ public class UserImplPermissionTest {
 
         jenkins = mock(Jenkins.class);
         when(jenkins.getACL()).thenReturn(new ACL() {
-            public boolean hasPermission(Authentication a, Permission permission) {
+            public boolean hasPermission2(Authentication a, Permission permission) {
                 return false;
             }
         });
 
         jenkinsMockedStatic = Mockito.mockStatic(Jenkins.class);
-        when(Jenkins.getAuthentication()).thenReturn(authentication);
+        when(Jenkins.getAuthentication2()).thenReturn(authentication);
         when(Jenkins.get()).thenReturn(jenkins);
 
-        try {
-            // After Jenkins 2.77 hasPermission is no longer in Node.class and is not final so we need to mock it
-            // prior to it is called as being final and mocking it will fail for the same reason.
-            // TODO remove after core base line is >= 2.77
-            Node.class.getDeclaredMethod("hasPermission", Permission.class);
-        } catch (NoSuchMethodException e) {
             when(jenkins.hasPermission(Mockito.any())).thenAnswer(new Answer<Boolean>() {
                 public Boolean answer(InvocationOnMock invocation) {
                     Permission permission = invocation.getArgument(0);
                     Jenkins j = (Jenkins) invocation.getMock();
-                    ACL acl = j.getACL();
-                    try {
-                        return acl.hasPermission(permission);
-                    } catch (NullPointerException x) {
-                        throw new AssumptionViolatedException("TODO cannot be made to work prior to Spring Security update", x);
-                    }
+                    return j.getACL().hasPermission(permission);
                 }
             });
-        }
 
         userMockedStatic = Mockito.mockStatic(User.class);
         when(User.get("some_user", false, Collections.EMPTY_MAP)).thenReturn(user);
@@ -150,12 +136,8 @@ public class UserImplPermissionTest {
      */
     @Test
     public void useTestAgainstOrgBaseOnFolder() {
-        try { // https://github.com/powermock/powermock/issues/428
         UserImpl userImpl = new UserImpl(testOrganization, user, testOrganization);
         checkPermissions(userImpl.getPermission(), false, true);
-        } catch (AssumptionViolatedException x) {
-            System.err.println(x);
-        }
     }
 
     /**
@@ -163,21 +145,17 @@ public class UserImplPermissionTest {
      */
     @Test
     public void useTestAgainstJenkinsRoot() {
-        try { // https://github.com/powermock/powermock/issues/428
         OrganizationImpl baseOrg = new OrganizationImpl("jenkins", jenkins);
         UserImpl userImpl = new UserImpl(baseOrg, user, baseOrg);
         checkPermissions(userImpl.getPermission(), false, false);
 
         when(jenkins.getACL()).thenReturn(new ACL() {
-            public boolean hasPermission(Authentication a, Permission permission) {
+            public boolean hasPermission2(Authentication a, Permission permission) {
                 return true;
             }
         });
 
         checkPermissions(userImpl.getPermission(), true, true);
-        } catch (AssumptionViolatedException x) {
-            System.err.println(x);
-        }
     }
 
     private void checkPermissions(BlueUserPermission permission, boolean shouldBeAdmin, boolean shouldHaveOtherPermissions) {
