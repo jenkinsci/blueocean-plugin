@@ -48,7 +48,7 @@
     "@jenkins-cd/blueocean-material-icons": "0.0.8",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/js-extensions": "0.0.44",
-    "linkifyjs": "2.1.4",
+    "linkifyjs": "4.3.2",
     "lodash.debounce": "4.0.8",
     "moment": "2.19.3",
     "moment-duration-format": "2.2.2",
