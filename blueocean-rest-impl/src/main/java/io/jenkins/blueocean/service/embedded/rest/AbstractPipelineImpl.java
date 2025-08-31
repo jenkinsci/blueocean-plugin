@@ -2,7 +2,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.Functions;
 import hudson.Util;
@@ -159,7 +158,6 @@ public class AbstractPipelineImpl extends BluePipeline {
     }
 
     @Override
-    @SuppressFBWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "isDisabled will return null if the job type doesn't support it")
     public Boolean getDisabled() {
         return Disabler.isDisabled(job);
     }
