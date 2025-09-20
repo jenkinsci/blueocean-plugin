@@ -29,6 +29,14 @@
       <artifactId>blueocean-pipeline-api-impl</artifactId>
     </dependency>
     <dependency>
+      <!-- Workaround to avoid test failures for CLI git 2.51.0 -->
+      <!-- If plugin is ever updated to require 2.492.3 or later, this can be removed -->
+      <!-- BOM for 2.479.x does not include a new enough git client plugin -->
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>git-client</artifactId>
+      <version>6.1.5</version>
+    </dependency>
+    <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>git</artifactId>
     </dependency>
@@ -38,7 +46,7 @@
       <groupId>org.eclipse.jgit</groupId>
       <artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
       <!-- TODO this is hard to manage; if needed, should be in BOM -->
-      <version>6.9.0.202403050737-r</version>
+      <version>7.0.0.202409031743-r</version>
       <exclusions>
         <!-- Exclude the jgit library because it is provided by git client plugin -->
         <exclusion>
