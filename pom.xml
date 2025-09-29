@@ -225,6 +225,16 @@
             <type>pom</type>
         </dependency>
 
+        <!-- remove when update BOM to version that includes git client 6.1.5 or newer  -->
+        <dependency>
+            <!-- Workaround to avoid test failures for CLI git 2.51.0 -->
+            <!-- If plugin is ever updated to require 2.492.3 or later, this can be removed -->
+            <!-- BOM for 2.479.x does not include a new enough git client plugin -->
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>git-client</artifactId>
+            <version>6.1.5</version>
+        </dependency>
+
         <!-- remove when update BOM to version that include bitbucket 936.4.0  -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
