@@ -1,14 +1,15 @@
 package io.jenkins.blueocean.rest.impl.pipeline.analytics;
 
-import hudson.Extension;
+import hudson.matrix.MatrixConfiguration;
 import hudson.matrix.MatrixProject;
 import hudson.model.Item;
 import io.jenkins.blueocean.service.embedded.analytics.JobAnalyticsCheck;
 import io.jenkins.blueocean.service.embedded.analytics.JobAnalyticsExclude;
+import org.jenkinsci.plugins.variant.OptionalExtension;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
-@Extension // TODO as in MatrixProjectImpl
+@OptionalExtension(requirePlugins = "matrix-project")
 @Restricted(NoExternalUse.class)
 public final class MatrixAnalyticsCheck implements JobAnalyticsCheck {
     @Override
@@ -24,12 +25,12 @@ public final class MatrixAnalyticsCheck implements JobAnalyticsCheck {
     /**
      * Exclude any jobs that are children of a MatrixProject
      */
-    @Extension // TODO as in MatrixProjectImpl
+    @OptionalExtension(requirePlugins = "matrix-project")
     @Restricted(NoExternalUse.class)
     public final static class ExcludeImpl implements JobAnalyticsExclude {
         @Override
         public Boolean apply(Item item) {
-            return item.getClass().getName().equals("hudson.matrix.MatrixConfiguration") || item.getParent() instanceof MatrixProject;
+            return item instanceof MatrixConfiguration || item.getParent() instanceof MatrixProject;
         }
     }
 }

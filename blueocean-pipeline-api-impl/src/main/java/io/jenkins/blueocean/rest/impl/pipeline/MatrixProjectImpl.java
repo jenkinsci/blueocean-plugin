@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import hudson.Extension;
 import hudson.matrix.MatrixProject;
 import hudson.model.Item;
 import io.jenkins.blueocean.rest.Reachable;
@@ -18,6 +17,7 @@ import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_MATRIX_PROJECT;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.NO_FAVORITE;
+import org.jenkinsci.plugins.variant.OptionalExtension;
 
 /**
  * @author Vivek Pandey
@@ -32,8 +32,7 @@ public class MatrixProjectImpl extends PipelineFolderImpl {
         this.matrixProject = folder;
     }
 
-    // TODO consider @OptionalExtension(plugin = "matrix-project") and make the dep optional
-    @Extension(ordinal = 1)
+    @OptionalExtension(requirePlugins = "matrix-project", ordinal = 1)
     public static class PipelineFactoryImpl extends BluePipelineFactory{
 
         @Override
