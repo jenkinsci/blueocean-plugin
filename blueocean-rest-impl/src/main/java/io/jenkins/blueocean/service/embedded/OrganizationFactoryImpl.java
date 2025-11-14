@@ -10,6 +10,8 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Default implementation of {@link OrganizationFactory} for a controller is to have everything in
@@ -22,6 +24,10 @@ public class OrganizationFactoryImpl extends OrganizationFactory {
     private static final String ORGANIZATION_NAME = StringUtils.defaultIfBlank(
             System.getProperty("BLUE_ORGANIZATION_NAME"),"jenkins");
 
+    private static final String ROOT_FOLDER_NAME = System.getProperty("BLUE_ORGANIZATION_ROOT_FOLDER");
+
+    private static final Logger LOG = Logger.getLogger(OrganizationFactoryImpl.class.getName());
+
     /**
      * In embedded mode, there's only one organization
      */
@@ -32,7 +38,17 @@ public class OrganizationFactoryImpl extends OrganizationFactory {
     }
 
     public OrganizationFactoryImpl(String name) {
-        this.instance = new OrganizationImpl(name, Jenkins.get());
+        if (ROOT_FOLDER_NAME != null) {
+            ItemGroup<?> root = Jenkins.get().getItemByFullName(ROOT_FOLDER_NAME, ItemGroup.class);
+            if (root != null) {
+                this.instance = new OrganizationImpl(name, root);
+            } else {
+                LOG.log(Level.WARNING, "Specified BLUE_ORGANIZATION_ROOT_FOLDER ''{0}'' not found, or not a Folder. Falling back to Jenkins root folder.", ROOT_FOLDER_NAME);
+                this.instance = new OrganizationImpl(name, Jenkins.get());
+            }
+        } else {
+            this.instance = new OrganizationImpl(name, Jenkins.get());
+        }
     }
 
     @Override
