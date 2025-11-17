@@ -43,7 +43,7 @@ public class OrganizationFactoryImpl extends OrganizationFactory {
             if (root instanceof ItemGroup<?> group) {
                 this.instance = new OrganizationImpl(name, group);
             } else {
-                LOG.log(Level.WARNING, "Specified BLUE_ORGANIZATION_ROOT_FOLDER ''{0}'' not found, or not a Folder. Falling back to Jenkins root folder.", ROOT_FOLDER_NAME);
+                LOG.warning(() -> "Specified BLUE_ORGANIZATION_ROOT_FOLDER '" + ROOT_FOLDER_NAME "' not found, or not a Folder. Falling back to Jenkins root folder.");
                 this.instance = new OrganizationImpl(name, Jenkins.get());
             }
         } else {
