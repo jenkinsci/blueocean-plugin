@@ -39,9 +39,9 @@ public class OrganizationFactoryImpl extends OrganizationFactory {
 
     public OrganizationFactoryImpl(String name) {
         if (ROOT_FOLDER_NAME != null) {
-            ItemGroup<?> root = Jenkins.get().getItemByFullName(ROOT_FOLDER_NAME, ItemGroup.class);
-            if (root != null) {
-                this.instance = new OrganizationImpl(name, root);
+            var root = Jenkins.get().getItemByFullName(ROOT_FOLDER_NAME);
+            if (root instanceof ItemGroup<?> group) {
+                this.instance = new OrganizationImpl(name, group);
             } else {
                 LOG.log(Level.WARNING, "Specified BLUE_ORGANIZATION_ROOT_FOLDER ''{0}'' not found, or not a Folder. Falling back to Jenkins root folder.", ROOT_FOLDER_NAME);
                 this.instance = new OrganizationImpl(name, Jenkins.get());
