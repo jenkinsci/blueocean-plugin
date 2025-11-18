@@ -6,6 +6,7 @@ import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import jenkins.model.Jenkins;
+import jenkins.model.ModifiableTopLevelItemGroup;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
@@ -40,7 +41,7 @@ public class OrganizationFactoryImpl extends OrganizationFactory {
     public OrganizationFactoryImpl(String name) {
         if (ROOT_FOLDER_NAME != null) {
             var root = Jenkins.get().getItemByFullName(ROOT_FOLDER_NAME);
-            if (root instanceof ItemGroup<?> group) {
+            if (root instanceof ModifiableTopLevelItemGroup group) {
                 this.instance = new OrganizationImpl(name, group);
             } else {
                 LOG.warning(() -> "Specified BLUE_ORGANIZATION_ROOT_FOLDER '" + ROOT_FOLDER_NAME + "' not found, or not a Folder. Falling back to Jenkins root folder.");
