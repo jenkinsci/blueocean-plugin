@@ -63,6 +63,7 @@ import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.*;
 
 /**
@@ -781,10 +782,14 @@ public class PipelineApiTest extends BaseTest {
                         Collections.singletonList(MapsHelper.of("name", "version", "value", "2.0"))
                 ), 200);
         assertEquals("pp", resp.get("pipeline"));
-        Thread.sleep(1000);
-        resp = get("/organizations/jenkins/pipelines/pp/runs/1/");
-        assertEquals("SUCCESS", resp.get("result"));
-        assertEquals("FINISHED", resp.get("state"));
+        await().until(() -> {
+            var build = p.getLastBuild();
+            return build != null && !build.isBuilding() && build.getResult() == Result.SUCCESS;
+        });
+        await().until(() -> {
+            Map runResp = get("/organizations/jenkins/pipelines/pp/runs/1/");
+            return "SUCCESS".equals(runResp.get("result")) && "FINISHED".equals(runResp.get("state"));
+        });
     }
 
     public static class TestStringParameterDefinition extends StringParameterDefinition{
