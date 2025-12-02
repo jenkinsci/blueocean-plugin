@@ -196,6 +196,17 @@ class RunDetailsHeader extends Component {
                     </div>
                 );
             }
+
+            if (lastCause && lastCause.userId) {
+                const userProfileUrl = `${UrlConfig.getJenkinsRootURL()}/user/${lastCause.userId}`;
+
+                return (
+                    <div className="causes" title={lastCause.shortDescription}>
+                        Started by user <a href={userProfileUrl}>{lastCause.userName || lastCause.userId}</a>
+                    </div>
+                );
+            }
+
             const causeMessage = (lastCause && lastCause.shortDescription) || null;
             return (
                 <div className="causes" title={causeMessage}>
