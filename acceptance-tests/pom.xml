@@ -12,7 +12,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <phantomjs.binary.path>./target/phantomjs-maven-plugin/phantomjs-2.1.1-linux-x86_64/bin/phantomjs</phantomjs.binary.path>
         <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
-        <slf4j.version>1.7.32</slf4j.version>
+        <slf4j.version>2.0.17</slf4j.version>
         <selenium.version>3.141.59</selenium.version> <!-- 3.141.59 4.0.0-alpha-6 -->
         <webDriverDefaultTimeout>180000</webDriverDefaultTimeout>
     </properties>
@@ -48,7 +48,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.11.0</version>
+            <version>2.19.0</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>org.kohsuke.stapler</groupId>
             <artifactId>stapler</artifactId>
-            <version>1.243</version>
+            <version>1896.v8170998149d0</version>
         </dependency>
         <dependency>
             <groupId>com.damnhandy</groupId>
@@ -90,12 +90,12 @@
         <dependency>
             <groupId>com.offbytwo.jenkins</groupId>
             <artifactId>jenkins-client</artifactId>
-            <version>0.3.7</version>
+            <version>0.3.8</version>
         </dependency>
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.85</version>
+            <version>1.329</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>

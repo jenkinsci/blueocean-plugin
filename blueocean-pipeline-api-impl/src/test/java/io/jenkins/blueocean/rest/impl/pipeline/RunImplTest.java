@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import hudson.model.FreeStyleProject;
 import hudson.model.Label;
 import hudson.model.Queue;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
@@ -44,6 +45,7 @@ public class RunImplTest
     @ClassRule
     public static BuildWatcher buildWatcher = new BuildWatcher();
 
+    @Override
     @Before
     public void setup() throws Exception{
         super.setup();
@@ -172,6 +174,12 @@ public class RunImplTest
             m = request().get(url).build(Map.class);
         }
 
+        // give another second to complete the job, not only latest state
+        Thread.sleep(500);
+        // assert the build result is valued as expected by the Jenkinsfile
+        Assert.assertEquals(Result.UNSTABLE, r.getResult());
+
+        m = request().get(url).build(Map.class);
         // Ensure that the run has finished and was marked as unstable when completed
         Assert.assertEquals("FINISHED", m.get("state"));
         Assert.assertEquals("UNSTABLE", m.get("result"));
@@ -209,16 +217,16 @@ public class RunImplTest
         // Replay this - with limited retry
         String replayURL = String.format("/organizations/jenkins/pipelines/%s/runs/%s/replay/", p.getName(), idOfSecondRun);
         try {
-            Thread.sleep(200);
+            Thread.sleep(500);
 
             request().crumb( getCrumb( j.jenkins ) ).post(replayURL).build(String.class);
         } catch (Exception e) {
-            Thread.sleep(200);
+            Thread.sleep(500);
             request().post(replayURL).build(String.class);
         }
 
         // Sleep to make sure the build actually gets launched.
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         WorkflowRun r3 = p.getLastBuild();
 
         j.waitForMessage("Still waiting to schedule task", r3);
@@ -376,7 +384,7 @@ public class RunImplTest
 
         SemaphoreStep.success("wait-a/1", null);
         // Sleep to make sure we get the a branch end node...
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         pipeline = request().get(String.format("/organizations/jenkins/pipelines/%s/", p.getName())).build(Map.class);
         latestRun = (Map) pipeline.get("latestRun");

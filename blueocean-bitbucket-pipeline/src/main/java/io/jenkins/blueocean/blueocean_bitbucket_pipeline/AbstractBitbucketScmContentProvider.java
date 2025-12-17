@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
-import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -26,7 +25,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -90,7 +89,7 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
     }
 
     @Override
-    public Object saveContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item) {
+    public Object saveContent(@NonNull StaplerRequest2 staplerRequest, @NonNull Item item) {
         JSONObject body;
         try {
             body = JSONObject.fromObject(IOUtils.toString(staplerRequest.getReader()));
@@ -196,14 +195,14 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
                 throw new ServiceException.UnauthorizedException("No logged in user found");
             }
 
-            StaplerRequest request = Stapler.getCurrentRequest();
+            StaplerRequest2 request = Stapler.getCurrentRequest2();
             String scmId = request.getParameter("scmId");
 
             //get credential for this user
             AbstractBitbucketScm scm;
             final BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(item);
-            if(BitbucketEndpointConfiguration.normalizeServerUrl(apiUrl)
-                    .startsWith(BitbucketEndpointConfiguration.normalizeServerUrl(BitbucketCloudScm.API_URL))
+            if(AbstractBitbucketScm.normalizeApiUrl(apiUrl)
+                    .startsWith(AbstractBitbucketScm.normalizeApiUrl(BitbucketCloudScm.API_URL))
                     //tests might add scmId to indicate which Scm should be used to find credential
                     //We have to do this because apiUrl might be of WireMock server and not Github
                     || (StringUtils.isNotBlank(scmId) && scmId.equals(BitbucketCloudScm.ID))) {
@@ -219,7 +218,7 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
             }
 
             //pick up github credential from user's store
-            StandardUsernamePasswordCredentials credential = scm.getCredential(BitbucketEndpointConfiguration.normalizeServerUrl(apiUrl));
+            StandardUsernamePasswordCredentials credential = scm.getCredential(AbstractBitbucketScm.normalizeApiUrl(apiUrl));
             if(credential == null){
                 throw new ServiceException.PreconditionRequired("Can't access content from Bitbucket: no credential found");
             }

@@ -6,6 +6,7 @@ import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import hudson.Extension;
+import hudson.model.Descriptor;
 import hudson.model.Item;
 import hudson.model.User;
 import hudson.tasks.Mailer;
@@ -38,7 +39,7 @@ import org.kohsuke.github.HttpException;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.GET;
@@ -136,7 +137,7 @@ public class GithubScm extends AbstractScm {
 
     @Override
     public Object getState() {
-        StaplerRequest request = Stapler.getCurrentRequest();
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
         Objects.requireNonNull(request, "Must be called in HTTP request context");
         String method = request.getMethod();
         if (!"POST".equalsIgnoreCase(method)) {
@@ -150,7 +151,7 @@ public class GithubScm extends AbstractScm {
     }
 
     private StandardUsernamePasswordCredentials getCredential(){
-        StaplerRequest request = Stapler.getCurrentRequest();
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
         String credentialId = GithubCredentialUtils.computeCredentialId(getCredentialIdFromRequest(request), getId(), getUri());
         User authenticatedUser = getAuthenticatedUser();
         final StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
@@ -195,7 +196,7 @@ public class GithubScm extends AbstractScm {
 
     @Override
     public Container<ScmOrganization> getOrganizations() {
-        StaplerRequest request = Stapler.getCurrentRequest();
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
         Objects.requireNonNull(request, "This request must be made in HTTP context");
         String method = request.getMethod();
         if (!"POST".equalsIgnoreCase(method)) {
@@ -277,7 +278,7 @@ public class GithubScm extends AbstractScm {
     }
 
     protected @NonNull String getCustomApiUri() {
-        StaplerRequest request = Stapler.getCurrentRequest();
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
         Objects.requireNonNull(request, "Must be called in HTTP request context");
         String apiUri = request.getParameter("apiUrl");
 
@@ -334,9 +335,13 @@ public class GithubScm extends AbstractScm {
             String credentialId = createCredentialId(getUri());
             StandardUsernamePasswordCredentials githubCredential =
                 CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
-            final StandardUsernamePasswordCredentials credential =
-                new UsernamePasswordCredentialsImpl(CredentialsScope.USER, credentialId, getCredentialDescription(),
+            final StandardUsernamePasswordCredentials credential;
+            try {
+                credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, credentialId, getCredentialDescription(),
                     authenticatedUser.getId(), accessToken);
+            } catch (Descriptor.FormException e) {
+                throw new RuntimeException(e);
+            }
 
             if(githubCredential == null) {
                 CredentialsUtils.createCredentialsInUserStore(

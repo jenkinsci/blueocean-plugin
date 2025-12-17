@@ -14,10 +14,10 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.model.Jenkins;
-import org.acegisecurity.Authentication;
+import org.springframework.security.core.Authentication;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -52,7 +52,7 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
     @Override
     public Object getTarget() {
 
-        StaplerRequest request = Stapler.getCurrentRequest();
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
 
         if(request.getOriginalRestOfPath().startsWith("/rest/")) {
             /**
@@ -67,8 +67,8 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
              *
              * @see Jenkins#getTarget()
              */
-            Authentication a = Jenkins.getAuthentication();
-            if(!Jenkins.get().getACL().hasPermission(a,Jenkins.READ)){
+            Authentication a = Jenkins.getAuthentication2();
+            if(!Jenkins.get().getACL().hasPermission2(a,Jenkins.READ)){
                 throw new ServiceException.ForbiddenException("Forbidden");
             }
         }else{
@@ -78,7 +78,7 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
         }
 
         // frontend uses this to determine when to reload
-        Stapler.getCurrentResponse().setHeader("X-Blueocean-Refresher", Jenkins.SESSION_HASH);
+        Stapler.getCurrentResponse2().setHeader("X-Blueocean-Refresher", Jenkins.SESSION_HASH);
 
         return app;
     }

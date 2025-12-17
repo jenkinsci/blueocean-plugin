@@ -47,6 +47,7 @@
     "history": "2.0.2",
     "immutable": "3.8.1",
     "keymirror": "0.1.1",
+    "loglevel": "^1.9.2",
     "mobx": "2.6.0",
     "mobx-react": "3.5.7",
     "mobx-react-devtools": "4.2.6",

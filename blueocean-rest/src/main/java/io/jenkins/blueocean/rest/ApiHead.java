@@ -12,8 +12,8 @@ import io.jenkins.blueocean.rest.pageable.Pageables;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
 
@@ -79,7 +79,7 @@ public final class ApiHead implements RootRoutable, Reachable  {
      */
     public ApiRoutable getDynamic(String route) {
         setApis();
-        StaplerRequest request = Stapler.getCurrentRequest();
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
         String m = request.getMethod();
         if(m.equalsIgnoreCase("POST") || m.equalsIgnoreCase("PUT") || m.equalsIgnoreCase("PATCH")) {
             String header = request.getHeader("Content-Type");
@@ -91,7 +91,7 @@ public final class ApiHead implements RootRoutable, Reachable  {
         ApiRoutable apiRoutable = apis.get(route);
 
         //JENKINS-46025 - Avoid caching REST API responses for IE
-        StaplerResponse response = Stapler.getCurrentResponse();
+        StaplerResponse2 response = Stapler.getCurrentResponse2();
         if (response != null && !response.containsHeader("Cache-Control")) {
             response.setHeader("Cache-Control", "no-cache, no-store, no-transform");
         }

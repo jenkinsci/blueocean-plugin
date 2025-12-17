@@ -1,7 +1,7 @@
 {
   "id" : "21f37681-abff-31fc-800a-38c1eb44d6a0",
   "request" : {
-    "url" : "/rest/api/1.0/projects/TESTP/repos/pipeline-demo-test/branches?start=0&limit=200",
+    "urlPattern" : "/rest/api/1.0/projects/TESTP/repos/pipeline-demo-test/(branches|pull-requests)[?]start=0[&]limit=200",
     "method" : "GET"
   },
   "response" : {

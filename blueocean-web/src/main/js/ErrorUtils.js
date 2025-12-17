@@ -1,4 +1,5 @@
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import log from "loglevel";
 
 let initialized = false;
 let warningLogged = false;
@@ -29,7 +30,7 @@ function logApplicationError(messageOrEvent) {
         message = messageOrEvent;
     }
 
-    console.error('Unhandled Error: ' + JSON.stringify(message, null, 4));
+    log.error('Unhandled Error: ' + JSON.stringify(message, null, 4));
 
     if (messageOrEvent.preventDefault) {
         messageOrEvent.preventDefault();
@@ -47,7 +48,7 @@ function logUnhandledPromiseRejection(errorEvent) {
         message = errorEvent;
     }
 
-    console.error('Unhandled Rejection: ' + JSON.stringify(message, null, 4));
+    log.error('Unhandled Rejection: ' + JSON.stringify(message, null, 4));
 
     if (errorEvent.preventDefault) {
         errorEvent.preventDefault();
@@ -67,9 +68,9 @@ function logBrowserConsoleWarning() {
         const translate = i18nTranslator('blueocean-web');
 
         if (isGoogleChrome()) {
-            console.log(translate('common.logging.warning.chrome'));
+            log.info(translate('common.logging.warning.chrome'));
         } else if (isFirefox()) {
-            console.log(translate('common.logging.warning.firefox'));
+            log.info(translate('common.logging.warning.firefox'));
         }
 
         warningLogged = true;

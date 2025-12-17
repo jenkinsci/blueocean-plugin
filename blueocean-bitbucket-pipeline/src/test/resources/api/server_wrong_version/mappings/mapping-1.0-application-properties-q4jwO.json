@@ -1,5 +1,5 @@
 {
-  "id" : "d5434dae-88c5-3cdd-a506-11adb708a1ad",
+  "id" : "d090987c-1d65-41bf-b291-6f2dfd6c943d",
   "request" : {
     "url" : "/rest/api/1.0/application-properties",
     "method" : "GET"
@@ -18,5 +18,5 @@
       "Date" : "Wed, 12 Jul 2017 09:54:11 GMT"
     }
   },
-  "uuid" : "d5434dae-88c5-3cdd-a506-11adb708a1ad"
+  "uuid" : "d090987c-1d65-41bf-b291-6f2dfd6c943d"
 }

@@ -5,7 +5,7 @@ import io.jenkins.blueocean.rest.annotation.Capability;
 import java.util.Collection;
 import java.util.Date;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.verb.POST;
@@ -123,6 +123,6 @@ public abstract class BluePipelineStep extends Resource{
      */
     @POST
     @WebMethod(name = "")
-    public abstract HttpResponse submitInputStep(StaplerRequest request);
+    public abstract HttpResponse submitInputStep(StaplerRequest2 request);
 
 }

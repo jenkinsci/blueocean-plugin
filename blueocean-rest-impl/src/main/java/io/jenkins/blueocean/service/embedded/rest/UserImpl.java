@@ -22,7 +22,7 @@ import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserPermission;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
-import org.acegisecurity.Authentication;
+import org.springframework.security.core.Authentication;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
@@ -71,7 +71,7 @@ public class UserImpl extends BlueUser {
 
     @Override
     public String getEmail() {
-        String name = Jenkins.getAuthentication().getName();
+        String name = Jenkins.getAuthentication2().getName();
         if(isAnonymous(name)){
             return null;
         }else{
@@ -113,7 +113,7 @@ public class UserImpl extends BlueUser {
 
     @Override
     public BlueUserPermission getPermission() {
-        Authentication authentication = Jenkins.getAuthentication();
+        Authentication authentication = Jenkins.getAuthentication2();
         String name = authentication.getName();
         if(isAnonymous(name)){
             return null;

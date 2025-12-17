@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 ENV MAVEN_VERSION 3.9.4
 ENV NODE_VERSION 10.13.0
@@ -17,7 +17,7 @@ RUN apt-get update
 RUN apt update -qqy \
   && apt -qqy --no-install-recommends install \
     sudo \
-    openjdk-11-jdk \
+    openjdk-21-jdk \
     tar \
     zip xz-utils \
     curl wget \
@@ -29,7 +29,7 @@ RUN apt update -qqy \
     locales \
     libsass-dev \
   && rm -rf /var/lib/apt/lists/* \
-  && sed -i 's/securerandom\.source=file:\/dev\/random/securerandom\.source=file:\/dev\/urandom/' /usr/lib/jvm/java-11-openjdk-amd64/conf/security/java.security
+  && sed -i 's/securerandom\.source=file:\/dev\/random/securerandom\.source=file:\/dev\/urandom/' /usr/lib/jvm/java-21-openjdk-amd64/conf/security/java.security
 
 # Set utf-8 locale
 RUN locale-gen en_US.UTF-8

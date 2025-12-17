@@ -3,7 +3,7 @@ package io.jenkins.blueocean.rest.model;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.hal.Link;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.Collection;
@@ -105,7 +105,7 @@ public abstract class BlueMultiBranchPipeline extends BluePipelineFolder impleme
             }
 
             @Override
-            public BlueRun create(StaplerRequest request) {
+            public BlueRun create(StaplerRequest2 request) {
                 throw new ServiceException.NotImplementedException("This action is not supported");
             }
         };

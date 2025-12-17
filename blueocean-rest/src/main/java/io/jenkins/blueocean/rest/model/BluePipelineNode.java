@@ -3,7 +3,7 @@ package io.jenkins.blueocean.rest.model;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -93,7 +93,7 @@ public abstract class BluePipelineNode extends BluePipelineStep {
      */
     @POST
     @WebMethod(name = "restart")
-    public abstract HttpResponse restart( StaplerRequest request);
+    public abstract HttpResponse restart( StaplerRequest2 request);
 
     /**
      * Represents edge of pipeline flow graph

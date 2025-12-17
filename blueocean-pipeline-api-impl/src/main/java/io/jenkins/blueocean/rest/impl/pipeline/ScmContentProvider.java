@@ -4,7 +4,7 @@ import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Item;
 import jenkins.scm.api.SCMNavigator;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -31,22 +31,22 @@ public abstract class ScmContentProvider implements ExtensionPoint{
     /**
      * Gives content of scm file.
      *
-     * @param staplerRequest {@link StaplerRequest} request specific to this SCM
+     * @param staplerRequest {@link StaplerRequest2} request specific to this SCM
      * @param item {@link Item} in context. e.g.  {@link jenkins.branch.OrganizationFolder}
      *                         or {@link jenkins.branch.MultiBranchProject}
      * @return scm content
      */
-    public abstract @CheckForNull Object getContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item);
+    public abstract @CheckForNull Object getContent(@NonNull StaplerRequest2 staplerRequest, @NonNull Item item);
 
     /**
      * Save content
      *
-     * @param staplerRequest {@link StaplerRequest} request specific to this SCM
+     * @param staplerRequest {@link StaplerRequest2} request specific to this SCM
      * @param item {@link Item} in context. e.g.  {@link jenkins.branch.OrganizationFolder}
      *                         or {@link jenkins.branch.MultiBranchProject}
      * @return SCM specific save content response
      */
-    public abstract @CheckForNull Object saveContent(@NonNull StaplerRequest staplerRequest, @NonNull Item item);
+    public abstract @CheckForNull Object saveContent(@NonNull StaplerRequest2 staplerRequest, @NonNull Item item);
 
     /**
      * {@link ScmContentProvider} instance that supports given {@link SCMNavigator}.

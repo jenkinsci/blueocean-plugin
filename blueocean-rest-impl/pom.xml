@@ -86,11 +86,6 @@
         </dependency>
 
         <dependency>
-            <groupId>io.keen</groupId>
-            <artifactId>keen-client-api-java</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.jenkins-ci.main</groupId>
             <artifactId>jenkins-test-harness-tools</artifactId>
         </dependency>
@@ -124,14 +119,20 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-jre8-standalone</artifactId>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-standalone</artifactId>
             <scope>test</scope>
         </dependency>
         <!-- only for ArtifactImplTest and write final field -->
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-reflect</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.3.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

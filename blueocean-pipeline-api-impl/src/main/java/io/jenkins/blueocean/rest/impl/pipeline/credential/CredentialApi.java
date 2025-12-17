@@ -13,7 +13,7 @@ import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.CreateResponse;
 import io.jenkins.blueocean.rest.model.Resource;
 import net.sf.json.JSONObject;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
@@ -51,7 +51,7 @@ public class CredentialApi extends Resource {
 
     @POST
     @WebMethod(name = "")
-    public CreateResponse create(@JsonBody JSONObject body, StaplerRequest request) throws IOException {
+    public CreateResponse create(@JsonBody JSONObject body, StaplerRequest2 request) throws IOException {
 
         User authenticatedUser =  User.current();
         if(authenticatedUser == null){
@@ -181,7 +181,7 @@ public class CredentialApi extends Resource {
         @POST
         @WebMethod(name = "")
         @Deprecated
-        public CreateResponse create(@JsonBody JSONObject body, StaplerRequest request) throws IOException {
+        public CreateResponse create(@JsonBody JSONObject body, StaplerRequest2 request) throws IOException {
 
             final IdCredentials credentials = request.bindJSON(IdCredentials.class, body.getJSONObject("credentials"));
             domainWrapper.getStore().addCredentials(domainWrapper.getDomain(), credentials);

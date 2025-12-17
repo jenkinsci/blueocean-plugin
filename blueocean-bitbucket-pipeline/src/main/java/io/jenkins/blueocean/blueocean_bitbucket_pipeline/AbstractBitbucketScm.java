@@ -1,9 +1,9 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
-import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
+import hudson.model.Descriptor;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -22,17 +22,19 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.json.JsonBody;
-
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -47,7 +49,7 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
 
     @Override
     public Object getState() {
-        StaplerRequest request = Stapler.getCurrentRequest();
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
         Objects.requireNonNull(request, "Must be called in HTTP request context");
         String method = request.getMethod();
         if (!"POST".equalsIgnoreCase(method)) {
@@ -109,7 +111,7 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
 
     @Override
     public Container<ScmOrganization> getOrganizations() {
-        StaplerRequest request = Stapler.getCurrentRequest();
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
         Objects.requireNonNull(request, "This request must be made in HTTP context");
         String method = request.getMethod();
         if (!"POST".equalsIgnoreCase(method)) {
@@ -211,8 +213,13 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
 
         validate(userName, password, apiUrl);
 
-        final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
+        final StandardUsernamePasswordCredentials credential;
+        try {
+            credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
                 createCredentialId(apiUrl), "Bitbucket server credentials", userName, password);
+        } catch (Descriptor.FormException e) {
+            throw new RuntimeException(e);
+        }
 
         //if credentials are wrong, this call will fail with 401 error
         validateCredential(apiUrl, credential);
@@ -326,27 +333,26 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
     /**
      *  Caller must ensure apiUrl is not blank or null
      *
-     * @param apiUrl must be normalized url using {@link BitbucketEndpointConfiguration#normalizeServerUrl(String)}
+     * @param apiUrl to get the associated credentialId
      * @return url
      */
     protected  abstract @NonNull String createCredentialId(@NonNull String apiUrl);
 
     protected abstract @NonNull String getDomainId();
 
-    protected StaplerRequest getStaplerRequest(){
-        StaplerRequest request = Stapler.getCurrentRequest();
+    protected StaplerRequest2 getStaplerRequest2(){
+        StaplerRequest2 request = Stapler.getCurrentRequest2();
         Objects.requireNonNull(request, "Must be called in HTTP request context");
         return request;
     }
 
     protected @NonNull String getApiUrlParameter(){
-        return getApiUrlParameter(getStaplerRequest());
+        return getApiUrlParameter(getStaplerRequest2());
     }
 
-    private @NonNull String getApiUrlParameter(StaplerRequest request){
+    private @NonNull String getApiUrlParameter(StaplerRequest2 request){
         String apiUrl =  request.getParameter("apiUrl");
-        // Ensure apiUrl is not blank/null, otherwise BitbucketEndpointConfiguration.normalizeServerUrl() will
-        // return bitbucket cloud API
+        // Ensure apiUrl is not blank/null
         if(StringUtils.isBlank(apiUrl)){
             throw new ServiceException.BadRequestException("apiUrl is required parameter");
         }
@@ -355,6 +361,38 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
 
     @Restricted(NoExternalUse.class)
     public static @NonNull String normalizeApiUrl(@NonNull String apiUrl){
-        return BitbucketEndpointConfiguration.normalizeServerUrl(apiUrl);
+        try {
+            URI uri = new URI(apiUrl).normalize();
+            String scheme = uri.getScheme();
+            if ("http".equals(scheme) || "https".equals(scheme)) {
+                // we only expect http / https, but also these are the only ones where we know the authority
+                // is server based, i.e. [userinfo@]server[:port]
+                // DNS names must be US-ASCII and are case insensitive, so we force all to lowercase
+
+                String host = uri.getHost() == null ? null : uri.getHost().toLowerCase(Locale.ENGLISH);
+                int port = uri.getPort();
+                if ("http".equals(scheme) && port == 80) {
+                    port = -1;
+                } else if ("https".equals(scheme) && port == 443) {
+                    port = -1;
+                }
+                apiUrl = new URI(
+                        scheme,
+                        uri.getUserInfo(),
+                        host,
+                        port,
+                        uri.getPath(),
+                        uri.getQuery(),
+                        uri.getFragment()
+                ).toASCIIString();
+            }
+        } catch (URISyntaxException e) {
+            // ignore, this was a best effort tidy-up
+        }
+        String serverUrl = apiUrl.replaceAll("/$", "");
+        if(serverUrl == null){
+            throw new ServiceException.UnexpectedErrorException("apiUrl is empty or is not a valid URL");
+        }
+        return apiUrl;
     }
 }
