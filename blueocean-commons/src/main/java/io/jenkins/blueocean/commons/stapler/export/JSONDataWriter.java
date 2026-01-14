@@ -25,7 +25,7 @@ package io.jenkins.blueocean.commons.stapler.export;
 
 import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.io.IOException;
 import java.io.Writer;

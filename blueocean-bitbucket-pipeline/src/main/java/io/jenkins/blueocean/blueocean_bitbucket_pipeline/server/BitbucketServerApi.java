@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
@@ -205,7 +205,7 @@ public class BitbucketServerApi extends BitbucketApi {
             if(StringUtils.isNotBlank(sourceBranch)){
                 builder.addTextBody("sourceBranch", sourceBranch);
             }
-            if(org.apache.commons.lang.StringUtils.isNotBlank(commitId)){
+            if(org.apache.commons.lang3.StringUtils.isNotBlank(commitId)){
                    builder.addTextBody("sourceCommitId", commitId);
             }
             HttpEntity entity = builder.build();
