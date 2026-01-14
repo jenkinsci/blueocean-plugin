@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>5.24</version>
+    <version>6.2116.v7501b_67dc517</version>
     <relativePath />
   </parent>
 
@@ -46,6 +46,7 @@
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
     <!-- override this as memory in parent pom is not big enough -->
     <argLine>-Xmx3g -Xms3g -Djava.awt.headless=true -XX:+HeapDumpOnOutOfMemoryError -XX:+TieredCompilation -XX:TieredStopAtLevel=1 @{jenkins.addOpens} @{jenkins.insaneHook}</argLine>
+    <ban-commons-lang-2.skip>false</ban-commons-lang-2.skip>
   </properties>
 
   <scm child.scm.connection.inherit.append.path="false" child.scm.developerConnection.inherit.append.path="false" child.scm.url.inherit.append.path="false">
