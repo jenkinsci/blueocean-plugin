@@ -7,11 +7,10 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
-import org.apache.commons.lang.StringUtils;
+import jenkins.util.SystemProperties;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -22,8 +21,7 @@ import java.util.logging.Logger;
  */
 @Extension(ordinal=-100)    // low ordinal to ensure this comes in the very last
 public class OrganizationFactoryImpl extends OrganizationFactory {
-    private static final String ORGANIZATION_NAME = StringUtils.defaultIfBlank(
-            System.getProperty("BLUE_ORGANIZATION_NAME"),"jenkins");
+    private static final String ORGANIZATION_NAME = SystemProperties.getString("BLUE_ORGANIZATION_NAME","jenkins");
 
     private static final String ROOT_FOLDER_NAME = System.getProperty("BLUE_ORGANIZATION_ROOT_FOLDER");
 
