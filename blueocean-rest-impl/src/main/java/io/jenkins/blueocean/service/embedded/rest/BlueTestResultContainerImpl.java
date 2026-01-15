@@ -13,7 +13,7 @@ import io.jenkins.blueocean.rest.model.BlueTestResult;
 import io.jenkins.blueocean.rest.model.BlueTestResult.State;
 import io.jenkins.blueocean.rest.model.BlueTestResult.Status;
 import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest2;
 
@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 public class BlueTestResultContainerImpl extends BlueTestResultContainer {
     protected final Run<?, ?> run;

@@ -25,7 +25,7 @@ package io.jenkins.blueocean.commons.stapler.export;
 
 import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -112,7 +112,7 @@ class JSONDataWriter implements DataWriter {
         buf.append('\"');
         // TODO: remove when JENKINS-45099 has been fixed correctly in upstream stapler
         if (config.isHtmlEncode()) {
-            jsonEncoder.quoteAsString(StringEscapeUtils.escapeHtml(v), buf);
+            jsonEncoder.quoteAsString(StringEscapeUtils.escapeHtml4(v), buf);
         } else {
             jsonEncoder.quoteAsString(v, buf);
         }

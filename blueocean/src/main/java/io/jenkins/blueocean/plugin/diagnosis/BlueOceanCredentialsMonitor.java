@@ -20,7 +20,7 @@ import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMSource;
 import jenkins.util.SystemProperties;
 import jenkins.util.Timer;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.kohsuke.accmod.Restricted;

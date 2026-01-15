@@ -26,7 +26,7 @@ package io.jenkins.blueocean;
 import com.cloudbees.sdk.extensibility.Extension;
 import com.google.common.base.Splitter;
 import com.google.inject.Injector;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.test.acceptance.controller.JenkinsController;
 import org.jenkinsci.test.acceptance.controller.LocalController;
 import org.jenkinsci.utils.process.CommandBuilder;

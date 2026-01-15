@@ -28,14 +28,8 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>de.skuzzle.enforcer</groupId>
-                        <artifactId>restrict-imports-enforcer-rule</artifactId>
-                        <version>0.7.0</version>
-                    </dependency>
-                </dependencies>
                 <executions>
                     <execution>
                         <id>check-no-jenkins-imports</id>
@@ -46,7 +40,7 @@
                         <configuration>
                             <rules>
                                 <!-- All packages can use Extension points -->
-                                <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+                                <RestrictImports>
                                     <basePackage>**</basePackage>
                                     <bannedImports>
                                         <bannedImport>jenkins.**</bannedImport>
@@ -60,13 +54,22 @@
                                         <allowedImport>hudson.security.csrf.CrumbExclusion</allowedImport>
                                         <allowedImport>hudson.util.AdaptedIterator</allowedImport>
                                         <allowedImport>hudson.Util</allowedImport>
+                                        <allowedImport>static hudson.Util.rawEncode</allowedImport>
+                                        <allowedImport>hudson.model.Action</allowedImport>
+                                        <allowedImport>hudson.model.Item</allowedImport>
+                                        <allowedImport>hudson.model.ItemGroup</allowedImport>
+                                        <allowedImport>hudson.model.Job</allowedImport>
+                                        <allowedImport>hudson.model.ModelObject</allowedImport>
+                                        <allowedImport>hudson.model.RootAction</allowedImport>
+                                        <allowedImport>hudson.model.Run</allowedImport>
+                                        <allowedImport>hudson.model.TopLevelItem</allowedImport>
+                                        <allowedImport>hudson.scm.ChangeLogSet</allowedImport>
+                                        <allowedImport>jenkins.model.Jenkins</allowedImport>
+                                        <allowedImport>jenkins.model.ModifiableTopLevelItemGroup</allowedImport>
                                     </allowedImports>
-                                    <excludedClasses>
-                                        <excludedClass>io.jenkins.blueocean.rest.factory.**</excludedClass>
-                                    </excludedClasses>
-                                </restrictImports>
+                                </RestrictImports>
                                 <!-- Factory package is allowed to import Jenkins models -->
-                                <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+                                <RestrictImports>
                                     <basePackage>io.jenkins.blueocean.rest.factory.**</basePackage>
                                     <bannedImports>
                                         <bannedImport>jenkins.**</bannedImport>
@@ -89,8 +92,8 @@
                                         <allowedImport>hudson.model.Job</allowedImport>
                                         <allowedImport>hudson.scm.ChangeLogSet</allowedImport>
                                     </allowedImports>
-                                </restrictImports>
-                                <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+                                </RestrictImports>
+                                <RestrictImports>
                                     <basePackage>io.jenkins.blueocean.rest.analytics.**</basePackage>
                                     <bannedImports>
                                         <bannedImport>jenkins.**</bannedImport>
@@ -101,7 +104,7 @@
                                         <allowedImport>hudson.ExtensionPoint</allowedImport>
                                         <allowedImport>hudson.ExtensionList</allowedImport>
                                     </allowedImports>
-                                </restrictImports>
+                                </RestrictImports>
                             </rules>
                         </configuration>
                     </execution>

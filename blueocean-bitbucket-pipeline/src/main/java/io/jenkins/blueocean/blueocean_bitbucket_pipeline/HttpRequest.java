@@ -7,7 +7,7 @@ import hudson.ProxyConfiguration;
 import hudson.util.Secret;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;

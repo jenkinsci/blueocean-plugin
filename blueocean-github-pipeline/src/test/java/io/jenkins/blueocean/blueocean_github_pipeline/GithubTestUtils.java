@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import io.jenkins.blueocean.commons.MapsHelper;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 

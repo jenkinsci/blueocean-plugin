@@ -15,7 +15,7 @@ import com.cloudbees.plugins.credentials.domains.SchemeSpecification;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
