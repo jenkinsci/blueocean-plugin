@@ -18,7 +18,7 @@ import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMSource;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.kohsuke.stapler.Stapler;

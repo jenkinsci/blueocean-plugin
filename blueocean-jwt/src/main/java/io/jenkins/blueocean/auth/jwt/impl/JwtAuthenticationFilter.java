@@ -6,7 +6,7 @@ import hudson.security.ACL;
 import hudson.security.ACLContext;
 import hudson.util.PluginServletFilter;
 import io.jenkins.blueocean.auth.jwt.JwtTokenVerifier;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.Stapler;
 import org.springframework.security.core.Authentication;
 

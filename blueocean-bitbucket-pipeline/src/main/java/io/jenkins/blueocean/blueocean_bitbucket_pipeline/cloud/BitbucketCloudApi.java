@@ -21,7 +21,7 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbUser;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
@@ -38,7 +38,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static io.jenkins.blueocean.commons.JsonConverter.om;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * @author Vivek Pandey
