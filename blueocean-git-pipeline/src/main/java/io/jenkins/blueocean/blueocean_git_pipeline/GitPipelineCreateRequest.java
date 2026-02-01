@@ -14,7 +14,7 @@ import jenkins.plugins.git.traits.CleanBeforeCheckoutTrait;
 import jenkins.plugins.git.traits.LocalBranchTrait;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.trait.SCMSourceTrait;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import edu.umd.cs.findbugs.annotations.NonNull;

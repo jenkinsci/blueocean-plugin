@@ -3,7 +3,7 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.BitbucketCloudScm;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.BitbucketServerScm;
 import io.jenkins.blueocean.commons.DigestUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author cliffmeyers

@@ -2,7 +2,10 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Action;
+import hudson.model.Run;
+import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -28,6 +31,7 @@ import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StageChunkFinder;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StatusAndTiming;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
+import org.jenkinsci.plugins.workflow.support.steps.build.DownstreamBuildAction;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,6 +101,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     // Collects instances of Action as we walk up the graph, to be drained when appropriate
     private Set<Action> pipelineActions;
+    // The IDs of nodes which contributed to pipelineActions.
+    private Set<String> pipelineActionsNodes;
 
     // Temporary holding for actions waiting to be assigned to the wrapper for a branch
     private Map<FlowNode /* is the branchStartNode */, Set<Action>> pendingActionsForBranches;
@@ -109,6 +115,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         this.run = run;
         this.inputAction = run.getAction(InputAction.class);
         this.pipelineActions = new HashSet<>();
+        this.pipelineActionsNodes = new HashSet<>();
         this.pendingActionsForBranches = new HashMap<>();
         declarative = run.getAction(ExecutionModelAction.class) != null;
         FlowExecution execution = run.getExecution();
@@ -558,6 +565,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     protected void accumulatePipelineActions(FlowNode node) {
         final List<Action> actions = node.getActions(Action.class);
         pipelineActions.addAll(actions);
+        pipelineActionsNodes.add(node.getId());
         if (isNodeVisitorDumpEnabled) {
             dump(String.format("\t\taccumulating actions - added %d, total is %d", actions.size(), pipelineActions.size()));
         }
@@ -571,12 +579,29 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             dump(String.format("\t\tdraining accumulated actions - total is %d", pipelineActions.size()));
         }
 
-        if (pipelineActions.size() == 0) {
-            return Collections.emptySet();
+        Set<Action> drainedActions = pipelineActions;
+        Set<String> nodes = pipelineActionsNodes;
+        pipelineActions = new HashSet<>();
+        pipelineActionsNodes = new HashSet<>();
+        if (!nodes.isEmpty()) {
+            DownstreamBuildAction action = run.getAction(DownstreamBuildAction.class);
+            if (action != null) {
+                for (DownstreamBuildAction.DownstreamBuild downstreamBuild : action.getDownstreamBuilds()) {
+                    if (nodes.contains(downstreamBuild.getFlowNodeId())) {
+                        Run<?, ?> downstream = downstreamBuild.getBuild();
+                        if (downstream != null) {
+                            Link link = LinkResolver.resolveLink(downstream);
+                            String description = downstream.getDescription();
+                            if (description == null) {
+                                description = downstream.getFullDisplayName();
+                            }
+                            drainedActions.add(new NodeDownstreamBuildAction(link, description));
+                        }
+                    }
+                }
+            }
         }
 
-        Set<Action> drainedActions = pipelineActions;
-        pipelineActions = new HashSet<>();
         return drainedActions;
     }
 
