@@ -6,10 +6,12 @@ import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang.StringUtils;
+import jenkins.model.ModifiableTopLevelItemGroup;
+import jenkins.util.SystemProperties;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.logging.Logger;
 
 /**
  * Default implementation of {@link OrganizationFactory} for a controller is to have everything in
@@ -19,8 +21,11 @@ import java.util.Collections;
  */
 @Extension(ordinal=-100)    // low ordinal to ensure this comes in the very last
 public class OrganizationFactoryImpl extends OrganizationFactory {
-    private static final String ORGANIZATION_NAME = StringUtils.defaultIfBlank(
-            System.getProperty("BLUE_ORGANIZATION_NAME"),"jenkins");
+    private static final String ORGANIZATION_NAME = SystemProperties.getString("BLUE_ORGANIZATION_NAME","jenkins");
+
+    private static final String ROOT_FOLDER_NAME = System.getProperty("BLUE_ORGANIZATION_ROOT_FOLDER");
+
+    private static final Logger LOG = Logger.getLogger(OrganizationFactoryImpl.class.getName());
 
     /**
      * In embedded mode, there's only one organization
@@ -32,7 +37,17 @@ public class OrganizationFactoryImpl extends OrganizationFactory {
     }
 
     public OrganizationFactoryImpl(String name) {
-        this.instance = new OrganizationImpl(name, Jenkins.get());
+        if (ROOT_FOLDER_NAME != null) {
+            var root = Jenkins.get().getItemByFullName(ROOT_FOLDER_NAME);
+            if (root instanceof ModifiableTopLevelItemGroup group) {
+                this.instance = new OrganizationImpl(name, group);
+            } else {
+                LOG.warning(() -> "Specified BLUE_ORGANIZATION_ROOT_FOLDER '" + ROOT_FOLDER_NAME + "' not found, or not a Folder. Falling back to Jenkins root folder.");
+                this.instance = new OrganizationImpl(name, Jenkins.get());
+            }
+        } else {
+            this.instance = new OrganizationImpl(name, Jenkins.get());
+        }
     }
 
     @Override

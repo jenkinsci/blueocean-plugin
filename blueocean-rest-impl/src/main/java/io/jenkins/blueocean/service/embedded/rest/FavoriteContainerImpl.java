@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import jakarta.servlet.http.HttpServletResponse;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.StaplerResponse2;

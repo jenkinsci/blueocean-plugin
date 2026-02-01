@@ -16,7 +16,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

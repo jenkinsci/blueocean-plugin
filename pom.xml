@@ -25,7 +25,7 @@
   </licenses>
 
   <properties>
-    <revision>1.27.22</revision>
+    <revision>1.27.26</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <!--
@@ -191,11 +191,11 @@
           <artifactId>commons-codec</artifactId>
           <scope>provided</scope>
       </dependency>
-      <dependency>
-          <groupId>commons-lang</groupId>
-          <artifactId>commons-lang</artifactId>
-          <scope>provided</scope>
-      </dependency>
+<!--      <dependency>-->
+<!--          <groupId>commons-lang</groupId>-->
+<!--          <artifactId>commons-lang</artifactId>-->
+<!--          <scope>provided</scope>-->
+<!--      </dependency>-->
       <dependency>
           <groupId>org.mockito</groupId>
           <artifactId>mockito-core</artifactId>
@@ -417,6 +417,12 @@
             <artifactId>jenkins-test-harness-tools</artifactId>
             <version>2.2</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jenkins-ci.plugins</groupId>
+                    <artifactId>gradle</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
@@ -517,10 +523,22 @@
                       <failOnError>${access-modifier-checker.failOnError}</failOnError>
                   </configuration>
               </plugin>
+              <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-enforcer-plugin</artifactId>
+                  <dependencies>
+                      <dependency>
+                          <groupId>de.skuzzle.enforcer</groupId>
+                          <artifactId>restrict-imports-enforcer-rule</artifactId>
+                          <version>3.0.0</version>
+                      </dependency>
+                  </dependencies>
+              </plugin>
           </plugins>
       </pluginManagement>
     <plugins>
         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
             <executions>
                 <execution>
@@ -533,9 +551,25 @@
                             <bannedDependencies>
                                 <excludes>
                                     <exclude>org.apache.commons:commons-lang3</exclude>
+                                    <exclude>commons-lang:commons-lang</exclude>
                                 </excludes>
                                 <searchTransitive>false</searchTransitive>
                             </bannedDependencies>
+                        </rules>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>check-commons-lang</id>
+                    <phase>process-sources</phase>
+                    <goals>
+                        <goal>enforce</goal>
+                    </goals>
+                    <configuration>
+                        <rules>
+                            <RestrictImports>
+                                <reason>Use commons-lang 2</reason>
+                                <bannedImport>org.apache.commons.lang.**</bannedImport>
+                            </RestrictImports>
                         </rules>
                     </configuration>
                 </execution>

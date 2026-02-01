@@ -56,7 +56,7 @@ import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.kohsuke.stapler.StaplerRequest2;
 import org.slf4j.Logger;

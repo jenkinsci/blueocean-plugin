@@ -35,7 +35,7 @@ import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.pubsub.EventProps;
 import org.jenkinsci.plugins.pubsub.Events;
 import org.jenkinsci.plugins.pubsub.JobChannelMessage;
