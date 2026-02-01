@@ -4,7 +4,7 @@ import hudson.model.Action;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.slf4j.Logger;

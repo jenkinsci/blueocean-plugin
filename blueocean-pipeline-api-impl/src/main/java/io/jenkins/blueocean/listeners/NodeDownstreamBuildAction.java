@@ -3,16 +3,15 @@ package io.jenkins.blueocean.listeners;
 import hudson.model.InvisibleAction;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import java.util.Objects;
 import org.jenkinsci.plugins.workflow.actions.FlowNodeAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import java.util.Objects;
-
 /**
- * Annotates a FlowNode to point to a downstream build triggered by said node. Applied by
- * io.jenkins.blueocean.listeners.DownstreamJobListener in blueocean-pipeline-api-impl
+ * Annotates a FlowNode to point to a downstream build triggered by said node.
+ * <p>Added dynamically to {@code FlowNodeWrapper} during graph processing by {@code PipelineNodeGraphVisitor}.
  */
 @ExportedBean
 public class NodeDownstreamBuildAction extends InvisibleAction implements FlowNodeAction, Reachable {
