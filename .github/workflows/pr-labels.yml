@@ -1,0 +1,41 @@
+name: PR Labels
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v6
+
+      - name: Run labeler
+        uses: actions/labeler@v6
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration-path: .github/labeler.yml
+
+  required:
+    name: PR Labels - Required
+    runs-on: ubuntu-latest
+    if: ${{ always() && github.event.pull_request.head.repo.full_name == github.repository }}
+    needs:
+      - label
+    steps:
+      - name: Verify required jobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "label: ${{ needs.label.result }}"
+          if [ "${{ needs.label.result }}" != "success" ]; then
+            echo "::error::PR Labels failed"
+            exit 1
+          fi

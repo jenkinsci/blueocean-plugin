@@ -1,0 +1,32 @@
+# Auto-approve owner PRs that receive no review within 3 days.
+#
+# Uses the reusable action: https://github.com/mPokornyETM/auto-approve-stale-prs
+#
+# Countdown labels give reviewers clear visibility:
+#   Day 0 → merge-in-3-days-without-review
+#   Day 1 → merge-in-2-days-without-review
+#   Day 2 → merge-in-1-day-without-review
+#   Day 3 → approved + merged-without-review (auto-merge takes over)
+#
+# Only PRs authored by a repo OWNER or MEMBER are processed.
+# PRs that already have at least one approval are skipped.
+name: Auto-approve owner PRs
+
+on:
+  schedule:
+    - cron: "0 8 * * *" # daily at 08:00 UTC
+  workflow_dispatch: # allow manual trigger
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  countdown:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: mPokornyETM/auto-approve-stale-prs@v1
+        with:
+          days-until-approve: '3'
+          author-associations: 'OWNER'
+          merge-method: 'squash'
