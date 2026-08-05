@@ -1,0 +1,44 @@
+# .github/labeler.yml — actions/labeler v5 schema
+# Labels PRs based on changed files.
+# For release-drafter compatibility, see also: auto-label-pr.yml
+
+# ═══════════════════════════════════════════════════════════════════
+# File-based labels (auto-applied by actions/labeler)
+# ═══════════════════════════════════════════════════════════════════
+
+java:
+  - changed-files:
+      - any-glob-to-any-file: 'src/main/java/**'
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file: 'src/test/**'
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: '.github/workflows/**'
+      - any-glob-to-any-file: 'Jenkinsfile'
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: 'pom.xml'
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file: '*.md'
+      - any-glob-to-any-file: 'src/doc/**'
+
+localization:
+  - changed-files:
+      - any-glob-to-any-file: 'src/main/resources/**/*.properties'
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file: 'src/main/webapp/**'
+      - any-glob-to-any-file: 'src/main/resources/**/*.jelly'
+
+chore:
+  - changed-files:
+      - any-glob-to-any-file: '.github/**'
+      - any-glob-to-any-file: '.gitignore'
+      - any-glob-to-any-file: 'crowdin.yml'

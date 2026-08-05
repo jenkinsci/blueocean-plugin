@@ -1,0 +1,149 @@
+# Auto-label PRs based on title, branch, and author association.
+# Adds release-drafter compatible labels for changelog generation.
+# Also adds auto-approve countdown label for owner/member PRs.
+name: Auto-label PR
+
+on:
+  # Use pull_request_target so the workflow has write permissions even for fork PRs.
+  # SECURITY: Do not check out or execute code from the PR in this workflow.
+  pull_request_target:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  auto-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto-label based on title and branch
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const title = pr.title.toLowerCase();
+            const branch = pr.head.ref.toLowerCase();
+            const author = pr.user.login;
+            const authorAssoc = pr.author_association;
+            const isDraft = pr.draft;
+            
+            const labelsToAdd = [];
+            const labelsToRemove = [];
+            
+            // Get current labels
+            const currentLabels = pr.labels.map(l => l.name);
+            
+            console.log(`PR #${pr.number}: "${pr.title}"`);
+            console.log(`  Branch: ${branch}`);
+            console.log(`  Author: ${author} (${authorAssoc})`);
+            console.log(`  Draft: ${isDraft}`);
+            console.log(`  Current labels: ${currentLabels.join(', ') || 'none'}`);
+            
+            // ═══════════════════════════════════════════════════════════════
+            // Release-drafter compatible labels based on title/branch
+            // ═══════════════════════════════════════════════════════════════
+            
+            // Breaking changes
+            if (title.includes('breaking') || title.includes('!:') || branch.startsWith('breaking/')) {
+              labelsToAdd.push('breaking');
+            }
+            
+            // Major enhancements
+            if (title.includes('major') && (title.includes('feat') || title.includes('enhancement'))) {
+              labelsToAdd.push('major-enhancement');
+            }
+            
+            // Major bugs
+            if (title.includes('major') && (title.includes('fix') || title.includes('bug'))) {
+              labelsToAdd.push('major-bug');
+            }
+            
+            // Removed/Deprecated
+            if (title.includes('remove') || title.includes('deprecat')) {
+              if (title.includes('deprecat')) {
+                labelsToAdd.push('deprecated');
+              } else {
+                labelsToAdd.push('removed');
+              }
+            }
+            
+            // Regular features/enhancements
+            if ((title.startsWith('feat') || title.includes('feature') || title.includes('enhancement') || 
+                 title.startsWith('add ') || title.startsWith('add:') ||
+                 branch.startsWith('feature/') || branch.startsWith('feat/')) &&
+                !currentLabels.includes('major-enhancement')) {
+              labelsToAdd.push('enhancement');
+            }
+            
+            // Bug fixes
+            if ((title.startsWith('fix') || title.includes('bugfix') || title.includes('bug fix') ||
+                 title.includes('regression') || branch.startsWith('fix/') || branch.startsWith('bugfix/')) &&
+                !currentLabels.includes('major-bug')) {
+              labelsToAdd.push('bug');
+            }
+            
+            // Documentation
+            if (title.startsWith('docs') || title.startsWith('doc:') || 
+                branch.startsWith('docs/') || branch.startsWith('doc/')) {
+              labelsToAdd.push('documentation');
+            }
+            
+            // Chore/Maintenance
+            if (title.startsWith('chore') || title.startsWith('maint') || 
+                title.startsWith('ci:') || title.startsWith('build:') ||
+                branch.startsWith('chore/') || branch.startsWith('maint/')) {
+              labelsToAdd.push('chore');
+            }
+            
+            // Refactoring
+            if (title.startsWith('refactor') || title.includes('refactoring') ||
+                branch.startsWith('refactor/')) {
+              labelsToAdd.push('refactor');
+            }
+            
+            // Tests
+            if (title.startsWith('test') || branch.startsWith('test/')) {
+              labelsToAdd.push('tests');
+            }
+            
+            // Security
+            if (title.includes('security') || title.includes('cve-') || 
+                title.includes('vulnerability') || branch.startsWith('security/')) {
+              labelsToAdd.push('security');
+            }
+            
+            // ═══════════════════════════════════════════════════════════════
+            // Auto-approve countdown for owner/member PRs
+            // ═══════════════════════════════════════════════════════════════
+            
+            const countdownLabel = 'merge-in-3-days-without-review';
+            const hasCountdownLabel = currentLabels.some(l => l.startsWith('merge-in-'));
+            
+            // Add countdown label for trusted authors (non-draft only)
+            // OWNER = repo owner, MEMBER = org member, COLLABORATOR = added as collaborator
+            const trustedAssociations = ['OWNER', 'MEMBER', 'COLLABORATOR'];
+            if (trustedAssociations.includes(authorAssoc) && !isDraft && !hasCountdownLabel) {
+              labelsToAdd.push(countdownLabel);
+              console.log(`  → Adding auto-approve countdown for ${authorAssoc}`);
+            }
+            
+            // ═══════════════════════════════════════════════════════════════
+            // Apply labels
+            // ═══════════════════════════════════════════════════════════════
+            
+            // Filter out labels that already exist
+            const newLabels = labelsToAdd.filter(l => !currentLabels.includes(l));
+            
+            if (newLabels.length > 0) {
+              console.log(`  → Adding labels: ${newLabels.join(', ')}`);
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: newLabels
+              });
+            } else {
+              console.log('  → No new labels to add');
+            }

@@ -1,0 +1,22 @@
+﻿name: Rebase open PRs
+
+on:
+  push:
+    branches:
+      - master
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  rebase-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: mPokornyETM/rebase-open-prs-action@v1
+        env:
+          # Use PAT to trigger subsequent workflows (security scan, etc.)
+          # Falls back to github.token if GH_TOKEN secret is not set
+          GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+        with:
+          github-token: ${{ secrets.GH_TOKEN || github.token }}
+
