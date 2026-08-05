@@ -86,7 +86,7 @@
     "gulp-less": "3.1.0",
     "gulp-rename": "1.2.2",
     "gulp-sourcemaps": "2.1.1",
-    "gulp-svgmin": "1.2.3",
+    "gulp-svgmin": "4.1.0",
     "gulp-typescript": "4.0.1",
     "harp": "0.46.1",
     "jest": "19.0.2",
