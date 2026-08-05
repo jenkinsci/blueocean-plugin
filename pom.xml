@@ -232,7 +232,7 @@
             <!-- BOM for 2.479.x does not include a new enough git client plugin -->
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git-client</artifactId>
-            <version>6.1.5</version>
+            <version>6.4.0</version>
         </dependency>
 
         <!-- remove when update BOM to version that include bitbucket 936.4.0  -->
