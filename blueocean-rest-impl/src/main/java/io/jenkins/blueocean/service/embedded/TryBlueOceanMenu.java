@@ -11,6 +11,7 @@ import hudson.model.ModelObject;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlObjectFactory;
 import io.jenkins.blueocean.rest.model.BlueOceanUrlObject;
 import jenkins.model.TransientActionFactory;
+import org.jenkinsci.plugins.workflow.graph.FlowNode;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Collection;
@@ -39,6 +40,16 @@ public class TryBlueOceanMenu extends TransientActionFactory<ModelObject> {
     @NonNull
     @Override
     public Collection<? extends Action> createFor(@NonNull ModelObject target) {
+        // The "Open Blue Ocean" sidebar link is meaningless on a pipeline FlowNode
+        // (BlueOceanUrlMapperImpl.getUrl() returns null for FlowNodes, so it would only ever
+        // fall back to the landing page). Because type() is ModelObject, this factory is invoked
+        // for every Actionable object in the JVM, including every FlowNode of every pipeline
+        // build. Skipping FlowNodes early avoids allocating a BlueOceanUrlObjectImpl (which eagerly
+        // runs computeUrl in its constructor) and a BlueOceanUrlAction per node - at pipeline scale
+        // that produced tens of millions of useless objects and drove a controller into GC death.
+        if (target instanceof FlowNode) {
+            return Collections.emptyList();
+        }
         // we do not report actions as it might appear multiple times, we simply add it to Actionable
         BlueOceanUrlObjectFactory f = getFirst();
         if(f != null) {
