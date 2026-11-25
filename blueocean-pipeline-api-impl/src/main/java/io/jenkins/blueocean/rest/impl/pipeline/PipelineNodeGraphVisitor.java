@@ -735,6 +735,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     currentNodeWrapper.getInputStep(),
                     run
                 );
+                newNodeWrapper.setPipelineActions(currentNodeWrapper.getPipelineActions());
 
                 newNodes.put(oldNodeWrapper.getId(), newNodeWrapper);
 

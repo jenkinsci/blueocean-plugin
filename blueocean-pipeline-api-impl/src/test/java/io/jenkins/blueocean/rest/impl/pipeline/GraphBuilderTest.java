@@ -89,6 +89,23 @@ public class GraphBuilderTest extends PipelineBaseTest {
     }
 
     @Test
+    public void downstreamBuildLinksSurviveUnion() throws Exception {
+        createJob("downstream1", "declarativeQueuedAgent.jenkinsfile");
+        createJob("downstream2", "declarativeQueuedAgent.jenkinsfile");
+        WorkflowJob p = createJob("downstreamUnion", "downstreamBuildLinks.jenkinsfile");
+        WorkflowRun b1 = j.buildAndAssertSuccess(p);
+        WorkflowRun b2 = j.buildAndAssertSuccess(p);
+        List<FlowNodeWrapper> plain = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b2).getPipelineNodes();
+        List<FlowNodeWrapper> union = unionPipelineNodes(b1, b2);
+        for (String name : new String[] {"downstream1", "downstream2"}) {
+            FlowNodeWrapper expected = assertStageAndEdges(plain, name, "Double-downstream");
+            FlowNodeWrapper actual = assertStageAndEdges(union, name, "Double-downstream");
+            assertEquals(name + " plain graph", 1, expected.getPipelineActions(NodeDownstreamBuildAction.class).size());
+            assertEquals(name + " union graph", 1, actual.getPipelineActions(NodeDownstreamBuildAction.class).size());
+        }
+    }
+
+    @Test
     public void downstreamBuildLinks() throws Exception {
 
         // Any simple pipeline would do for these
